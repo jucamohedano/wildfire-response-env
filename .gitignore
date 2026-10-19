@@ -1,0 +1,17 @@
+.venv*/
+.runtime/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+checkpoints/
+outputs/
+**/private/
+*.safetensors
+*.pt
+*.pth
+*.ckpt

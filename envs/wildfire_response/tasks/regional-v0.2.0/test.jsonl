@@ -1,0 +1,6 @@
+{"id": "regional-test-030", "split": "test", "group_id": "regional-configuration-030", "seed": 30030, "synthetic": true, "configuration_sha256": "dc8b4a33172e3886fc25cf910d0e769e4f4b69d62a609e2f0f6e07a8fe98336a"}
+{"id": "regional-test-031", "split": "test", "group_id": "regional-configuration-031", "seed": 30031, "synthetic": true, "configuration_sha256": "534412325b59442e6e1bc23c4167af6a07ebab55edc7b21afa6debe5687a828c"}
+{"id": "regional-test-032", "split": "test", "group_id": "regional-configuration-032", "seed": 30032, "synthetic": true, "configuration_sha256": "bf8a1a755fa598a16210e027d644a475e5a52e26d7b56d559377368045ceae33"}
+{"id": "regional-test-033", "split": "test", "group_id": "regional-configuration-033", "seed": 30033, "synthetic": true, "configuration_sha256": "fa194c84d2bbccb81d79d793a136f6e544b42fff6a641869cf227d4091db6467"}
+{"id": "regional-test-034", "split": "test", "group_id": "regional-configuration-034", "seed": 30034, "synthetic": true, "configuration_sha256": "dae975f285f0ad7f91f4ebbd65036df689a9de4e83a32a4cb7b952da25fd93e0"}
+{"id": "regional-test-035", "split": "test", "group_id": "regional-configuration-035", "seed": 30035, "synthetic": true, "configuration_sha256": "8d9a8e3b43e9273b6b074054f925b1df167baacbfdf11f52b49e9f5b45913d54"}

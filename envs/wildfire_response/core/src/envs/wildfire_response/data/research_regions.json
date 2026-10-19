@@ -1,0 +1,448 @@
+{
+  "schema_version": "spain-regional-fire-evidence-v1",
+  "cutoff_date": "2026-10-18",
+  "retrieved_date": "2026-10-18",
+  "timezone": "Europe/Madrid",
+  "scope": {
+    "description": "Bounded official-source research outside Andalucía; three incident records, including independent Sierra Oeste claim check.",
+    "exhaustive": false,
+    "regions_with_verified_incidents": [
+      "Comunidad de Madrid",
+      "Aragón"
+    ],
+    "regions_searched_without_admitted_incidents": [
+      "Galicia",
+      "Castilla y León",
+      "Comunitat Valenciana"
+    ],
+    "limitations": [
+      "Search results used only for discovery; no incident facts admitted from snippets.",
+      "Current official page bodies and metadata verified; historical archived versions were not checked.",
+      "No private transcripts accessed. No existing dataset edited. No CEMS activation claims independently validated."
+    ]
+  },
+  "counts": {
+    "sources": 6,
+    "body_verified_sources": 4,
+    "unverified_candidate_sources": 2,
+    "verified_incident_records": 3,
+    "verified_facts": 11,
+    "confirmed_contradictions_with_existing_dataset": 0,
+    "raw_body_snapshots": 4,
+    "http_header_files": 8
+  },
+  "existing_dataset_review": {
+    "path": "envs/wildfire_response/data/spain_2026.json",
+    "sha256": "2d2a0b52b9b20fa4902d8800b4fcca295b7cfe5cc50e6ea808769f45841514a2",
+    "scope": "Only Madrid/Sierra Oeste fields and its Madrid and Moncloa source dates independently checked. Andalucía entries outside assigned scope.",
+    "modified": false,
+    "contradictions": [],
+    "findings": [
+      {
+        "claim": "Sierra Oeste official recovery report dated 2026-07-29",
+        "assessment": "supported",
+        "source_ids": [
+          "madrid_sierra_oeste"
+        ],
+        "explanation": "Body date and structured publication metadata agree on July 2026; body describes the fire and recovery plan."
+      },
+      {
+        "claim": "17 affected municipalities and approximately 27000 hectares of affected perimeter",
+        "assessment": "supported_as_reported",
+        "source_ids": [
+          "madrid_sierra_oeste"
+        ],
+        "explanation": "Municipality count includes evacuation impact. Perimeter area must not be substituted for measured burned vegetation."
+      },
+      {
+        "claim": "National emergency de-escalation on 2026-07-30",
+        "assessment": "supported",
+        "source_ids": [
+          "moncloa_deescalation"
+        ],
+        "explanation": "Dated official article title announces end of national emergency for Ávila and Madrid and return to operational level 2; this is not a fire extinction date."
+      },
+      {
+        "claim": "Sierra Oeste complex classification, individual ignition dates, EMSR900 and AOI mappings",
+        "assessment": "not_independently_verified",
+        "source_ids": [],
+        "explanation": "Reviewed pages do not establish ignition count, exact ignition time or Copernicus identifiers."
+      }
+    ],
+    "warning": "No date contradiction found in the two scoped Madrid-related sources; this does not validate the remainder of the existing dataset."
+  },
+  "sources": {
+    "madrid_sierra_oeste": {
+      "url": "https://www.comunidad.madrid/noticias/2026/07/29/diaz-ayuso-avanza-plan-recuperacion-paisaje-17-municipios-afectados-incendios-sierra-oeste",
+      "publisher": "Comunidad de Madrid",
+      "published_date": "2026-07-29",
+      "date_verification": "Article body displays 29 julio 2026; article:published_time is 2026-07-29T14:18:04+02:00 and JSON-LD datePublished is 2026-07-29.",
+      "retrieved_date": "2026-10-18",
+      "retrieval_status": "body_verified",
+      "official_primary_source": true,
+      "licensing": {
+        "license": null,
+        "status": "Reuse license and asset-specific rights not verified; public access is not a licensing grant."
+      },
+      "access_gap": null,
+      "snapshots": [
+        {
+          "path": ".runtime/spain-research-regions/madrid_sierra_oeste.html",
+          "sha256": "32a1d72e0f3c5e350bfeabff9203cdf6cbce227bd61c90d9e3f5dc7da249b4ec",
+          "bytes": 114201,
+          "kind": "raw_http_response_body",
+          "http_status": 200,
+          "tls_verified": true
+        },
+        {
+          "path": ".runtime/spain-research-regions/madrid_sierra_oeste.headers",
+          "sha256": "574c6fcec2fef0e82adea235b51b580d33507f3b77375d46089928b9f0de17b9",
+          "bytes": 3924,
+          "kind": "raw_http_response_headers"
+        }
+      ]
+    },
+    "moncloa_deescalation": {
+      "url": "https://www.lamoncloa.gob.es/presidente/actividades/Paginas/2026/300726-sanchez-pma-navaluenga-.aspx",
+      "publisher": "Gobierno de España / La Moncloa",
+      "published_date": "2026-07-30",
+      "date_verification": "Article body date 30.7.2026; JSON-LD datePublished 2026-07-30T10:00:00Z.",
+      "retrieved_date": "2026-10-18",
+      "retrieval_status": "body_verified",
+      "official_primary_source": true,
+      "licensing": {
+        "license": null,
+        "status": "Reuse license and asset-specific rights not verified; public access is not a licensing grant."
+      },
+      "access_gap": null,
+      "snapshots": [
+        {
+          "path": ".runtime/spain-research-regions/moncloa_deescalation.html",
+          "sha256": "1fea3dcbd8c7c855035432e2e7cc4ea9a4b146d6d34c00646aeee71258892e6e",
+          "bytes": 78097,
+          "kind": "raw_http_response_body",
+          "http_status": 200,
+          "tls_verified": true
+        },
+        {
+          "path": ".runtime/spain-research-regions/moncloa_deescalation.headers",
+          "sha256": "7bb1d794a279e0d59801c411d432b17c60b1853b833ab3e3dcec69ad703cff51",
+          "bytes": 1059,
+          "kind": "raw_http_response_headers"
+        }
+      ]
+    },
+    "galicia_quiroga": {
+      "url": "https://mediorural.xunta.gal/es/recursos/noticias/controlado-el-incendio-del-ayuntamiento-lucense-de-quiroga-parroquia-de-pacios-da",
+      "publisher": "Xunta de Galicia / Consellería do Medio Rural",
+      "published_date": null,
+      "date_verification": "Not established from page body; search discovery date intentionally not accepted.",
+      "retrieved_date": "2026-10-18",
+      "retrieval_status": "body_unavailable",
+      "official_primary_source": true,
+      "licensing": {
+        "license": null,
+        "status": "Reuse license and asset-specific rights not verified; public access is not a licensing grant."
+      },
+      "access_gap": "Web open returned internal error/timeouts. Curl failed certificate validation (exit 60), including explicit system CA retry; TLS verification was not disabled.",
+      "snapshots": []
+    },
+    "galicia_porto_do_son": {
+      "url": "https://mediorural.xunta.gal/es/recursos/noticias/extinguido-el-incendio-forestal-del-ayuntamiento-corunes-de-o-porto-do-son",
+      "publisher": "Xunta de Galicia / Consellería do Medio Rural",
+      "published_date": null,
+      "date_verification": "Not established from page body; search discovery date intentionally not accepted.",
+      "retrieved_date": "2026-10-18",
+      "retrieval_status": "body_unavailable",
+      "official_primary_source": true,
+      "licensing": {
+        "license": null,
+        "status": "Reuse license and asset-specific rights not verified; public access is not a licensing grant."
+      },
+      "access_gap": "Web open returned internal error/timeouts. Curl failed certificate validation (exit 60), including explicit system CA retry; TLS verification was not disabled.",
+      "snapshots": []
+    },
+    "aragon_riglos": {
+      "url": "https://pro.aragonhoy.es/hacienda-interior-administracion-publica/incendio-forestal-penas-riglos-queda-estabilizado-intenso-operativo-historico-106143",
+      "publisher": "Gobierno de Aragón / Aragón Hoy",
+      "published_date": "2026-08-20",
+      "date_verification": "Article update label 20/08/2026 09:36; JSON-LD datePublished and dateModified 2026-08-20T09:36:55+02:00. Ignition year anchored to this dated article.",
+      "retrieved_date": "2026-10-18",
+      "retrieval_status": "body_verified",
+      "official_primary_source": true,
+      "licensing": {
+        "license": null,
+        "status": "Reuse license and asset-specific rights not verified; public access is not a licensing grant."
+      },
+      "access_gap": null,
+      "snapshots": [
+        {
+          "path": ".runtime/spain-research-regions/aragon_riglos.html",
+          "sha256": "30a43554231acc3fa73caa70f3f0a2dc99cfec4b39517676391392181e68849e",
+          "bytes": 25915,
+          "kind": "raw_http_response_body",
+          "http_status": 200,
+          "tls_verified": true
+        },
+        {
+          "path": ".runtime/spain-research-regions/aragon_riglos.headers",
+          "sha256": "010ec0b203227189f3672894ec67f18ed4b917670f7a89b9663476c378873d64",
+          "bytes": 527,
+          "kind": "raw_http_response_headers"
+        }
+      ]
+    },
+    "aragon_algairen": {
+      "url": "https://pro.aragonhoy.es/hacienda-interior-administracion-publica/incendio-sierra-algairen-presenta-evolucion-favorable-superficie-afectada-200-hectareas-106111",
+      "publisher": "Gobierno de Aragón / Aragón Hoy",
+      "published_date": "2026-08-15",
+      "date_verification": "Article update label 15/08/2026 10:52; JSON-LD datePublished and dateModified 2026-08-15T10:52:03+02:00.",
+      "retrieved_date": "2026-10-18",
+      "retrieval_status": "body_verified",
+      "official_primary_source": true,
+      "licensing": {
+        "license": null,
+        "status": "Reuse license and asset-specific rights not verified; public access is not a licensing grant."
+      },
+      "access_gap": null,
+      "snapshots": [
+        {
+          "path": ".runtime/spain-research-regions/aragon_algairen.html",
+          "sha256": "7c0ca495f6f49500e1d721958a1dae01c36d913fcba448f7a6e9c23dd9737590",
+          "bytes": 23463,
+          "kind": "raw_http_response_body",
+          "http_status": 200,
+          "tls_verified": true
+        },
+        {
+          "path": ".runtime/spain-research-regions/aragon_algairen.headers",
+          "sha256": "5e0c7e23edb5950e7c0d2fb0cdd9093f7f8fb0c8c4077ac94f3057cf16994cc5",
+          "bytes": 527,
+          "kind": "raw_http_response_headers"
+        }
+      ]
+    }
+  },
+  "incidents": [
+    {
+      "id": "es-2026-madrid-sierra-oeste",
+      "name": "Sierra Oeste",
+      "autonomous_community": "Comunidad de Madrid",
+      "scope": "Regional incident/recovery reporting; ignition count not established",
+      "facts": [
+        {
+          "field": "official_recovery_report_date",
+          "value": "2026-07-29",
+          "source_ids": [
+            "madrid_sierra_oeste"
+          ],
+          "evidence_locator": "Article date, article:published_time and JSON-LD datePublished",
+          "qualifier": "Publication date, not ignition date.",
+          "verification": "official_page_body",
+          "uncertainty": "Reported by the issuing authority; not independently measured."
+        },
+        {
+          "field": "affected_municipalities_reported_count",
+          "value": 17,
+          "source_ids": [
+            "madrid_sierra_oeste"
+          ],
+          "evidence_locator": "Lead paragraph and municipality list",
+          "qualifier": "Recovery scope includes El Escorial because Peralejo was evacuated.",
+          "verification": "official_page_body",
+          "uncertainty": "Reported by the issuing authority; not independently measured."
+        },
+        {
+          "field": "reported_affected_perimeter_area_ha",
+          "value": 27000,
+          "source_ids": [
+            "madrid_sierra_oeste"
+          ],
+          "evidence_locator": "First area paragraph",
+          "qualifier": "Approximate perimeter area; not a burned-area measurement.",
+          "verification": "official_page_body",
+          "uncertainty": "Reported by the issuing authority; not independently measured."
+        },
+        {
+          "field": "national_emergency_deescalation_date",
+          "value": "2026-07-30",
+          "source_ids": [
+            "moncloa_deescalation"
+          ],
+          "evidence_locator": "Article title and dated activity heading",
+          "qualifier": "Applies jointly to Ávila and Madrid; operational level 2, not extinction.",
+          "verification": "official_page_body",
+          "uncertainty": "Reported by the issuing authority; not independently measured."
+        }
+      ],
+      "missing": [
+        "Exact ignition date/time",
+        "Ignition coordinates",
+        "Single-fire versus multiple-ignition classification",
+        "Final burned area",
+        "CEMS/AOI verification"
+      ],
+      "uncertainty": "Supports an official July 2026 fire report; does not establish when each ignition occurred."
+    },
+    {
+      "id": "es-2026-aragon-las-penas-de-riglos",
+      "name": "Las Peñas de Riglos",
+      "autonomous_community": "Aragón",
+      "facts": [
+        {
+          "field": "incident_start_date",
+          "value": "2026-08-10",
+          "source_ids": [
+            "aragon_riglos"
+          ],
+          "evidence_locator": "First article paragraph",
+          "qualifier": "Day/month explicitly reported; year anchored to dated 2026 article.",
+          "verification": "official_page_body",
+          "uncertainty": "Reported by the issuing authority; not independently measured."
+        },
+        {
+          "field": "stabilized_date",
+          "value": "2026-08-20",
+          "source_ids": [
+            "aragon_riglos"
+          ],
+          "evidence_locator": "First article paragraph and update date",
+          "qualifier": "Date resolved from 'hoy'; exact stabilization time not established.",
+          "verification": "official_page_body",
+          "uncertainty": "Reported by the issuing authority; not independently measured."
+        },
+        {
+          "field": "reported_affected_perimeter_area_ha",
+          "value": 18400,
+          "source_ids": [
+            "aragon_riglos"
+          ],
+          "evidence_locator": "First article paragraph",
+          "qualifier": "Area within affected perimeter; distinct from burned area.",
+          "verification": "official_page_body",
+          "uncertainty": "Reported by the issuing authority; not independently measured."
+        },
+        {
+          "field": "reported_burned_area_ha",
+          "value": 14500,
+          "source_ids": [
+            "aragon_riglos"
+          ],
+          "evidence_locator": "First article paragraph",
+          "qualifier": "Authority reports satellite-derived burned area within the perimeter; underlying satellite product not retrieved.",
+          "verification": "official_page_body",
+          "uncertainty": "Reported by the issuing authority; not independently measured."
+        }
+      ],
+      "missing": [
+        "Ignition coordinates/time",
+        "Underlying satellite perimeter and acquisition details",
+        "Final extinction report",
+        "Final audited burned area"
+      ],
+      "uncertainty": "Status and area are a dated official reporting snapshot, not a final outcome."
+    },
+    {
+      "id": "es-2026-aragon-sierra-de-algairen",
+      "name": "Sierra de Algairén",
+      "autonomous_community": "Aragón",
+      "facts": [
+        {
+          "field": "reported_affected_area_ha",
+          "value": 200,
+          "source_ids": [
+            "aragon_algairen"
+          ],
+          "evidence_locator": "First article paragraph",
+          "qualifier": "Provisional affected area on 2026-08-15.",
+          "verification": "official_page_body",
+          "uncertainty": "Reported by the issuing authority; not independently measured."
+        },
+        {
+          "field": "reported_status",
+          "value": {
+            "as_of_date": "2026-08-15",
+            "status": "progressing_toward_stabilization"
+          },
+          "source_ids": [
+            "aragon_algairen"
+          ],
+          "evidence_locator": "First article paragraph and subheading",
+          "qualifier": "Stabilization anticipated, not declared complete.",
+          "verification": "official_page_body",
+          "uncertainty": "Reported by the issuing authority; not independently measured."
+        },
+        {
+          "field": "planned_infoar_fire_engines",
+          "value": 3,
+          "source_ids": [
+            "aragon_algairen"
+          ],
+          "evidence_locator": "Dispositivo paragraph",
+          "qualifier": "Planned deployment for the report day; not initial available fleet or cumulative resources.",
+          "verification": "official_page_body",
+          "uncertainty": "Reported by the issuing authority; not independently measured."
+        }
+      ],
+      "missing": [
+        "Ignition date/time",
+        "Exact ignition coordinates",
+        "Final status",
+        "Final burned area"
+      ],
+      "uncertainty": "Do not convert anticipated stabilization or planned Alpartir deconfinement into completed events."
+    }
+  ],
+  "unverified_candidates": [
+    {
+      "source_id": "galicia_quiroga",
+      "name_from_discovery": "Quiroga / Pacios da Serra",
+      "incident_facts_admitted": false,
+      "reason": "Body inaccessible; year and details not independently verified."
+    },
+    {
+      "source_id": "galicia_porto_do_son",
+      "name_from_discovery": "O Porto do Son / Ribasieira",
+      "incident_facts_admitted": false,
+      "reason": "Body inaccessible; year and details not independently verified."
+    }
+  ],
+  "access_and_licensing_gaps": [
+    "Direct network initially failed DNS in sandbox; approved public-page downloads succeeded for Madrid, Moncloa and Aragón.",
+    "Four zero-byte Galicia header artifacts record failed curl attempts; they are not evidence snapshots.",
+    "Galicia bodies were not retrieved, so discovery claims remain excluded.",
+    "No qualifying Castilla y León or Valencia incident body verified within bounded search; this is not evidence of no fires.",
+    "Licenses not verified for the four admitted pages; snapshots retained for provenance without a redistribution-rights assertion."
+  ],
+  "provenance": {
+    "snapshot_directory": ".runtime/spain-research-regions",
+    "hash_algorithm": "SHA256",
+    "body_format": "Original downloaded HTML bytes, not a rendered screenshot or manually transcribed text.",
+    "failed_attempt_files": [
+      {
+        "path": ".runtime/spain-research-regions/galicia_quiroga.headers",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "meaning": "Empty header output from certificate-validation failure; no HTTP body."
+      },
+      {
+        "path": ".runtime/spain-research-regions/galicia_quiroga_system_ca.headers",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "meaning": "Empty header output from certificate-validation failure; no HTTP body."
+      },
+      {
+        "path": ".runtime/spain-research-regions/galicia_porto_do_son.headers",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "meaning": "Empty header output from certificate-validation failure; no HTTP body."
+      },
+      {
+        "path": ".runtime/spain-research-regions/galicia_porto_do_son_system_ca.headers",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "meaning": "Empty header output from certificate-validation failure; no HTTP body."
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wildfire-response-core"
+version = "0.1.0"
+description = "Seeded wildfire coordination tasks, simulator, outcome verification and training bridge"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+dataset = ["pyarrow>=18,<27"]
+dev = []
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["wildfire_core*", "envs", "envs.wildfire_response*", "simulator"]
+exclude = ["envs.wildfire_response.tests*"]
+
+[tool.setuptools.package-data]
+simulator = ["static/maps/brunete-illustrated.json"]
+"envs.wildfire_response" = ["data/*.json", "data/*.md", "tasks/*.md", "regional/*.md", "regional/*.json", "regional/director/*.md", "regional/training/*.md", "regional/training/*.json", "regional/training/*.txt", "openenv/*.yaml", "regional/openenv/*.yaml"]

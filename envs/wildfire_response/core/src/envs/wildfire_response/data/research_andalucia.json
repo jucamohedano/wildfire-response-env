@@ -1,0 +1,619 @@
+{
+  "schema_version": "spain-wildfire-research-v1",
+  "reviewed_on": "2026-10-18",
+  "cutoff_date": "2026-10-18",
+  "timezone": "Europe/Madrid",
+  "geographic_scope": "Andalucía: Almería, Huelva and cross-province extension into Sevilla",
+  "exhaustive": false,
+  "methodology": {
+    "selection": "Bounded verification of two existing claims and two additional incidents using five official pages.",
+    "verification": "Search used for discovery only; official page bodies and visible publication dates opened and cross-checked against downloaded HTML.",
+    "facts_are": "Attributed dated reports, with qualifications; not independently reconstructed physical measurements.",
+    "excluded": [
+      "Secondary reporting as factual evidence",
+      "Search snippets as proof",
+      "Events or publications after cutoff",
+      "Private transcripts",
+      "Unverified Copernicus activation identifiers"
+    ]
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/217472/incendioLosGallardos/emergencia/fasedepreemergencia/situacionoperativa0",
+      "publisher": "Junta de Andalucía / Emergencias 112 / Agencia de Emergencias de Andalucía",
+      "title": "Desciende a fase de preemergencia el Plan Infoca por el incendio en Los Gallardos",
+      "published_date": "2026-07-13",
+      "retrieved_date": "2026-10-18",
+      "primary_source": true,
+      "body_verified": true,
+      "year_verified_in_page": true,
+      "verification_anchor": {
+        "date": "13/07/2026",
+        "body": "jueves 9 de julio",
+        "section": "Cronología del incendio"
+      },
+      "snapshot": {
+        "path": ".runtime/spain-research-andalucia/los_gallardos_20260713.html",
+        "sha256": "401e0e9e90ed8254ce3887de5be51cab7e619c4b0a17ac1316f8ab18dcee8c71",
+        "format": "text/html; UTF-8",
+        "transformation": "Full retrieved HTML; line endings normalized to LF and terminal newline ensured by apply_patch. Hash covers saved bytes, not original HTTP bytes.",
+        "fetch_method": "Python urllib; verified TLS with OP_IGNORE_UNEXPECTED_EOF",
+        "transport_note": "curl failed with TLS unexpected EOF; clean urllib retrieval succeeded. Failed mixed stderr output was not saved."
+      },
+      "licensing": {
+        "license": null,
+        "status": "No explicit reuse license verified; public availability does not establish unrestricted redistribution.",
+        "signed_pdf_verified": false
+      },
+      "access_gaps": [
+        "Page is a dated operational report, not a final incident register."
+      ]
+    },
+    {
+      "id": "S2",
+      "url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/216605/Emergencias/112/Andalucia/Huelva",
+      "publisher": "Junta de Andalucía / Emergencias 112 / Agencia de Emergencias de Andalucía",
+      "title": "Estabilizado el incendio forestal de Villanueva de los Castillejos",
+      "published_date": "2026-06-10",
+      "retrieved_date": "2026-10-18",
+      "primary_source": true,
+      "body_verified": true,
+      "year_verified_in_page": true,
+      "verification_anchor": {
+        "date": "10/06/2026",
+        "body": "desde las 13:00 horas del lunes",
+        "section": "Article body; publication date and calendar establish Monday 8 June"
+      },
+      "snapshot": {
+        "path": ".runtime/spain-research-andalucia/castillejos_20260610.html",
+        "sha256": "1c97fe9c790b0f6fa0587d0ef4f8f38387f7b3f26c292fc433f37341058dc2c1",
+        "format": "text/html; UTF-8",
+        "transformation": "Full retrieved HTML; line endings normalized to LF and terminal newline ensured by apply_patch. Hash covers saved bytes, not original HTTP bytes.",
+        "fetch_method": "curl; verified TLS",
+        "transport_note": "Initial curl EOF failure; successful HTTP/1.1 TLS 1.2 retry saved."
+      },
+      "licensing": {
+        "license": null,
+        "status": "No explicit reuse license verified; public availability does not establish unrestricted redistribution.",
+        "signed_pdf_verified": false
+      },
+      "access_gaps": [
+        "Page is a dated operational report, not a final incident register."
+      ]
+    },
+    {
+      "id": "S3",
+      "url": "https://www.juntadeandalucia.es/boja/2026/128/3",
+      "publisher": "Junta de Andalucía / Boletín Oficial de la Junta de Andalucía",
+      "title": "Acuerdo de 1 de julio de 2026: incendio de 8 de junio de 2026 en Huelva",
+      "published_date": "2026-07-06",
+      "retrieved_date": "2026-10-18",
+      "primary_source": true,
+      "body_verified": true,
+      "year_verified_in_page": true,
+      "verification_anchor": {
+        "date": "06/07/2026",
+        "body": "incendio originado el 8 de junio de 2026",
+        "section": "Agreement title and Primero"
+      },
+      "snapshot": {
+        "path": ".runtime/spain-research-andalucia/boja_castillejos_20260706.html",
+        "sha256": "cb9011338982e3fac07a8d0915f39e9d8946f29a662fa57ebbf308b4b8ab2722",
+        "format": "text/html; UTF-8",
+        "transformation": "Full retrieved HTML; line endings normalized to LF and terminal newline ensured by apply_patch. Hash covers saved bytes, not original HTTP bytes.",
+        "fetch_method": "curl; verified TLS",
+        "transport_note": null
+      },
+      "licensing": {
+        "license": null,
+        "status": "No explicit reuse license verified; public availability does not establish unrestricted redistribution.",
+        "signed_pdf_verified": false
+      },
+      "access_gaps": [
+        "HTML warns that signed PDF is the authentic legal version; PDF and CVE verification not performed."
+      ]
+    },
+    {
+      "id": "S4",
+      "url": "https://www.juntadeandalucia.es/boja/2026/171/1",
+      "publisher": "Junta de Andalucía / Boletín Oficial de la Junta de Andalucía",
+      "title": "Acuerdo de 31 de agosto de 2026: incendio de 6 de agosto de 2026 en Huelva y Sevilla",
+      "published_date": "2026-09-03",
+      "retrieved_date": "2026-10-18",
+      "primary_source": true,
+      "body_verified": true,
+      "year_verified_in_page": true,
+      "verification_anchor": {
+        "date": "03/09/2026",
+        "body": "El 6 de agosto de 2026",
+        "section": "Opening paragraph and Primero"
+      },
+      "snapshot": {
+        "path": ".runtime/spain-research-andalucia/boja_niebla_20260903.html",
+        "sha256": "6e80333b97db3abfb97f5c8391747ae1c03551b7dbcd7948997edcc12db25ea6",
+        "format": "text/html; UTF-8",
+        "transformation": "Full retrieved HTML; line endings normalized to LF and terminal newline ensured by apply_patch. Hash covers saved bytes, not original HTTP bytes.",
+        "fetch_method": "curl; verified TLS",
+        "transport_note": null
+      },
+      "licensing": {
+        "license": null,
+        "status": "No explicit reuse license verified; public availability does not establish unrestricted redistribution.",
+        "signed_pdf_verified": false
+      },
+      "access_gaps": [
+        "HTML warns that signed PDF is the authentic legal version; PDF and CVE verification not performed."
+      ]
+    },
+    {
+      "id": "S5",
+      "url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/217655/Emergencias/112/Andalucia/Huelva",
+      "publisher": "Junta de Andalucía / Emergencias 112 / Agencia de Emergencias de Andalucía",
+      "title": "La Junta eleva el Plan Infoca a situación operativa 1 por un incendio en El Cerro de Andévalo",
+      "published_date": "2026-07-22",
+      "retrieved_date": "2026-10-18",
+      "primary_source": true,
+      "body_verified": true,
+      "year_verified_in_page": true,
+      "verification_anchor": {
+        "date": "22/07/2026",
+        "body": "desde las 20:40 horas de ayer",
+        "section": "Article body; publication date establishes 21 July"
+      },
+      "snapshot": {
+        "path": ".runtime/spain-research-andalucia/cerro_andevalo_20260722.html",
+        "sha256": "5681b8a2931aeee764d620e49cdd62255eaf55a2c90dac47de8fd29f11e45486",
+        "format": "text/html; UTF-8",
+        "transformation": "Full retrieved HTML; line endings normalized to LF and terminal newline ensured by apply_patch. Hash covers saved bytes, not original HTTP bytes.",
+        "fetch_method": "Python urllib; verified TLS with OP_IGNORE_UNEXPECTED_EOF",
+        "transport_note": "curl failed with TLS unexpected EOF; clean urllib retrieval succeeded. Failed mixed stderr output was not saved."
+      },
+      "licensing": {
+        "license": null,
+        "status": "No explicit reuse license verified; public availability does not establish unrestricted redistribution.",
+        "signed_pdf_verified": false
+      },
+      "access_gaps": [
+        "Page is a dated operational report, not a final incident register."
+      ]
+    }
+  ],
+  "incidents": [
+    {
+      "id": "es-2026-almeria-los-gallardos",
+      "name": "Los Gallardos",
+      "province": "Almería",
+      "relation_to_existing": "reverified",
+      "facts": [
+        {
+          "field": "first_112_call",
+          "value": "2026-07-09T16:25:00+02:00",
+          "source_ids": [
+            "S1"
+          ],
+          "qualifier": "Reported first call; not proven ignition time. Date from article chronology; timezone Europe/Madrid.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "operational_level_1",
+          "value": "2026-07-09T19:37:00+02:00",
+          "source_ids": [
+            "S1"
+          ],
+          "qualifier": "Thursday in dated chronology; local time.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "operational_level_2",
+          "value": "2026-07-09T22:37:00+02:00",
+          "source_ids": [
+            "S1"
+          ],
+          "qualifier": "Thursday in dated chronology; local time.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "preemergency_level_0",
+          "value": "2026-07-13T12:34:00+02:00",
+          "source_ids": [
+            "S1"
+          ],
+          "qualifier": "Publication-day de-escalation; not extinction.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "reported_burned_area_ha",
+          "value": 7000,
+          "source_ids": [
+            "S1"
+          ],
+          "qualifier": "Approximate interim estimate as of publication.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "evacuated_or_preventively_relocated_people",
+          "value": 1468,
+          "source_ids": [
+            "S1"
+          ],
+          "qualifier": "Combined categories; publication-date report.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "confined_people",
+          "value": 1300,
+          "source_ids": [
+            "S1"
+          ],
+          "qualifier": "Approximately; publication-date report.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "emergency_calls",
+          "value": 500,
+          "source_ids": [
+            "S1"
+          ],
+          "qualifier": "Approximately; aggregated public count only.",
+          "verification": "official_page_body"
+        }
+      ],
+      "uncertainty": [
+        "No final burned-area or final casualty determination checked.",
+        "First call cannot establish exact ignition.",
+        "Existing municipality list is incomplete for protective actions; see audit."
+      ]
+    },
+    {
+      "id": "es-2026-huelva-villanueva-castillejos",
+      "name": "Villanueva de los Castillejos",
+      "province": "Huelva",
+      "relation_to_existing": "reverified",
+      "facts": [
+        {
+          "field": "incident_start_date",
+          "value": "2026-06-08",
+          "source_ids": [
+            "S3"
+          ],
+          "qualifier": "Year explicit in agreement title and operative text.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "first_112_calls_since",
+          "value": "2026-06-08T13:00:00+02:00",
+          "source_ids": [
+            "S2",
+            "S3"
+          ],
+          "qualifier": "S2 says Monday; dated Wednesday 10 June. S3 independently states 8 June 2026.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "stabilized_at",
+          "value": "2026-06-10T22:20:00+02:00",
+          "source_ids": [
+            "S2"
+          ],
+          "qualifier": "Publication-day stabilization; not extinction.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "evacuated_or_preventively_relocated_people",
+          "value": 380,
+          "source_ids": [
+            "S2",
+            "S3"
+          ],
+          "qualifier": "More than; combined categories.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "emergency_calls",
+          "value": 300,
+          "source_ids": [
+            "S2"
+          ],
+          "qualifier": "More than; aggregated public count.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "heavy_firefighting_vehicles_on_june_10_night",
+          "value": 10,
+          "source_ids": [
+            "S2"
+          ],
+          "qualifier": "Deployed nighttime snapshot; not initial fleet inventory.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "reported_burned_area_ha",
+          "value": 6310,
+          "source_ids": [
+            "S3"
+          ],
+          "qualifier": "Approximately; administrative damage assessment, not an independently measured perimeter.",
+          "verification": "official_page_body"
+        }
+      ],
+      "uncertainty": [
+        "No final extinction time checked.",
+        "Reported hectares and deployment counts retain source-specific scope."
+      ]
+    },
+    {
+      "id": "es-2026-huelva-niebla",
+      "name": "Niebla / Raboconejo",
+      "provinces": [
+        "Huelva",
+        "Sevilla"
+      ],
+      "relation_to_existing": "additional_case",
+      "facts": [
+        {
+          "field": "incident_start_date",
+          "value": "2026-08-06",
+          "source_ids": [
+            "S4"
+          ],
+          "qualifier": "Explicit full date in opening paragraph.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "origin_paraje",
+          "value": "Raboconejo",
+          "source_ids": [
+            "S4"
+          ],
+          "qualifier": "Within Niebla municipality; no exact coordinates.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "extinguished_date",
+          "value": "2026-08-21",
+          "source_ids": [
+            "S4"
+          ],
+          "qualifier": "21 August in retrospective August 2026 incident chronology.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "affected_municipalities",
+          "value": [
+            "Berrocal",
+            "El Campillo",
+            "Niebla",
+            "Escacena del Campo",
+            "La Palma del Condado",
+            "Paterna del Campo",
+            "Valverde del Camino",
+            "Villalba del Alcor",
+            "Villarrasa",
+            "Zalamea la Real",
+            "Aznalcóllar"
+          ],
+          "source_ids": [
+            "S4"
+          ],
+          "qualifier": "First ten in Huelva; Aznalcóllar in Sevilla.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "reported_burned_area_ha",
+          "value": 33000,
+          "source_ids": [
+            "S4"
+          ],
+          "qualifier": "Around; BOJA attributes this to Copernicus. Original Copernicus product not independently checked.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "reported_huelva_burned_area_ha",
+          "value": 28578.74,
+          "source_ids": [
+            "S4"
+          ],
+          "qualifier": "Provincial figure as printed; retain separately.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "reported_sevilla_affected_area_ha",
+          "value": 5072.51,
+          "source_ids": [
+            "S4"
+          ],
+          "qualifier": "Source says affected area; retain separately from burned-area total.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "reported_perimeter_km",
+          "value": 210,
+          "source_ids": [
+            "S4"
+          ],
+          "qualifier": "Approximately; linear perimeter length.",
+          "verification": "official_page_body"
+        }
+      ],
+      "uncertainty": [
+        "Internal numerical/scope discrepancy retained in issues; no canonical combined area chosen.",
+        "Signed BOJA PDF and original Copernicus measurement not checked."
+      ]
+    },
+    {
+      "id": "es-2026-huelva-cerro-andevalo",
+      "name": "El Cerro de Andévalo",
+      "province": "Huelva",
+      "relation_to_existing": "additional_case",
+      "facts": [
+        {
+          "field": "first_112_calls_since",
+          "value": "2026-07-21T20:40:00+02:00",
+          "source_ids": [
+            "S5"
+          ],
+          "qualifier": "Yesterday relative to 22 July publication; not ignition time.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "reported_paraje",
+          "value": "Los Pajares",
+          "source_ids": [
+            "S5"
+          ],
+          "qualifier": "Location in public emergency calls; no exact coordinates.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "operational_level_1",
+          "value": "2026-07-22T07:18:00+02:00",
+          "source_ids": [
+            "S5"
+          ],
+          "qualifier": "Today relative to publication date.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "deployed_ground_personnel",
+          "value": 120,
+          "source_ids": [
+            "S5"
+          ],
+          "qualifier": "Up to; snapshot at report time.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "deployed_fire_engines",
+          "value": 13,
+          "source_ids": [
+            "S5"
+          ],
+          "qualifier": "Report-time deployment; not initial inventory.",
+          "verification": "official_page_body"
+        },
+        {
+          "field": "deployed_bulldozers",
+          "value": 4,
+          "source_ids": [
+            "S5"
+          ],
+          "qualifier": "Report-time deployment.",
+          "verification": "official_page_body"
+        }
+      ],
+      "uncertainty": [
+        "No burned area, final status, evacuation total, or ignition cause verified.",
+        "Publication also mentions Almonaster la Real and Lucena del Puerto; those mentions were not promoted to independently researched cases."
+      ]
+    }
+  ],
+  "existing_dataset_audit": {
+    "path": "envs/wildfire_response/data/spain_2026.json",
+    "sha256_at_review": "2d2a0b52b9b20fa4902d8800b4fcca295b7cfe5cc50e6ea808769f45841514a2",
+    "modified": false,
+    "checks": [
+      {
+        "incident_id": "es-2026-almeria-los-gallardos",
+        "status": "supported_by_official_page_body",
+        "fields": [
+          "first_112_call",
+          "operational_level_1",
+          "operational_level_2",
+          "preemergency_level_0",
+          "reported_burned_area_ha",
+          "evacuated_or_preventively_relocated_people",
+          "confined_people",
+          "emergency_calls"
+        ],
+        "source_ids": [
+          "S1"
+        ],
+        "year_conclusion": "2026 is printed on the page; chronology explicitly gives 9 July. No date/year contradiction found."
+      },
+      {
+        "incident_id": "es-2026-huelva-villanueva-castillejos",
+        "status": "supported_by_official_page_bodies",
+        "fields": [
+          "incident_start_date",
+          "first_112_calls_since",
+          "stabilized_at",
+          "evacuated_or_preventively_relocated_people",
+          "emergency_calls",
+          "heavy_firefighting_vehicles_on_june_10_night",
+          "reported_burned_area_ha"
+        ],
+        "source_ids": [
+          "S2",
+          "S3"
+        ],
+        "year_conclusion": "8 June 2026 is explicit in BOJA title and operative text; operational chronology agrees. No date/year contradiction found."
+      }
+    ],
+    "date_or_year_contradictions_found": 0,
+    "scope_limit": "Only the two Andalucía incidents and their 15 listed facts reverified. Madrid, source authenticity beyond public official pages, and CEMS identifiers/AOIs not audited.",
+    "unverified_existing_fields": [
+      "incidents[0].cems",
+      "incidents[1].cems"
+    ]
+  },
+  "issues": [
+    {
+      "id": "I1",
+      "type": "existing_dataset_completeness_gap",
+      "incident_id": "es-2026-almeria-los-gallardos",
+      "source_ids": [
+        "S1"
+      ],
+      "existing_value": [
+        "Los Gallardos",
+        "Bédar"
+      ],
+      "finding": "Official protective-action geography also includes Lubrín, Sorbas and Antas, among others.",
+      "interpretation": "Existing municipality array is incomplete if intended to list all protective-action municipalities; evacuation geography is not necessarily burned geography.",
+      "resolution": "Reported only; existing file untouched."
+    },
+    {
+      "id": "I2",
+      "type": "within_source_numeric_and_scope_discrepancy",
+      "incident_id": "es-2026-huelva-niebla",
+      "source_ids": [
+        "S4"
+      ],
+      "values": {
+        "approximate_total_ha": 33000,
+        "huelva_burned_ha": 28578.74,
+        "sevilla_affected_ha": 5072.51,
+        "derived_provincial_sum_ha": 33651.25
+      },
+      "finding": "Provincial figures sum to 33651.25 ha, versus around 33000 ha total; Sevilla is described as affected area.",
+      "interpretation": "May reflect rounding or differing definitions; source does not reconcile them.",
+      "resolution": "Keep all reported values with qualifiers; derived sum is arithmetic only and not a replacement official total."
+    }
+  ],
+  "gaps": {
+    "licensing": "No explicit reuse licenses verified for these pages; retain attribution and review reuse terms before redistribution.",
+    "access": [
+      "Sandbox DNS lookup initially failed; escalated public network retrieval succeeded.",
+      "Some curl requests encountered TLS unexpected EOF; successful clean retries were used.",
+      "BOJA signed PDFs and CVE authentication not checked."
+    ],
+    "incident_evidence": [
+      "Exact ignition coordinates and causes",
+      "Final incident records and final burned perimeters",
+      "Initial fleet availability",
+      "Local timestamped meteorological observations"
+    ],
+    "privacy": "Only public aggregate call counts; no private transcripts acquired."
+  },
+  "counts": {
+    "official_sources": 5,
+    "verified_cases": 4,
+    "additional_cases": 2,
+    "reverified_existing_cases": 2,
+    "verified_facts": 29,
+    "raw_html_snapshots": 5,
+    "existing_date_or_year_contradictions": 0,
+    "reported_issues": 2
+  }
+}

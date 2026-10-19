@@ -1,0 +1,30 @@
+spec_version: 1
+name: wildfire_response
+type: space
+runtime: fastapi
+app: envs.wildfire_response.openenv.server:app
+port: 8000
+version: "0.1.0"
+description: Emergency coordination with partial observations, noisy reports, fleet orders and delayed warnings.
+validation:
+  reward:
+    range: [-256.0, 0.0]
+    oracle_tolerance: 0.000001
+    floor_margin: 0.1
+  resources:
+    cpu: 1.0
+    memory_mb: 1024
+    disk_mb: 1024
+    episode_timeout_s: 300.0
+  network:
+    mode: no-network
+  capabilities:
+    verifier:
+      kind: reward_channel
+    task_api: true
+    declared_task_count:
+      train: 80
+      validation: 20
+      test: 20
+  types:
+    tags: [simulation, wildfire, partial-observation, communications, coordination]

@@ -1,0 +1,265 @@
+{
+  "002": {
+    "action_items": {
+      "authorizations": 0,
+      "messages": 2,
+      "releases": 0,
+      "requests": 5
+    },
+    "adapter_file_sha256": "67f1a76ce804df9c053aeef0996b50153da76faf0506a8f777a3546df3852609",
+    "gradient_norms": [
+      0.335386723279953,
+      0.0
+    ],
+    "metadata": {
+      "benchmark": {
+        "sha256": "e882e0f8ba58246ef3e4c3d271d32a6d54a1756d980be52bcccb524ff84ad840",
+        "version": "regional-benchmark-v0.2.0"
+      },
+      "completion_tokens": 768,
+      "cuda": "12.8",
+      "gpu": "NVIDIA GeForce RTX 5090",
+      "heldout_evaluation": false,
+      "inference_backend": "transformers_sdpa",
+      "model": "Qwen/Qwen3-1.7B",
+      "publish": false,
+      "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+      "reward": "Unchanged full-horizon outcome cost; early model stop preserves missions and passively advances time",
+      "source_sha256": "ca143fd6493906800d4bb3b99b4071d3391adc0782dcc808898c31840fad1dbb",
+      "steps": 2,
+      "thinking": false,
+      "training_tasks": [
+        "regional-train-001",
+        "regional-train-003"
+      ],
+      "versions": {
+        "huggingface_hub": "2.2.0",
+        "peft": "0.21.2",
+        "torch": "2.11.0+cu128",
+        "transformers": "5.20.1",
+        "trl": "1.16.0"
+      }
+    },
+    "natural_episode_completions": 0,
+    "source_revision": "697a9c0",
+    "summary": {
+      "adapter_changed": true,
+      "after": {
+        "after_loss": 0.0,
+        "after_model_preparation_time": 0.0074,
+        "after_runtime": 22.0035,
+        "after_samples_per_second": 0.091,
+        "after_steps_per_second": 0.045,
+        "epoch": 1.0,
+        "eval_clip_ratio/high_max": 0.0,
+        "eval_clip_ratio/high_mean": 0.0,
+        "eval_clip_ratio/low_mean": 0.0,
+        "eval_clip_ratio/low_min": 0.0,
+        "eval_clip_ratio/region_mean": 0.0,
+        "eval_completions/clipped_ratio": 0.0,
+        "eval_completions/max_length": 462.0,
+        "eval_completions/max_terminated_length": 462.0,
+        "eval_completions/mean_length": 414.0,
+        "eval_completions/mean_terminated_length": 414.0,
+        "eval_completions/min_length": 366.0,
+        "eval_completions/min_terminated_length": 366.0,
+        "eval_entropy": 0.01707598753273487,
+        "eval_frac_reward_zero_std": 1.0,
+        "eval_num_tokens": 10697.0,
+        "eval_reward": -30.572628617286682,
+        "eval_reward_std": 0.0,
+        "eval_rewards/outcome_reward/mean": -30.572628617286682,
+        "eval_rewards/outcome_reward/std": 0.0,
+        "eval_tools/call_frequency": 2.0,
+        "eval_tools/failure_frequency": 0.0
+      },
+      "after_adapter_sha256": "093c8158324b9e1767419a2f5c141551e27720830f30857e249a2ecd610827cb",
+      "before": {
+        "before_loss": 0.0,
+        "before_model_preparation_time": 0.0074,
+        "before_runtime": 7.4475,
+        "before_samples_per_second": 0.269,
+        "before_steps_per_second": 0.134,
+        "epoch": 0,
+        "eval_clip_ratio/high_max": 0.0,
+        "eval_clip_ratio/high_mean": 0.0,
+        "eval_clip_ratio/low_mean": 0.0,
+        "eval_clip_ratio/low_min": 0.0,
+        "eval_clip_ratio/region_mean": 0.0,
+        "eval_completions/clipped_ratio": 0.0,
+        "eval_completions/max_length": 114.0,
+        "eval_completions/max_terminated_length": 114.0,
+        "eval_completions/mean_length": 114.0,
+        "eval_completions/mean_terminated_length": 114.0,
+        "eval_completions/min_length": 114.0,
+        "eval_completions/min_terminated_length": 114.0,
+        "eval_entropy": 0.008165108505636454,
+        "eval_frac_reward_zero_std": 1.0,
+        "eval_num_tokens": 0.0,
+        "eval_reward": -30.572628617286682,
+        "eval_reward_std": 0.0,
+        "eval_rewards/outcome_reward/mean": -30.572628617286682,
+        "eval_rewards/outcome_reward/std": 0.0,
+        "eval_tools/call_frequency": 2.0,
+        "eval_tools/failure_frequency": 0.0
+      },
+      "before_adapter_sha256": "78fe89b59d34eefe5c3494a3f7f033e3fe56fa676595fb6aae8b9cedf850bf84",
+      "benchmark": {
+        "sha256": "e882e0f8ba58246ef3e4c3d271d32a6d54a1756d980be52bcccb524ff84ad840",
+        "version": "regional-benchmark-v0.2.0"
+      },
+      "elapsed_seconds": 45.987,
+      "independently_verified_episodes": 12,
+      "model_checks": 23,
+      "model_submissions": 1,
+      "note": "Two-update pipeline pilot, not demonstrated policy improvement or held-out generalization",
+      "optimizer_steps": 2,
+      "peak_cuda_allocated_bytes": 4535098368,
+      "status": "complete"
+    },
+    "training_zero_reward_std_fractions": [
+      0.0,
+      1.0
+    ]
+  },
+  "003": {
+    "action_items": {
+      "authorizations": 0,
+      "messages": 16,
+      "releases": 0,
+      "requests": 40
+    },
+    "adapter_file_sha256": "01e98d357f1e100e354cf85e168b7afef82e64be02bc263d825371c3258a34ed",
+    "gradient_norms": [
+      0.0,
+      0.0
+    ],
+    "metadata": {
+      "benchmark": {
+        "sha256": "e882e0f8ba58246ef3e4c3d271d32a6d54a1756d980be52bcccb524ff84ad840",
+        "version": "regional-benchmark-v0.2.0"
+      },
+      "completion_tokens": 1536,
+      "cuda": "12.8",
+      "gpu": "NVIDIA GeForce RTX 5090",
+      "heldout_evaluation": false,
+      "inference_backend": "transformers_sdpa",
+      "max_tool_calling_iterations": 8,
+      "model": "Qwen/Qwen3-1.7B",
+      "publish": false,
+      "python": "3.12.9",
+      "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+      "reward": "Unchanged full-horizon outcome cost; early model stop preserves missions and passively advances time",
+      "source_sha256": "2565737a26bb4327974660ac461233951f4f0d978d5508179f0bfeab78b1852b",
+      "steps": 2,
+      "thinking": false,
+      "training_tasks": [
+        "regional-train-001",
+        "regional-train-003"
+      ],
+      "versions": {
+        "huggingface_hub": "2.2.0",
+        "peft": "0.21.2",
+        "torch": "2.11.0+cu128",
+        "transformers": "5.20.1",
+        "trl": "1.16.0"
+      }
+    },
+    "natural_episode_completions": 0,
+    "source_revision": "dbd48e2",
+    "summary": {
+      "adapter_changed": false,
+      "after": {
+        "after_loss": 0.0,
+        "after_model_preparation_time": 0.0074,
+        "after_runtime": 17.7801,
+        "after_samples_per_second": 0.112,
+        "after_steps_per_second": 0.056,
+        "epoch": 1.0,
+        "eval_clip_ratio/high_max": 0.0,
+        "eval_clip_ratio/high_mean": 0.0,
+        "eval_clip_ratio/low_mean": 0.0,
+        "eval_clip_ratio/low_min": 0.0,
+        "eval_clip_ratio/region_mean": 0.0,
+        "eval_completions/clipped_ratio": 0.0,
+        "eval_completions/max_length": 392.5,
+        "eval_completions/max_terminated_length": 392.5,
+        "eval_completions/mean_length": 389.5,
+        "eval_completions/mean_terminated_length": 389.5,
+        "eval_completions/min_length": 386.5,
+        "eval_completions/min_terminated_length": 386.5,
+        "eval_entropy": 0.015333663206547499,
+        "eval_frac_reward_zero_std": 1.0,
+        "eval_num_tokens": 11066.0,
+        "eval_reward": -2.003199338912964,
+        "eval_reward_std": 0.0,
+        "eval_rewards/outcome_reward/mean": -2.003199338912964,
+        "eval_rewards/outcome_reward/std": 0.0,
+        "eval_tools/call_frequency": 2.0,
+        "eval_tools/failure_frequency": 0.0
+      },
+      "after_adapter_sha256": "78fe89b59d34eefe5c3494a3f7f033e3fe56fa676595fb6aae8b9cedf850bf84",
+      "before": {
+        "before_loss": 0.0,
+        "before_model_preparation_time": 0.0074,
+        "before_runtime": 12.9739,
+        "before_samples_per_second": 0.154,
+        "before_steps_per_second": 0.077,
+        "epoch": 0,
+        "eval_clip_ratio/high_max": 0.0,
+        "eval_clip_ratio/high_mean": 0.0,
+        "eval_clip_ratio/low_mean": 0.0,
+        "eval_clip_ratio/low_min": 0.0,
+        "eval_clip_ratio/region_mean": 0.0,
+        "eval_completions/clipped_ratio": 0.0,
+        "eval_completions/max_length": 253.5,
+        "eval_completions/max_terminated_length": 253.5,
+        "eval_completions/mean_length": 250.5,
+        "eval_completions/mean_terminated_length": 250.5,
+        "eval_completions/min_length": 247.5,
+        "eval_completions/min_terminated_length": 247.5,
+        "eval_entropy": 0.010859058238565922,
+        "eval_frac_reward_zero_std": 1.0,
+        "eval_num_tokens": 0.0,
+        "eval_reward": -2.0021992921829224,
+        "eval_reward_std": 0.0,
+        "eval_rewards/outcome_reward/mean": -2.0021992921829224,
+        "eval_rewards/outcome_reward/std": 0.0,
+        "eval_tools/call_frequency": 2.5,
+        "eval_tools/failure_frequency": 0.0
+      },
+      "before_adapter_sha256": "78fe89b59d34eefe5c3494a3f7f033e3fe56fa676595fb6aae8b9cedf850bf84",
+      "benchmark": {
+        "sha256": "e882e0f8ba58246ef3e4c3d271d32a6d54a1756d980be52bcccb524ff84ad840",
+        "version": "regional-benchmark-v0.2.0"
+      },
+      "elapsed_seconds": 45.457,
+      "independently_verified_episodes": 12,
+      "model_checks": 16,
+      "model_submissions": 12,
+      "note": "Two-update pipeline pilot, not demonstrated policy improvement or held-out generalization",
+      "optimizer_steps": 2,
+      "peak_cuda_allocated_bytes": 4839474688,
+      "status": "complete"
+    },
+    "training_zero_reward_std_fractions": [
+      1.0,
+      1.0
+    ]
+  },
+  "date": "2026-10-19",
+  "failed_setup": {
+    "attempt": "001",
+    "cause": "System Python lacked Python.h for Triton",
+    "optimizer_updates": 0,
+    "remedy": "Isolated uv-managed Python 3.12.9 with development headers; no system Python modification"
+  },
+  "hardware": "RTX 5090, 32607 MiB VRAM, 7 allocated vCPUs, 24 GiB RAM",
+  "interpretation": "Training plumbing verified, but no useful learned director or policy improvement demonstrated",
+  "model": "Qwen/Qwen3-1.7B",
+  "no_heldout_model_evaluation": true,
+  "no_hub_publication": true,
+  "no_openrouter_requests": true,
+  "report_version": "qwen3-grpo-gpu-pilot-v1",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e"
+}

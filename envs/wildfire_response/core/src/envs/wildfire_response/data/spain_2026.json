@@ -1,0 +1,90 @@
+{
+  "schema_version": "spain-fire-evidence-v1",
+  "reviewed_on": "2026-10-18",
+  "sources": {
+    "andalucia_gallardos_20260713": {
+      "publisher": "Junta de Andalucía / EMA 112",
+      "url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/217472/incendioLosGallardos/emergencia/fasedepreemergencia/situacionoperativa0",
+      "published_date": "2026-07-13",
+      "timezone": "Europe/Madrid"
+    },
+    "andalucia_castillejos_20260610": {
+      "publisher": "Junta de Andalucía / EMA 112",
+      "url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/216605/Emergencias/112/Andalucia/Huelva",
+      "published_date": "2026-06-10",
+      "timezone": "Europe/Madrid"
+    },
+    "boja_castillejos_20260706": {
+      "publisher": "Boletín Oficial de la Junta de Andalucía",
+      "url": "https://www.juntadeandalucia.es/boja/2026/128/3",
+      "published_date": "2026-07-06",
+      "timezone": "Europe/Madrid"
+    },
+    "madrid_sierra_oeste_20260729": {
+      "publisher": "Comunidad de Madrid",
+      "url": "https://www.comunidad.madrid/noticias/2026/07/29/diaz-ayuso-avanza-plan-recuperacion-paisaje-17-municipios-afectados-incendios-sierra-oeste",
+      "published_date": "2026-07-29",
+      "timezone": "Europe/Madrid"
+    },
+    "moncloa_deescalation_20260730": {
+      "publisher": "La Moncloa",
+      "url": "https://www.lamoncloa.gob.es/presidente/actividades/Paginas/2026/300726-sanchez-pma-navaluenga-.aspx",
+      "published_date": "2026-07-30",
+      "timezone": "Europe/Madrid"
+    }
+  },
+  "incidents": [
+    {
+      "id": "es-2026-almeria-los-gallardos",
+      "province": "Almería",
+      "name": "Los Gallardos",
+      "scope": "incident",
+      "cems": {"code": "EMSR892", "aoi_numbers": [1], "expected_aoi_names": ["Los Gallardos"]},
+      "municipalities": ["Los Gallardos", "Bédar"],
+      "facts": [
+        {"field": "first_112_call", "value": "2026-07-09T16:25:00+02:00", "precision": "minute", "source": "andalucia_gallardos_20260713"},
+        {"field": "operational_level_1", "value": "2026-07-09T19:37:00+02:00", "precision": "minute", "source": "andalucia_gallardos_20260713"},
+        {"field": "operational_level_2", "value": "2026-07-09T22:37:00+02:00", "precision": "minute", "source": "andalucia_gallardos_20260713"},
+        {"field": "preemergency_level_0", "value": "2026-07-13T12:34:00+02:00", "precision": "minute", "source": "andalucia_gallardos_20260713"},
+        {"field": "reported_burned_area_ha", "value": 7000, "qualifier": "approximately; interim estimate on publication date", "source": "andalucia_gallardos_20260713"},
+        {"field": "evacuated_or_preventively_relocated_people", "value": 1468, "qualifier": "combined categories, as reported on publication date", "source": "andalucia_gallardos_20260713"},
+        {"field": "confined_people", "value": 1300, "qualifier": "approximately", "source": "andalucia_gallardos_20260713"},
+        {"field": "emergency_calls", "value": 500, "qualifier": "approximately; no transcripts supplied", "source": "andalucia_gallardos_20260713"}
+      ],
+      "missing": ["exact ignition coordinates", "call transcripts", "initial fleet availability", "local weather observations", "timestamped fire perimeter series"]
+    },
+    {
+      "id": "es-2026-huelva-villanueva-castillejos",
+      "province": "Huelva",
+      "name": "Villanueva de los Castillejos",
+      "scope": "incident affecting multiple municipalities",
+      "cems": {"code": "EMSR881", "aoi_numbers": [1], "expected_aoi_names": ["Gibraleon"]},
+      "municipalities": ["Villanueva de los Castillejos", "Alosno", "Gibraleón", "San Bartolomé de la Torre"],
+      "facts": [
+        {"field": "incident_start_date", "value": "2026-06-08", "precision": "date", "source": "boja_castillejos_20260706"},
+        {"field": "first_112_calls_since", "value": "2026-06-08T13:00:00+02:00", "precision": "minute", "source": "andalucia_castillejos_20260610"},
+        {"field": "stabilized_at", "value": "2026-06-10T22:20:00+02:00", "precision": "minute", "source": "andalucia_castillejos_20260610"},
+        {"field": "evacuated_or_preventively_relocated_people", "value": 380, "qualifier": "more than", "source": "andalucia_castillejos_20260610"},
+        {"field": "emergency_calls", "value": 300, "qualifier": "more than; no transcripts supplied", "source": "andalucia_castillejos_20260610"},
+        {"field": "heavy_firefighting_vehicles_on_june_10_night", "value": 10, "qualifier": "deployed snapshot, not initially available inventory", "source": "andalucia_castillejos_20260610"},
+        {"field": "reported_burned_area_ha", "value": 6310, "qualifier": "approximately; regional administrative assessment", "source": "boja_castillejos_20260706"}
+      ],
+      "missing": ["exact ignition coordinates", "call transcripts", "initial fleet availability", "local weather observations", "timestamped fire perimeter series"]
+    },
+    {
+      "id": "es-2026-madrid-sierra-oeste",
+      "province": "Madrid",
+      "name": "Sierra Oeste / Villa del Prado",
+      "scope": "regional fire complex; not a single ignition",
+      "cems": {"code": "EMSR900", "aoi_numbers": [2, 5, 6], "expected_aoi_names": ["Villa del Prado", "San Martin de Valdeiglesias", "Navas del Rey"]},
+      "municipalities": ["Villa del Prado", "San Martín de Valdeiglesias", "Navas del Rey"],
+      "facts": [
+        {"field": "affected_municipalities_regional_count", "value": 17, "qualifier": "regional recovery report; includes areas affected by evacuations", "source": "madrid_sierra_oeste_20260729"},
+        {"field": "reported_affected_perimeter_area_ha", "value": 27000, "qualifier": "approximately; not asserted to equal burned vegetation area", "source": "madrid_sierra_oeste_20260729"},
+        {"field": "national_emergency_deescalation_date", "value": "2026-07-30", "precision": "date", "source": "moncloa_deescalation_20260730"}
+      ],
+      "missing": ["single ignition time for the complex", "call transcripts", "initial fleet availability", "local weather observations", "timestamped fire perimeter series"],
+      "notes": ["EMSR900 also includes Brieva in Segovia and other areas outside Madrid; activation-wide centroid and eventTime are not Madrid ignition coordinates or time."]
+    }
+  ]
+}

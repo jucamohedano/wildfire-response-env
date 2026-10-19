@@ -1,0 +1,705 @@
+{
+  "schema_version": "spain-2026-ancillary-geodata-research-v1",
+  "cutoff_date": "2026-10-18",
+  "retrieved_date": "2026-10-18",
+  "scope": "Bounded review of six official ancillary dataset families; not exhaustive. No RapidMapping activation inventory research. Existing files were read but not modified.",
+  "methodology": {
+    "primary_sources_only": true,
+    "page_bodies_verified": true,
+    "search_snippets_used_as_evidence": false,
+    "private_transcripts_used": false,
+    "raw_response_limit_bytes": 1500000,
+    "notes": [
+      "Dynamic official bodies and raw downloads took precedence over stale search or web-renderer representations.",
+      "A supported request date is not proof of returned observations. Reference datasets available in 2026 are not necessarily observations acquired in 2026.",
+      "Unbounded real-time EFFIS archives were not downloaded. No API keys were requested or inspected."
+    ]
+  },
+  "sources": [
+    {
+      "id": "effis_services",
+      "url": "https://forest-fire.emergency.copernicus.eu/applications/data-and-services",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/effis_services.html",
+      "bytes": 39630,
+      "sha256": "66dfb68f6d81f198fb93b8913a323dac4f7341b5b1f082e2d276aeeca4dd7e6e",
+      "publisher": "European Commission Joint Research Centre / EFFIS",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "effis_license",
+      "url": "https://forest-fire.emergency.copernicus.eu/about-effis/data-license",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/effis_license.html",
+      "bytes": 13433,
+      "sha256": "45ada44c9887dd982d7b5a4b526ab99ea9a838624e82647cd516c34a0c10c062",
+      "publisher": "European Commission Joint Research Centre / EFFIS",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "effis_wms",
+      "url": "https://maps.effis.emergency.copernicus.eu/effis?service=WMS&request=GetCapabilities&version=1.1.1",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/effis_wms.xml",
+      "bytes": 101245,
+      "sha256": "8def4aef81a51eadc5c6f8496baae3b25c6bced1bb701b016f310128692be244",
+      "publisher": "European Commission Joint Research Centre / EFFIS",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "aemet_api",
+      "url": "https://opendata.aemet.es/dist/",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/aemet_api.html",
+      "bytes": 1360,
+      "sha256": "ff5c67c08338a2155f54df0a92bd7b8d6cbaa4284bf3454efbf0448e342e91e6",
+      "publisher": "Agencia Estatal de Meteorología (AEMET)",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "aemet_start",
+      "url": "https://opendata.aemet.es/centrodedescargas/inicio",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/aemet_start.html",
+      "bytes": 9285,
+      "sha256": "140e5e67ab7f2a0251b013d6ad471f972485cdcb84a671aa47f565eeb1579bb8",
+      "publisher": "Agencia Estatal de Meteorología (AEMET)",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "aemet_legal",
+      "url": "https://www.aemet.es/es/nota_legal",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/aemet_legal.html",
+      "bytes": 47624,
+      "sha256": "a9ac5dbb2bc1a301cbbc0ad47b1881768eab32f70a2193e3e93b95424ea01a9c",
+      "publisher": "Agencia Estatal de Meteorología (AEMET)",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "ign_services",
+      "url": "https://www.ign.es/web/ign/portal/ide-area-nodo-ide-ign",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/ign_services.html",
+      "bytes": 99555,
+      "sha256": "2e6eb9461a3c717a1d1c8b154d28e7ad241db0ded7b52b110374b51dcbbb241a",
+      "publisher": "Instituto Geográfico Nacional / Sistema Cartográfico Nacional",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "ign_terrain_wcs",
+      "url": "https://servicios.idee.es/wcs-inspire/mdt?request=GetCapabilities&service=WCS&version=2.0.1",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/ign_terrain_wcs.xml",
+      "bytes": 12162,
+      "sha256": "30c95575991611cd15924369d2a3ad5066aa9a81ff68f8e549c71bdc6c638d3f",
+      "publisher": "Instituto Geográfico Nacional / Sistema Cartográfico Nacional",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "ign_landcover_wfs",
+      "url": "https://servicios.idee.es/wfs-inspire/ocupacion-suelo?service=WFS&request=GetCapabilities&version=2.0.0",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/ign_landcover_wfs.xml",
+      "bytes": 35101,
+      "sha256": "e5e6761c1479a03ae64fe1e2a283b67edce1a2111a430f062fcce46e6cd7b29e",
+      "publisher": "Instituto Geográfico Nacional / Sistema Cartográfico Nacional",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "miteco_egif",
+      "url": "https://www.miteco.gob.es/es/biodiversidad/temas/incendios-forestales/estadisticas-datos.html",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/miteco_egif.html",
+      "bytes": 117486,
+      "sha256": "f48795b4ff8b8718cf9d2043b3cd3e65509b7133954604dc541c6119897de846",
+      "publisher": "Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO)",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "miteco_provisional",
+      "url": "https://www.miteco.gob.es/es/biodiversidad/temas/incendios-forestales/estadisticas-avances.html",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/miteco_provisional.html",
+      "bytes": 84421,
+      "sha256": "981d09bd2d5b6fc62cf420ff71266b82232b58863d9bc479a39ea2f0c76bff1e",
+      "publisher": "Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO)",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "egif_search",
+      "url": "https://servicio.mapa.gob.es/incendios/Search/Publico",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/egif_search.html",
+      "bytes": 66114,
+      "sha256": "4a614a2e229efd51fade7f1fb7f44ad46ff47c1d9a37fb2daf0ad97d568d5d01",
+      "publisher": "Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO)",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "existing_gallardos",
+      "url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/217472/incendioLosGallardos/emergencia/fasedepreemergencia/situacionoperativa0",
+      "published_date": "2026-07-13",
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/existing_gallardos.html",
+      "bytes": 151832,
+      "sha256": "fab4f5846a475a9f1cd7d2f34caae80f7f69cd1d98dbb484d4cc2997562cc087",
+      "publisher": "Junta de Andalucía / EMA 112",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "existing_castillejos",
+      "url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/216605/Emergencias/112/Andalucia/Huelva",
+      "published_date": "2026-06-10",
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/existing_castillejos.html",
+      "bytes": 146323,
+      "sha256": "9e4ea61f0c8f8339c6ad074580a01996fad0eefa9938563cb8ad07c7240a808d",
+      "publisher": "Junta de Andalucía / EMA 112",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "aemet_spec",
+      "url": "https://opendata.aemet.es/AEMET_OpenData_specification.json",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/aemet_spec.json",
+      "bytes": 186686,
+      "sha256": "2e5deaf5f1499bc5a139ee86970cd36f313082369b0de70ada50517a18412659",
+      "publisher": "Agencia Estatal de Meteorología (AEMET)",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "aemet_news",
+      "url": "https://opendata.aemet.es/centrodedescargas/novedades",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/aemet_news.html",
+      "bytes": 139195,
+      "sha256": "4c25359d98a9eb10e99160ef771c474787996b1a86c00bf225567b39ae7473e5",
+      "publisher": "Agencia Estatal de Meteorología (AEMET)",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "miteco_estimate",
+      "url": "https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/temas/incendios-forestales/estimacion_provisional.html",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/miteco_estimate.html",
+      "bytes": 821301,
+      "sha256": "9e8a48e4a5b092cedf60ab9a1313d4555fbe1c09aeff46828de9606bcdcb5a54",
+      "publisher": "Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO)",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "ign_terrain_description",
+      "url": "https://servicios.idee.es/wcs-inspire/mdt?service=WCS&version=2.0.1&request=DescribeCoverage&coverageId=Elevacion4258_5",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/ign_terrain_description.xml",
+      "bytes": 2519,
+      "sha256": "cfb3a677580104eca03fedef17ef8a36027b651cf8d0973b48d9fa5516aab6e0",
+      "publisher": "Instituto Geográfico Nacional / Sistema Cartográfico Nacional",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "effis_2026_burnt_area",
+      "url": "https://maps.effis.emergency.copernicus.eu/effis?service=WMS&version=1.1.1&request=GetMap&layers=modis.ba.poly&styles=&srs=EPSG%3A4326&bbox=-10%2C35%2C5%2C44&width=256&height=154&format=image%2Fpng&TIME=2026-01-01%2F2026-10-18",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/effis_2026_burnt_area.png",
+      "bytes": 544,
+      "sha256": "acd0a28f898f03e9e4391e49fde4dd6e8104f2e13ea19e0522385f2ca4272a18",
+      "publisher": "European Commission Joint Research Centre / EFFIS",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "effis_2026_hotspots",
+      "url": "https://maps.effis.emergency.copernicus.eu/effis?service=WMS&version=1.1.1&request=GetMap&layers=viirs.hs&styles=&srs=EPSG%3A4326&bbox=-10%2C35%2C5%2C44&width=256&height=154&format=image%2Fpng&TIME=2026-10-18",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/effis_2026_hotspots.png",
+      "bytes": 544,
+      "sha256": "acd0a28f898f03e9e4391e49fde4dd6e8104f2e13ea19e0522385f2ca4272a18",
+      "publisher": "European Commission Joint Research Centre / EFFIS",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "ign_terrain_sample",
+      "url": "https://servicios.idee.es/wcs-inspire/mdt?service=WCS&version=2.0.1&request=GetCoverage&coverageId=Elevacion4258_5&subset=lat%2837.16%2C37.162%29&subset=long%28-1.94%2C-1.938%29&format=image%2Ftiff",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/ign_terrain_sample.tif",
+      "bytes": 4290,
+      "sha256": "07d9c8fecd354710105ad5f332c6938ce6c278fd402ec4f18dbc719bb11f473d",
+      "publisher": "Instituto Geográfico Nacional / Sistema Cartográfico Nacional",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    },
+    {
+      "id": "effis_burnt_schema",
+      "url": "https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=DescribeFeatureType&typename=ms:modis.ba.poly",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "snapshot": ".runtime/spain-research-geodata/effis_burnt_schema.xml",
+      "bytes": 2183,
+      "sha256": "4b0f26e13c38b88647c32a21ba37f9a2b642ef222ec361a46c6ff0ddf854dde6",
+      "publisher": "European Commission Joint Research Centre / EFFIS",
+      "verification": "Retrieved and inspected official response body; SHA256 covers saved bytes"
+    }
+  ],
+  "datasets": [
+    {
+      "id": "effis_burnt_areas",
+      "name": "EFFIS burnt-area polygons",
+      "source_ids": [
+        "effis_services",
+        "effis_wms",
+        "effis_burnt_schema",
+        "effis_license",
+        "effis_2026_burnt_area"
+      ],
+      "access": {
+        "free": true,
+        "key_required": false,
+        "base_url": "https://maps.effis.emergency.copernicus.eu/effis",
+        "protocols": [
+          "WMS 1.1.1",
+          "WFS 1.1.0"
+        ],
+        "feature_type": "ms:modis.ba.poly",
+        "documented_full_download_url": "https://maps.effis.emergency.copernicus.eu/effis?outputformat=SHAPEZIP&request=getfeature&service=WFS&typename=ms%3Amodis.ba.poly&version=1.1.0",
+        "small_candidate_url": "https://maps.effis.emergency.copernicus.eu/effis?service=WFS&version=1.1.0&request=GetFeature&typename=ms%3Amodis.ba.poly&maxFeatures=1&bbox=-10,35,5,44,EPSG:4326",
+        "candidate_status": "Not executed; add an explicit date filter after inspecting returned FIREDATE values; maxFeatures alone does not establish year."
+      },
+      "coverage": {
+        "advertised": "Current Season Burned Areas; WMS TIME extent 2000-01-01/2099-12-31",
+        "includes_2026": "Request accepted, but actual 2026 feature retrieval not established",
+        "warning": "2099 is a service parameter bound, not future observations. WMS advertised polygon bounding box is near -29.09 longitude and 12.99 latitude, inconsistent with useful Spain coverage; treat as suspect service metadata."
+      },
+      "verified_facts": [
+        {
+          "claim": "DescribeFeatureType returned fields FIREDATE, FINALDATE, LASTUPDATE, COUNTRY, COMMUNE and AREA_HA, all declared strings.",
+          "source_ids": [
+            "effis_burnt_schema"
+          ]
+        }
+      ],
+      "sample": {
+        "source_id": "effis_2026_burnt_area",
+        "result": "256x154 PNG with identical bytes to hotspot sample; blank output does not establish absence of fires.",
+        "verified_2026_feature_count": 0
+      },
+      "license": {
+        "name": "CC BY 4.0 for EU-owned content unless otherwise indicated",
+        "source_ids": [
+          "effis_license"
+        ],
+        "requirements": [
+          "Credit source and indicate modifications; check third-party exceptions."
+        ]
+      },
+      "uncertainty": [
+        "Historical raw perimeters and unavailable extracts may require the official EFFIS data-request form.",
+        "WFS GetCapabilities timed out; schema retrieval succeeded."
+      ]
+    },
+    {
+      "id": "effis_hotspots",
+      "name": "EFFIS MODIS/VIIRS active-fire detections",
+      "source_ids": [
+        "effis_services",
+        "effis_wms",
+        "effis_license",
+        "effis_2026_hotspots"
+      ],
+      "access": {
+        "free": true,
+        "key_required": false,
+        "base_url": "https://maps.effis.emergency.copernicus.eu/effis",
+        "protocol": "WMS",
+        "layers": [
+          "all.hs",
+          "viirs.hs",
+          "modis.hs"
+        ],
+        "download": "Use GetMap with explicit TIME, BBOX, WIDTH, HEIGHT and FORMAT. Exact tested URL is in source effis_2026_hotspots.",
+        "query": "WMS GetFeatureInfo is documented, but no hotspot feature response was verified."
+      },
+      "coverage": {
+        "advertised_time_extent": "2000-01-01/2099-12-31",
+        "includes_2026": "TIME=2026-10-18 accepted; no nonempty detection sample established",
+        "warning": "Do not infer sensor history or actual year coverage from permissive TIME bounds."
+      },
+      "sample": {
+        "source_id": "effis_2026_hotspots",
+        "result": "Blank 256x154 PNG; identical hash to burnt-area image. No detections counted.",
+        "verified_2026_detection_count": 0
+      },
+      "license": {
+        "name": "CC BY 4.0 for EU-owned content subject to exceptions",
+        "source_ids": [
+          "effis_license"
+        ]
+      },
+      "uncertainty": [
+        "Thermal anomalies are not verified wildfire incidents or burnt-area polygons.",
+        "Rolling layers do not supply a frozen historical event archive."
+      ]
+    },
+    {
+      "id": "aemet_weather",
+      "name": "AEMET station weather and daily climatology",
+      "source_ids": [
+        "aemet_spec",
+        "aemet_start",
+        "aemet_news",
+        "aemet_legal"
+      ],
+      "access": {
+        "free": true,
+        "free_evidence": "Official information page verified through web browser states free downloading; direct snapshot attempt returned HTTP 500.",
+        "free_evidence_url": "https://opendata.aemet.es/centrodedescargas/info",
+        "key_required": true,
+        "key_acquisition": "Request using email at https://opendata.aemet.es/centrodedescargas/inicio",
+        "header": "api_key",
+        "base_url": "https://opendata.aemet.es/opendata",
+        "daily_endpoint": "/api/valores/climatologicos/diarios/datos/fechaini/{fechaIniStr}/fechafin/{fechaFinStr}/estacion/{idema}",
+        "station_inventory_endpoint": "/api/valores/climatologicos/inventarioestaciones/todasestaciones",
+        "recent_hourly_endpoint": "/api/observacion/convencional/datos/estacion/{idema}",
+        "request_dates": "AAAA-MM-DDTHH:MM:SSUTC",
+        "response_workflow": "First response gives datos and metadatos URLs; fetch the referenced resources. No authenticated request made.",
+        "key_policy_as_of_cutoff": "New keys have three-month validity. Notice published 2026-10-15 describes progressive retirement of keys without expiration, including intermittent authentication failures."
+      },
+      "coverage": {
+        "recent_hourly": "Latest 12 hours only according to specification; unsuitable to reconstruct July from an October request.",
+        "daily": "Date-range endpoint supports historical requests; actual station-specific 2026 availability unverified without a key.",
+        "includes_2026": "Documented service operating in 2026; no 2026 weather observations downloaded"
+      },
+      "sample": {
+        "source_id": "aemet_spec",
+        "kind": "OpenAPI specification only",
+        "weather_observation_count": 0
+      },
+      "license": {
+        "name": "AEMET general reuse authorization; not asserted to be CC BY",
+        "source_ids": [
+          "aemet_legal"
+        ],
+        "requirements": [
+          "Credit AEMET, retain update-date and reuse metadata, avoid distortion and implied endorsement."
+        ]
+      },
+      "uncertainty": [
+        "Choose stations from the inventory before asserting proximity to an incident.",
+        "No hourly historical archive verified here."
+      ]
+    },
+    {
+      "id": "ign_terrain",
+      "name": "IGN digital terrain model / PNOA-LiDAR",
+      "source_ids": [
+        "ign_services",
+        "ign_terrain_wcs",
+        "ign_terrain_description",
+        "ign_terrain_sample"
+      ],
+      "access": {
+        "free": true,
+        "key_required": false,
+        "protocol": "WCS 2.0.1",
+        "base_url": "https://servicios.idee.es/wcs-inspire/mdt",
+        "coverage_id": "Elevacion4258_5",
+        "operations": [
+          "GetCapabilities",
+          "DescribeCoverage",
+          "GetCoverage"
+        ],
+        "sample_download": "Exact working GetCoverage URL with lat and long subsets is source ign_terrain_sample."
+      },
+      "coverage": {
+        "spatial": "Spain; 5 m named coverage plus 25, 200 and 1000 m coverages advertised.",
+        "includes_2026": "Available for use as terrain context as retrieved in 2026; acquisition year not established.",
+        "temporal_reference": null
+      },
+      "sample": {
+        "source_id": "ign_terrain_sample",
+        "format": "TIFF",
+        "width": 44,
+        "height": 44,
+        "bytes": 4290,
+        "bbox_crs": "EPSG:4326 per DescribeCoverage envelope",
+        "bbox_lon_lat": [
+          -1.94,
+          37.16,
+          -1.938,
+          37.162
+        ],
+        "selection": "Illustrative small tile near Los Gallardos; not asserted to be an ignition location or an incident footprint.",
+        "raster_values_verified": false
+      },
+      "license": {
+        "name": "CC BY 4.0 scne.es",
+        "source_ids": [
+          "ign_terrain_wcs"
+        ]
+      },
+      "uncertainty": [
+        "DescribeCoverage range unit is W.m-2.Sr-1, inconsistent with terrain elevation; verify units/nodata with product documentation before slope or elevation analysis.",
+        "Per-tile acquisition dates and vertical reference remain unverified."
+      ]
+    },
+    {
+      "id": "ign_landcover",
+      "name": "IGN SIOSE Alta Resolución land cover / land use",
+      "source_ids": [
+        "ign_services",
+        "ign_landcover_wfs"
+      ],
+      "access": {
+        "free": true,
+        "key_required": false,
+        "protocol": "WFS 2.0.0",
+        "base_url": "https://servicios.idee.es/wfs-inspire/ocupacion-suelo",
+        "feature_types": [
+          "lcv:LandCoverDataset",
+          "lcv:LandCoverUnit",
+          "elu:ExistingLandUseDataSet",
+          "elu:ExistingLandUseObject"
+        ],
+        "bounded_request_attempt": "https://servicios.idee.es/wfs-inspire/ocupacion-suelo?service=WFS&version=2.0.0&request=GetFeature&typeNames=lcv%3ALandCoverUnit&count=1&bbox=-1.95%2C37.14%2C-1.92%2C37.18%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A%3ACRS84",
+        "attempt_result": "HTTP 500; GetFeature LandCoverDataset count=1 also timed out."
+      },
+      "coverage": {
+        "reference_year": 2017,
+        "includes_2026": false,
+        "usable_in_2026": "Historical baseline only; capabilities explicitly identify SIOSE AR 2017."
+      },
+      "sample": {
+        "kind": "Capabilities only",
+        "downloaded_feature_count": 0
+      },
+      "license": {
+        "name": "CC BY 4.0 scne.es",
+        "source_ids": [
+          "ign_landcover_wfs"
+        ]
+      },
+      "uncertainty": [
+        "A 2017 class must not be labelled observed 2026 fuel or vegetation state.",
+        "No small feature geometry successfully retrieved."
+      ]
+    },
+    {
+      "id": "national_fire_inventory",
+      "name": "MITECO EGIF and 2026 provisional ancillary report",
+      "source_ids": [
+        "miteco_egif",
+        "egif_search",
+        "miteco_provisional",
+        "miteco_estimate"
+      ],
+      "access": {
+        "free": true,
+        "key_required": false,
+        "search_url": "https://servicio.mapa.gob.es/incendios/Search/Publico",
+        "export_formats": [
+          "Excel summary",
+          "XML PIF/Monte"
+        ],
+        "export_workflow": "Select year/province in public EGIF search, search, then export results; no stable REST export URL verified.",
+        "small_machine_readable_download": "https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/temas/incendios-forestales/estimacion_provisional.html",
+        "extraction": "JSONDecoder.raw_decode on text following 'var D='; fields meta, cur, ccaa, gif. Preserve the original HTML hash.",
+        "provisional_pdf_url": "https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/temas/incendios-forestales/Avance%20Informativo%204%20de%20octubre%202026.pdf",
+        "pdf_result": "Body exceeded 1.5 MB retrieval cap; not saved or treated as read."
+      },
+      "coverage": {
+        "egif_series_start": 1968,
+        "egif_definitive_publication_years_verified": "1968-2021 on examined index",
+        "egif_2026_consolidated_records": "Not established; provincial consolidation determines availability.",
+        "provisional_start": "2026-01-01",
+        "provisional_end": "2026-10-16",
+        "ccaa_advance_through": "2026-10-04",
+        "report_generated_date": "2026-10-16"
+      },
+      "sample": {
+        "source_id": "miteco_estimate",
+        "kind": "Official HTML with embedded data; 821301 bytes",
+        "embedded_large_fire_rows": 47,
+        "curated_incident_rows": 3
+      },
+      "license": {
+        "name": null,
+        "status": "Specific EGIF/report redistribution license not verified; official public access is not itself a license.",
+        "gap": "Check MITECO reuse terms and upstream EFFIS attribution before redistributing extracted perimeters."
+      },
+      "uncertainty": [
+        "Provisional blended CCAA/EFFIS estimate is not definitive EGIF.",
+        "Some incident locations are name or area/date matches, including shared perimeters; not measured ignition coordinates.",
+        "No full inventory exported."
+      ]
+    }
+  ],
+  "verified_incident_facts": [
+    {
+      "incident": "Los Gallardos",
+      "source_ids": [
+        "miteco_estimate"
+      ],
+      "date_as_reported": "2026-07-09",
+      "forest_area_ha": 5458.28,
+      "original_fields": {
+        "fecha": "09/07/2026",
+        "forr": 5458.28,
+        "fuente": "Avance (CCAA)",
+        "geoVia": "nombre equivalente"
+      },
+      "qualifier": "Provisional report forest-area measure; do not equate to total burnt perimeter.",
+      "existing_date_crosscheck": {
+        "source_id": "existing_gallardos",
+        "published_date": "2026-07-13",
+        "first_112_call_body": "jueves 9 de julio a las 16:25",
+        "year_status": "2026 independently verified in body and publication date"
+      }
+    },
+    {
+      "incident": "Villanueva de los Castillejos",
+      "source_ids": [
+        "miteco_estimate"
+      ],
+      "date_as_reported": "2026-06-08",
+      "forest_area_ha": 4388.62,
+      "original_fields": {
+        "fecha": "08/06/2026",
+        "forr": 4388.62,
+        "fuente": "Avance (CCAA)",
+        "geoVia": "nombre exacto"
+      },
+      "qualifier": "Provisional forest area, not necessarily same footprint as regional administrative estimate.",
+      "existing_date_crosscheck": {
+        "source_id": "existing_castillejos",
+        "published_date": "2026-06-10",
+        "year_status": "Publication year 2026 verified directly; report date independently corroborates 2026-06-08"
+      }
+    },
+    {
+      "incident": "Villa del Prado",
+      "source_ids": [
+        "miteco_estimate"
+      ],
+      "date_as_reported": "2026-07-22",
+      "forest_area_ha": 2879.02,
+      "original_fields": {
+        "fecha": "22/07/2026",
+        "forr": 2879.02,
+        "fuente": "Avance (CCAA)",
+        "geoVia": "provincia y mismo día (perímetro compartido)",
+        "geoComp": 1
+      },
+      "qualifier": "Individual provisional entry; cannot replace the regional Sierra Oeste complex total. Shared perimeter match is not ignition location."
+    }
+  ],
+  "contradictions_and_crosschecks": [
+    {
+      "kind": "area_discrepancy_requires_metric_reconciliation",
+      "existing_path": "envs/wildfire_response/data/spain_2026.json",
+      "incident": "Los Gallardos",
+      "existing_field": "reported_burned_area_ha",
+      "existing_value": 7000,
+      "verified_provisional_forest_area_ha": 5458.28,
+      "source_ids": [
+        "miteco_estimate",
+        "existing_gallardos"
+      ],
+      "resolution": "Both retained. Different measure/date/footprint possible; no silent correction or conclusion that one is false."
+    },
+    {
+      "kind": "area_discrepancy_requires_metric_reconciliation",
+      "existing_path": "envs/wildfire_response/data/spain_2026.json",
+      "incident": "Villanueva de los Castillejos",
+      "existing_field": "reported_burned_area_ha",
+      "existing_value": 6310,
+      "verified_provisional_forest_area_ha": 4388.62,
+      "source_ids": [
+        "miteco_estimate"
+      ],
+      "resolution": "Both retained. Existing BOJA assessment not independently inspected in this ancillary scope; cannot resolve metric/footprint difference."
+    },
+    {
+      "kind": "stale_web_representation",
+      "source_ids": [
+        "miteco_provisional",
+        "miteco_estimate"
+      ],
+      "observation": "Search/web representation displayed advance through 2026-09-27 and estimate through 2026-10-06; directly downloaded bodies identify 2026-10-04 and 2026-10-16 respectively.",
+      "resolution": "Direct response bodies and hashes control this research."
+    },
+    {
+      "kind": "date_audit_limit",
+      "source_ids": [
+        "existing_gallardos",
+        "existing_castillejos"
+      ],
+      "observation": "No year contradiction found in these two directly retrieved Junta bodies; 2026 is explicit.",
+      "resolution": "Other existing incident source URLs and timestamps not fully audited here; no claim of validating the entire existing file."
+    },
+    {
+      "kind": "aemet_notice_qualification",
+      "source_ids": [
+        "aemet_news"
+      ],
+      "observation": "Earlier 2026-10-06 notice says indefinite keys stop on October 15; newer October 15 notice describes progressive retirement.",
+      "resolution": "Record the newer body wording; do not claim all older keys necessarily already fail."
+    }
+  ],
+  "access_gaps": [
+    {
+      "url": "https://maps.effis.emergency.copernicus.eu/effis?service=WFS&request=GetCapabilities&version=1.1.0",
+      "result": "Read timeout"
+    },
+    {
+      "url": "https://opendata.aemet.es/centrodedescargas/info",
+      "result": "Direct download HTTP 500; page body readable through web tool",
+      "published_date": null,
+      "retrieved_date": "2026-10-18",
+      "publisher": "AEMET"
+    },
+    {
+      "dataset_id": "aemet_weather",
+      "result": "No key available/requested; no authenticated observations fetched"
+    },
+    {
+      "dataset_id": "ign_landcover",
+      "result": "Bounded GetFeature HTTP 500; dataset metadata GetFeature timed out"
+    },
+    {
+      "dataset_id": "national_fire_inventory",
+      "result": "Linked PDF response exceeds 1.5 MB cap; skipped"
+    },
+    {
+      "dataset_id": "effis_burnt_areas",
+      "result": "No nonempty 2026 raw polygon sample verified"
+    }
+  ],
+  "counts": {
+    "dataset_families": 6,
+    "source_snapshots": 22,
+    "verified_incident_rows": 3,
+    "raw_2026_weather_observations": 0,
+    "raw_2026_effis_features": 0,
+    "terrain_raster_samples": 1,
+    "landcover_feature_samples": 0,
+    "total_snapshot_bytes": 2082833
+  }
+}

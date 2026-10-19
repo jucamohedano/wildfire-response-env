@@ -1,0 +1,28 @@
+spec_version: 1
+name: regional_wildfire_response
+type: space
+runtime: fastapi
+app: wildfire_openenv.server:app
+port: 7860
+version: "0.2.0-alpha.2"
+description: Synthetic regional wildfire coordination with programmatic outcome reward.
+validation:
+  reward:
+    range: [-512.0, 0.0]
+  resources:
+    cpu: 1.0
+    memory_mb: 1024
+    disk_mb: 1024
+    episode_timeout_s: 300.0
+  network:
+    mode: no-network
+  capabilities:
+    verifier:
+      kind: reward_channel
+    task_api: true
+    declared_task_count:
+      train: 24
+      validation: 6
+      test: 6
+  types:
+    tags: [simulation, wildfire, regional-coordination, partial-observation]

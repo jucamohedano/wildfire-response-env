@@ -1,0 +1,55 @@
+{
+  "version": "huelva-regional-evidence-v0.1",
+  "reviewed_on": "2026-10-19",
+  "status": "source-grounded derived simulation; not an operational roster or historical replay",
+  "sources": {
+    "infoca": {"publisher": "Junta de Andalucía / EMA", "url": "https://www.juntadeandalucia.es/organismos/ema/areas/incendios-forestales/dispositivo-infoca/catalogo-medios.html", "title": "Catálogo de medios 2026", "snapshot_sha256": "20715db12a943f7d7441065b82c94f85352f113747263d76cccb708e5ab23c4b", "text_sha256": "aa602f630352082e1751a162a5c3878f321878c89330323d0f7b0321f23b9d9c", "publication_time_verified": false},
+    "aircraft": {"publisher": "MITECO", "url": "https://www.miteco.gob.es/es/biodiversidad/temas/incendios-forestales/extincion/medios_aereos.html", "snapshot_sha256": "c913ca2d47790288192a3d0c80324c17f61e70e203c5bec2b5801ba8ec2c18db", "text_sha256": "7945dfeb30b7f6e8c35e25dc25ee9bedbe72bf9f69f983724e2fc831732c59cf", "publication_time_verified": false},
+    "coordination": {"publisher": "MITECO", "url": "https://www.miteco.gob.es/es/biodiversidad/temas/incendios-forestales/coordinacion-institucional.html", "snapshot_sha256": "99b0666c360c86a0c5932e3a70b7f678a235ca9cb288147e5dcad5683daa8ba8", "text_sha256": "47bb5d3b4a4dc7377c66d5d95eb11eb305ed18dd38dc50640c1f2012234b05c6", "publication_time_verified": false},
+    "cems": {"publisher": "Copernicus EMS", "url": "https://rapidmapping.emergency.copernicus.eu/backend/dashboard-api/public-activations/?code=EMSR913", "snapshot_sha256": "8ab0745b9c7c028238a171d96153ddcd006427387d0b3302ada9ef306c4bbcf6", "role": "retrospective mapping coverage, not an ignition or burnt perimeter"}
+  },
+  "facilities": [
+    {"id": "valverde", "name": "Valverde del Camino", "type": "CEDEFO", "province": "Huelva", "address_as_published": "Ctra. Calañas S/n 21600- Valverde del Camino", "source": "infoca", "locator": "Centros de Defensa Forestal CEDEFO / Huelva", "coordinates": null},
+    {"id": "cabezudos", "name": "Cabezudos", "type": "CEDEFO", "province": "Huelva", "address_as_published": "Ctra. (Hu 4200) Almonte Cabezudos. Km 14 Almonte", "source": "infoca", "locator": "Centros de Defensa Forestal CEDEFO / Huelva", "coordinates": null},
+    {"id": "las-arenas", "name": "Las Arenas", "type": "airstrip", "province": "Huelva", "address_as_published": "Monte Baldíos de Niebla. Ctra. Niebla a Valverde km. 6.", "source": "infoca", "locator": "Otras pistas / Propiedad municipal / Huelva", "coordinates": null}
+  ],
+  "capability_evidence": [
+    {"field": "heavy_engine_capacity_litres", "value": [3000, 4000], "source": "infoca", "locator": "Vehículos autobomba"},
+    {"field": "ground_loaded_aircraft_capacity_litres", "value": 3100, "source": "infoca", "locator": "Medios aéreos disponibles / carga en tierra", "qualifier": "Capability class only; not a confirmed aircraft assignment to Las Arenas"},
+    {"field": "specialist_group_size", "value": 7, "source": "infoca", "locator": "Grupos de especialistas", "qualifier": "Published unit structure, not a per-base operational staffing record"},
+    {"field": "aircraft_missions", "value": ["suppression", "observation", "coordination", "personnel_transport"], "source": "aircraft", "qualifier": "Missions depend on aircraft type; the pilot implements suppression and reconnaissance only"},
+    {"field": "reinforcement_coordination", "value": "State means support competent regional administrations through coordinated requests", "source": "coordination", "qualifier": "Pilot authority is a simulated provincial director, not a reproduction of official dispatch protocols"}
+  ],
+  "region": {"activation_code": "EMSR913", "aoi_number": 1, "aoi_name": "Niebla", "bbox_lon_lat": [-6.842963, 37.335315, -6.2472, 37.696873], "source": "cems", "role": "rectangular mapping coverage envelope; not a wildfire boundary"},
+  "assumptions": {
+    "cell_km": 1.0,
+    "model_minutes_per_tick": 1,
+    "spread_interval_multiplier": 12,
+    "population_speed_cells_per_tick": 0.1,
+    "synthetic_refuge_offset_cells": 4,
+    "synthetic_population_counts": {"settlement-west": 200, "settlement-east": 150},
+    "offer_ttl_minutes": 8,
+    "mobilization_minutes": {"engine": 4, "crew": 3, "aircraft": 6},
+    "base_transit_minutes": {"valverde": 8, "cabezudos": 14, "las-arenas": 6},
+    "aircraft_refill_minutes": 6,
+    "engine_refill_minutes": 4,
+    "aircraft_grounding_wind_index": 2.8,
+    "engine_water_use_litres_per_minute": 500,
+    "suppression_probability": {"engine": 0.8, "crew": 0.5, "aircraft": 0.85},
+    "note": "All timings, inventories, deployment readiness, travel costs, weather gates, terrain, settlements, populations and effectiveness are scenario assumptions, not measured 2026 operational data. Grid georeferencing uses an approximate local equirectangular transform; bases stay off-map because verified coordinates are missing."
+  },
+  "scenario_inventory": [
+    {"id": "engine-valverde", "kind": "engine", "home_base": "valverde", "capacity_litres": 3500},
+    {"id": "crew-valverde", "kind": "crew", "home_base": "valverde", "people": 7},
+    {"id": "engine-cabezudos", "kind": "engine", "home_base": "cabezudos", "capacity_litres": 3500},
+    {"id": "crew-cabezudos", "kind": "crew", "home_base": "cabezudos", "people": 7},
+    {"id": "aircraft-las-arenas", "kind": "aircraft", "home_base": "las-arenas", "capacity_litres": 3100}
+  ],
+  "known_issues": [
+    "INFOCA narrative totals and some table totals differ. No aggregate fleet totals are imported or silently reconciled.",
+    "No verified base coordinates, historical unit readiness, dispatch transcripts, sorties, flight paths or turnaround logs have been collected.",
+    "AOI coverage is retrospective evaluator geography; the derived scenarios are not historical replays.",
+    "No measured land-cover or road network is included. Do not infer flight or road travel times from this pack.",
+    "Public access is not a blanket redistribution licence; root code and asset publication clearance remain unresolved."
+  ]
+}
