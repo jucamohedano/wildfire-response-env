@@ -7,9 +7,9 @@ and field units are deterministic simulated counterparts; they return offers,
 acknowledgements, status, and mission outcomes according to the scenario.
 
 The regional v0.2 implementation keeps its existing `director` package, names,
-and action contract for compatibility. `OpsControlCenterEnv` adds an
-operations-facing Python facade over that simulator; it does not change the
-fire engine, scenario pack, action validation, or reward.
+action contract, and weighted reward for compatibility. `OpsControlCenterEnv`
+adds an operations-facing Python facade and a separate objective reward over the
+same simulator; it does not change the fire engine or regional scenario pack.
 
 ## Decision lifecycle
 
@@ -42,17 +42,43 @@ delivery only; it does not prove that a responder understood or executed an
 instruction.
 
 Each submitted action advances the configured simulation interval (two assumed
-model minutes by default). Checks do not advance time. An optional explanation
-field is validated by the core but is not persisted or scored.
+model minutes by default). Checks do not advance time. Free-text explanations
+are not part of this ops interface or stored in its public trajectories.
 
-## Reward and scenario limits
+The checked-in `wildfire-ops-task-pack-v0.1.0` supplies objectives for six
+development fixtures mapped to the six regional scenario families. It does not
+define train/validation/test splits or a held-out benchmark. The public task brief
+includes each objective; the model cannot supply or edit its own scoring goals.
+These objectives are exercise assignments tied to reported locations, not hidden
+fire-truth labels or expert claims about the correct tactical response.
 
-The weighted reward is unchanged in this documentation slice. The implementation
-continues to use `regional-outcome-cost-v2`, which computes reward as the reduction
-in a weighted cost covering population exposure, burned terrain, unnecessary
-evacuation, committed resource time, redundant notices, invalid actions, and
-unresolved incidents. This is not a coordination-goal fraction, and its weights
-have not been recalibrated here.
+Use `trajectory()` to export the public trace and `verify_episode()` after
+termination or truncation to recompute the objective score, bind it to the
+canonical task manifest, reward formula, simulator version and scenario-pack
+hash, then replay the underlying simulator. Malformed action payloads are
+redacted in public traces and represented by a replayable invalid-action marker;
+the public trace intentionally does not preserve arbitrary rejected input.
+
+## Objective reward and scenario limits
+
+The ops facade uses `wildfire-ops-objective-fraction-v1`: at each committed
+decision it awards newly completed task objectives divided by the fixed objective
+count. The first objective type is `resource_arrival`: an acceptable resource
+must be on scene in the declared sector by the declared deadline. Objective
+specifications come from the checked-in canonical task manifest and are included
+in the public task brief; neither the model nor reset caller can set them.
+Deadlines must fit the episode horizon and align with decision intervals.
+
+`OpsControlCenterEnv.verify_episode()` recomputes objective credit from the
+recorded public observations, then independently replays and checks the underlying
+regional simulator trace. This verifies completion of the declared simulated
+mission; it does not establish that dispatching that resource was the best real
+world decision. The original `WildfireResponseEnv` still uses
+`regional-outcome-cost-v2`.
+
+Fire spread, exposed population, resource effort, and message counts remain
+separate diagnostics. They do not add to or subtract from objective reward in
+this version.
 
 Fleet composition, readiness, transit and delivery times, evacuation behavior,
 effectiveness, procedures, and deadlines are scenario assumptions unless a source

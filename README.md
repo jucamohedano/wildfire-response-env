@@ -79,18 +79,20 @@ and field units are deterministic simulated counterparts in the initial design.
 The current v0.2 implementation and APIs retain the historical `director` naming
 for compatibility; see the [ops interface notes](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/README.md).
 
-This initial interface slice adds a Python ops facade over the existing core.
-The simulator and reward remain unchanged: `regional-outcome-cost-v2` is the existing weighted negative outcome
-cost, with components for population exposure, burned terrain, unnecessary
-evacuation, committed resource time, redundant notices, invalid actions and
-unresolved incidents. The initial fleet, timing, communication procedures and
-deadlines are scenario assumptions, not validated operational protocols.
+The ops facade uses `wildfire-ops-objective-fraction-v1`: the fraction of
+task-declared resource-arrival objectives completed by their deadlines. The
+original regional v0.2 environment keeps its `regional-outcome-cost-v2` weighted
+cost unchanged. Fire damage, exposure and resource effort remain diagnostics for
+ops tasks until calibrated. Objective deadlines align with decision intervals
+and are scenario assumptions, not doctrine.
 
 ```python
 from wildfire_core import OpsControlCenterEnv
 
 env = OpsControlCenterEnv()
-observation, info = env.reset("regional-000", seed=20000)
+observation, info = env.reset(
+    "ops-000", seed=20000,
+)
 observation, reward, terminated, truncated, info = env.request_resources([
     {"resource_id": "engine-valverde", "sector_id": "report:report-0", "mission": "recon"}
 ])
@@ -101,6 +103,10 @@ The new facade exposes `get_situation`, `get_reports`, `check_orders`,
 `send_messages` and `advance`. Each committed tool call advances one configured
 simulator decision; reads and checks do not. See the [ops interface notes](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/README.md)
 and [contract](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/CONTRACT.md).
+Use `env.trajectory()` to export the public trace and `env.verify_episode()` after
+episode end to reproduce the objective fraction and replay the simulator.
+The checked-in `wildfire-ops-task-pack-v0.1.0` contains six development fixtures
+only; they are not held-out evaluation scenarios.
 
 The AirOpsEnv article describes related but distinct task versions: v1 models one
 ops desk at one hub; v2 adds ops and crew desks; v3 builds on v2 with passenger
