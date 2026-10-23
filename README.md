@@ -70,6 +70,43 @@ historical paths so frozen scenario hashes, rewards, tests and old trajectories
 remain compatible. Those are internal compatibility modules, not another checkout
 or a second simulator implementation. Legacy v1 fixtures remain for regression.
 
+## Wildfire Ops Control Center
+
+The intended learned role is the **ops desk/controller**: it reviews incoming
+information, coordinates resources, communicates with bases and population groups,
+and monitors reported execution. It does not act as the incident commander. Bases
+and field units are deterministic simulated counterparts in the initial design.
+The current v0.2 implementation and APIs retain the historical `director` naming
+for compatibility; see the [ops interface notes](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/README.md).
+
+This initial interface slice adds a Python ops facade over the existing core.
+The simulator and reward remain unchanged: `regional-outcome-cost-v2` is the existing weighted negative outcome
+cost, with components for population exposure, burned terrain, unnecessary
+evacuation, committed resource time, redundant notices, invalid actions and
+unresolved incidents. The initial fleet, timing, communication procedures and
+deadlines are scenario assumptions, not validated operational protocols.
+
+```python
+from wildfire_core import OpsControlCenterEnv
+
+env = OpsControlCenterEnv()
+observation, info = env.reset("regional-000", seed=20000)
+observation, reward, terminated, truncated, info = env.request_resources([
+    {"resource_id": "engine-valverde", "sector_id": "report:report-0", "mission": "recon"}
+])
+```
+
+The new facade exposes `get_situation`, `get_reports`, `check_orders`,
+`request_resources`, `authorize_resources`, `release_resources`,
+`send_messages` and `advance`. Each committed tool call advances one configured
+simulator decision; reads and checks do not. See the [ops interface notes](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/README.md)
+and [contract](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/CONTRACT.md).
+
+The AirOpsEnv article describes related but distinct task versions: v1 models one
+ops desk at one hub; v2 adds ops and crew desks; v3 builds on v2 with passenger
+modeling and a customer desk. These versions are useful structural references, but
+this project does not claim equivalence to AirOpsEnv.
+
 ## Tasks and evaluation
 
 The frozen regional pack has 36 synthetic configurations: 24 train, six validation
