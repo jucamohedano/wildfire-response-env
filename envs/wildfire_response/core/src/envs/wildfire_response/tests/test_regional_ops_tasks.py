@@ -1,6 +1,7 @@
 import unittest
 
 from envs.wildfire_response.regional.ops.objectives import validate_objectives
+from wildfire_core import OpsControlCenterEnv
 from envs.wildfire_response.regional.ops.tasks import (
     OPS_TASK_VERSION,
     get_ops_task,
@@ -12,7 +13,7 @@ class OpsTaskManifestTests(unittest.TestCase):
     def test_development_task_ids_and_scenario_mappings(self):
         tasks = list_ops_tasks()
 
-        self.assertEqual(OPS_TASK_VERSION, 'wildfire-ops-task-pack-v0.1.0')
+        self.assertEqual(OPS_TASK_VERSION, 'wildfire-ops-task-pack-v0.2.0')
         self.assertEqual([task['id'] for task in tasks], [f'ops-{i:03d}' for i in range(6)])
         for index, task in enumerate(tasks):
             regional_id = f'regional-{index:03d}'
@@ -20,6 +21,19 @@ class OpsTaskManifestTests(unittest.TestCase):
             self.assertEqual(task['group_id'], regional_id)
             self.assertEqual(task['split'], 'development')
             self.assertTrue(task['objectives'])
+
+    def test_all_six_development_tasks_reset_including_delayed_reports(self):
+        for task in list_ops_tasks():
+            with self.subTest(task=task['id']):
+                env = OpsControlCenterEnv()
+                observation, _ = env.reset(task['id'])
+                self.assertEqual(observation['task_id'], task['id'])
+                self.assertEqual(observation['completed_objective_ids'], [])
+                self.assertEqual(observation['readbacks'], [])
+                self.assertNotIn('mission_swap_once', observation)
+                if task['id'] == 'ops-003':
+                    self.assertNotIn('report-1', [report['id'] for report in observation['reports']])
+                    self.assertNotIn('report:report-1', [sector['id'] for sector in observation['sectors']])
 
     def test_only_competing_incidents_has_two_report_objectives(self):
         for index, task in enumerate(list_ops_tasks()):

@@ -38,7 +38,8 @@ def completed_ops_002_trajectory():
         {'resource_id': 'engine-valverde', 'sector_id': 'report:report-0', 'mission': 'recon'}
     ])
     offer_id = result[0]['offers'][0]['id']
-    env.authorize_resources([offer_id])
+    env.submit_action(dict(authorizations=[offer_id],
+        readback_confirmations=[result[0]['readbacks'][0]['id']]))
     while env._core.resources['engine-valverde']['state'] != 'on_scene':
         env.advance()
     env.release_resources(['engine-valverde'])
@@ -150,6 +151,7 @@ class OpsObjectiveTests(unittest.TestCase):
 
     def test_trajectory_requires_manifest_fields(self):
         for field in ('interface_version', 'task_id', 'task_version', 'task_manifest_sha256',
+                      'communication_protocol_version',
                       'reward_version', 'core_version', 'core_reward_version',
                       'core_pack_sha256', 'scenario_id', 'seed', 'max_decisions',
                       'ticks_per_action', 'objectives', 'initial_observation'):

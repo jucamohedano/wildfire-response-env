@@ -101,6 +101,7 @@ def verify_ops_trajectory(trajectory):
     if not isinstance(trajectory, Mapping):
         raise ValueError('trajectory must be a record')
     required = ('interface_version', 'task_id', 'task_version', 'task_manifest_sha256',
+                'communication_protocol_version',
                 'reward_version', 'core_version', 'core_reward_version', 'core_pack_sha256',
                 'scenario_id', 'seed',
                 'max_decisions', 'ticks_per_action', 'objectives', 'initial_observation')
@@ -108,10 +109,12 @@ def verify_ops_trajectory(trajectory):
     if missing:
         raise ValueError(f'trajectory is missing required field(s): {", ".join(missing)}')
     from .environment import OPS_INTERFACE_VERSION, OpsControlCenterEnv
-    from ..environment import RegionalResponseEnv
+    from .communications import PROTOCOL_VERSION
 
     if trajectory['interface_version'] != OPS_INTERFACE_VERSION:
         raise ValueError('trajectory.interface_version does not match this verifier')
+    if trajectory['communication_protocol_version'] != PROTOCOL_VERSION:
+        raise ValueError('trajectory.communication_protocol_version does not match this verifier')
     task_id = _nonempty_string(trajectory['task_id'], 'trajectory.task_id')
     task_version = _nonempty_string(trajectory['task_version'], 'trajectory.task_version')
     scenario_id = _nonempty_string(trajectory['scenario_id'], 'trajectory.scenario_id')
@@ -165,10 +168,9 @@ def verify_ops_trajectory(trajectory):
         raise ValueError('canonical objective deadlines exceed the recorded episode horizon')
     if any(objective['deadline_minute'] % trajectory['ticks_per_action'] for objective in objectives):
         raise ValueError('canonical objective deadlines do not align with the recorded decision interval')
-    core = RegionalResponseEnv(max_decisions=trajectory['max_decisions'],
-                               ticks_per_action=trajectory['ticks_per_action'])
-    initial_observation, _ = core.reset(scenario_id, trajectory['seed'])
-    expected_initial = OpsControlCenterEnv._present_task(initial_observation, task_id, objectives)
+    env = OpsControlCenterEnv(max_decisions=trajectory['max_decisions'],
+                             ticks_per_action=trajectory['ticks_per_action'])
+    expected_initial, _ = env.reset(task_id, trajectory['seed'])
     if trajectory['initial_observation'] != expected_initial:
         raise ValueError('trajectory initial observation does not replay from its task and seed')
 
@@ -190,8 +192,11 @@ def verify_ops_trajectory(trajectory):
         if not isinstance(action, Mapping) or 'explanation' in action:
             raise ValueError(f'{label}.action must be a public structured ops action')
 
-        result = core.step(dict(action))
-        actual_observation = OpsControlCenterEnv._present_task(result[0], task_id, objectives)
+        try:
+            result = env.submit_action(dict(action))
+        except RuntimeError as error:
+            raise ValueError(f'{label} occurs after the episode ended') from error
+        actual_observation = result[0]
         if transition['observation'] != actual_observation:
             raise ValueError(f'{label} observation does not replay from its action')
         if transition['action_valid'] is not (result[4]['error'] is None):

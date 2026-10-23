@@ -7,7 +7,7 @@ import json
 from .objectives import validate_objectives
 
 
-OPS_TASK_VERSION = 'wildfire-ops-task-pack-v0.1.0'
+OPS_TASK_VERSION = 'wildfire-ops-task-pack-v0.2.0'
 
 
 def _arrival_objective(identifier, report_id, deadline_minute):
@@ -27,6 +27,7 @@ _TASKS = {
         'scenario_id': f'regional-{index:03d}',
         'split': 'development',
         'group_id': f'regional-{index:03d}',
+        'communication': {'mission_swap_once': index in (1, 3)},
         'objectives': (
             [
                 _arrival_objective('arrive-report-0', 'report-0', 40),

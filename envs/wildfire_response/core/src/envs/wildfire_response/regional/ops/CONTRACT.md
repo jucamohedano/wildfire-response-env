@@ -1,4 +1,4 @@
-# Wildfire Ops Control Center interface v1
+# Wildfire Ops Control Center interface v2
 
 This interface represents one learned operations desk in a simulated wildfire
 control center. The ops operator reviews public information, requests and
@@ -18,6 +18,9 @@ keeps `regional-outcome-cost-v2`; the ops facade returns the separately versione
   the clock; the core allows at most three checks between committed actions.
 - `request_resources(requests)` sends resource requests to their owning bases.
 - `authorize_resources(offer_ids)` authorizes only currently valid offers.
+- `confirm_readbacks(readback_ids)` confirms matching live readbacks.
+- `correct_readbacks(corrections)` restates an offered resource, sector and mission
+  when a readback differs. A new readback arrives after one model minute.
 - `release_resources(resource_ids)` releases assigned resources.
 - `send_messages(messages)` sends the existing structured recipient/purpose
   messages.
@@ -43,9 +46,20 @@ counterparts from the underlying environment. Reports remain untrusted claims;
 the facade does not add or expose private report annotations, future events,
 scenario truth, or evaluator checkpoints.
 
-The current core has delivery acknowledgements and delayed base offers, but it
-does not implement an explicit readback/repeat-back and correction protocol.
-Delivery acknowledgement is not evidence of understanding or execution.
+The ops layer adds `wildfire-ops-readback-v1` over the core's delayed offers.
+Each visible live offer includes a base readback of resource, sector and mission.
+Authorization requires its matching readback to be confirmed. A correction must
+restate the original offer exactly; changing the allocation requires releasing
+and making a new request. Confirmation and authorization may share one action.
+An invalid combined action changes neither readback nor mission state and still
+advances the core clock. Expired, closed, or superseded readbacks cannot authorize
+an allocation. Delivery and confirmation remain separate from arrival evidence.
+
+The task pack contains deterministic synthetic mission swaps in two fixtures.
+It does not expose the fault schedule in observations. The agent compares the
+public offer and readback instead of receiving a correctness label. Message text
+uses fixed readable templates; this is not certified ASD-STE100 compliance or a
+validated emergency radio protocol.
 
 Resource availability, transit times, wind gates, population behavior and
 fire effects retain their existing synthetic/assumed labels. Nothing in this
@@ -71,6 +85,15 @@ redacted from public traces and represented by an invalid-action marker. The
 score certifies completion of the declared synthetic task, not the operational
 wisdom of its mission objectives or real-world fire effectiveness.
 
-The initial task pack has six development fixtures and no held-out splits. Do not
+The task pack has six development fixtures and no held-out splits. Do not
 use it to claim model generalization; build incident-grouped splits in a later
 version before training or model selection.
+
+The default decision interval is two model minutes. A configured interval must
+leave time for one correction before offer expiry (at most four minutes with the
+current eight-minute offer lifetime), fit objective deadlines, and divide them
+exactly. Goal references to later reports are task assignments only; those report
+locations and contents enter the public observation only when received.
+
+Interface v2 and task pack v0.2.0 change the ops action/replay contract. Use commit
+`fdc2a10` to replay interface-v1 traces. The regional v0.2 environment is unchanged.

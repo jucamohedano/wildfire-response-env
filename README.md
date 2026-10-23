@@ -105,8 +105,21 @@ simulator decision; reads and checks do not. See the [ops interface notes](envs/
 and [contract](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/CONTRACT.md).
 Use `env.trajectory()` to export the public trace and `env.verify_episode()` after
 episode end to reproduce the objective fraction and replay the simulator.
-The checked-in `wildfire-ops-task-pack-v0.1.0` contains six development fixtures
+The checked-in `wildfire-ops-task-pack-v0.2.0` contains six development fixtures
 only; they are not held-out evaluation scenarios.
+
+Ops interface v2 requires a matching base readback before authorization. Two
+fixtures include a synthetic mission readback error. The controller corrects it,
+waits for the corrected readback, then confirms and authorizes. The dispatch
+baseline uses only public observations and performs this sequence automatically.
+Run the six-fixture CPU smoke suite and replay an exported episode with:
+
+```sh
+PYTHONPATH=envs/wildfire_response/core/src python -m envs.wildfire_response.regional.ops.run \
+  --output .runtime/ops-development-smoke
+PYTHONPATH=envs/wildfire_response/core/src python -m envs.wildfire_response.regional.ops.run \
+  --replay .runtime/ops-development-smoke/ops-001/dispatch/trajectory.json.gz
+```
 
 The AirOpsEnv article describes related but distinct task versions: v1 models one
 ops desk at one hub; v2 adds ops and crew desks; v3 builds on v2 with passenger

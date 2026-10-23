@@ -86,7 +86,8 @@ class OpsControlCenterTests(unittest.TestCase):
         self.assertEqual(reward, 0.0)
         offer_id = observation['offers'][0]['id']
 
-        result = self.env.authorize_resources([offer_id])
+        result = self.env.submit_action(dict(authorizations=[offer_id],
+            readback_confirmations=[observation['readbacks'][0]['id']]))
         self.assertEqual(len(result), 5)
         self.assertEqual(self.env._core.decisions, 2)
         self.assertEqual(self.env._core.sim.tick, 2)
@@ -98,7 +99,8 @@ class OpsControlCenterTests(unittest.TestCase):
     def test_release_resources_commits_once_and_returns_assigned_unit(self):
         offer_observation, *_ = self.env.request_resources(resource_request())
         offer_id = offer_observation['offers'][0]['id']
-        self.env.authorize_resources([offer_id])
+        self.env.submit_action(dict(authorizations=[offer_id],
+            readback_confirmations=[offer_observation['readbacks'][0]['id']]))
 
         result = self.env.release_resources(['engine-valverde'])
 
@@ -161,7 +163,8 @@ class OpsControlCenterTests(unittest.TestCase):
         result = self.env.request_resources(resource_request())
         self.assertEqual(result[1], 0.0)
         offer_id = result[0]['offers'][0]['id']
-        result = self.env.authorize_resources([offer_id])
+        result = self.env.submit_action(dict(authorizations=[offer_id],
+            readback_confirmations=[result[0]['readbacks'][0]['id']]))
         self.assertEqual(result[1], 0.0)
 
         while self.env._core.resources['engine-valverde']['state'] != 'on_scene':
@@ -190,8 +193,8 @@ class OpsControlCenterTests(unittest.TestCase):
     def test_task_brief_includes_public_objectives(self):
         self.assertEqual(self.initial['task_objectives'], get_ops_task('ops-000')['objectives'])
         self.assertEqual(self.initial['task_id'], 'ops-000')
-        self.assertEqual(self.initial['task_version'], 'wildfire-ops-task-pack-v0.1.0')
-        self.assertEqual(self.initial['ops_interface_version'], 'wildfire-ops-control-center-v1')
+        self.assertEqual(self.initial['task_version'], 'wildfire-ops-task-pack-v0.2.0')
+        self.assertEqual(self.initial['ops_interface_version'], 'wildfire-ops-control-center-v2')
         self.assertEqual(self.info['reward_version'], OPS_REWARD_VERSION)
 
     def test_reset_rejects_unknown_task_before_mutating_episode(self):
