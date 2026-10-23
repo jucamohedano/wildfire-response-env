@@ -7,7 +7,7 @@ import json
 from .objectives import validate_objectives
 
 
-OPS_TASK_VERSION = 'wildfire-ops-task-pack-v0.2.0'
+OPS_TASK_VERSION = 'wildfire-ops-task-pack-v0.3.0'
 
 
 def _arrival_objective(identifier, report_id, deadline_minute):
@@ -26,6 +26,7 @@ _TASKS = {
         'id': f'ops-{index:03d}',
         'scenario_id': f'regional-{index:03d}',
         'split': 'development',
+        'task_set': 'dispatch',
         'group_id': f'regional-{index:03d}',
         'communication': {'mission_swap_once': index in (1, 3)},
         'objectives': (
@@ -39,6 +40,17 @@ _TASKS = {
     }
     for index in range(6)
 }
+
+_TASKS.update({
+    f'control-{index:03d}': dict(
+        id=f'control-{index:03d}', scenario_id=f'regional-train-{index if index in (1, 3) else 18 + index:03d}',
+        split='development', task_set='control',
+        group_id=f'regional-configuration-{index if index in (1, 3) else 18 + index:03d}',
+        communication={'mission_swap_once': index in (1, 3)},
+        objectives=[dict(id=kind, kind=kind, deadline_minute=120) for kind in (
+            'evidence_triage', 'population_safety', 'incident_resolved', 'communication_discipline')])
+    for index in range(6)
+})
 
 for _task in _TASKS.values():
     validate_objectives(_task['objectives'])
@@ -57,6 +69,9 @@ def get_ops_task(task_id):
     return task
 
 
-def list_ops_tasks():
+def list_ops_tasks(task_set=None):
     """Return isolated copies of all development tasks in manifest order."""
-    return [get_ops_task(task_id) for task_id in _TASKS]
+    if task_set not in (None, 'dispatch', 'control'):
+        raise ValueError('Choose dispatch or control tasks')
+    return [get_ops_task(task_id) for task_id, task in _TASKS.items()
+            if task_set is None or task['task_set'] == task_set]

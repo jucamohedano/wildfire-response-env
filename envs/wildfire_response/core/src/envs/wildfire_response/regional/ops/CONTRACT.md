@@ -1,4 +1,4 @@
-# Wildfire Ops Control Center interface v2
+# Wildfire Ops Control Center interface v3
 
 This interface represents one learned operations desk in a simulated wildfire
 control center. The ops operator reviews public information, requests and
@@ -8,7 +8,7 @@ not the incident commander and does not replace base or field-unit behavior.
 The facade wraps the existing `RegionalResponseEnv`. It does not copy its fire
 engine or change the regional v0.2 task pack. The legacy `WildfireResponseEnv`
 keeps `regional-outcome-cost-v2`; the ops facade returns the separately versioned
-`wildfire-ops-objective-fraction-v1` reward.
+`wildfire-ops-objective-fraction-v2` reward.
 
 ## Tools
 
@@ -24,6 +24,9 @@ keeps `regional-outcome-cost-v2`; the ops facade returns the separately versione
 - `release_resources(resource_ids)` releases assigned resources.
 - `send_messages(messages)` sends the existing structured recipient/purpose
   messages.
+- `triage_reports(assessments)` records received reports against fresh public
+  sensor evidence, or explicitly defers them. Assessments use `report_ids` and
+  `assessment`; linking duplicates requires matching location/observation time.
 - `advance()` advances the existing simulator with no new orders.
 - `submit_action(action)` remains available for a caller that needs to combine
   compatible order fields in one core decision.
@@ -55,7 +58,7 @@ An invalid combined action changes neither readback nor mission state and still
 advances the core clock. Expired, closed, or superseded readbacks cannot authorize
 an allocation. Delivery and confirmation remain separate from arrival evidence.
 
-The task pack contains deterministic synthetic mission swaps in two fixtures.
+Each task set contains deterministic synthetic mission swaps in two fixtures.
 It does not expose the fault schedule in observations. The agent compares the
 public offer and readback instead of receiving a correctness label. Message text
 uses fixed readable templates; this is not certified ASD-STE100 compliance or a
@@ -70,12 +73,18 @@ or emergency-message wording.
 
 The versioned task manifest supplies a fixed, non-empty list of public objective
 records. Reset accepts a task ID, not caller-provided scoring goals.
-The first supported objective is `resource_arrival`: an accepted resource kind
-and mission must be on scene in the declared sector at a post-action observation
-no later than the deadline. Deadlines align with decision intervals. Each
-objective counts once; per-step reward is newly completed objectives divided by
-the fixed objective count. Checks, acknowledgements, messages, and explanations
-do not earn credit by themselves.
+Control tasks require evidence-backed triage, population safety, incident
+resolution, and communication discipline. All four are evaluated at episode end,
+after scheduled events/reports and queued deliveries, with one quarter credit
+per completed objective. A three-invalid-action abort earns no terminal control
+credit. Hidden fire counts are used only by the evaluator and replay, not agent
+observations. Each condition and its limits is specified in [OBJECTIVES.md](OBJECTIVES.md).
+
+Arrival-only `ops-*` fixtures remain available in the separate dispatch task set.
+An accepted resource kind and mission must be on scene in the declared sector
+by its deadline. Each objective counts once. Deadlines align with decision
+intervals. Checks, acknowledgements, messages, explanations, and triage selections
+alone do not earn credit.
 
 `verify_episode()` binds the recorded task ID and objective list to the canonical
 manifest, reward formula, simulator version, and scenario-pack hash; reconstructs
@@ -85,7 +94,7 @@ redacted from public traces and represented by an invalid-action marker. The
 score certifies completion of the declared synthetic task, not the operational
 wisdom of its mission objectives or real-world fire effectiveness.
 
-The task pack has six development fixtures and no held-out splits. Do not
+The task pack has six control and six dispatch development fixtures and no held-out splits. Do not
 use it to claim model generalization; build incident-grouped splits in a later
 version before training or model selection.
 
@@ -95,5 +104,6 @@ current eight-minute offer lifetime), fit objective deadlines, and divide them
 exactly. Goal references to later reports are task assignments only; those report
 locations and contents enter the public observation only when received.
 
-Interface v2 and task pack v0.2.0 change the ops action/replay contract. Use commit
-`fdc2a10` to replay interface-v1 traces. The regional v0.2 environment is unchanged.
+Interface v3 and task pack v0.3.0 add the evidence/action/scoring contract. Use
+commit `3202d49` for interface-v2 traces and `fdc2a10` for interface-v1 traces.
+The regional v0.2 environment is unchanged.

@@ -48,14 +48,15 @@ Each submitted action advances the configured simulation interval (two assumed
 model minutes by default). Checks do not advance time. Free-text explanations
 are not part of this ops interface or stored in its public trajectories.
 
-The checked-in `wildfire-ops-task-pack-v0.2.0` supplies objectives for six
-development fixtures mapped to the six regional scenario families. It does not
-define train/validation/test splits or a held-out benchmark. The public task brief
-includes each objective; the model cannot supply or edit its own scoring goals.
-These objectives are exercise assignments tied to reported locations, not hidden
-fire-truth labels or expert claims about the correct tactical response.
+The checked-in `wildfire-ops-task-pack-v0.3.0` supplies six control tasks
+(`control-*`) and six dispatch exercises (`ops-*`), all development-only.
+Control tasks cover evidence triage, population safety, incident resolution and
+communication discipline without prescribing targets. Dispatch exercises retain
+their explicit arrival assignments. The model cannot supply or edit its scoring
+goals. Control scenarios reuse existing regional training configurations, so this
+pack does not provide a fresh held-out benchmark.
 
-`ops-001` and `ops-003` contain one synthetic mission swap in the first base
+`ops-001`, `ops-003`, `control-001` and `control-003` contain one synthetic mission swap in the first base
 readback; other initial readbacks match. This private generation setting is not
 included in agent observations. Corrected readbacks restate the intended offer.
 These are deterministic communication exercises, not measured error rates.
@@ -74,6 +75,13 @@ env.submit_action({
 })
 ```
 
+Use `triage_reports([{"report_ids": ["report-0"], "assessment": "fire_observed"}])`
+to assess a received report with fresh matching sensor evidence. Other assessments
+are `no_fire_observed` and `defer`. Matching location and observation time are
+required to link multiple report IDs as duplicates. Public observations include
+the assessment ledger and issued notices; private fire counts and future events
+remain evaluator-only. See [OBJECTIVES.md](OBJECTIVES.md) for exact rules.
+
 Use `trajectory()` to export the public trace and `verify_episode()` after
 termination or truncation to recompute the objective score, bind it to the
 canonical task manifest, reward formula, simulator version and scenario-pack
@@ -83,56 +91,65 @@ the public trace intentionally does not preserve arbitrary rejected input.
 
 ## Objective reward and scenario limits
 
-The ops facade uses `wildfire-ops-objective-fraction-v1`: at each committed
-decision it awards newly completed task objectives divided by the fixed objective
-count. The first objective type is `resource_arrival`: an acceptable resource
-must be on scene in the declared sector by the declared deadline. Objective
-specifications come from the checked-in canonical task manifest and are included
-in the public task brief; neither the model nor reset caller can set them.
-Deadlines must fit the episode horizon and align with decision intervals.
+The ops facade uses `wildfire-ops-objective-fraction-v2`: newly completed
+objectives divided by the fixed count. The four broader control objectives are
+evaluated at episode end only, with one quarter credit each. Scheduled incident
+events/reports and deliveries must be complete; invalid-action abandonment earns
+no terminal credit. Population safety and fire resolution use realised outcomes,
+not message or arrival counts. The equal fraction is a transparent engineering
+rubric, not a calibrated safety utility; always report the components separately.
+Arrival-only objectives remain available in dispatch exercises. Objective specs
+come from the canonical manifest. Deadlines must fit the configured horizon and
+align with decision intervals.
 
 `OpsControlCenterEnv.verify_episode()` recomputes objective credit from the
-recorded public observations, then independently replays and checks the underlying
-regional simulator trace. This verifies completion of the declared simulated
-mission; it does not establish that dispatching that resource was the best real
-world decision. The original `WildfireResponseEnv` still uses
+replayed public evidence and final simulator state, then checks the underlying
+regional accounting. This verifies completion in the documented simulator; it
+does not establish a real-world optimal response. The original `WildfireResponseEnv` still uses
 `regional-outcome-cost-v2`.
 
-Fire spread, exposed population, resource effort, and message counts remain
-separate diagnostics. They do not add to or subtract from objective reward in
-this version.
+Burned terrain, population exposure, resource effort and message counts remain
+separate diagnostics alongside the four pass/fail control components. Exposure
+and unfinished movement fail the population-safety goal; active fire fails the
+incident-resolution goal. Damage and effort are not separately weighted here.
 
 ## CPU baselines and replay
 
 Run `python -m envs.wildfire_response.regional.ops.run` after installing the core,
 or set `PYTHONPATH=envs/wildfire_response/core/src` from the repository root.
-By default it runs all six development tasks with three policies on one worker:
+By default it runs all six control tasks with five policies on one worker:
 
 - `passive` waits without new actions.
 - `dispatch` follows the public assigned goals, compares and corrects readbacks,
   confirms and authorizes allocations, and releases resources after completion.
-- `random_valid` samples subsets of the dispatch policy's legal candidates,
+  On broader tasks it visits report locations but neither triages nor suppresses.
+- `control` uses public evidence to triage received claims, target conditional
+  suppression, warn threatened districts and release units once local fire clears.
+- `blanket_warning` evacuates every unwarned district once, without investigating.
+- `random_valid` samples subsets of the selected task set's informed baseline candidates,
   keeping confirmation and authorization bundles together. It is a constrained
   random control, not a uniform sample of the full legal action space.
 
 Use `--output .runtime/ops-development-smoke` for a fresh output directory,
-`--task-id ops-001 --policy dispatch` for one episode, or `--replay PATH` for an
+`--task-id control-001 --policy control` for one episode, or `--replay PATH` for an
 exported `trajectory.json.gz`. Public traces contain actions, readbacks, timing,
 observations and objective rewards. A separate `evaluator/task-manifest.json`
 contains task generation settings. Per-episode summaries include component
 diagnostics, invalid actions, corrections, elapsed seconds including verification,
 and process peak resident memory including previous runs in that process.
 
-The dispatch baseline sends no population messages because the current objectives
-only assign reconnaissance arrivals. It is a communication/dispatch execution
-baseline; evidence triage and population protection need additional objectives
-and a new held-out evaluation before any training claims.
+Use `--task-set dispatch --policy dispatch` for the legacy dispatch exercises,
+or `--task-set all` for both task sets. `wildfire_core.ops` exposes the baseline
+classes for an external client. These are deterministic public-observation
+heuristics and a constrained stochastic control, not expert demonstrations.
 
-Interface v2 traces require the readback protocol. Older interface-v1 traces can
-be replayed from commit `fdc2a10`.
+Interface v3 traces require the evidence and readback contracts. Interface-v2
+traces replay from `3202d49`; interface-v1 traces replay from `fdc2a10`.
 
-See [the development smoke results](SMOKE.md) for measured CPU costs, baseline
-scores, replay checks, and the remaining task-design gate before training.
+See [the earlier arrival-only smoke results](SMOKE.md) for the prior v2 run and
+[the broader control results](CONTROL_SMOKE.md) for the current CPU run, component
+scores and acceptance checks. The [objective contract](OBJECTIVES.md) specifies
+the semantics and remaining evaluation/calibration gates before training.
 
 Fleet composition, readiness, transit and delivery times, evacuation behavior,
 effectiveness, procedures, and deadlines are scenario assumptions unless a source

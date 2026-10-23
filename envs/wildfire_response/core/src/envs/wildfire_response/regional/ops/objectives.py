@@ -5,7 +5,8 @@ import hashlib
 from collections.abc import Mapping
 
 
-REWARD_VERSION = 'wildfire-ops-objective-fraction-v1'
+REWARD_VERSION = 'wildfire-ops-objective-fraction-v2'
+TERMINAL_KINDS = {'evidence_triage', 'population_safety', 'incident_resolved', 'communication_discipline'}
 _OBJECTIVE_FIELDS = {
     'id',
     'kind',
@@ -28,9 +29,13 @@ def validate_objectives(objectives):
         label = f'objectives[{index}]'
         if not isinstance(objective, dict):
             raise ValueError(f'{label} must be a record')
+        kind = objective.get('kind')
+        if not isinstance(kind, str):
+            raise ValueError(f'{label}.kind must be a string')
+        expected_fields = {'id', 'kind', 'deadline_minute'} if kind in TERMINAL_KINDS else _OBJECTIVE_FIELDS
         fields = set(objective)
-        unknown = fields - _OBJECTIVE_FIELDS
-        missing = _OBJECTIVE_FIELDS - fields
+        unknown = fields - expected_fields
+        missing = expected_fields - fields
         if unknown:
             raise ValueError(f'{label} has unknown field(s): {", ".join(sorted(unknown))}')
         if missing:
@@ -42,22 +47,30 @@ def validate_objectives(objectives):
         identifiers.add(identifier)
 
         kind = _nonempty_string(objective['kind'], f'{label}.kind')
-        if kind != 'resource_arrival':
-            raise ValueError(f'{label}.kind must be "resource_arrival"')
+        if kind not in {'resource_arrival', *TERMINAL_KINDS}:
+            raise ValueError(f'{label}.kind is unsupported')
+
+        deadline = objective['deadline_minute']
+        if type(deadline) is not int or deadline <= 0:
+            raise ValueError(f'{label}.deadline_minute must be a positive integer')
+        if kind in TERMINAL_KINDS:
+            if kind in predicates:
+                raise ValueError(f'{label} duplicates an existing objective predicate')
+            predicates.add(kind)
+            validated.append(dict(id=identifier, kind=kind, deadline_minute=deadline))
+            continue
 
         sector_id = _nonempty_string(objective['sector_id'], f'{label}.sector_id')
         resource_kinds = sorted(set(_nonempty_string_list(
             objective['acceptable_resource_kinds'], f'{label}.acceptable_resource_kinds')))
         missions = sorted(set(_nonempty_string_list(
             objective['acceptable_missions'], f'{label}.acceptable_missions')))
-        deadline = objective['deadline_minute']
-        if type(deadline) is not int or deadline <= 0:
-            raise ValueError(f'{label}.deadline_minute must be a positive integer')
         predicate = (kind, sector_id, tuple(resource_kinds), tuple(missions), deadline)
         if predicate in predicates:
             raise ValueError(f'{label} duplicates an existing objective predicate')
         if any(
-                objective['sector_id'] == previous['sector_id']
+                previous['kind'] == 'resource_arrival'
+                and objective['sector_id'] == previous['sector_id']
                 and set(objective['acceptable_resource_kinds']) & set(previous['acceptable_resource_kinds'])
                 and set(objective['acceptable_missions']) & set(previous['acceptable_missions'])
                 for previous in validated):
@@ -75,7 +88,7 @@ def validate_objectives(objectives):
     return validated
 
 
-def objective_step(observation, objectives, completed_ids):
+def objective_step(observation, objectives, completed_ids, *, terminal=False, evidence=None):
     """Score supplied objective specs without establishing their authority.
 
     This low-level helper assumes its caller has already validated that the
@@ -91,17 +104,38 @@ def objective_step(observation, objectives, completed_ids):
     for objective in validated:
         if objective['id'] in completed or minute > objective['deadline_minute']:
             continue
-        if any(_resource_satisfies(resource, objective) for resource in resources):
+        if objective['kind'] in TERMINAL_KINDS:
+            satisfied = terminal and _terminal_satisfies(observation, objective['kind'], evidence)
+        else:
+            satisfied = any(_resource_satisfies(resource, objective) for resource in resources)
+        if satisfied:
             newly_completed.append(objective['id'])
     return newly_completed, len(newly_completed) / len(validated)
+
+
+def _terminal_satisfies(observation, kind, evidence):
+    if not isinstance(evidence, Mapping) or not evidence.get('schedule_complete'):
+        return False
+    if kind == 'evidence_triage':
+        assessed = {record['report_id'] for record in observation['report_assessments']
+                    if record['assessment'] in ('fire_observed', 'no_fire_observed')}
+        return all(report['id'] in assessed for report in observation['reports']
+                   if report.get('location') is not None)
+    if kind == 'population_safety':
+        return all(district['exposed'] == 0 and district['status'] not in ('evacuating', 'blocked')
+                   for district in observation['districts'])
+    if kind == 'incident_resolved':
+        return evidence['active_fire_cells'] == 0
+    return evidence['redundant_notices'] == 0 and evidence['unsupported_evacuations'] == 0
 
 
 def verify_ops_trajectory(trajectory):
     """Replay a public ops trace and verify its manifest-bound objective rewards."""
     if not isinstance(trajectory, Mapping):
         raise ValueError('trajectory must be a record')
-    required = ('interface_version', 'task_id', 'task_version', 'task_manifest_sha256',
+    required = ('interface_version', 'task_id', 'task_set', 'task_version', 'task_manifest_sha256',
                 'communication_protocol_version',
+                'evidence_version',
                 'reward_version', 'core_version', 'core_reward_version', 'core_pack_sha256',
                 'scenario_id', 'seed',
                 'max_decisions', 'ticks_per_action', 'objectives', 'initial_observation')
@@ -110,11 +144,14 @@ def verify_ops_trajectory(trajectory):
         raise ValueError(f'trajectory is missing required field(s): {", ".join(missing)}')
     from .environment import OPS_INTERFACE_VERSION, OpsControlCenterEnv
     from .communications import PROTOCOL_VERSION
+    from .evidence import EVIDENCE_VERSION
 
     if trajectory['interface_version'] != OPS_INTERFACE_VERSION:
         raise ValueError('trajectory.interface_version does not match this verifier')
     if trajectory['communication_protocol_version'] != PROTOCOL_VERSION:
         raise ValueError('trajectory.communication_protocol_version does not match this verifier')
+    if trajectory['evidence_version'] != EVIDENCE_VERSION:
+        raise ValueError('trajectory.evidence_version does not match this verifier')
     task_id = _nonempty_string(trajectory['task_id'], 'trajectory.task_id')
     task_version = _nonempty_string(trajectory['task_version'], 'trajectory.task_version')
     scenario_id = _nonempty_string(trajectory['scenario_id'], 'trajectory.scenario_id')
@@ -156,6 +193,8 @@ def verify_ops_trajectory(trajectory):
         raise ValueError(
             f'trajectory.scenario_id mismatch: recorded {scenario_id!r}, '
             f'expected {canonical_scenario_id!r}')
+    if trajectory['task_set'] != task['task_set']:
+        raise ValueError('trajectory.task_set does not match the canonical task manifest')
     objectives = validate_objectives(trajectory['objectives'])
     validate_objectives(canonical_objectives)
     if trajectory['objectives'] != canonical_objectives:
@@ -204,7 +243,8 @@ def verify_ops_trajectory(trajectory):
         if transition['terminated'] is not result[2] or transition['truncated'] is not result[3]:
             raise ValueError(f'{label} termination flags do not replay')
 
-        newly_completed, expected_reward = objective_step(actual_observation, objectives, completed)
+        newly_completed, expected_reward = objective_step(actual_observation, objectives, completed,
+            terminal=result[2] or result[3], evidence=env._evaluation_evidence())
         recorded_reward = transition['objective_reward']
         if (isinstance(recorded_reward, bool)
                 or not isinstance(recorded_reward, (int, float))
@@ -231,6 +271,9 @@ def verify_ops_trajectory(trajectory):
         'completed_ids': completed_order,
         'verified': True,
         'core_replayed': True,
+        'by_kind': {objective['kind']: objective['id'] in completed for objective in objectives
+                    if objective['kind'] in TERMINAL_KINDS},
+        'all_objectives_met': len(completed) == len(objectives),
     }
 
 

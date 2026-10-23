@@ -79,46 +79,50 @@ and field units are deterministic simulated counterparts in the initial design.
 The current v0.2 implementation and APIs retain the historical `director` naming
 for compatibility; see the [ops interface notes](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/README.md).
 
-The ops facade uses `wildfire-ops-objective-fraction-v1`: the fraction of
-task-declared resource-arrival objectives completed by their deadlines. The
-original regional v0.2 environment keeps its `regional-outcome-cost-v2` weighted
-cost unchanged. Fire damage, exposure and resource effort remain diagnostics for
-ops tasks until calibrated. Objective deadlines align with decision intervals
-and are scenario assumptions, not doctrine.
+The ops facade uses `wildfire-ops-objective-fraction-v2`. Control tasks score
+evidence-backed triage, population safety, incident resolution, and communication
+discipline at episode end, with a separate pass/fail result for each. Full credit
+requires all four, including no unresolved fire. See the [objective definitions](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/OBJECTIVES.md)
+for the formula, evidence rules and calibration limits. The original regional
+v0.2 environment retains its separately weighted `regional-outcome-cost-v2` score.
 
 ```python
 from wildfire_core import OpsControlCenterEnv
+from wildfire_core.ops import ControlBaseline
 
 env = OpsControlCenterEnv()
-observation, info = env.reset(
-    "ops-000", seed=20000,
-)
-observation, reward, terminated, truncated, info = env.request_resources([
-    {"resource_id": "engine-valverde", "sector_id": "report:report-0", "mission": "recon"}
-])
+observation, info = env.reset("control-000")
+policy = ControlBaseline()
+while True:
+    observation, reward, terminated, truncated, info = env.submit_action(policy(observation))
+    if terminated or truncated:
+        break
+print(env.verify_episode()["objective_result"])
 ```
 
 The new facade exposes `get_situation`, `get_reports`, `check_orders`,
 `request_resources`, `authorize_resources`, `release_resources`,
-`send_messages` and `advance`. Each committed tool call advances one configured
+`confirm_readbacks`, `correct_readbacks`, `triage_reports`, `send_messages` and
+`advance`. Each committed tool call advances one configured
 simulator decision; reads and checks do not. See the [ops interface notes](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/README.md)
 and [contract](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/CONTRACT.md).
 Use `env.trajectory()` to export the public trace and `env.verify_episode()` after
 episode end to reproduce the objective fraction and replay the simulator.
-The checked-in `wildfire-ops-task-pack-v0.2.0` contains six development fixtures
-only; they are not held-out evaluation scenarios.
+The checked-in `wildfire-ops-task-pack-v0.3.0` contains six broader control tasks
+and six arrival-only dispatch exercises, all development-only. The control cases
+reuse existing regional training configurations; they are not new held-out data.
 
-Ops interface v2 requires a matching base readback before authorization. Two
-fixtures include a synthetic mission readback error. The controller corrects it,
+Ops interface v3 requires a matching base readback before authorization. Two
+fixtures in each task set include a synthetic mission readback error. The controller corrects it,
 waits for the corrected readback, then confirms and authorizes. The dispatch
 baseline uses only public observations and performs this sequence automatically.
-Run the six-fixture CPU smoke suite and replay an exported episode with:
+Run the control CPU smoke suite and replay an exported episode with:
 
 ```sh
 PYTHONPATH=envs/wildfire_response/core/src python -m envs.wildfire_response.regional.ops.run \
   --output .runtime/ops-development-smoke
 PYTHONPATH=envs/wildfire_response/core/src python -m envs.wildfire_response.regional.ops.run \
-  --replay .runtime/ops-development-smoke/ops-001/dispatch/trajectory.json.gz
+  --replay .runtime/ops-development-smoke/control-001/control/trajectory.json.gz
 ```
 
 The AirOpsEnv article describes related but distinct task versions: v1 models one

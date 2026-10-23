@@ -1,5 +1,8 @@
 # Ops readback development smoke run
 
+Historical interface-v2 run at commit `3202d49`. Current broader objectives and
+results are in [OBJECTIVES.md](OBJECTIVES.md) and [CONTROL_SMOKE.md](CONTROL_SMOKE.md).
+
 Run on 2026-10-23 with one CPU worker, no model inference, and no API keys.
 This is a procedure/execution check across six development fixtures and three
 policies, not a held-out benchmark or evidence of operational firefighting skill.

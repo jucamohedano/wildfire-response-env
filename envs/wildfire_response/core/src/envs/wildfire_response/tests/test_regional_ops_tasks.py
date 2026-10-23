@@ -11,9 +11,9 @@ from envs.wildfire_response.regional.ops.tasks import (
 
 class OpsTaskManifestTests(unittest.TestCase):
     def test_development_task_ids_and_scenario_mappings(self):
-        tasks = list_ops_tasks()
+        tasks = list_ops_tasks('dispatch')
 
-        self.assertEqual(OPS_TASK_VERSION, 'wildfire-ops-task-pack-v0.2.0')
+        self.assertEqual(OPS_TASK_VERSION, 'wildfire-ops-task-pack-v0.3.0')
         self.assertEqual([task['id'] for task in tasks], [f'ops-{i:03d}' for i in range(6)])
         for index, task in enumerate(tasks):
             regional_id = f'regional-{index:03d}'
@@ -36,7 +36,7 @@ class OpsTaskManifestTests(unittest.TestCase):
                     self.assertNotIn('report:report-1', [sector['id'] for sector in observation['sectors']])
 
     def test_only_competing_incidents_has_two_report_objectives(self):
-        for index, task in enumerate(list_ops_tasks()):
+        for index, task in enumerate(list_ops_tasks('dispatch')):
             expected_reports = ['report-0', 'report-1'] if index == 3 else ['report-0']
             self.assertEqual(
                 [objective['sector_id'] for objective in task['objectives']],
@@ -52,7 +52,7 @@ class OpsTaskManifestTests(unittest.TestCase):
             'acceptable_missions',
             'deadline_minute',
         }
-        for task in list_ops_tasks():
+        for task in list_ops_tasks('dispatch'):
             self.assertEqual(validate_objectives(task['objectives']), task['objectives'])
             for objective in task['objectives']:
                 with self.subTest(task=task['id'], objective=objective['id']):
