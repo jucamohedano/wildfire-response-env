@@ -72,7 +72,10 @@ Then build a small new development pack covering intake, arrival monitoring,
 escalation and resource/protection coordination. All missing dispatch queues,
 readbacks, movement and suppression effects must remain explicit simulator
 assumptions with tested state effects. Historical final outcomes must never force
-the future of a counterfactual rollout. No such new task pack is implemented here.
+the future of a counterfactual rollout. The audit sampler itself creates no tasks.
+The follow-on [Spanish development bridge](../../envs/wildfire_response/core/src/envs/wildfire_response/regional/grounded/README.md)
+now implements a small opt-in pack; it does not replace this source audit or claim
+to have completed the remaining geographic, weather and protection-mechanic gates.
 
 ## Rights and retention
 

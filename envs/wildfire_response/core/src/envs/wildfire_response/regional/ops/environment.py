@@ -35,7 +35,7 @@ class OpsControlCenterEnv:
         self._ticks_per_action = ticks_per_action
 
     def reset(self, task_id='control-000', seed=None):
-        task = get_ops_task(task_id)
+        task = self._resolve_task(task_id)
         if task.get('generator_version') and seed is not None and seed != task['seed']:
             raise ValueError('Generated cases pin their seed; select a different variant ID')
         scenario_id = task['scenario_id']
@@ -45,8 +45,7 @@ class OpsControlCenterEnv:
             raise ValueError('Task objective deadlines must fit within the episode horizon')
         if any(objective['deadline_minute'] % self._ticks_per_action for objective in objectives):
             raise ValueError('Task objective deadlines must align with the decision interval')
-        candidate = ScenarioResponseEnv(max_decisions=self._max_decisions,
-                                        ticks_per_action=self._ticks_per_action)
+        candidate = self._new_core()
         observation, info = candidate.reset(scenario_id, seed, scenario=task.get('scenario'))
         if 2 * self._ticks_per_action >= 1 + candidate.pack['assumptions']['offer_ttl_minutes']:
             raise ValueError('Decision interval must leave time to correct a readback before offer expiry')
@@ -100,6 +99,13 @@ class OpsControlCenterEnv:
         info['reward_version'] = REWARD_VERSION
         info['objective_count'] = len(objectives)
         return public_observation, info
+
+    def _resolve_task(self, task_id):
+        return get_ops_task(task_id)
+
+    def _new_core(self):
+        return ScenarioResponseEnv(max_decisions=self._max_decisions,
+                                   ticks_per_action=self._ticks_per_action)
 
     def get_situation(self):
         return self._present_episode(self._core.observe())

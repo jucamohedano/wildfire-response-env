@@ -155,6 +155,14 @@ they are not a fresh secret model-selection set. See [results](results/README.md
 
 ## Communication evidence
 
+The opt-in [Spanish development bridge](envs/wildfire_response/core/src/envs/wildfire_response/regional/grounded/README.md)
+now builds four private EGIF anchors into 12 synthetic development cases and
+connects them to `SpanishDevelopmentEnv`. It adds delayed report-location
+clarification, source-informed timing assumptions, seeded episode replay and a
+CPU baseline runner. Real weather, geography and shelter mechanics are not implied.
+The [development validation report](results/spanish-development-v1.html) records
+the 36 replayed baseline episodes and the limitations of these exercises.
+
 The [operational-source audit](data/operational/README.md) now inspects actual EGIF
 2021 records and ICS-209-PLUS report sequences. See the [HTML findings](results/operational-source-audit-v1.html)
 for field coverage, missingness, CPU measurements and the recommended next scope.

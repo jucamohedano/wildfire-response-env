@@ -1,0 +1,61 @@
+{
+  "version": "wildfire-spanish-development-validation-v1",
+  "reviewed_on": "2026-10-24",
+  "interface_version": "wildfire-spanish-control-development-v1",
+  "task_version": "wildfire-spanish-development-tasks-v1",
+  "scenario_version": "wildfire-grounded-scenario-v1",
+  "reward_version": "wildfire-ops-objective-fraction-v3",
+  "anchor_pack_sha256": "8af9ebdcd0d96c2ed6a270f29233a9bfbb994c3fa6da241cccb373a0c0181b88",
+  "task_manifest_sha256": "b2c11ae11272480e16eb275f47f4d45d896595bb8bd94ce0eecfb6aca979a78b",
+  "dataset_status": "12 development cases from four private source incidents; no held-out split",
+  "all_variants_grouped_by_source_anchor": true,
+  "validation": {
+    "root_tests_run": 10,
+    "core_tests_run": 218,
+    "core_tests_skipped": 9,
+    "failures": 0,
+    "new_anchor_tests": 13,
+    "new_runtime_tests": 10,
+    "external_installed_python_client": "passed",
+    "external_public_trajectory_replay": "passed",
+    "smoke_episodes": 18,
+    "full_episodes": 36,
+    "all_full_episodes_replayed": true,
+    "full_elapsed_seconds": 14.431,
+    "full_peak_rss_kib": 39796,
+    "invalid_actions": 0,
+    "compute": "One sequential CPU rollout worker; no GPU, inference provider or live messaging. Observed local validation timing, not an isolated throughput benchmark."
+  },
+  "policies": {
+    "passive": {
+      "cases": 12, "reward_total": 5.25, "all_objectives_met": 0,
+      "evidence_triage": 0, "population_safety": 9, "incident_resolved": 0,
+      "communication_discipline": 12, "clarification_answers": 0
+    },
+    "control": {
+      "cases": 12, "reward_total": 10.25, "all_objectives_met": 6,
+      "evidence_triage": 12, "population_safety": 11, "incident_resolved": 6,
+      "communication_discipline": 12, "clarification_answers": 0
+    },
+    "clarifying": {
+      "cases": 12, "reward_total": 11.75, "all_objectives_met": 11,
+      "evidence_triage": 12, "population_safety": 12, "incident_resolved": 11,
+      "communication_discipline": 12, "clarification_answers": 12
+    }
+  },
+  "remaining_failure": {
+    "case_id": "es-dev-002-v2",
+    "policy": "clarifying",
+    "failed_objective": "incident_resolved",
+    "note": "Synthetic gust exercise still has unresolved fire. Retained as a failure, not a demonstration or proof of infeasibility."
+  },
+  "limits": [
+    "This compares deterministic baselines on development fixtures, not trained models or held-out generalisation.",
+    "Historical response duration informs an assumed transit component; it does not identify real travel time.",
+    "Weather, fleet readiness, terrain, populations, communication scripts and fire effects remain synthetic.",
+    "No source control/extinction time or final burned area forces a rollout outcome.",
+    "Shelter, in-person warning teams, road networks, historical weather joins and new OpenEnv/model-server wiring remain unsupported.",
+    "Reward checks are verifiable in this simulator, not calibrated real-world safety or optimal-action labels.",
+    "Existing regional and generated benchmark scenarios and rewards remain separate; old ops default behaviour is regression-tested."
+  ]
+}
