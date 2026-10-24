@@ -166,3 +166,10 @@ No data has been published. Current pages do not certify their historical conten
 all consolidated facts and imported layers remain evaluator-only. Licensing,
 incident grouping, temporal alignment and scenario generation must be resolved
 before freezing training splits or claiming historical replay fidelity.
+
+## Communication evidence development pack
+
+The separate [communication evidence card](COMMUNICATIONS.md) documents the
+24 October bounded audit, four source snapshots, eight retrospective summaries,
+missing communication data and an explicitly synthetic report bridge. It does
+not replace this historical catalog or change the locked task generator.

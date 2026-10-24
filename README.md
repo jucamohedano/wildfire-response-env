@@ -153,6 +153,14 @@ Use fresh output directories. Every baseline rollout is independently verified a
 exactly replayed. The existing held-out baseline outcomes have already been seen;
 they are not a fresh secret model-selection set. See [results](results/README.md).
 
+## Communication evidence
+
+The [communication evidence pack](envs/wildfire_response/core/src/envs/wildfire_response/data/COMMUNICATIONS.md)
+adds four official sources and eight attributed summaries from three incidents,
+with explicit missing-data and simulator-capability gates. It includes no authentic
+call transcripts. Source-inspired exercises keep evaluator provenance separate;
+the locked scenarios and benchmark results are unchanged.
+
 ## Optional OpenEnv and GPU training
 
 The [OpenEnv package](envs/wildfire_response/openenv/README.md) installs separately:
