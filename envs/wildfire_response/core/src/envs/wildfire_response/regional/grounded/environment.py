@@ -16,14 +16,21 @@ VERSION = 'wildfire-spanish-control-development-v1'
 
 
 class SpanishDevelopmentEnv(OpsControlCenterEnv):
+    interface_version = VERSION
+    task_version = TASK_VERSION
+    scenario_version = SCENARIO_VERSION
+
     def __init__(self, anchor_pack, *, max_decisions=60, ticks_per_action=2):
         self._anchor_pack = (validate_anchor_pack(copy.deepcopy(anchor_pack))
                              if isinstance(anchor_pack, dict) else load_anchor_pack(anchor_pack))
-        self._manifest = task_manifest(self._anchor_pack)
+        self._manifest = self._task_manifest()
         super().__init__(max_decisions=max_decisions, ticks_per_action=ticks_per_action)
 
     def _resolve_task(self, task_id):
         return get_task(self._anchor_pack, task_id)
+
+    def _task_manifest(self):
+        return task_manifest(self._anchor_pack)
 
     def _new_core(self):
         return GroundedScenarioEnv(max_decisions=self._max_decisions,
@@ -31,22 +38,22 @@ class SpanishDevelopmentEnv(OpsControlCenterEnv):
 
     def reset(self, task_id='es-dev-000-v0', seed=None):
         observation, info = super().reset(task_id, seed)
-        self._ops_trajectory.update(interface_version=VERSION, task_version=TASK_VERSION,
-            scenario_engine_version=SCENARIO_VERSION,
+        self._ops_trajectory.update(interface_version=self.interface_version, task_version=self.task_version,
+            scenario_engine_version=self.scenario_version,
             anchor_pack_sha256=self._anchor_pack['sha256'], task_manifest_sha256=digest(self._manifest))
-        self._core_trajectory.update(scenario_engine_version=SCENARIO_VERSION,
+        self._core_trajectory.update(scenario_engine_version=self.scenario_version,
                                      policy='wildfire_spanish_development')
         return observation, self._present_info(info)
 
     def _present_info(self, info):
-        info.update(ops_interface_version=VERSION, ops_task_version=TASK_VERSION,
-                    scenario_engine_version=SCENARIO_VERSION)
+        info.update(ops_interface_version=self.interface_version, ops_task_version=self.task_version,
+                    scenario_engine_version=self.scenario_version)
         return info
 
     def _present_episode(self, observation):
         public = super()._present_episode(observation)
-        public.update(ops_interface_version=VERSION, task_version=TASK_VERSION,
-                      scenario_engine_version=SCENARIO_VERSION)
+        public.update(ops_interface_version=self.interface_version, task_version=self.task_version,
+                      scenario_engine_version=self.scenario_version)
         public['capabilities'] = dict(location_clarification=True, shelter_in_place=False,
             in_person_warnings=False, incident_specific_roads=False,
             historical_weather_replay=False, live_messaging=False)
@@ -84,20 +91,27 @@ class SpanishDevelopmentEnv(OpsControlCenterEnv):
     def verify_episode(self):
         if not hasattr(self, '_ops_trajectory') or not (self._core.terminated or self._core.truncated):
             raise RuntimeError('Finish an episode before verification')
-        result = verify_spanish_trajectory(self.trajectory(), self._anchor_pack)
+        result = self._verify_public_trace(self.trajectory())
         accounting = verify_accounting(self._core_trajectory, self._core.evaluator_state())
         return dict(passed=True, objective_result=result, objective_score=result['total_score'],
                     core_accounting=accounting, evaluator_evidence=self._evaluation_evidence())
 
+    def _verify_public_trace(self, trajectory):
+        return verify_spanish_trajectory(trajectory, self._anchor_pack)
+
 
 def verify_spanish_trajectory(trajectory, anchor_pack):
+    return replay_development_trajectory(trajectory, anchor_pack, SpanishDevelopmentEnv)
+
+
+def replay_development_trajectory(trajectory, anchor_pack, environment_type):
     if not isinstance(trajectory, Mapping):
         raise ValueError('Expected a public trajectory')
     for field in ('max_decisions', 'ticks_per_action'):
         if type(trajectory.get(field)) is not int:
             raise ValueError('Recorded episode limits must be integers')
-    environment = SpanishDevelopmentEnv(anchor_pack, max_decisions=trajectory['max_decisions'],
-                                         ticks_per_action=trajectory['ticks_per_action'])
+    environment = environment_type(anchor_pack, max_decisions=trajectory['max_decisions'],
+                                   ticks_per_action=trajectory['ticks_per_action'])
     environment.reset(trajectory.get('task_id'), trajectory.get('seed'))
     expected = environment.trajectory()
     if set(trajectory) != set(expected) or digest({key: value for key, value in trajectory.items()

@@ -155,6 +155,14 @@ they are not a fresh secret model-selection set. See [results](results/README.md
 
 ## Communication evidence
 
+The new opt-in [protection mode](envs/wildfire_response/core/src/envs/wildfire_response/regional/protection/README.md)
+adds fallible synthetic shelter, sequenced/corrected instructions, separate
+delivery/readback/execution, resource-bound in-person warnings and safety-gated
+reward. Its offline context gate validates declared metadata without pretending
+that real weather/geographic joins are complete. Spanish v1 remains replayable.
+See the [protection validation report](results/protection-development-v1.html),
+including the retained unsafe-shelter counterexample and remaining data gates.
+
 The opt-in [Spanish development bridge](envs/wildfire_response/core/src/envs/wildfire_response/regional/grounded/README.md)
 now builds four private EGIF anchors into 12 synthetic development cases and
 connects them to `SpanishDevelopmentEnv`. It adds delayed report-location

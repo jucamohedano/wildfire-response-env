@@ -176,8 +176,7 @@ class OpsControlCenterEnv:
             self._evidence.apply(action, previous_observation, assessments)
         self._communications.receive(observation)
         public_observation = self._present_episode(observation)
-        newly_completed, reward = objective_step(public_observation, self._objectives, self._completed_ids,
-            terminal=terminated or truncated, evidence=self._evaluation_evidence())
+        newly_completed, reward = self._objective_step(public_observation, terminated or truncated)
         self._completed_ids.update(newly_completed)
         self._objective_score += reward
         public_observation = self._present_episode(observation)
@@ -201,6 +200,10 @@ class OpsControlCenterEnv:
                     objective_score=self._objective_score,
                     objectives_completed=list(newly_completed), objective_count=len(self._objectives))
         return public_observation, reward, terminated, truncated, info
+
+    def _objective_step(self, observation, terminal):
+        return objective_step(observation, self._objectives, self._completed_ids,
+                              terminal=terminal, evidence=self._evaluation_evidence())
 
     def _validated_core_action(self, action):
         if (not isinstance(action, dict)
