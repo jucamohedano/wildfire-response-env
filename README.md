@@ -155,6 +155,11 @@ they are not a fresh secret model-selection set. See [results](results/README.md
 
 ## Communication evidence
 
+The [operational-source audit](data/operational/README.md) now inspects actual EGIF
+2021 records and ICS-209-PLUS report sequences. See the [HTML findings](results/operational-source-audit-v1.html)
+for field coverage, missingness, CPU measurements and the recommended next scope.
+These evaluator-only samples are not enabled as training tasks.
+
 The [communication evidence pack](envs/wildfire_response/core/src/envs/wildfire_response/data/COMMUNICATIONS.md)
 adds four official sources and eight attributed summaries from three incidents,
 with explicit missing-data and simulator-capability gates. It includes no authentic
