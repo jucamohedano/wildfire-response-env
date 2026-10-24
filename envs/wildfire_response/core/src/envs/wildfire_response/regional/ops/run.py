@@ -37,7 +37,9 @@ def run_episode(task_id='control-000', policy_name='control', seed=None, *,
     trajectory['source_sha256'] = source_digest()
     verification = env.verify_episode()
     transitions = trajectory['transitions']
-    summary = dict(task_id=task_id, task_set=trajectory['task_set'], split='development', seed=effective_seed, policy=policy_name,
+    task = get_ops_task(task_id)
+    summary = dict(task_id=task_id, task_set=trajectory['task_set'], split=task['split'], seed=effective_seed, policy=policy_name,
+        group_id=task['group_id'], family=task.get('family', task['scenario_id']),
         interface_version=OPS_INTERFACE_VERSION, task_version=OPS_TASK_VERSION,
         reward_version=REWARD_VERSION, objective_score=verification['objective_score'],
         completed_objectives=verification['objective_result']['completed_count'],
@@ -49,6 +51,7 @@ def run_episode(task_id='control-000', policy_name='control', seed=None, *,
         invalid_actions=sum(not step['action_valid'] for step in transitions),
         corrections_sent=sum(len(step['action'].get('readback_corrections', []))
                              for step in transitions if step['action_valid']),
+        failed_deliveries=sum(record['status'] == 'failed' for record in observation['message_deliveries']),
         terminated=terminated, truncated=truncated, verified=verification['passed'],
         diagnostics=verification['core_accounting']['components'],
         elapsed_seconds=round(time.perf_counter() - started, 6),

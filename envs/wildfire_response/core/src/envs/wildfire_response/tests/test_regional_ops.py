@@ -15,7 +15,7 @@ class OpsControlCenterTests(unittest.TestCase):
     def test_public_core_exports_preserve_both_interfaces(self):
         self.assertTrue(callable(OpsControlCenterEnv))
         self.assertTrue(callable(WildfireResponseEnv))
-        self.assertEqual(OPS_REWARD_VERSION, 'wildfire-ops-objective-fraction-v2')
+        self.assertEqual(OPS_REWARD_VERSION, 'wildfire-ops-objective-fraction-v3')
         self.assertTrue(callable(verify_ops_trajectory))
 
     def setUp(self):
@@ -50,7 +50,7 @@ class OpsControlCenterTests(unittest.TestCase):
 
     def test_trace_captures_reward_and_data_provenance(self):
         trace = self.env.trajectory()
-        self.assertEqual(trace['reward_version'], 'wildfire-ops-objective-fraction-v2')
+        self.assertEqual(trace['reward_version'], 'wildfire-ops-objective-fraction-v3')
         self.assertEqual(trace['core_version'], CORE_VERSION)
         self.assertEqual(len(trace['core_pack_sha256']), 64)
         self.assertEqual(len(trace['task_manifest_sha256']), 64)
@@ -193,8 +193,8 @@ class OpsControlCenterTests(unittest.TestCase):
     def test_task_brief_includes_public_objectives(self):
         self.assertEqual(self.initial['task_objectives'], get_ops_task('ops-000')['objectives'])
         self.assertEqual(self.initial['task_id'], 'ops-000')
-        self.assertEqual(self.initial['task_version'], 'wildfire-ops-task-pack-v0.3.0')
-        self.assertEqual(self.initial['ops_interface_version'], 'wildfire-ops-control-center-v3')
+        self.assertEqual(self.initial['task_version'], 'wildfire-ops-task-pack-v0.4.0')
+        self.assertEqual(self.initial['ops_interface_version'], 'wildfire-ops-control-center-v4')
         self.assertEqual(self.info['reward_version'], OPS_REWARD_VERSION)
 
     def test_reset_rejects_unknown_task_before_mutating_episode(self):

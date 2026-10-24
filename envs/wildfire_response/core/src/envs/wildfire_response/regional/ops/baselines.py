@@ -10,6 +10,16 @@ def passive(observation):
     return {}
 
 
+def notice_needed(observation, recipient, purpose):
+    attempts = [record for record in observation.get('message_deliveries', [])
+                if record['recipient'] == recipient and record['purpose'] == purpose]
+    if attempts:
+        return attempts[-1]['status'] == 'failed' and not any(
+            record['status'] in ('pending', 'delivered') for record in attempts)
+    return not any(notice['recipient'] == recipient and notice['purpose'] == purpose
+                   for notice in observation['issued_notices'])
+
+
 def _matches(order, objective, resources):
     unit = resources[order['resource_id']]
     return (order.get('sector_id') == objective['sector_id']
@@ -62,7 +72,8 @@ class DispatchBaseline:
         assignments = offers + [dict(resource_id=unit['id'], **{
             field: unit[field] for field in ('sector_id', 'mission')})
             for unit in resources.values() if unit['state'] in ('mobilizing', 'en_route', 'on_scene')]
-        available = [unit for unit in observation['resources'] if unit['state'] == 'available']
+        available = [unit for unit in observation['resources'] if unit['state'] == 'available'
+                     and unit['id'] not in observation.get('pending_resource_requests', [])]
         public_sectors = {sector['id'] for sector in observation['sectors']}
         for objective in objectives:
             if (objective['sector_id'] not in public_sectors
@@ -114,10 +125,9 @@ class RandomValidBaseline:
 
 
 def blanket_warning(observation):
-    issued = {(notice['recipient'], notice['purpose']) for notice in observation['issued_notices']}
     return dict(messages=[dict(recipient=district['id'], purpose='evacuate')
                           for district in observation['districts'] if district['status'] == 'unwarned'
-                          and (district['id'], 'evacuate') not in issued])
+                          and notice_needed(observation, district['id'], 'evacuate')])
 
 
 class ControlBaseline:
@@ -142,12 +152,11 @@ class ControlBaseline:
             for offset in range(0, len(identifiers), 20):
                 action['triage'].append(dict(report_ids=identifiers[offset:offset + 20], assessment=state))
         action['triage'] = action['triage'][:12]
-        issued = {(notice['recipient'], notice['purpose']) for notice in observation['issued_notices']}
         for district in observation['districts']:
             nearby_reports = [report for report in observation['reports']
                               if report.get('location') is not None
                               and math.dist(report['location'], district['home']) <= 3]
-            if (district['status'] == 'unwarned' and (district['id'], 'evacuate') not in issued
+            if (district['status'] == 'unwarned' and notice_needed(observation, district['id'], 'evacuate')
                     and local_threat(dict(observation, reports=nearby_reports), district)):
                 action['messages'].append(dict(recipient=district['id'], purpose='evacuate'))
         resources = {unit['id']: unit for unit in observation['resources']}
@@ -199,6 +208,7 @@ class ControlBaseline:
         targets = sorted(candidates, key=lambda point: (
             min(math.dist(point, district['home']) for district in observation['districts']), point))
         available = [unit for unit in observation['resources'] if unit['state'] == 'available'
+                     and unit['id'] not in observation.get('pending_resource_requests', [])
                      and (unit['kind'] != 'aircraft' or observation['aircraft_operable'])]
         for point in targets:
             if any(math.dist(point, target) <= 3 for target in assigned) or not available:

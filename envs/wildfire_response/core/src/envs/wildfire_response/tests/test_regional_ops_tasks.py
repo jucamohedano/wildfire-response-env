@@ -13,7 +13,7 @@ class OpsTaskManifestTests(unittest.TestCase):
     def test_development_task_ids_and_scenario_mappings(self):
         tasks = list_ops_tasks('dispatch')
 
-        self.assertEqual(OPS_TASK_VERSION, 'wildfire-ops-task-pack-v0.3.0')
+        self.assertEqual(OPS_TASK_VERSION, 'wildfire-ops-task-pack-v0.4.0')
         self.assertEqual([task['id'] for task in tasks], [f'ops-{i:03d}' for i in range(6)])
         for index, task in enumerate(tasks):
             regional_id = f'regional-{index:03d}'

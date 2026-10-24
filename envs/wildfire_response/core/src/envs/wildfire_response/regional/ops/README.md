@@ -48,13 +48,15 @@ Each submitted action advances the configured simulation interval (two assumed
 model minutes by default). Checks do not advance time. Free-text explanations
 are not part of this ops interface or stored in its public trajectories.
 
-The checked-in `wildfire-ops-task-pack-v0.3.0` supplies six control tasks
+The checked-in `wildfire-ops-task-pack-v0.4.0` supplies six control tasks
 (`control-*`) and six dispatch exercises (`ops-*`), all development-only.
 Control tasks cover evidence triage, population safety, incident resolution and
 communication discipline without prescribing targets. Dispatch exercises retain
 their explicit arrival assignments. The model cannot supply or edit its scoring
 goals. Control scenarios reuse existing regional training configurations, so this
-pack does not provide a fresh held-out benchmark.
+pack's original development fixtures do not provide a fresh held-out benchmark.
+The [new generator](DATASET.md) adds 120 configuration groups, three variants per
+group and an 80/20/20 grouped split; test policy outcomes remain unconsumed.
 
 `ops-001`, `ops-003`, `control-001` and `control-003` contain one synthetic mission swap in the first base
 readback; other initial readbacks match. This private generation setting is not
@@ -91,7 +93,7 @@ the public trace intentionally does not preserve arbitrary rejected input.
 
 ## Objective reward and scenario limits
 
-The ops facade uses `wildfire-ops-objective-fraction-v2`: newly completed
+The ops facade uses `wildfire-ops-objective-fraction-v3`: newly completed
 objectives divided by the fixed count. The four broader control objectives are
 evaluated at episode end only, with one quarter credit each. Scheduled incident
 events/reports and deliveries must be complete; invalid-action abandonment earns
@@ -101,6 +103,9 @@ rubric, not a calibrated safety utility; always report the components separately
 Arrival-only objectives remain available in dispatch exercises. Objective specs
 come from the canonical manifest. Deadlines must fit the configured horizon and
 align with decision intervals.
+Reward v3/evidence v2 allow a retry after an acknowledged failed delivery without
+counting a redundant notice. Repeating pending or delivered notices remains
+redundant; the four equal numerical fractions have not changed.
 
 `OpsControlCenterEnv.verify_episode()` recomputes objective credit from the
 replayed public evidence and final simulator state, then checks the underlying
@@ -143,7 +148,10 @@ or `--task-set all` for both task sets. `wildfire_core.ops` exposes the baseline
 classes for an external client. These are deterministic public-observation
 heuristics and a constrained stochastic control, not expert demonstrations.
 
-Interface v3 traces require the evidence and readback contracts. Interface-v2
+Interface v4 adds scenario-adapter and concrete-configuration hashes, public
+pending resource requests and delivery history. See [DATASET.md](DATASET.md) for
+CPU generation/evaluation, checkpointed resume and test-consumption protocol.
+Interface-v3 traces replay from `3ea2778`. Interface-v2
 traces replay from `3202d49`; interface-v1 traces replay from `fdc2a10`.
 
 See [the earlier arrival-only smoke results](SMOKE.md) for the prior v2 run and

@@ -79,7 +79,7 @@ and field units are deterministic simulated counterparts in the initial design.
 The current v0.2 implementation and APIs retain the historical `director` naming
 for compatibility; see the [ops interface notes](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/README.md).
 
-The ops facade uses `wildfire-ops-objective-fraction-v2`. Control tasks score
+The ops facade uses `wildfire-ops-objective-fraction-v3`. Control tasks score
 evidence-backed triage, population safety, incident resolution, and communication
 discipline at episode end, with a separate pass/fail result for each. Full credit
 requires all four, including no unresolved fire. See the [objective definitions](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/OBJECTIVES.md)
@@ -108,11 +108,15 @@ simulator decision; reads and checks do not. See the [ops interface notes](envs/
 and [contract](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/CONTRACT.md).
 Use `env.trajectory()` to export the public trace and `env.verify_episode()` after
 episode end to reproduce the objective fraction and replay the simulator.
-The checked-in `wildfire-ops-task-pack-v0.3.0` contains six broader control tasks
+The checked-in `wildfire-ops-task-pack-v0.4.0` contains six broader control tasks
 and six arrival-only dispatch exercises, all development-only. The control cases
 reuse existing regional training configurations; they are not new held-out data.
+The new [locked generator](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/DATASET.md)
+adds 120 configuration groups with three variants each, split 80/20/20 by group.
+It supports delayed reports/requests, initial resource commitments, message
+failures and acknowledged retries. Test policy outcomes are left unconsumed.
 
-Ops interface v3 requires a matching base readback before authorization. Two
+Ops interface v4 requires a matching base readback before authorization. Two
 fixtures in each task set include a synthetic mission readback error. The controller corrects it,
 waits for the corrected readback, then confirms and authorizes. The dispatch
 baseline uses only public observations and performs this sequence automatically.

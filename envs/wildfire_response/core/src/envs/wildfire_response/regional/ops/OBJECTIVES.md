@@ -1,7 +1,8 @@
 # Broader control objectives
 
-Ops interface v3, task pack v0.3.0, evidence contract v1, reward
-`wildfire-ops-objective-fraction-v2`.
+Ops interface v4, task pack v0.4.0, evidence contract v2, reward
+`wildfire-ops-objective-fraction-v3`. The four numerical fractions are unchanged;
+acknowledged failed-delivery retries are now distinguished from duplicate notices.
 
 `control-000` through `control-005` assess the control center over an episode.
 Their public briefs specify the following four objectives, without prescribing
@@ -29,8 +30,10 @@ report locations, dispatch targets, a particular resource, or an evacuation plan
   inspects its actual state; the agent does not receive hidden fire counts or
   future ignition schedules. Dispatch, arrival, and water-drop counts cannot
   substitute for resolution.
-- **Communication discipline:** no repeated notice with the same recipient and
-  purpose, and no unsupported evacuation order. Support is assessed from public
+- **Communication discipline:** no redundant notice with the same recipient and
+  purpose, and no unsupported evacuation order. A retry after an acknowledged
+  failed delivery is allowed; repeating while pending or after delivery is redundant.
+  Support is assessed from public
   information when the instruction was issued: fresh observed fire or a report
   not cleared by fresh sensors within six grid cells of the district home.
   A reasonable warning based on an uncertain report remains supported if the
@@ -78,6 +81,8 @@ training configurations, not a new held-out split or historical incident replay.
 The six `ops-*` arrival-only fixtures remain in the `dispatch` task set for tool
 and protocol practice. Their score cannot be compared directly with control-task
 scores. The API and rollout CLI default to the broader control task set.
+The [generated dataset](DATASET.md) adds 120 grouped configurations and 360 seed
+variants with separate train/validation/test membership and a pinned catalog.
 
 The deterministic control baseline uses public observations only: it requests
 resources for reported/observed sectors, corrects and confirms readbacks, lets

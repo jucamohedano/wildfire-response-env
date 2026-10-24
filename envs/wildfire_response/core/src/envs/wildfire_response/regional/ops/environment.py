@@ -5,15 +5,16 @@ import json
 
 from ..data import PACK
 from ..environment import (REWARD_VERSION as CORE_REWARD_VERSION,
-                           VERSION as CORE_VERSION, RegionalResponseEnv)
-from ..run import replay
+                           VERSION as CORE_VERSION)
 from ..verifier import verify
 from .communications import PROTOCOL_FIELDS, PROTOCOL_VERSION, ReadbackProtocol
 from .evidence import EVIDENCE_FIELDS, EVIDENCE_VERSION, EvidenceLedger
 from .objectives import REWARD_VERSION, objective_step, validate_objectives, verify_ops_trajectory
 from .tasks import OPS_TASK_MANIFEST_SHA256, OPS_TASK_VERSION, get_ops_task
+from .generator import digest
+from .scenario_core import SCENARIO_ENGINE_VERSION, ScenarioResponseEnv, replay_core
 
-OPS_INTERFACE_VERSION = 'wildfire-ops-control-center-v3'
+OPS_INTERFACE_VERSION = 'wildfire-ops-control-center-v4'
 CORE_ACTION_FIELDS = {'requests', 'authorizations', 'releases', 'messages'}
 ACTION_ERRORS = (ValueError, TypeError, KeyError, AttributeError, OverflowError, RecursionError)
 
@@ -28,13 +29,15 @@ class OpsControlCenterEnv:
     """
 
     def __init__(self, *, max_decisions=60, ticks_per_action=2):
-        self._core = RegionalResponseEnv(max_decisions=max_decisions,
+        self._core = ScenarioResponseEnv(max_decisions=max_decisions,
                                          ticks_per_action=ticks_per_action)
         self._max_decisions = max_decisions
         self._ticks_per_action = ticks_per_action
 
     def reset(self, task_id='control-000', seed=None):
         task = get_ops_task(task_id)
+        if task.get('generator_version') and seed is not None and seed != task['seed']:
+            raise ValueError('Generated cases pin their seed; select a different variant ID')
         scenario_id = task['scenario_id']
         objectives = validate_objectives(task['objectives'])
         horizon = self._max_decisions * self._ticks_per_action
@@ -42,9 +45,9 @@ class OpsControlCenterEnv:
             raise ValueError('Task objective deadlines must fit within the episode horizon')
         if any(objective['deadline_minute'] % self._ticks_per_action for objective in objectives):
             raise ValueError('Task objective deadlines must align with the decision interval')
-        candidate = RegionalResponseEnv(max_decisions=self._max_decisions,
+        candidate = ScenarioResponseEnv(max_decisions=self._max_decisions,
                                         ticks_per_action=self._ticks_per_action)
-        observation, info = candidate.reset(scenario_id, seed)
+        observation, info = candidate.reset(scenario_id, seed, scenario=task.get('scenario'))
         if 2 * self._ticks_per_action >= 1 + candidate.pack['assumptions']['offer_ttl_minutes']:
             raise ValueError('Decision interval must leave time to correct a readback before offer expiry')
         sectors = {sector['id'] for sector in observation['sectors']}
@@ -72,6 +75,7 @@ class OpsControlCenterEnv:
             task_id=task_id, task_set=task['task_set'], task_version=OPS_TASK_VERSION, reward_version=REWARD_VERSION,
             communication_protocol_version=PROTOCOL_VERSION,
             evidence_version=EVIDENCE_VERSION,
+            scenario_engine_version=SCENARIO_ENGINE_VERSION, scenario_sha256=digest(self._core.task),
             core_version=CORE_VERSION, core_reward_version=CORE_REWARD_VERSION,
             core_pack_sha256=hashlib.sha256(PACK.read_bytes()).hexdigest(),
             task_manifest_sha256=OPS_TASK_MANIFEST_SHA256,
@@ -80,6 +84,7 @@ class OpsControlCenterEnv:
             ticks_per_action=self._core.ticks_per_action, objectives=copy.deepcopy(objectives),
             initial_observation=copy.deepcopy(public_observation), transitions=[])
         self._core_trajectory = dict(version=CORE_VERSION,
+            scenario_engine_version=SCENARIO_ENGINE_VERSION, scenario_sha256=digest(self._core.task),
             reward_version=CORE_REWARD_VERSION, scenario_id=scenario_id, seed=self._core.seed,
             policy='wildfire_ops_control_center', max_decisions=self._core.max_decisions,
             ticks_per_action=self._core.ticks_per_action, pack_sha256=hashlib.sha256(PACK.read_bytes()).hexdigest(),
@@ -226,6 +231,7 @@ class OpsControlCenterEnv:
         public['completed_objective_ids'] = sorted(self._completed_ids)
         public['communication_protocol_version'] = PROTOCOL_VERSION
         public['evidence_version'] = EVIDENCE_VERSION
+        public['scenario_engine_version'] = SCENARIO_ENGINE_VERSION
         public['task_set'] = self._task['task_set']
         public['rules']['objective'] = (
             'Complete the public task objectives. Control tasks score evidence triage, '
@@ -239,7 +245,8 @@ class OpsControlCenterEnv:
             'Use inform without moving people. Evacuation should be supported by a report '
             'not cleared by fresh sensors, or fresh observed fire, within six grid cells '
             'of the district home. This is a synthetic exercise rule, not response doctrine. '
-            'Repeat notices with the same recipient and purpose count as redundant.')
+            'Repeat notices count as redundant unless retrying an acknowledged failed delivery. '
+            'Pending messages have not delivered instructions; only delivered evacuation starts movement.')
         public['rules']['dispatch'] = (
             'request -> base offer and readback -> correct or confirm readback -> '
             'ops authorization -> mobilization -> travel -> arrival')
@@ -263,7 +270,7 @@ class OpsControlCenterEnv:
             raise RuntimeError('The episode must terminate or truncate before verification')
         objective_result = verify_ops_trajectory(self._ops_trajectory)
         accounting = verify(self._core_trajectory, self._core.evaluator_state())
-        core_reward = replay(self._core_trajectory)
+        core_reward = replay_core(self._core_trajectory, self._task)
         return dict(passed=True, reward_version=REWARD_VERSION,
                     objective_score=objective_result['total_score'],
                     objective_result=objective_result, core_accounting=accounting,

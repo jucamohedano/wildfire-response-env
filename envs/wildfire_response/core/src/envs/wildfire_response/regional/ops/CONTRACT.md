@@ -1,4 +1,4 @@
-# Wildfire Ops Control Center interface v3
+# Wildfire Ops Control Center interface v4
 
 This interface represents one learned operations desk in a simulated wildfire
 control center. The ops operator reviews public information, requests and
@@ -8,7 +8,7 @@ not the incident commander and does not replace base or field-unit behavior.
 The facade wraps the existing `RegionalResponseEnv`. It does not copy its fire
 engine or change the regional v0.2 task pack. The legacy `WildfireResponseEnv`
 keeps `regional-outcome-cost-v2`; the ops facade returns the separately versioned
-`wildfire-ops-objective-fraction-v2` reward.
+`wildfire-ops-objective-fraction-v3` reward.
 
 ## Tools
 
@@ -104,6 +104,9 @@ current eight-minute offer lifetime), fit objective deadlines, and divide them
 exactly. Goal references to later reports are task assignments only; those report
 locations and contents enter the public observation only when received.
 
-Interface v3 and task pack v0.3.0 add the evidence/action/scoring contract. Use
-commit `3202d49` for interface-v2 traces and `fdc2a10` for interface-v1 traces.
+Interface v4/task pack v0.4.0 add the [locked grouped dataset](DATASET.md), initial
+resource commitments and delayed/failed transport. Public pending requests and
+delivery attempts allow clients to wait and retry without private future flags.
+Only retries after an acknowledged failure avoid the duplicate-notice penalty.
+Use `3ea2778` for interface-v3 traces, `3202d49` for v2 and `fdc2a10` for v1.
 The regional v0.2 environment is unchanged.

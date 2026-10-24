@@ -5,9 +5,10 @@ import hashlib
 import json
 
 from .objectives import validate_objectives
+from .generator import catalog_manifest, case_ids, get_generated_task
 
 
-OPS_TASK_VERSION = 'wildfire-ops-task-pack-v0.3.0'
+OPS_TASK_VERSION = 'wildfire-ops-task-pack-v0.4.0'
 
 
 def _arrival_objective(identifier, report_id, deadline_minute):
@@ -56,12 +57,15 @@ for _task in _TASKS.values():
     validate_objectives(_task['objectives'])
 
 OPS_TASK_MANIFEST_SHA256 = hashlib.sha256(
-    json.dumps(_TASKS, sort_keys=True, separators=(',', ':'), allow_nan=False).encode('utf-8')
+    json.dumps(dict(development=_TASKS, generated=catalog_manifest()),
+               sort_keys=True, separators=(',', ':'), allow_nan=False).encode('utf-8')
 ).hexdigest()
 
 
 def get_ops_task(task_id):
     """Return an isolated copy of a development task by ID."""
+    if isinstance(task_id, str) and task_id.startswith(('control-train-', 'control-validation-', 'control-test-')):
+        return get_generated_task(task_id)
     if not isinstance(task_id, str) or task_id not in _TASKS:
         raise ValueError(f'Unknown ops task: {task_id!r}')
     task = copy.deepcopy(_TASKS[task_id])
@@ -69,9 +73,13 @@ def get_ops_task(task_id):
     return task
 
 
-def list_ops_tasks(task_set=None):
+def list_ops_tasks(task_set=None, *, split='development'):
     """Return isolated copies of all development tasks in manifest order."""
     if task_set not in (None, 'dispatch', 'control'):
         raise ValueError('Choose dispatch or control tasks')
+    if split != 'development':
+        if task_set == 'dispatch':
+            raise ValueError('Generated splits contain control tasks only')
+        return [get_generated_task(identifier) for identifier in case_ids(split)]
     return [get_ops_task(task_id) for task_id, task in _TASKS.items()
             if task_set is None or task['task_set'] == task_set]

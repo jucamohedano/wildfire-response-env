@@ -5,7 +5,7 @@ import hashlib
 from collections.abc import Mapping
 
 
-REWARD_VERSION = 'wildfire-ops-objective-fraction-v2'
+REWARD_VERSION = 'wildfire-ops-objective-fraction-v3'
 TERMINAL_KINDS = {'evidence_triage', 'population_safety', 'incident_resolved', 'communication_discipline'}
 _OBJECTIVE_FIELDS = {
     'id',
@@ -136,6 +136,7 @@ def verify_ops_trajectory(trajectory):
     required = ('interface_version', 'task_id', 'task_set', 'task_version', 'task_manifest_sha256',
                 'communication_protocol_version',
                 'evidence_version',
+                'scenario_engine_version', 'scenario_sha256',
                 'reward_version', 'core_version', 'core_reward_version', 'core_pack_sha256',
                 'scenario_id', 'seed',
                 'max_decisions', 'ticks_per_action', 'objectives', 'initial_observation')
@@ -145,6 +146,7 @@ def verify_ops_trajectory(trajectory):
     from .environment import OPS_INTERFACE_VERSION, OpsControlCenterEnv
     from .communications import PROTOCOL_VERSION
     from .evidence import EVIDENCE_VERSION
+    from .scenario_core import SCENARIO_ENGINE_VERSION
 
     if trajectory['interface_version'] != OPS_INTERFACE_VERSION:
         raise ValueError('trajectory.interface_version does not match this verifier')
@@ -152,6 +154,8 @@ def verify_ops_trajectory(trajectory):
         raise ValueError('trajectory.communication_protocol_version does not match this verifier')
     if trajectory['evidence_version'] != EVIDENCE_VERSION:
         raise ValueError('trajectory.evidence_version does not match this verifier')
+    if trajectory['scenario_engine_version'] != SCENARIO_ENGINE_VERSION:
+        raise ValueError('trajectory.scenario_engine_version does not match this verifier')
     task_id = _nonempty_string(trajectory['task_id'], 'trajectory.task_id')
     task_version = _nonempty_string(trajectory['task_version'], 'trajectory.task_version')
     scenario_id = _nonempty_string(trajectory['scenario_id'], 'trajectory.scenario_id')
@@ -210,6 +214,8 @@ def verify_ops_trajectory(trajectory):
     env = OpsControlCenterEnv(max_decisions=trajectory['max_decisions'],
                              ticks_per_action=trajectory['ticks_per_action'])
     expected_initial, _ = env.reset(task_id, trajectory['seed'])
+    if trajectory['scenario_sha256'] != env.trajectory()['scenario_sha256']:
+        raise ValueError('trajectory.scenario_sha256 does not match the canonical scenario')
     if trajectory['initial_observation'] != expected_initial:
         raise ValueError('trajectory initial observation does not replay from its task and seed')
 

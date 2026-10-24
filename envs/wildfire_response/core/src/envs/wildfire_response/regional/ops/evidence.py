@@ -3,7 +3,7 @@ import copy
 import math
 
 
-EVIDENCE_VERSION = 'wildfire-ops-evidence-v1'
+EVIDENCE_VERSION = 'wildfire-ops-evidence-v2'
 EVIDENCE_FIELDS = {'triage'}
 MAX_EVIDENCE_AGE = 4
 NOTICE_RADIUS = 6
@@ -32,6 +32,7 @@ class EvidenceLedger:
         self._assessments = {}
         self._notices = []
         self._notice_keys = set()
+        self._retried_failures = set()
         self.redundant_notices = 0
         self.unsupported_evacuations = 0
 
@@ -81,7 +82,13 @@ class EvidenceLedger:
         districts = {district['id']: district for district in observation['districts']}
         for message in action.get('messages', []):
             key = (message['recipient'], message['purpose'])
-            self.redundant_notices += key in self._notice_keys
+            attempts = [record for record in observation.get('message_deliveries', [])
+                        if (record['recipient'], record['purpose']) == key]
+            failure = attempts[-1] if attempts and attempts[-1]['status'] == 'failed' else None
+            justified_retry = failure is not None and failure['id'] not in self._retried_failures
+            self.redundant_notices += key in self._notice_keys and not justified_retry
+            if key in self._notice_keys and justified_retry:
+                self._retried_failures.add(failure['id'])
             self._notice_keys.add(key)
             district = districts.get(message['recipient'])
             if (district is not None and message['purpose'] == 'evacuate'

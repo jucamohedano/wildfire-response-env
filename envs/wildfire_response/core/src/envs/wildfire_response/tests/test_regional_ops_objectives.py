@@ -53,7 +53,7 @@ class OpsObjectiveTests(unittest.TestCase):
         newly_completed, reward = objective_step(
             observation(10, [on_scene()]), [objective()], [])
 
-        self.assertEqual(REWARD_VERSION, 'wildfire-ops-objective-fraction-v2')
+        self.assertEqual(REWARD_VERSION, 'wildfire-ops-objective-fraction-v3')
         self.assertEqual(newly_completed, ['recon-west'])
         self.assertEqual(reward, 1.0)
 
@@ -153,6 +153,7 @@ class OpsObjectiveTests(unittest.TestCase):
         for field in ('interface_version', 'task_id', 'task_set', 'task_version', 'task_manifest_sha256',
                       'communication_protocol_version',
                       'evidence_version',
+                      'scenario_engine_version', 'scenario_sha256',
                       'reward_version', 'core_version', 'core_reward_version',
                       'core_pack_sha256', 'scenario_id', 'seed', 'max_decisions',
                       'ticks_per_action', 'objectives', 'initial_observation'):
