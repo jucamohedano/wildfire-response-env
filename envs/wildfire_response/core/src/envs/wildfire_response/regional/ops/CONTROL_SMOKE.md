@@ -1,5 +1,8 @@
 # Broader control development smoke
 
+Historical interface-v3 run at `3ea2778`. See [DATASET_RESULTS.md](DATASET_RESULTS.md)
+for the newer grouped dataset and larger train/validation evaluation.
+
 Run on 2026-10-23, one CPU worker, six control fixtures and five policies, without
 model inference or external APIs. This checks the versioned programmatic rubric;
 it does not measure generalisation or establish an optimal firefighting policy.

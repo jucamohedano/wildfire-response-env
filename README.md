@@ -115,6 +115,8 @@ The new [locked generator](envs/wildfire_response/core/src/envs/wildfire_respons
 adds 120 configuration groups with three variants each, split 80/20/20 by group.
 It supports delayed reports/requests, initial resource commitments, message
 failures and acknowledged retries. Test policy outcomes are left unconsumed.
+The [recorded CPU run](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/DATASET_RESULTS.md)
+verifies 600 train/validation policy episodes and preserves their public trajectories.
 
 Ops interface v4 requires a matching base readback before authorization. Two
 fixtures in each task set include a synthetic mission readback error. The controller corrects it,

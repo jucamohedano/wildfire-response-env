@@ -95,6 +95,9 @@ per case/policy. `--traces all|failures|none` controls stored public trajectorie
 Completed records include checksums. `--resume` reuses verified records only when
 the source hash, catalog, cases, policies and output settings match; corrupt
 records or mismatched runs are rejected. No model-training job is launched.
+Invocation timing in `summary.json` describes the latest attempt; a cache-only
+resume is not a measurement of original policy-evaluation cost. See the
+[recorded batch results](DATASET_RESULTS.md) for the initial train/validation run.
 
 The output `run.json` records the exact experiment; per-case records contain
 summary and evaluator verification, while `*.trajectory.json.gz` contains the
