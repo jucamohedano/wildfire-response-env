@@ -63,6 +63,12 @@ not approval to start training. Failed policy decisions are not silently filtere
 to inflate scores. A storage hash proves byte integrity, not real-world truth,
 optimal decisions or safety.
 
+The first36-episode stress batch retained16.9MB of canonical compressed replays.
+Its compact transition view is approximately463KB plus one25KB shared landscape;
+all1,302 observations were reconstructed exactly. This is map deduplication, not
+discarding reports, actions or rewards. Private compressed verification is kept
+separately. See `data/topographic_stress_v1/provenance.json` for exact byte counts.
+
 ## Persistence
 
 Active development is on `codex/wildfire-ops-control-center` in the standalone

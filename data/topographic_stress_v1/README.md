@@ -60,6 +60,44 @@ Use `reset(task_id)` / `step(action)`. To reproduce rewards from a saved public
 trajectory, use `verify_stress_trajectory(trace, prepared, domain, catalog)`.
 Existing observation/action and safety-gated reward contracts are inherited.
 
+## First recorded result
+
+The source-pinned training smoke run at revision857f740 completed36 primary
+rollouts and36 exact repetitions, with no invalid actions or boundary censoring.
+All primary rewards independently replayed, and canonical exports matched those
+verified traces. Runtime was199.823s on one CPU worker, with83,382,272 bytes peak
+process RSS. The full regression suites passed282 core methods and201 root
+methods;9 and16 optional adapter tests respectively were skipped in these base
+environments. Prior adapter evidence is not a new stress-server validation.
+
+Passive mean reward was0.5, with200 abstract exposed people across the12 cases.
+Evacuation and shelter baselines each scored1.0 with no exposure. This initial
+batch therefore does not establish a difficult benchmark for those scripted
+policies. All validation/test policy outcomes remain unconsumed.
+
+Training-only exploratory reward controls are retained alongside the main run.
+Two false alarms scored1.0 for the response baseline versus0.75 for blanket
+warnings. With no fleet actions, immediate population protection scored0.5 and
+avoided exposure; waiting until model minute110 scored0 and exposed200 people.
+Neither resolves the fire or performs evidence triage, so the timely case does
+not earn full credit just for communicating.
+
+One initial control expected warning delay40 to lower reward while active fleet
+response continued. It did not: both policies scored1.0 with no exposure. That
+strict ordering expectation was inappropriate when the realized outcome was safe;
+we did not invent a delay penalty. A population-only delay80 case scored0 because
+evacuation remained unresolved at the horizon, not because anyone was recorded
+exposed. These intermediate controls and their full action traces are kept, not
+hidden as successful tests. They are synthetic diagnostics, not optimal-policy
+labels or evidence of a universal safe/unsafe warning delay. Reproduce any stored
+diagnostic outcome with `verify_stress_trajectory` using its recorded actions.
+
+The36 episodes contain1,302 observations. Every compact observation reconstructed
+its canonical counterpart exactly. Compressed canonical trajectories occupy
+16,874,446 bytes; compact transitions463,337 bytes plus one24,842-byte shared
+landscape. Both forms are retained. `provenance.json` records artifact/code hashes,
+source context, measured results, exploratory controls and unresolved gates.
+
 See `../../DATA_STORAGE.md` for artifact layout and separation rules. Catalog
 configuration, verification and private scoring evidence must not enter actor
 observations or retrieval banks. The frozen split is not yet a training release;
