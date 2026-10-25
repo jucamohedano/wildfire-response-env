@@ -276,10 +276,12 @@ read-only public form query worked without CDS or SiAR API credentials. The
 [daily IFAPA audit](../malaga_2021/station_weather_search_v1.json) separately
 retains eight daily records and station metadata. The station is a 185 m
 coastal/agricultural site, not a mountain fire-front measurement. Manual pages
-22/25 establish UTC for post-April2014 subdaily queries, but eight midnight rows
-combine a next-day date and24:00. Original labels stay intact; no UTC receipt or
-fully normalized observation clock is invented. Mean wind is not gust data, and
-the measurement height/directional convention remain separate checks.
+22/25 establish UTC for post-April2014 subdaily queries. Eight table midnight
+labels combine a next-day date and24:00. The subsequent normalization below
+resolves them using independently matching source-chart labels and the official
+calendar parser; original labels remain intact. Receipt times remain unknown.
+Mean wind is not gust data, and the station-specific measurement height and
+directional convention remain separate checks.
 
 The [terrain/fuel audit](../malaga_2021/terrain_fuel_search_v1.json) adds an official
 PNOA2020–21 terrain candidate whose collection predates the fire, unlike the
@@ -310,6 +312,64 @@ These are new evaluator-side candidates, not changes to the locked evidence
 bundle, episode configuration, synthetic-condition runtime or reward. Raw source
 files and derived rasters/weather remain in ignored local storage; public metadata
 does not establish redistribution clearance or real operational effectiveness.
+
+## Canonical data provenance and prepared inputs
+
+Start with [the provenance JSON](../malaga_2021/provenance.json). It records source
+URLs, input/output byte hashes, units/CRS, transformations, quality limitations,
+runtime use and field-level origins for the mixed episode configuration. Its
+SHA-256 detects edits; it does not prove source authenticity or physical validity.
+`measured`, `derived`, `retrospective` and `synthetic` are distinct evidence classes.
+Missing local artifacts are explicitly marked rather than claimed downloaded.
+The document is an operator/evaluator reference, never an actor observation.
+
+The [weather normalization audit](../malaga_2021/weather_normalization_v1.json)
+contains exact offline reproduction commands. All384 source-clock labels now
+normalize to UTC with no imputation or gaps. The eight midnight corrections are
+supported by all five matching measurements, preceding-day chart `fechaStr`
+labels and the pinned official `parseFechaHora` rollover. The chart's serialized
+`+02:00` is retained but is not treated as the displayed measurement timezone.
+Interval semantics and publication/receipt times remain unknown; normalized
+weather is not automatically released to the actor or mapped to engine wind.
+Sanitized chart evidence excludes forms, cookies and CSRF tokens.
+
+The [landscape preparation audit](../malaga_2021/landscape_preparation_v1.json)
+pins six small rasters on a common37×41,500m EPSG:25830 grid. Fuel codes use
+nearest-neighbour categorical sampling:1,354 recognized samples and163 unknown
+cells, with separate source-coverage and study-envelope masks. This is a baseline
+map, not measured2021 fuel, fuel moisture or subcell composition. The study grid
+is not the existing runtime's approximate36×39 grid; integration needs a separate
+versioned adapter and tests. Terrain remains fully quarantined: the validity mask
+is all zero, the suspect mask is diagnostic only, and no elevation/slope is emitted.
+Apparently plausible elevations are not silently approved or filled with zero.
+
+[Generated runtime inputs](../malaga_2021/synthetic_runtime_inputs_v1.json)
+document the existing fictional roster/readiness,200/150-person groups, fixed
+communication delays, seeded variants, normalized fuel and uncalibrated fire/
+suppression rules, with their code hashes. These make exercises runnable without
+pretending to reconstruct dispatch/readback logs. Physical fuel moisture remains
+unimplemented and null, not an invented historical percentage. This increment
+does not change simulator physics, rewards or the frozen evidence bundle.
+
+To regenerate the reference after intentionally changing its inputs, run from the
+repository root with the core source on the Python path:
+
+```sh
+PYTHONPATH=envs/wildfire_response/core/src python -m eval.build_malaga_provenance \
+  --snapshot-date YYYY-MM-DD --output .runtime/provenance-refresh
+```
+
+The output directory must be new. Required episode/evidence and cached raw inputs
+must be prepared or restored separately. A changed generated profile must be
+inspected and deliberately updated before its pinned canonical reference can be
+rebuilt; a mismatch fails closed. Commit the reviewed JSON snapshots, not raw
+CSRF-bearing HTML or uncleared source files. Keep ignored artifacts in a durable
+local backup. Weather normalization uses only the standard library; landscape
+preparation uses the isolated data environment's NumPy/rasterio, not new demo/core
+dependencies. Run `python -m unittest discover -s tests -v` with the core source
+on `PYTHONPATH`; raster tests require those optional data dependencies. Install
+the tested pins from `data/malaga_2021/requirements.txt` in a separate virtual
+environment; do not add these packages to the demo or dependency-free core.
 
 ## Rights and retention
 

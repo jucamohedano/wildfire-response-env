@@ -1,0 +1,314 @@
+{
+  "version": "malaga-weather-normalization-v1",
+  "status": "source_clock_normalized",
+  "actor_input_eligible": false,
+  "historical_replay_ready": false,
+  "checks": {
+    "input_schema_valid": true,
+    "finite_measurements": true,
+    "unique_source_rows": true,
+    "unique_source_labels": true,
+    "unique_normalized_timestamps": true,
+    "source_rows": 384,
+    "normalized_rows": 384,
+    "unresolved_rows": 0,
+    "chart_value_matches": 384,
+    "midnight_rows_resolved": 8,
+    "expected_halfhour_slots": 384,
+    "gap_count": 0,
+    "gap_timestamps_utc": [],
+    "complete_source_clock_grid": true,
+    "imputed_rows": 0,
+    "known_receipt_times": 0,
+    "interval_start_end_semantics_verified": false
+  },
+  "limitations": [
+    "Timestamps identify the documented source measurement clock; interval start/end semantics remain unknown.",
+    "Historical publication, availability and decision-maker receipt are unknown; no receipt times are inferred.",
+    "Wind FROM/TO convention, sensor height and fire-front representativeness are unverified.",
+    "Mean wind is not gust data or an engine wind index; no simulator conversion is performed.",
+    "Finite exported values do not establish sensor completeness or quality flags. No values are imputed.",
+    "Chart fecha carries +02:00 serialization offsets; these are not treated as measurement timezone evidence. The manual establishes the displayed UTC clock, and fechaStr plus the official parser establish calendar rollover."
+  ],
+  "input_files": [
+    {
+      "path": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+      "bytes": 155732,
+      "sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223"
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.html",
+      "bytes": 1196036,
+      "sha256": "81877de9b665ae1ba0af0d6430819bb9189f4369f55fa991aa7f7ac195e928fd"
+    },
+    {
+      "path": ".runtime/malaga-weather-normalized-v1/resultadosConsultaDatos.js",
+      "bytes": 31900,
+      "sha256": "3da22a58ce002b2ebbd3bd371c7979e98ccb95975cfa4a2e3a3c64f1c22a4b70"
+    }
+  ],
+  "output_files": [
+    {
+      "path": ".runtime/malaga-weather-normalized-v1/chart_evidence.json",
+      "bytes": 143049,
+      "sha256": "38e710230c093cd88990897a35e9c859f983a57cea6116e33ae87528d6853e74"
+    },
+    {
+      "path": ".runtime/malaga-weather-normalized-v1/weather.json",
+      "bytes": 590224,
+      "sha256": "135e4723f25ed6c7a1ddd42dc7016ee8d065b8eb2a3ded0e592b04aa1a073d10"
+    }
+  ],
+  "timezone_evidence": {
+    "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualUsoWebSiAR.pdf",
+    "pdf_pages": [
+      22,
+      25
+    ],
+    "sha256": "3a55586b1e3ccde386a2f9f4875c9aa45e74241598a04b8ebfcfe974db738264",
+    "scope": "Displayed hourly/subdaily clock is UTC from 2014-04-01 onward."
+  },
+  "timestamp_mapping": "weather.json records[*].provenance maps every source row; chart_evidence_pointer refers to chart_evidence.json when present.",
+  "boundary_mappings": [
+    {
+      "source_row": 49,
+      "source_date": "09/09/2021",
+      "source_hour": "24:00",
+      "observed_at_utc": "2021-09-09T00:00:00Z",
+      "provenance": {
+        "input_file": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+        "input_sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223",
+        "json_pointer": "/records/47",
+        "source_row": 49,
+        "timestamp_classification": "chart_verified_midnight_utc",
+        "timestamp_reason": "Matched all five measurements to alternate official fechaStr and fecha; audited chart parser rolls preceding-day 24:00 to this midnight. Manual specifies UTC.",
+        "timezone_evidence": {
+          "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualUsoWebSiAR.pdf",
+          "pdf_pages": [
+            22,
+            25
+          ],
+          "sha256": "3a55586b1e3ccde386a2f9f4875c9aa45e74241598a04b8ebfcfe974db738264",
+          "scope": "Displayed hourly/subdaily clock is UTC from 2014-04-01 onward."
+        },
+        "chart_evidence_pointer": "/records/47"
+      }
+    },
+    {
+      "source_row": 97,
+      "source_date": "10/09/2021",
+      "source_hour": "24:00",
+      "observed_at_utc": "2021-09-10T00:00:00Z",
+      "provenance": {
+        "input_file": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+        "input_sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223",
+        "json_pointer": "/records/95",
+        "source_row": 97,
+        "timestamp_classification": "chart_verified_midnight_utc",
+        "timestamp_reason": "Matched all five measurements to alternate official fechaStr and fecha; audited chart parser rolls preceding-day 24:00 to this midnight. Manual specifies UTC.",
+        "timezone_evidence": {
+          "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualUsoWebSiAR.pdf",
+          "pdf_pages": [
+            22,
+            25
+          ],
+          "sha256": "3a55586b1e3ccde386a2f9f4875c9aa45e74241598a04b8ebfcfe974db738264",
+          "scope": "Displayed hourly/subdaily clock is UTC from 2014-04-01 onward."
+        },
+        "chart_evidence_pointer": "/records/95"
+      }
+    },
+    {
+      "source_row": 145,
+      "source_date": "11/09/2021",
+      "source_hour": "24:00",
+      "observed_at_utc": "2021-09-11T00:00:00Z",
+      "provenance": {
+        "input_file": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+        "input_sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223",
+        "json_pointer": "/records/143",
+        "source_row": 145,
+        "timestamp_classification": "chart_verified_midnight_utc",
+        "timestamp_reason": "Matched all five measurements to alternate official fechaStr and fecha; audited chart parser rolls preceding-day 24:00 to this midnight. Manual specifies UTC.",
+        "timezone_evidence": {
+          "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualUsoWebSiAR.pdf",
+          "pdf_pages": [
+            22,
+            25
+          ],
+          "sha256": "3a55586b1e3ccde386a2f9f4875c9aa45e74241598a04b8ebfcfe974db738264",
+          "scope": "Displayed hourly/subdaily clock is UTC from 2014-04-01 onward."
+        },
+        "chart_evidence_pointer": "/records/143"
+      }
+    },
+    {
+      "source_row": 193,
+      "source_date": "12/09/2021",
+      "source_hour": "24:00",
+      "observed_at_utc": "2021-09-12T00:00:00Z",
+      "provenance": {
+        "input_file": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+        "input_sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223",
+        "json_pointer": "/records/191",
+        "source_row": 193,
+        "timestamp_classification": "chart_verified_midnight_utc",
+        "timestamp_reason": "Matched all five measurements to alternate official fechaStr and fecha; audited chart parser rolls preceding-day 24:00 to this midnight. Manual specifies UTC.",
+        "timezone_evidence": {
+          "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualUsoWebSiAR.pdf",
+          "pdf_pages": [
+            22,
+            25
+          ],
+          "sha256": "3a55586b1e3ccde386a2f9f4875c9aa45e74241598a04b8ebfcfe974db738264",
+          "scope": "Displayed hourly/subdaily clock is UTC from 2014-04-01 onward."
+        },
+        "chart_evidence_pointer": "/records/191"
+      }
+    },
+    {
+      "source_row": 241,
+      "source_date": "13/09/2021",
+      "source_hour": "24:00",
+      "observed_at_utc": "2021-09-13T00:00:00Z",
+      "provenance": {
+        "input_file": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+        "input_sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223",
+        "json_pointer": "/records/239",
+        "source_row": 241,
+        "timestamp_classification": "chart_verified_midnight_utc",
+        "timestamp_reason": "Matched all five measurements to alternate official fechaStr and fecha; audited chart parser rolls preceding-day 24:00 to this midnight. Manual specifies UTC.",
+        "timezone_evidence": {
+          "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualUsoWebSiAR.pdf",
+          "pdf_pages": [
+            22,
+            25
+          ],
+          "sha256": "3a55586b1e3ccde386a2f9f4875c9aa45e74241598a04b8ebfcfe974db738264",
+          "scope": "Displayed hourly/subdaily clock is UTC from 2014-04-01 onward."
+        },
+        "chart_evidence_pointer": "/records/239"
+      }
+    },
+    {
+      "source_row": 289,
+      "source_date": "14/09/2021",
+      "source_hour": "24:00",
+      "observed_at_utc": "2021-09-14T00:00:00Z",
+      "provenance": {
+        "input_file": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+        "input_sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223",
+        "json_pointer": "/records/287",
+        "source_row": 289,
+        "timestamp_classification": "chart_verified_midnight_utc",
+        "timestamp_reason": "Matched all five measurements to alternate official fechaStr and fecha; audited chart parser rolls preceding-day 24:00 to this midnight. Manual specifies UTC.",
+        "timezone_evidence": {
+          "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualUsoWebSiAR.pdf",
+          "pdf_pages": [
+            22,
+            25
+          ],
+          "sha256": "3a55586b1e3ccde386a2f9f4875c9aa45e74241598a04b8ebfcfe974db738264",
+          "scope": "Displayed hourly/subdaily clock is UTC from 2014-04-01 onward."
+        },
+        "chart_evidence_pointer": "/records/287"
+      }
+    },
+    {
+      "source_row": 337,
+      "source_date": "15/09/2021",
+      "source_hour": "24:00",
+      "observed_at_utc": "2021-09-15T00:00:00Z",
+      "provenance": {
+        "input_file": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+        "input_sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223",
+        "json_pointer": "/records/335",
+        "source_row": 337,
+        "timestamp_classification": "chart_verified_midnight_utc",
+        "timestamp_reason": "Matched all five measurements to alternate official fechaStr and fecha; audited chart parser rolls preceding-day 24:00 to this midnight. Manual specifies UTC.",
+        "timezone_evidence": {
+          "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualUsoWebSiAR.pdf",
+          "pdf_pages": [
+            22,
+            25
+          ],
+          "sha256": "3a55586b1e3ccde386a2f9f4875c9aa45e74241598a04b8ebfcfe974db738264",
+          "scope": "Displayed hourly/subdaily clock is UTC from 2014-04-01 onward."
+        },
+        "chart_evidence_pointer": "/records/335"
+      }
+    },
+    {
+      "source_row": 385,
+      "source_date": "16/09/2021",
+      "source_hour": "24:00",
+      "observed_at_utc": "2021-09-16T00:00:00Z",
+      "provenance": {
+        "input_file": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+        "input_sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223",
+        "json_pointer": "/records/383",
+        "source_row": 385,
+        "timestamp_classification": "chart_verified_midnight_utc",
+        "timestamp_reason": "Matched all five measurements to alternate official fechaStr and fecha; audited chart parser rolls preceding-day 24:00 to this midnight. Manual specifies UTC.",
+        "timezone_evidence": {
+          "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualUsoWebSiAR.pdf",
+          "pdf_pages": [
+            22,
+            25
+          ],
+          "sha256": "3a55586b1e3ccde386a2f9f4875c9aa45e74241598a04b8ebfcfe974db738264",
+          "scope": "Displayed hourly/subdaily clock is UTC from 2014-04-01 onward."
+        },
+        "chart_evidence_pointer": "/records/383"
+      }
+    }
+  ],
+  "reproduction": {
+    "command": [
+      "python",
+      "eval/normalize_malaga_weather.py",
+      "--input",
+      ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+      "--expected-sha256",
+      "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223",
+      "--chart-html",
+      ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.html",
+      "--expected-html-sha256",
+      "81877de9b665ae1ba0af0d6430819bb9189f4369f55fa991aa7f7ac195e928fd",
+      "--chart-script",
+      ".runtime/malaga-weather-normalized-v1/resultadosConsultaDatos.js",
+      "--expected-script-sha256",
+      "3da22a58ce002b2ebbd3bd371c7979e98ccb95975cfa4a2e3a3c64f1c22a4b70"
+    ],
+    "working_directory": "/tmp/wildfire-response-env-ops",
+    "network_required": false,
+    "output_directory": ".runtime/malaga-weather-normalized-v1",
+    "without_chart_evidence": "Omit all four chart arguments to leave eight 24:00 timestamps unknown for the full source."
+  },
+  "validation": {
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "tests.test_malaga_weather_normalization",
+      "-v"
+    ],
+    "tests_passed": 13,
+    "provider_required": false
+  },
+  "source_evidence": {
+    "finding": "The pinned official HTML exposes a separate resultadoConsultaChart series with fecha, fechaStr, hora and all five measurements for all 384 rows.",
+    "boundary_example": {
+      "source_row": 49,
+      "table_source_date": "09/09/2021",
+      "table_source_hour": "24:00",
+      "chart_fecha": "2021-09-09T00:00:00.000+02:00",
+      "chart_fechaStr": "08/09/2021 24:00",
+      "source_clock_utc": "2021-09-09T00:00:00Z"
+    },
+    "calendar_verification": "The audited official script parseFechaHora explicitly constructs day+1 at 00:00 for fechaStr hour 24:00. All eight alternate chart labels identify the preceding day, independently of table row order.",
+    "timezone_interpretation": "UTC comes from the official manual's displayed-clock convention. The chart's literal +02:00 offset is preserved as evidence, not converted as a measurement timezone. This establishes the source clock label, not interval start/end or receipt.",
+    "html_policy": "Original CSRF-bearing HTML is an input hash/reference only; sanitized chart_evidence.json copies whitelisted timestamps and numeric measurements, never forms, cookies or tokens.",
+    "live_query": "Only the observed public chart/export script was fetched anonymously; no saved/account query was made."
+  }
+}

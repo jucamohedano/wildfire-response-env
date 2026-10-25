@@ -1,0 +1,619 @@
+{
+  "entries": [
+    {
+      "actor_input_eligible": false,
+      "derived_artifacts": [],
+      "evidence_class": "measured",
+      "id": "weather-measured",
+      "limitations": [
+        "MA04 Estepona is coastal/agricultural at185m, not measured fire-front weather.",
+        "Network documentation describes2m wind measurements; station-specific2021 setup is unverified.",
+        "Observed time is not publication/receipt time. No gusts or engine-wind conversion inferred."
+      ],
+      "metadata": {
+        "bytes": 3177,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": "data/malaga_2021/halfhour_weather_v1.json",
+        "sha256": "6474c4df0a6cb87d55d27e83310d5b2b51bff04c9b6f56341f06927eb3c6f46e"
+      },
+      "observation_period": {
+        "requested_dates": [
+          "2021-09-08",
+          "2021-09-15"
+        ],
+        "source_clock": "UTC per official manual",
+        "source_rows": 384,
+        "unresolved_source_midnight_labels": 8
+      },
+      "raw_artifacts": [
+        {
+          "bytes": 1196036,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.html",
+          "sha256": "81877de9b665ae1ba0af0d6430819bb9189f4369f55fa991aa7f7ac195e928fd"
+        },
+        {
+          "bytes": 155732,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+          "sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223"
+        }
+      ],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [
+        "https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio"
+      ],
+      "status": "metadata_recorded",
+      "transformations": [],
+      "units_crs": {
+        "direction": "degrees_source_convention_unverified",
+        "humidity": "percent",
+        "precipitation": "mm",
+        "temperature": "C",
+        "wind_speed": "m/s"
+      },
+      "used_by_current_runtime": false
+    },
+    {
+      "actor_input_eligible": false,
+      "checks": {
+        "chart_value_matches": 384,
+        "complete_source_clock_grid": true,
+        "expected_halfhour_slots": 384,
+        "finite_measurements": true,
+        "gap_count": 0,
+        "gap_timestamps_utc": [],
+        "imputed_rows": 0,
+        "input_schema_valid": true,
+        "interval_start_end_semantics_verified": false,
+        "known_receipt_times": 0,
+        "midnight_rows_resolved": 8,
+        "normalized_rows": 384,
+        "source_rows": 384,
+        "unique_normalized_timestamps": true,
+        "unique_source_labels": true,
+        "unique_source_rows": true,
+        "unresolved_rows": 0
+      },
+      "derived_artifacts": [
+        {
+          "bytes": 143049,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-weather-normalized-v1/chart_evidence.json",
+          "sha256": "38e710230c093cd88990897a35e9c859f983a57cea6116e33ae87528d6853e74"
+        },
+        {
+          "bytes": 590224,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-weather-normalized-v1/weather.json",
+          "sha256": "135e4723f25ed6c7a1ddd42dc7016ee8d065b8eb2a3ded0e592b04aa1a073d10"
+        }
+      ],
+      "evidence_class": "derived",
+      "id": "weather-normalized",
+      "limitations": [
+        "Preparation does not activate this data in the frozen/synthetic runtime.",
+        "Timestamps identify the documented source measurement clock; interval start/end semantics remain unknown.",
+        "Historical publication, availability and decision-maker receipt are unknown; no receipt times are inferred.",
+        "Wind FROM/TO convention, sensor height and fire-front representativeness are unverified.",
+        "Mean wind is not gust data or an engine wind index; no simulator conversion is performed.",
+        "Finite exported values do not establish sensor completeness or quality flags. No values are imputed.",
+        "Chart fecha carries +02:00 serialization offsets; these are not treated as measurement timezone evidence. The manual establishes the displayed UTC clock, and fechaStr plus the official parser establish calendar rollover."
+      ],
+      "metadata": {
+        "bytes": 14473,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": "data/malaga_2021/weather_normalization_v1.json",
+        "sha256": "b01a26eb2e0eb39888ba92ff0ed6888b24d3fe8e83f98db1c92dec7326c9f124"
+      },
+      "raw_artifacts": [
+        {
+          "bytes": 155732,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+          "sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223"
+        },
+        {
+          "bytes": 1196036,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.html",
+          "sha256": "81877de9b665ae1ba0af0d6430819bb9189f4369f55fa991aa7f7ac195e928fd"
+        },
+        {
+          "bytes": 31900,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-weather-normalized-v1/resultadosConsultaDatos.js",
+          "sha256": "3da22a58ce002b2ebbd3bd371c7979e98ccb95975cfa4a2e3a3c64f1c22a4b70"
+        }
+      ],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [],
+      "status": "source_clock_normalized",
+      "transformations": [
+        {
+          "bytes": 20129,
+          "integrity": "locally_hashed_not_source_authenticated",
+          "path": "eval/normalize_malaga_weather.py",
+          "sha256": "6dacae94dc7961bf40fa8ec74bbf202587de7525ca71ffd06aff8b75ec663bad"
+        }
+      ],
+      "units_crs": {},
+      "used_by_current_runtime": false
+    },
+    {
+      "actor_input_eligible": false,
+      "checks": {
+        "fuel_codes_preserved": true,
+        "fuel_unknown_matches_mask": true,
+        "fuel_valid_samples_have_source_coverage": true,
+        "measured_repairs_generated": false,
+        "outputs_reopened_on_common_grid": true,
+        "physics_ready_elevation_emitted": false,
+        "source_files_unchanged": true,
+        "source_hashes_match": true,
+        "terrain_valid_mask_all_zero": true
+      },
+      "derived_artifacts": [
+        {
+          "bytes": 1586,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-landscape-prepared-v1/fuel_classes.tif",
+          "sha256": "035f7a3ac07db866dc34b4c55778891055d4b03a790268dda77362c1e1ed400c"
+        },
+        {
+          "bytes": 1275,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-landscape-prepared-v1/fuel_valid_mask.tif",
+          "sha256": "44368e111a336e03211f754774fcb1b65396803aab0d85f772da7a8a7a8fef77"
+        },
+        {
+          "bytes": 1166,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-landscape-prepared-v1/fuel_source_coverage_mask.tif",
+          "sha256": "ff67e5d38a9f3765fd1fa1b77e82a1b27d8fda11da308ecb7ec3d62d5e903dd9"
+        },
+        {
+          "bytes": 1158,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-landscape-prepared-v1/study_envelope_mask.tif",
+          "sha256": "03cf3adebacc680fcd72bd7ded0b1c7fb7bd1df8d0e88cfcfb24f1f3310ac8b2"
+        },
+        {
+          "bytes": 1159,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-landscape-prepared-v1/terrain_valid_mask.tif",
+          "sha256": "b27fe887f32e708d89a48ff87f78c6c4cc026443c52ccc85251bda6902e11627"
+        },
+        {
+          "bytes": 1202,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-landscape-prepared-v1/terrain_suspect_mask.tif",
+          "sha256": "86213ae8b511f422d5693a022c82f9d4d33fd0d554c9b0a2ee3cd51b35e69f06"
+        }
+      ],
+      "evidence_class": "derived",
+      "id": "landscape-prepared",
+      "limitations": [
+        "Preparation does not activate this data in the frozen/synthetic runtime.",
+        "No terrain elevation, slope or aspect is emitted. Earlier 25 m averaging may have spread unknown sentinels.",
+        "Zero terrain suspect flags do not establish valid heights; MAX considers overlapping source pixels only.",
+        "Pre-fire collection claim is retained from cached metadata; authentic nodata, units and datum remain unresolved.",
+        "Later terrain publication does not establish information available to actors during the incident.",
+        "EFFIS citation 2017 and source filename FuelMap2000 do not verify vegetation observation epoch.",
+        "Nearest sampling at 500 m is not area-majority fuel or subcell composition; unsampled source gaps may be missed.",
+        "Fuel classes are not measured loads, moisture, treatments or validated engine parameters.",
+        "All actor, simulator, physics and historical replay usage remains false; no runtime integration occurs."
+      ],
+      "metadata": {
+        "bytes": 10113,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": "data/malaga_2021/landscape_preparation_v1.json",
+        "sha256": "aae8d75b6504ae468a1f53292138949f53991a1e29ba1ca25c64c6a9de109fc8"
+      },
+      "raw_artifacts": [
+        {
+          "bytes": 6927,
+          "integrity": "pinned_match",
+          "path": "data/malaga_2021/terrain_fuel_search_v1.json",
+          "sha256": "bcc0a7f5e18280b17afaf66a27baf171e61985b8ac30f2223c96b4a6fa049759"
+        },
+        {
+          "bytes": 2063043,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-terrain-fuel-search/pnoa2020-21-dtm-aoi25m.tif",
+          "sha256": "1632268aa51a18884b05a8984e64e86b2c1df528b376315781cdbc06f82ad675"
+        },
+        {
+          "bytes": 1686,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-terrain-fuel-search/effis-fuel-aoi-native.tif",
+          "sha256": "4cc9b17c7f738af14d1f12302b4e8c9f958608023c600d8668864954d95cd308"
+        },
+        {
+          "bytes": 19578,
+          "integrity": "pinned_match",
+          "path": "eval/prepare_malaga_landscape.py",
+          "sha256": "c0289070c4f414e6d4c80f2dcb51070a563cb9ced5e65f63e2537f46980696b8"
+        }
+      ],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [],
+      "status": "fuel_prepared_terrain_quarantined",
+      "transformations": [
+        {
+          "bytes": 19578,
+          "integrity": "locally_hashed_not_source_authenticated",
+          "path": "eval/prepare_malaga_landscape.py",
+          "sha256": "c0289070c4f414e6d4c80f2dcb51070a563cb9ced5e65f63e2537f46980696b8"
+        }
+      ],
+      "units_crs": {
+        "alignment": "Outward rounding to EPSG:25830 coordinate multiples of 500 m",
+        "bounds": [
+          297000,
+          4034000,
+          315500,
+          4054500
+        ],
+        "crs": "EPSG:25830",
+        "envelope_mask_rule": "Cell centre inside retained study bbox; padding remains explicit",
+        "envelope_origin": "Retained terrain acquisition bbox, not an exact episode AOI polygon",
+        "height": 41,
+        "resolution_metres": 500,
+        "study_bbox": [
+          297125,
+          4034450,
+          315325,
+          4054275
+        ],
+        "transform": [
+          500,
+          0,
+          297000,
+          0,
+          -500,
+          4054500
+        ],
+        "width": 37
+      },
+      "used_by_current_runtime": false
+    },
+    {
+      "actor_input_eligible": false,
+      "derived_artifacts": [],
+      "evidence_class": "derived",
+      "id": "terrain-candidate",
+      "limitations": [
+        "Producer collection2020-21 predates fire; publication follows it.",
+        "Only window/header hashes are pinned; the203GB upstream mosaic is not fully fingerprinted.",
+        "Extreme negative values survive declared nodata; candidate stays quarantined until justified review."
+      ],
+      "metadata": {
+        "bytes": 6927,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": "data/malaga_2021/terrain_fuel_search_v1.json",
+        "sha256": "bcc0a7f5e18280b17afaf66a27baf171e61985b8ac30f2223c96b4a6fa049759"
+      },
+      "quality": {
+        "actor_input_eligible": false,
+        "cells_below_minus1000": 354,
+        "cells_equal_declared_nodata": 0,
+        "cells_equal_minus32767": 284,
+        "declared_nodata": 255,
+        "explanation": "Extreme negative sentinel-like heights survive the declared mask; average resampling may propagate unmasked sentinel values. Do not treat these as real elevation or repair with zero.",
+        "numeric_min": -32767,
+        "physics_input_eligible": false,
+        "status": "quarantine_pending_nodata_and_resampling_review"
+      },
+      "raw_artifacts": [
+        {
+          "bytes": 2063043,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-terrain-fuel-search/pnoa2020-21-dtm-aoi25m.tif",
+          "sha256": "1632268aa51a18884b05a8984e64e86b2c1df528b376315781cdbc06f82ad675"
+        }
+      ],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [
+        "https://portalrediam.cica.es/repositorio/01_CARACTERIZACION_TERRITORIO/07_BASES_REF_ELEV/01_ELEVACIONES/01_PROYECTOS_REGIONALES/2020_AND_PNOA_LIDAR_V226_el/InfGeografica/InfRaster/MDT/ETRS89_h30_Horto/COG/Mos_1m/Mos_MDT_1m_COG.tif",
+        "https://www.juntadeandalucia.es/medioambiente/portal/acceso-rediam/geoportal/raster-formato-cog/bases-referencia-y-elevaciones/modelos-digitales-elevaciones",
+        "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/67875318/Boletin_Rediam_mayo_2023_blog..pdf/9c26a5ff-8276-c7e1-f2e7-182ab743dcc5?t=1684738946073"
+      ],
+      "status": "downloaded_subset_quarantined",
+      "transformations": [],
+      "units_crs": {
+        "horizontal_crs": "EPSG:25830",
+        "output_cell_metres": 25,
+        "vertical_units": null
+      },
+      "used_by_current_runtime": false
+    },
+    {
+      "actor_input_eligible": false,
+      "derived_artifacts": [
+        {
+          "bytes": 1686,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-terrain-fuel-search/effis-fuel-aoi-native.tif",
+          "sha256": "4cc9b17c7f738af14d1f12302b4e8c9f958608023c600d8668864954d95cd308"
+        }
+      ],
+      "evidence_class": "derived",
+      "id": "fuel-baseline",
+      "limitations": [
+        "Citation2017 is not a verified vegetation survey epoch; filename contains2000.",
+        "Fuel class is not fuel load/moisture or an engine fuel-availability value. Unknowns remain unknown."
+      ],
+      "metadata": {
+        "bytes": 6927,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": "data/malaga_2021/terrain_fuel_search_v1.json",
+        "sha256": "bcc0a7f5e18280b17afaf66a27baf171e61985b8ac30f2223c96b4a6fa049759"
+      },
+      "raw_artifacts": [
+        {
+          "bytes": 18226545,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-terrain-fuel-search/FuelMap_LAEA.zip",
+          "sha256": "ed06080d81048de18dc34caf0f4fcc2f26d626f020bf132277d4e470a71a83d8"
+        }
+      ],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [
+        "https://forest-fire.emergency.copernicus.eu/about-effis/technical-background/fuels"
+      ],
+      "status": "subset_acquired",
+      "transformations": [],
+      "units_crs": {
+        "source_cell_metres": 250,
+        "source_crs": "EPSG:3035",
+        "values": "NFFL_categorical_codes"
+      },
+      "used_by_current_runtime": false
+    },
+    {
+      "actor_input_eligible": false,
+      "derived_artifacts": [],
+      "evidence_class": "retrospective",
+      "id": "incident-and-maps",
+      "limitations": [
+        "Retrospective fire extents and final outcomes are evaluator-only, never initial actor evidence."
+      ],
+      "metadata": {
+        "bytes": 9889,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": "data/malaga_2021/sources.lock.json",
+        "sha256": "f4c393e82456a22d21d955e207fe5befe316af2b4aaaa486f72a72123089029c"
+      },
+      "raw_artifacts": [],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [
+        "https://mapping.emergency.copernicus.eu/activations/EMSR545/"
+      ],
+      "status": "metadata_recorded",
+      "transformations": [],
+      "units_crs": {},
+      "used_by_current_runtime": false
+    },
+    {
+      "actor_input_eligible": false,
+      "derived_artifacts": [],
+      "evidence_class": "retrospective",
+      "id": "operations",
+      "limitations": [
+        "Assignments/plans are not initial readiness, actual dispatches or delivery acknowledgements."
+      ],
+      "metadata": {
+        "bytes": 63361,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": "data/malaga_2021/operations_search_v1.json",
+        "sha256": "1fc22a6484d5bfcf113bec4a3a3ec1f0582a0926da3e772cda75b37c4ec92024"
+      },
+      "plan_count": 14,
+      "raw_artifacts": [],
+      "record_count": 34,
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [
+        "https://espacios.proteccioncivil.es/documents/20121/0/Memoria%20anual%20CENEM%202021.pdf/315f4515-a848-0bc3-cc2b-52715df38bf1",
+        "https://www.defensa.gob.es/ume/Noticias/2021/09/Noticias/if_jubrique.html",
+        "https://www.dsn.gob.es/es/node?page=946",
+        "https://www.dsn.gob.es/va/node/15849",
+        "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+        "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/164183/casi/mil/efectivos/medio/centenar/medios/aereos/lucha/fuego/hoy/sierra/bermeja",
+        "https://www.juntadeandalucia.es/sites/default/files/2021-07/ESP%209%20CONSULTAS%20PREVIAS%20PLAN%20ESPECIAL%20ISTAN%20MARBELLLA%20INFOCA%28F%29%20%281%29.pdf",
+        "https://www.lamoncloa.gob.es/serviciosdeprensa/notasprensa/transicion-ecologica/paginas/2021/120921incendio.aspx",
+        "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja"
+      ],
+      "status": "partial_operations_no_initial_readiness_log",
+      "transformations": [],
+      "units_crs": {},
+      "used_by_current_runtime": false
+    },
+    {
+      "actor_input_eligible": false,
+      "derived_artifacts": [],
+      "evidence_class": "retrospective",
+      "id": "population-reference",
+      "limitations": [
+        "January2021 municipal registered residents were published after the incident; not exposed population."
+      ],
+      "metadata": {
+        "bytes": 10307,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": "data/malaga_2021/population_sources.json",
+        "sha256": "636ed4fb59ca576baf4fd4cb3139839f50d7da7b280829ef740984c4a56063b6"
+      },
+      "raw_artifacts": [],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [
+        "https://www.ine.es/jaxiT3/Tabla.htm?t=2882"
+      ],
+      "status": "acquired_verified",
+      "transformations": [],
+      "units_crs": {},
+      "used_by_current_runtime": false
+    },
+    {
+      "actor_input_eligible": false,
+      "derived_artifacts": [],
+      "evidence_class": "synthetic",
+      "id": "generated-exercise-inputs",
+      "limitations": [
+        "Explicitly generated readiness, communications, populations, normalized fuel and fire effects; not historical observations."
+      ],
+      "metadata": {
+        "bytes": 7617,
+        "integrity": "pinned_match",
+        "path": "data/malaga_2021/synthetic_runtime_inputs_v1.json",
+        "sha256": "79668e3a06ea4d0ef134d89eac588086b36fd07a5b25de511ef83799cb6450ee"
+      },
+      "raw_artifacts": [],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [],
+      "status": "documented_existing_runtime_defaults",
+      "transformations": [
+        {
+          "bytes": 6021,
+          "integrity": "locally_hashed_not_source_authenticated",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/data/huelva_regional_v2.json",
+          "sha256": "db20dc7806eac7d5b0b07cffd06931c9d40120f0813bd8b6fb80ff1d13f6bcf0"
+        },
+        {
+          "bytes": 3581,
+          "integrity": "locally_hashed_not_source_authenticated",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/malaga/pack.py",
+          "sha256": "1b675136765747df5f8a772eb868e8ce495fb62955183063c90fe35ba6b44bfc"
+        },
+        {
+          "bytes": 4194,
+          "integrity": "locally_hashed_not_source_authenticated",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/malaga/tasks.py",
+          "sha256": "d63569dbd70deae69dade38d8ea85f22ab098091af1b13578f08b50473589640"
+        },
+        {
+          "bytes": 2568,
+          "integrity": "locally_hashed_not_source_authenticated",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/protection/tasks.py",
+          "sha256": "ea8bd6fef37343a64e19a8798c26bbe8de11a5b5d89dc21236ddc33120f849dc"
+        },
+        {
+          "bytes": 10111,
+          "integrity": "locally_hashed_not_source_authenticated",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/protection/protocol.py",
+          "sha256": "8d8472ef71cc4f0c2e213f2351a1bd55f5092ee6cb81010dce67ac2e698c672e"
+        },
+        {
+          "bytes": 2928,
+          "integrity": "locally_hashed_not_source_authenticated",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/fire.py",
+          "sha256": "3f03dc618bf46bf0d24289a29e201cc084a39a2ca760e983d41b3504a9093a8c"
+        }
+      ],
+      "units_crs": {
+        "time": "assumed_model_minutes",
+        "wind": "relative_index"
+      },
+      "used_by_current_runtime": true
+    },
+    {
+      "actor_input_eligible": false,
+      "derived_artifacts": [],
+      "evidence_class": "mixed",
+      "field_lineage": {
+        "assumed_ground_transit_minutes": "Generated assumed half-response decomposition, not measured travel",
+        "detection_local": "Source detection clock, not known ignition",
+        "region_bbox_lon_lat": "Mapping study-envelope bounds only, not burned perimeter"
+      },
+      "id": "episode-configuration",
+      "limitations": [
+        "Retrospectively selected study region; measured terrain/fuel/weather are not activated."
+      ],
+      "metadata": {
+        "bytes": 505,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": ".runtime/malaga-episode-v1/episode.json",
+        "sha256": "943f43848bc179095231c853ac540095dd31939deb66ab71c890941438f4ab9a"
+      },
+      "raw_artifacts": [],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [],
+      "status": "allowlisted_source_context_and_declared_synthetic_prior",
+      "transformations": [
+        {
+          "bytes": 4224,
+          "integrity": "locally_hashed_not_source_authenticated",
+          "path": "eval/prepare_malaga_episode.py",
+          "sha256": "981556e8cc8c02ab5d16d376ccbd530ad3f9ab118018740f6fc883af6fe20da3"
+        }
+      ],
+      "units_crs": {
+        "clock": "source_local_interpretation_not_verified_timezone",
+        "geography": "longitude_latitude_degrees",
+        "transit": "assumed_model_minutes"
+      },
+      "used_by_current_runtime": true
+    }
+  ],
+  "evidence_policy": {
+    "derived": "Reproducible transformations with pinned inputs; no automatic truth upgrade",
+    "integrity": "Byte hashes detect changes, not source authenticity, causality or optimality",
+    "measured": "Source-reported measurements with their resolution/limitations retained",
+    "quarantined": "Retained for audit, excluded from physics/actor inputs",
+    "synthetic": "Explicit exercise assumptions; never relabelled observed historical events"
+  },
+  "generator": {
+    "bytes": 19975,
+    "integrity": "locally_hashed_not_source_authenticated",
+    "path": "eval/build_malaga_provenance.py",
+    "sha256": "f084420d4e076ab809767fb70b7aec42a497de2fd9abd201047038c99e00beab"
+  },
+  "incident": {
+    "event_year": 2021,
+    "name": "Sierra Bermeja, Malaga"
+  },
+  "lineage": [
+    {
+      "inputs": [
+        "weather-measured"
+      ],
+      "output": "weather-normalized"
+    },
+    {
+      "inputs": [
+        "terrain-candidate",
+        "fuel-baseline"
+      ],
+      "output": "landscape-prepared"
+    },
+    {
+      "inputs": [
+        "incident-and-maps"
+      ],
+      "output": "episode-configuration"
+    },
+    {
+      "inputs": [
+        "episode-configuration"
+      ],
+      "output": "generated-exercise-inputs"
+    }
+  ],
+  "open_gates": [
+    "Verify data clocks/quality masks before any separately versioned runtime adapter.",
+    "No historical initial fleet or full delivery logs found; retain declared generated states.",
+    "Physical fuel moisture is not implemented; no percentage is fabricated.",
+    "Station wind height/direction and terrain/fuel effects require calibration; no direct m/s-to-index mapping.",
+    "Source-specific rights and public redistribution remain uncleared."
+  ],
+  "readiness": {
+    "current_declared_synthetic_mode_runs": true,
+    "historical_replay_ready": false,
+    "normalized_weather_or_landscape_activated": false,
+    "real_world_operational_validity_established": false
+  },
+  "role": "operator_and_evaluator_reference_not_actor_observation",
+  "sha256": "3b31dcd68bedc0066e7d207e55a638d74e9d618cfb98348892a66c2fc9df47cd",
+  "snapshot_date": "2026-10-25",
+  "synthetic_profile_sha256": "e46ab752ff31731b7ba294eff364cd3d16ff1d319b354e996c4c2ab8965a9350",
+  "version": "wildfire-data-provenance-v1"
+}
