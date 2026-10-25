@@ -189,6 +189,84 @@ Remaining sequence before simulator integration:
    model training. Keep incident groups separate for future held-out evaluation;
    wording/weather variants of this one fire do not create independent incidents.
 
+## Opt-in Málaga initial-response bridge
+
+The episode compiler now creates a small, separate configuration from an
+independently retained prepared-bundle fingerprint. It hashes every prepared
+content file, not the mutable timing/audit report, before copying only the study
+envelope, detection clock and an explicitly assumed transit decomposition. It
+does not copy historical fire polygons, later reports, population totals or final
+outcomes. Changes to even excluded private evidence still invalidate the trusted
+bundle fingerprint. Keep the compiled configuration outside the evidence bundle.
+
+The new mode requires `allow_synthetic_conditions=True`. Missing historical
+weather is not silently replaced under a historical-replay label. Three variants
+share one incident group and a 120-model-minute horizon, starting at the source
+local detection clock. They are initial-response contract tests, not a compressed
+six-day replay, held-out set, imitation demonstrations or calibrated fire model.
+
+```sh
+PYTHONPATH=envs/wildfire_response/core/src python -m eval.prepare_malaga_episode \
+  --bundle .runtime/malaga-2021-prepared \
+  --expected-sha256 05fb6bce8b91a1c6e10d09328ae5548c9160e937053483873f6d7595748afe0f \
+  --output .runtime/malaga-episode/episode.json
+PYTHONPATH=envs/wildfire_response/core/src python -m envs.wildfire_response.regional.malaga.run \
+  --pack .runtime/malaga-episode/episode.json \
+  --output .runtime/malaga-rollouts --allow-synthetic-conditions --repeat
+```
+
+The fingerprint identifies the previously prepared exact-byte bundle, not a
+signature or permission to trust arbitrary caller-supplied configurations. An
+updated evidence collection requires its own reviewed fingerprint. The compiler
+is a data-preparation script; the environment itself is available from an
+installed core wheel with no data/GPU/model dependencies:
+
+```python
+from wildfire_core.malaga import MalagaDevelopmentEnv, ProtectionBaseline
+
+env = MalagaDevelopmentEnv("episode.json", allow_synthetic_conditions=True)
+observation, info = env.reset("malaga-dev-v0")
+policy = ProtectionBaseline(prefer_shelter=False)
+while True:
+    observation, reward, terminated, truncated, info = env.step(policy(observation))
+    if terminated or truncated:
+        break
+verification = env.verify_episode()
+```
+
+`get_situation`, report queries, action checks, requests, offer/readback handling,
+authorization, triage, releases and versioned protection orders use the existing
+public interface. Public trajectories bind both the episode configuration and
+active runtime pack and support `verify_malaga_trajectory(trace, episode_pack)`.
+The old protection/Spanish modes retain their default pack and exact replay.
+
+Only study-envelope georeferencing is connected from the new geographic data.
+Measured terrain, fuel, road routing, exposed settlement populations and actual
+initial readiness are still not in the physical model. Base names are fictional
+exercise desks; inherited resource/base IDs are compatibility handles, not actual
+Málaga deployments. The original synthetic 200/150-person groups are not INE
+municipal populations. Grid kilometre labels do not calibrate spread or travel.
+The inherited protection safety-gated reward is unchanged and is not a medically
+calibrated utility. Historical end states never force simulated resolution.
+
+The [weather access audit](../malaga_2021/weather_access_status.json) distinguishes
+public metadata from actual weather acquisition. Public global ERA5 chunks were
+identified, but no suitable small anonymous local window was acquired; this is
+not a claim that every public route is inaccessible. The prepared CDS request
+still requires user access and terms. No token or API-key values were read.
+
+An optional local hardware probe is separate from the simulator:
+
+```sh
+python eval/check_local_gpu_determinism.py
+```
+
+It runs a bounded disposable process and compares repeated integer CUDA results
+to a Python CPU reference. It does not accelerate the simulator or prove model,
+floating-point or cross-hardware determinism. Missing CUDA-enabled PyTorch
+returns an explicit unavailable status, not a pass; it never installs drivers or
+downloads model weights. No core dependencies are added for this probe.
+
 ## Rights and retention
 
 ICS-209-PLUS v3 metadata declares CC BY 4.0; retain dataset attribution and DOI.
