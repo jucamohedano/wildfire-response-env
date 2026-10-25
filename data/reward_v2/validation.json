@@ -1,0 +1,70 @@
+{
+  "version": "wildfire-protection-reward-v2-validation",
+  "validated_on": "2026-10-26",
+  "reason": "User requested population safety carry80% of the reward",
+  "reward_version": "wildfire-protection-safety-gate-v2",
+  "objective_weight_units": {
+    "population_safety": 12,
+    "evidence_triage": 1,
+    "incident_resolved": 1,
+    "communication_discipline": 1
+  },
+  "normalization_denominator": 15,
+  "rules": {
+    "population_safety_weight": 0.8,
+    "other_objective_weights": "1/15 each, approximately6.6667%; together20%",
+    "unsafe_population_scalar": 0,
+    "boundary_censored_scalar": 0,
+    "intermediate_reward": 0,
+    "maximum_reward": 1,
+    "population_success_threshold": "Unchanged; this is reward weighting, not permission to leave20% of people unsafe",
+    "full_credit": "All four existing component goals must pass",
+    "unchanged": "Underlying population, triage, incident, communication and boundary predicates; dynamics; legacy regional cost; generic ops fraction"
+  },
+  "versioning": {
+    "metadata": "Weights are copied into public observations, info, public trajectory headers and verification output",
+    "legacy_reward_version": "wildfire-protection-safety-gate-v1",
+    "legacy_revision": "8ce2142",
+    "legacy_handling": "Saved v1 traces and baseline results are not relabelled or overwritten. The current verifier rejects v1 reward headers or edited weight metadata; use the pinned earlier revision to replay v1 traces."
+  },
+  "tests": {
+    "methods_passed": 117,
+    "modules": [
+      "envs.wildfire_response.tests.test_protection",
+      "envs.wildfire_response.tests.test_malaga_development",
+      "envs.wildfire_response.tests.test_prepared_development",
+      "envs.wildfire_response.tests.test_topographic_development",
+      "envs.wildfire_response.tests.test_regional_ops_control",
+      "envs.wildfire_response.tests.test_regional_ops_objectives",
+      "tests.test_topographic_stress",
+      "tests.test_ui_server"
+    ],
+    "runtime": ".runtime/ui-venv/bin/python with PYTHONPATH=envs/wildfire_response/core/src",
+    "coverage": "All16 combinations of objective completion;80% safety-only credit; exact full credit; unsafe and censored zero; communication failures; no intermediate credit; detached weight metadata; changed reward/weights rejected; complete canonical replay; unchanged generic ops behavior and UI API"
+  },
+  "episode_checks": [
+    {
+      "task_id": "topo-dev-003",
+      "check": "Saved the existing v1 public trajectory, restarted the loopback preview on v2, and executed the same26 recorded actions as a separate new-version run",
+      "old_score": 1,
+      "new_score": 1,
+      "verification_passed": true,
+      "all_four_objectives_met": true,
+      "legacy_trace": ".runtime/reward-v2/previous-trajectory.json",
+      "new_trace": ".runtime/reward-v2/rerun-trajectory.json",
+      "summary": ".runtime/reward-v2/preview-rerun.json"
+    },
+    {
+      "task_id": "topo-dev-001",
+      "policy": "passive",
+      "model_minutes": 24,
+      "score": 0.9333333333333333,
+      "exact_score": "14/15",
+      "components": {"population_safety": true, "evidence_triage": false, "incident_resolved": true, "communication_discipline": true},
+      "verification_passed": true,
+      "trace": ".runtime/reward-v2/false-alarm-passive-trajectory.json",
+      "summary": ".runtime/reward-v2/false-alarm-passive-summary.json"
+    }
+  ],
+  "limitations": "Requested engineering priority, not calibrated real-world safety utility. Sparse terminal rewards and binary safety predicates remain. No new model training, provider calls, held-out policy selection or regrading of archived benchmark files."
+}

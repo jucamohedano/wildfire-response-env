@@ -12,7 +12,10 @@ from .tasks import get_task, task_manifest, VERSION as TASK_VERSION
 
 
 VERSION = 'wildfire-protection-control-development-v1'
-REWARD_VERSION = 'wildfire-protection-safety-gate-v1'
+REWARD_VERSION = 'wildfire-protection-safety-gate-v2'
+REWARD_UNITS = dict(population_safety=12, evidence_triage=1,
+                    incident_resolved=1, communication_discipline=1)
+REWARD_WEIGHTS = {kind: units / sum(REWARD_UNITS.values()) for kind, units in REWARD_UNITS.items()}
 
 
 class ProtectionDevelopmentEnv(SpanishDevelopmentEnv):
@@ -31,13 +34,16 @@ class ProtectionDevelopmentEnv(SpanishDevelopmentEnv):
 
     def reset(self, task_id='protect-dev-000-v0', seed=None):
         observation, info = super().reset(task_id, seed)
-        self._ops_trajectory.update(reward_version=REWARD_VERSION, protection_protocol_version=PROTOCOL_VERSION)
+        self._ops_trajectory.update(reward_version=REWARD_VERSION,
+                                    reward_weights=REWARD_WEIGHTS.copy(),
+                                    protection_protocol_version=PROTOCOL_VERSION)
         self._core_trajectory['policy'] = 'wildfire_protection_development'
         return observation, info
 
     def _present_info(self, info):
         super()._present_info(info)
-        info.update(reward_version=REWARD_VERSION, protection_protocol_version=PROTOCOL_VERSION)
+        info.update(reward_version=REWARD_VERSION, reward_weights=REWARD_WEIGHTS.copy(),
+                    protection_protocol_version=PROTOCOL_VERSION)
         return info
 
     def _present_episode(self, observation):
@@ -45,6 +51,7 @@ class ProtectionDevelopmentEnv(SpanishDevelopmentEnv):
         public['capabilities'].update(shelter_in_place=True, in_person_warnings=True,
                                       versioned_protection_orders=True)
         public['protection_protocol_version'] = PROTOCOL_VERSION
+        public['reward_weights'] = REWARD_WEIGHTS.copy()
         public['rules']['clarification'] = 'Clarify received unlocated reports once; replies remain unverified claims.'
         public['rules']['evacuate'] = 'Population movement starts after execution, not delivery or acknowledgement.'
         public['rules']['notices'] = (
@@ -53,7 +60,9 @@ class ProtectionDevelopmentEnv(SpanishDevelopmentEnv):
             'sensors or synthetic smoke telemetry, not private historical outcomes.')
         public['rules']['objective'] = (
             'At episode end, population-safety failure yields zero scalar reward. '
-            'Otherwise score the completed fraction of four objectives. Always report component flags.')
+            'Otherwise population safety contributes 80%, with the remaining 20% split equally '
+            'between evidence triage, incident resolution and communication discipline. '
+            'All four are required for full credit. Always report component flags.')
         public['rules']['protection'] = (
             'Use protection_orders with recipient, action shelter/evacuate/release, channel broadcast/in_person, '
             'resource_id or null, and supersedes equal to the latest issued ID or null. '
@@ -89,7 +98,10 @@ class ProtectionDevelopmentEnv(SpanishDevelopmentEnv):
         protocol = self._core.protection
         if protocol.redundant_orders or protocol.unsupported_orders:
             completed = [identifier for identifier in completed if identifier != 'communication_discipline']
-        score = len(completed) / len(self._objectives) if 'population_safety' in completed else 0.0
+        completed_kinds = {objective['kind'] for objective in self._objectives
+                           if objective['id'] in completed}
+        score = (sum(REWARD_UNITS[kind] for kind in completed_kinds) / sum(REWARD_UNITS.values())
+                 if 'population_safety' in completed_kinds else 0.0)
         return completed, score
 
     def issue_protection_orders(self, orders):
@@ -101,6 +113,7 @@ class ProtectionDevelopmentEnv(SpanishDevelopmentEnv):
     def verify_episode(self):
         result = super().verify_episode()
         result.update(reward_version=REWARD_VERSION,
+                      reward_weights=REWARD_WEIGHTS.copy(),
                       protection_checkpoint=self._core.sim.protection_checkpoint())
         return result
 

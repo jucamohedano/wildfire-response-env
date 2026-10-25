@@ -76,13 +76,16 @@ actions and exposure. Ordinary fleet readbacks remain mandatory before dispatch.
 
 ## Safety-gated reward
 
-Reward version: `wildfire-protection-safety-gate-v1`.
+Reward version: `wildfire-protection-safety-gate-v2`.
 
 The existing four component goals remain: evidence triage, population safety,
 incident resolution and communication discipline. Population safety additionally
 requires no current synthetic smoke hazard. Unsafe population outcomes yield
-**zero scalar reward even if other goals are complete**; otherwise reward is the
-completed fraction. Component flags, exposure counts and truncation are reported
+**zero scalar reward even if other goals are complete**. Otherwise population
+safety contributes80%, and the remaining20% is split equally across the other
+three goals (one fifteenth each, approximately6.67%). The exact score uses integer
+units12:1:1:1 divided by15, so full completion earns exactly1. Intermediate reward
+remains zero. Component flags, exposure counts and truncation are reported
 separately. Readbacks, sending messages, acknowledgement and tool volume alone
 earn no credit. Supported protection is judged from public reports, sensors or
 current synthetic smoke telemetry, never hidden historical truth.
@@ -92,6 +95,20 @@ private weighted cost is retained for lifecycle/accounting checks only; its lega
 `unnecessary_evacuation` diagnostic also counts non-unwarned shelter states in
 false-alarm exercises and must not be interpreted as a true evacuation rate here.
 No reference policy is labelled optimal or an expert demonstration.
+
+Weights are declared in public observations, info, trajectories and verification
+results, not supplied by agent actions. Full credit still requires all four goals;
+population safety alone earns0.8, not success on the entire task. Boundary-censored
+topographic episodes still earn zero and are excluded from learning labels.
+These are engineering priorities, not calibrated real-world utilities.
+
+Archived v1 traces/results retain their equal-quarter safety-gated formula and
+must not be silently relabelled or compared with v2 scores. The current verifier
+rejects old reward metadata; replay old traces using their pinned engine revision
+(for example repository commit8ce2142 for the preceding version). Existing
+baseline result files are not rewritten. Re-evaluate policies under v2 before
+comparing numerical scores. The legacy regional cost and generic ops fraction
+reward are unchanged.
 
 ## Separate offline data gate
 

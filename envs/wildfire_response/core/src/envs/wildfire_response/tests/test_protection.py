@@ -6,6 +6,7 @@ from wildfire_core.protection import ProtectionDevelopmentEnv, ProtectionBaselin
 from wildfire_core.spanish import SpanishDevelopmentEnv, verify_spanish_trajectory
 from envs.wildfire_response.regional.fire import RegionalFire
 from envs.wildfire_response.regional.protection.tasks import CONFIGURATION, case_ids
+from envs.wildfire_response.regional.protection.environment import REWARD_VERSION, REWARD_WEIGHTS
 from envs.wildfire_response.regional.protection.world import ProtectionWorld
 from envs.wildfire_response.tests.test_spanish_development import fixture_pack
 
@@ -223,6 +224,56 @@ class ProtectionProtocolTests(unittest.TestCase):
         self.assertNotIn('population_safety', completed)
         self.assertEqual(len(completed), 3)
 
+    def test_population_has_eighty_percent_and_all_completion_combinations_are_bounded(self):
+        instance = environment()
+        kinds = ['population_safety', 'evidence_triage', 'incident_resolved', 'communication_discipline']
+        self.assertEqual(REWARD_WEIGHTS['population_safety'], .8)
+        self.assertAlmostEqual(sum(REWARD_WEIGHTS.values()), 1.)
+        for mask in range(16):
+            completed = [kind for index, kind in enumerate(kinds) if mask & (1 << index)]
+            with self.subTest(completed=completed), patch(
+                    'envs.wildfire_response.regional.protection.environment.objective_step',
+                    return_value=(completed, 1.)), patch.object(ProtectionWorld, 'population_safe_now', return_value=True):
+                actual, reward = instance._objective_step(instance.get_situation(), True)
+                expected = (12 + len(completed) - 1) / 15 if 'population_safety' in completed else 0.
+                self.assertEqual(actual, completed)
+                self.assertEqual(reward, expected)
+                self.assertGreaterEqual(reward, 0.)
+                self.assertLessEqual(reward, 1.)
+
+    def test_reward_weights_are_exposed_as_detached_versioned_public_metadata(self):
+        instance = environment()
+        observation, info = instance.reset('protect-dev-000-v0')
+        self.assertEqual(info['reward_version'], REWARD_VERSION)
+        self.assertEqual(info['reward_weights'], REWARD_WEIGHTS)
+        self.assertEqual(observation['reward_weights'], REWARD_WEIGHTS)
+        trace = instance.trajectory()
+        self.assertEqual(trace['reward_version'], REWARD_VERSION)
+        self.assertEqual(trace['reward_weights'], REWARD_WEIGHTS)
+        info['reward_weights']['population_safety'] = 0
+        observation['reward_weights']['population_safety'] = 0
+        trace['reward_weights']['population_safety'] = 0
+        self.assertEqual(instance.get_situation()['reward_weights']['population_safety'], .8)
+        self.assertEqual(instance.trajectory()['reward_weights']['population_safety'], .8)
+
+    def test_intermediate_objective_credit_remains_zero(self):
+        instance = environment()
+        with patch('envs.wildfire_response.regional.protection.environment.objective_step',
+                   return_value=(['population_safety'], .8)):
+            self.assertEqual(instance._objective_step(instance.get_situation(), False), ([], 0.))
+
+    def test_unsupported_or_redundant_orders_remove_only_communication_credit_when_safe(self):
+        for field in ('redundant_orders', 'unsupported_orders'):
+            instance = environment()
+            setattr(instance._core.protection, field, 1)
+            completed = ['population_safety', 'evidence_triage', 'incident_resolved', 'communication_discipline']
+            with self.subTest(field=field), patch(
+                    'envs.wildfire_response.regional.protection.environment.objective_step',
+                    return_value=(completed, 1.)), patch.object(ProtectionWorld, 'population_safe_now', return_value=True):
+                actual, reward = instance._objective_step(instance.get_situation(), True)
+                self.assertNotIn('communication_discipline', actual)
+                self.assertEqual(reward, 14 / 15)
+
     def test_in_person_order_replays_in_a_complete_canonical_episode(self):
         instance = environment()
         observation, *_ = instance.request_resources([
@@ -253,6 +304,14 @@ class ProtectionProtocolTests(unittest.TestCase):
             if terminated or truncated:
                 break
         self.assertTrue(instance.verify_episode()['passed'])
+        changed = instance.trajectory()
+        changed['reward_version'] = 'wildfire-protection-safety-gate-v1'
+        with self.assertRaises(ValueError):
+            verify_protection_trajectory(changed, pack)
+        changed = instance.trajectory()
+        changed['reward_weights']['population_safety'] = .25
+        with self.assertRaises(ValueError):
+            verify_protection_trajectory(changed, pack)
         changed = instance.trajectory()
         changed['transitions'][0]['observation']['minute'] += 1
         with self.assertRaises(ValueError):

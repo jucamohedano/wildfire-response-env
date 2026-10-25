@@ -170,6 +170,13 @@ adds fallible synthetic shelter, sequenced/corrected instructions, separate
 delivery/readback/execution, resource-bound in-person warnings and safety-gated
 reward. Its offline context gate validates declared metadata without pretending
 that real weather/geographic joins are complete. Spanish v1 remains replayable.
+Protection/prepared/topographic/stress episodes now use reward
+`wildfire-protection-safety-gate-v2`: population safety carries80%, and triage,
+incident resolution and communication discipline share the remaining20% equally.
+Safety failure or topographic boundary censoring still yields zero; all four
+goals are needed for1.0. Old equal-quarter protection results retain their v1
+labels and require their pinned engine revision for replay. The legacy regional
+cost and generic ops fraction contracts remain unchanged.
 See the [protection validation report](results/protection-development-v1.html),
 including the retained unsafe-shelter counterexample and remaining data gates.
 
