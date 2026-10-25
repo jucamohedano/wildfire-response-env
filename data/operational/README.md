@@ -371,6 +371,89 @@ on `PYTHONPATH`; raster tests require those optional data dependencies. Install
 the tested pins from `data/malaga_2021/requirements.txt` in a separate virtual
 environment; do not add these packages to the demo or dependency-free core.
 
+## Prepared-data simulation mode
+
+The new `wildfire_core.prepared.PreparedDataEnv` is separate from the original
+Málaga exercise. Its compiler reads the exact pinned source/preparation audits
+and artifacts, checks all six raster grids/masks and384 weather rows, and emits
+a127KB dependency-free JSON configuration. No raw HTML, elevations, later fire
+perimeters, operational labels or final incident outcomes are copied into it.
+
+All positions use the common37×41 EPSG:25830 grid. `cell_lon_lat(column, row)`
+returns precompiled cell-centre coordinates without requiring runtime PROJ.
+Synthetic homes, refuge locations, reports and ignitions are generated inside the
+study mask; reported fuel unknowns remain visible. The default mode is unchanged.
+
+The mapping `wildfire-nffl-exercise-mapping-v1` assigns classes1–3 to the existing
+field profile with0.75 normalized initial fuel,4–7 to scrub with1.0, and8–10 to
+woodland with0.9. These are **assumed exercise parameters**, not calibrated NFFL
+physics. Existing profile spread/burn-duration rules remain synthetic. Unknown
+fuel uses explicitly labelled synthetic scrub, not an invented measured class or
+non-burnable barrier. Padding outside the study mask is excluded. The inherited
+`burned_terrain` diagnostic measures normalized kernel consumption per grid cell,
+not independently validated hectares. Moisture is unimplemented; slope remains
+disabled and pending authentic terrain, vertical metadata and mask validation.
+
+Weather is measured **context only**. The source local detection clock is
+interpreted in Europe/Madrid, giving2021-09-08T19:35:00Z. Received context exposes
+only observations whose source clock plus an assumed five-minute delivery delay
+has elapsed, retaining up to one hour of recent context. Receipt is synthetic,
+not recovered publication history. No interpolation, gust reconstruction or
+coastal-to-mountain wind correction is performed. `weather_context.physics_coupled`
+is false: engine wind and the wind-shift smoke case remain explicitly synthetic
+until source direction and a defensible conversion are verified.
+
+With the ignored source/prepared caches restored, compile and run on one CPU:
+
+```sh
+export PYTHONPATH=envs/wildfire_response/core/src
+.runtime/malaga-data-venv/bin/python -m eval.compile_malaga_runtime_data
+python -m envs.wildfire_response.regional.prepared.run \
+  --inputs .runtime/malaga-prepared-inputs-v1/inputs.json \
+  --expected-sha256 ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108 \
+  --allow-synthetic-conditions --output .runtime/prepared-smoke-new --repeat
+```
+
+Both destinations must be fresh. The compiler digest pins the complete logical
+payload, while provenance also records the different encoded-file byte digest.
+Use the compiler's newly inspected digest if intentionally changing pinned data.
+At runtime no NumPy/rasterio, keys, model weights, GPU or network access are needed.
+
+Python usage:
+
+```python
+from wildfire_core.prepared import PreparedDataEnv, ProtectionBaseline
+
+environment = PreparedDataEnv(
+    '.runtime/malaga-prepared-inputs-v1/inputs.json',
+    expected_sha256='ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108',
+    allow_synthetic_conditions=True,
+)
+observation, info = environment.reset()
+policy = ProtectionBaseline(prefer_shelter=False)
+while True:
+    observation, reward, terminated, truncated, info = environment.step(policy(observation))
+    if terminated or truncated:
+        break
+verification = environment.verify_episode()
+```
+
+Six cases check urgent fire, false alarms, duplicates, conflicting/delayed reports,
+synthetic wind changes and failed delivery. They are one-incident development
+checks, **not held-out validation or training splits**. Passive, evacuation and
+shelter policies use the same API. Traces record input/mapping/implementation
+hashes and objective rewards; verification replays exact actions and independently
+checks underlying population/resource/cost accounting. Complete exported JSON
+must also survive exact replay. Safety-gated objective weights are unchanged;
+this does not establish a medically or operationally validated utility.
+
+The optional OpenEnv package additionally provides
+`wildfire_openenv.prepared` with bounded typed actions, a single active hosted
+episode and development-only discovery. Follow its README for isolated installs,
+localhost startup and the real client/server comparison runner. The original nine
+optional checks are exercised against their own legacy servers, not silently
+substituted with the new adapter tests. No HappyRobot connection is required.
+
 ## Rights and retention
 
 ICS-209-PLUS v3 metadata declares CC BY 4.0; retain dataset attribution and DOI.

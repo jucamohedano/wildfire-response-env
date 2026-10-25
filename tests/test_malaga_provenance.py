@@ -33,7 +33,7 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(encoded(document), encoded(self.document()))
         self.assertEqual(document['sha256'], fingerprint(document))
         entries = {entry['id']: entry for entry in document['entries']}
-        self.assertEqual(len(entries), 10)
+        self.assertEqual(len(entries), 11)
         self.assertEqual(entries['weather-measured']['evidence_class'], 'measured')
         self.assertEqual(entries['weather-normalized']['evidence_class'], 'derived')
         self.assertEqual(entries['generated-exercise-inputs']['evidence_class'], 'synthetic')
@@ -102,7 +102,7 @@ class ProvenanceTests(unittest.TestCase):
             lambda document: document['entries'][0].update(used_by_current_runtime=True),
             lambda document: document['entries'][0].update(evidence_class='historical_ground_truth'),
             lambda document: document['entries'][0].update(id=document['entries'][1]['id']),
-            lambda document: document['entries'][-1].update(field_lineage={}),
+            lambda document: next(entry for entry in document['entries'] if entry['id'] == 'episode-configuration').update(field_lineage={}, used_by_current_runtime=True),
             lambda document: document['readiness'].update(historical_replay_ready=True),
             lambda document: document['lineage'][0].update(inputs=['missing']),
             lambda document: document['entries'][0].update(source_urls=['https://user:password@example.com/']),

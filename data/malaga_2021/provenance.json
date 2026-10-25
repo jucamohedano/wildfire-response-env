@@ -552,6 +552,137 @@
         "transit": "assumed_model_minutes"
       },
       "used_by_current_runtime": true
+    },
+    {
+      "actor_input_eligible": false,
+      "derived_artifacts": [
+        {
+          "bytes": 18127,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-prepared-smoke-v2/summary.json",
+          "sha256": "a0e5bf3bfc2cea1fc49db4e43d80c0ae335ffd6c033bf59e029f8ac6544a1b46"
+        },
+        {
+          "bytes": 5384,
+          "integrity": "pinned_match",
+          "path": ".runtime/openenv-integration-actual.json",
+          "sha256": "0720d869d0c7a5a82f23c17dadb2033cd49feabc01a40163bac8a38f7a5ecaeb"
+        },
+        {
+          "bytes": 456,
+          "integrity": "pinned_match",
+          "path": ".runtime/prepared-wheel-client.json",
+          "sha256": "e0836100ebc9292e9d8c514b7d7499a7ee544434826f7868b22bdae44117ea30"
+        },
+        {
+          "bytes": 2681,
+          "integrity": "pinned_match",
+          "path": ".runtime/prepared-core-tests.log",
+          "sha256": "e6dce5da27432d94d78635e9fef0cafb065e9d95d9ae375fda22e646f71c26c0"
+        }
+      ],
+      "evidence_class": "mixed",
+      "id": "prepared-integration",
+      "limitations": [
+        "Separate opt-in mode; historical replay and slope effects remain disabled.",
+        "One source landscape and six synthetic development cases, not held-out or real-world validation.",
+        "Wind direction convention and source interval semantics remain unverified. Coastal weather is context, not calibrated spread input.",
+        "Weather receipts are generated with a five-minute delay, not recovered historical publication times.",
+        "Fuel classification epoch unverified; class mapping and unknown-cell fallback are explicit uncalibrated exercise assumptions.",
+        "Terrain remains quarantined; slope disabled and pending uncontaminated elevations and verified vertical metadata.",
+        "Roster, homes, refuges, reports, ignitions, transport, communications and fire/protection effects remain synthetic.",
+        "All cases start at night and do not validate daytime aircraft operations; separate kernel tests cover the inherited aircraft lifecycle.",
+        "Synthetic safety-gated objective reward is unchanged. Burned-terrain diagnostic is kernel consumption, not independently measured hectares.",
+        "Raw data and trajectory redistribution rights are not cleared; no public publication or training performed."
+      ],
+      "metadata": {
+        "bytes": 6927,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": "data/malaga_2021/runtime_integration_v1.json",
+        "sha256": "e3d511bbcb0583e55fd31bf87b2df762322557d717fc7175383c8fe8259e7a59"
+      },
+      "opt_in_runtime_usage": {
+        "legacy_mode_unchanged": true,
+        "prepared_mode": {
+          "historical_replay": false,
+          "measured_fuel_class_baseline": true,
+          "measured_station_weather_context": true,
+          "measured_wind_in_physics": false,
+          "metric_grid": true,
+          "slope_effects": false,
+          "synthetic_fuel_mapping": true,
+          "unknown_fuel_synthetic_fallback": true
+        }
+      },
+      "raw_artifacts": [
+        {
+          "bytes": 127299,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-prepared-inputs-v1/inputs.json",
+          "sha256": "9e1998653eaf154d29350db5f080f70812510b8abd7751517a71868cf2bdb998"
+        }
+      ],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [],
+      "status": "opt_in_prepared_mode_cpu_and_external_client_verified",
+      "transformations": [
+        {
+          "bytes": 20861,
+          "integrity": "pinned_match",
+          "path": "eval/compile_malaga_runtime_data.py",
+          "sha256": "a5035b1a8d9530acacba60dea0e180ba56c4dc16a7aa2bcb8d9fad8deadc296f"
+        },
+        {
+          "bytes": 578,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/wildfire_core/prepared.py",
+          "sha256": "c368d39c952de0d8f3bc2eaea5d0adce48caa4717bbf95f3f82000cd280da6e5"
+        },
+        {
+          "bytes": 8166,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/openenv/wildfire_openenv/prepared.py",
+          "sha256": "69587db04a748c60c69e66e5855f798a02a1a42ab93398e7bdd905133c8c1bbf"
+        },
+        {
+          "bytes": 14562,
+          "integrity": "pinned_match",
+          "path": "eval/check_openenv_integration.py",
+          "sha256": "3ddf6f520ba2434d35755e1f6b54c634f46a87f766d7b4bd8e01ca7b926ba8ed"
+        },
+        {
+          "bytes": 83,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/prepared/__init__.py",
+          "sha256": "4b9de0fdcb41444fa93c2976839decd13edabd083a73f443611526c508b81ba6"
+        },
+        {
+          "bytes": 6934,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/prepared/data.py",
+          "sha256": "196ac0aad5daa0b654c53e219df7b00b0df75ffb015c2f66a4fb3636b489efbb"
+        },
+        {
+          "bytes": 4227,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/prepared/tasks.py",
+          "sha256": "e16a64a56c2f059ddb16027f39a36ffdb593c3da41e9c1957ad35c2e555b5c6f"
+        },
+        {
+          "bytes": 10882,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/prepared/environment.py",
+          "sha256": "7b5f058ea3ac67659f8f370e509c3d887d00a4c16b5bd5d3db8a8cd721798954"
+        },
+        {
+          "bytes": 4165,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/prepared/run.py",
+          "sha256": "a4facdcdb9bb9cec76e097282cba6c2f0ddcd459996986c2a11fad630809028a"
+        }
+      ],
+      "units_crs": {},
+      "used_by_current_runtime": false
     }
   ],
   "evidence_policy": {
@@ -562,10 +693,10 @@
     "synthetic": "Explicit exercise assumptions; never relabelled observed historical events"
   },
   "generator": {
-    "bytes": 19975,
+    "bytes": 20942,
     "integrity": "locally_hashed_not_source_authenticated",
     "path": "eval/build_malaga_provenance.py",
-    "sha256": "f084420d4e076ab809767fb70b7aec42a497de2fd9abd201047038c99e00beab"
+    "sha256": "4be1287cbf89fce7d5c85915d2e1a7fdb2acaa6d68b6ad50b87a1a491944330c"
   },
   "incident": {
     "event_year": 2021,
@@ -596,6 +727,14 @@
         "episode-configuration"
       ],
       "output": "generated-exercise-inputs"
+    },
+    {
+      "inputs": [
+        "episode-configuration",
+        "weather-normalized",
+        "landscape-prepared"
+      ],
+      "output": "prepared-integration"
     }
   ],
   "open_gates": [
@@ -608,11 +747,12 @@
   "readiness": {
     "current_declared_synthetic_mode_runs": true,
     "historical_replay_ready": false,
-    "normalized_weather_or_landscape_activated": false,
+    "normalized_weather_or_landscape_activated_in_legacy_mode": false,
+    "opt_in_prepared_mode_available": true,
     "real_world_operational_validity_established": false
   },
   "role": "operator_and_evaluator_reference_not_actor_observation",
-  "sha256": "3b31dcd68bedc0066e7d207e55a638d74e9d618cfb98348892a66c2fc9df47cd",
+  "sha256": "b3aba9cfb6c1e02377b9f0da30445ace3fd86ea933b3d230e61bdfb84dc83846",
   "snapshot_date": "2026-10-25",
   "synthetic_profile_sha256": "e46ab752ff31731b7ba294eff364cd3d16ff1d319b354e996c4c2ab8965a9350",
   "version": "wildfire-data-provenance-v1"

@@ -219,11 +219,21 @@ def build_document(root, snapshot_date, profile):
             detection_local='Source detection clock, not known ignition',
             assumed_ground_transit_minutes='Generated assumed half-response decomposition, not measured travel'),
         limitations=('Retrospectively selected study region; measured terrain/fuel/weather are not activated.',)))
+    integration, value = _entry(root, 'prepared-integration', 'mixed', 'runtime_integration_v1.json',
+        limitations=('Separate opt-in mode; historical replay and slope effects remain disabled.',))
+    if value:
+        integration['opt_in_runtime_usage'] = value['runtime_usage']
+        integration['raw_artifacts'] = [artifact(root, value['runtime_input']['path'], value['runtime_input'])]
+        integration['derived_artifacts'] = [artifact(root, item['path'], item) for item in value['validation_artifacts']]
+        integration['transformations'] = [artifact(root, item['path'], item) for item in value['implementation_files']]
+        integration['limitations'].extend(value['limitations'])
+    entries.append(integration)
     document = dict(version=VERSION, snapshot_date=snapshot_date,
         role='operator_and_evaluator_reference_not_actor_observation',
         incident=dict(name='Sierra Bermeja, Malaga', event_year=2021),
         readiness=dict(current_declared_synthetic_mode_runs=True,
-            normalized_weather_or_landscape_activated=False, historical_replay_ready=False,
+            normalized_weather_or_landscape_activated_in_legacy_mode=False,
+            opt_in_prepared_mode_available=value is not None, historical_replay_ready=False,
             real_world_operational_validity_established=False),
         evidence_policy=dict(measured='Source-reported measurements with their resolution/limitations retained',
             derived='Reproducible transformations with pinned inputs; no automatic truth upgrade',
@@ -234,7 +244,9 @@ def build_document(root, snapshot_date, profile):
         lineage=[dict(inputs=['weather-measured'], output='weather-normalized'),
                  dict(inputs=['terrain-candidate', 'fuel-baseline'], output='landscape-prepared'),
                  dict(inputs=['incident-and-maps'], output='episode-configuration'),
-                 dict(inputs=['episode-configuration'], output='generated-exercise-inputs')],
+                 dict(inputs=['episode-configuration'], output='generated-exercise-inputs'),
+                 dict(inputs=['episode-configuration', 'weather-normalized', 'landscape-prepared'],
+                      output='prepared-integration')],
         synthetic_profile_sha256=profile['sha256'],
         open_gates=['Verify data clocks/quality masks before any separately versioned runtime adapter.',
                     'No historical initial fleet or full delivery logs found; retain declared generated states.',
