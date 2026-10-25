@@ -1,0 +1,166 @@
+{
+  "actor_input_eligible": false,
+  "crop": {
+    "height": 36,
+    "left": 0,
+    "top": 0,
+    "width": 37
+  },
+  "data_readiness": {
+    "cpu_simulation_ready": true,
+    "external_client_ready": true,
+    "frozen_training_dataset_ready": false,
+    "held_out_generalization_validated": false,
+    "next_gates": [
+      "Broader harder scenario configuration groups and disjoint train/validation/test groups before seed assignment.",
+      "Freeze compact model-facing observations/actions, scenario and reward versions; declare synthetic weather, fuel/moisture, roster and communication assumptions.",
+      "Evaluate policy/reward/safety sensitivity on held-out cases and filter censored episodes from learning labels.",
+      "Export dataset/environment cards and reproducible manifests; clear source redistribution rights before publication."
+    ],
+    "real_world_operational_validity": false,
+    "replay_and_reward_accounting_ready": true
+  },
+  "domain": {
+    "active_cells": 1332,
+    "all_active_height_support": true,
+    "boundary_guard_cells": 2,
+    "boundary_policy": "censor_and_exclude_training; not_a_firebreak",
+    "rectangle_selection": "Deterministic largest positive-height supported rectangle; not chosen by policy outcome",
+    "unknown_height_fill": false
+  },
+  "implementation_files": [
+    {
+      "bytes": 85,
+      "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/topographic/__init__.py",
+      "sha256": "19f1552fcba3b93cc7132154d113f0f9305e48907b36deac848d82bee8226af7"
+    },
+    {
+      "bytes": 4755,
+      "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/topographic/data.py",
+      "sha256": "7fea7b23ae5784ade95b9bd957873256eb9fae4c50bc189dbe4a128111fad83d"
+    },
+    {
+      "bytes": 6211,
+      "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/topographic/fire.py",
+      "sha256": "895ca31e72805f9d3423a8a663c28866f079f451f77e6386bf983b7ec7192042"
+    },
+    {
+      "bytes": 12628,
+      "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/topographic/environment.py",
+      "sha256": "7219155f7995fe4ed16415c4859e15a06683d7c87511539b337c1713a61915b8"
+    },
+    {
+      "bytes": 6525,
+      "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/topographic/run.py",
+      "sha256": "3f835cb10286f4725bf08d77f0495593645b4296e736e5abcbfee929dc1895fa"
+    },
+    {
+      "bytes": 528,
+      "path": "envs/wildfire_response/core/src/wildfire_core/topographic.py",
+      "sha256": "f801be083de879f739868b26bda0db029db2a280d8485872aee86459c9c82f44"
+    },
+    {
+      "bytes": 13004,
+      "path": "eval/compile_topographic_domain.py",
+      "sha256": "028733cfe150f9a088e3149edfb4216696316d8f759abc7583c2e5463b3dc8eb"
+    },
+    {
+      "bytes": 13517,
+      "path": "eval/check_topographic_openenv.py",
+      "sha256": "5174d0077674233f548179ae83f601c3bf1ea310feb4ffa6ff6752bfb5803efa"
+    },
+    {
+      "bytes": 4042,
+      "path": "envs/wildfire_response/openenv/wildfire_openenv/topographic.py",
+      "sha256": "db0caf891f5271ac94a06180e0dbbe8727503b1afd4dae5c5ed46facde6b631d"
+    }
+  ],
+  "implementation_sha256": "7015d81b99e89a26248b931943293c1c1a3618098284a24957ed7735e20ba88c",
+  "limitations": [
+    "One landscape and six synthetic development cases; active baselines still reach the score ceiling on these smoke cases.",
+    "Complete support means the declared positive-data restriction, not authenticated producer void semantics or survey certification.",
+    "Exact survey edition and vertical datum remain unknown; source metre interpretation comes from documented MDT05 format.",
+    "The exp(beta*grade) eligible-probability modifier is an uncalibrated experiment, not a validated spread or movement law.",
+    "Both slope settings share one crop and seed/policy. Reactive policies may change actions; comparisons explicitly record this.",
+    "Boundary probes are diagnostics only; censoring flags require filtering in a downstream trainer, not fabricated success/failure labels.",
+    "Independent survey-point checks and realism calibration remain open under issue8; no training, inference or publication performed."
+  ],
+  "parent_inputs_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
+  "payload_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+  "role": "operator_evaluator_reference",
+  "runtime_input": {
+    "bytes": 59047,
+    "path": ".runtime/topographic-inputs-v1/inputs.json",
+    "sha256": "b4585046b95d9bccc1c7701a95d15b9ca59120cbbd49f5bf080f9e146ad0f355"
+  },
+  "runtime_usage": {
+    "experimental_slope_available": true,
+    "kernel_version": "wildfire-topographic-probability-v1",
+    "legacy_modes_unchanged": true,
+    "measured_weather_physics": false,
+    "physics_coupling": {
+      "beta": 3.0,
+      "grade_clip": 0.5,
+      "modifies": "eligible ignition probability, not wind interval or ground transit",
+      "physical_calibration": false
+    },
+    "requires_explicit_slope_boolean": true,
+    "terrain_based_ground_travel": false
+  },
+  "snapshot_date": "2026-10-25",
+  "status": "complete_support_experimental_slope_on_off_verified",
+  "validation_artifacts": [
+    {
+      "bytes": 54415,
+      "path": ".runtime/topographic-comparison-v2/summary.json",
+      "sha256": "43ac44499415f9c776b0141c01321b701b7131379e076f6523725a865a85c502"
+    },
+    {
+      "bytes": 13358,
+      "path": ".runtime/topographic-openenv-report-v2.json",
+      "sha256": "97e2aa39be349b87156b5d73f2b488d82e93cd9e86a4c2d82c34cb4b78af71b0"
+    },
+    {
+      "bytes": 438,
+      "path": ".runtime/topographic-wheel-client-v2.json",
+      "sha256": "fedfd8ecdcb750fac39f677768c99963cf611101ef81388eb01b6b163fe88aa1"
+    },
+    {
+      "bytes": 2689,
+      "path": ".runtime/topographic-core-tests-v2.log",
+      "sha256": "41e22e26b2e4067644730c93fe09579cc39997b4be0dbd1f561eed99e781a552"
+    },
+    {
+      "bytes": 3382,
+      "path": ".runtime/topographic-openenv-unit-tests.log",
+      "sha256": "c75a09193106c98d12e41e41d5388630fe5b351297342e761dbf719a86a60933"
+    },
+    {
+      "bytes": 330359,
+      "path": ".runtime/topographic-wheel-v2/wildfire_response_core-0.1.0-py3-none-any.whl",
+      "sha256": "ea96700fd37981db82f9bd8b758a440a0ae2e89837375c512e452d20a4452851"
+    }
+  ],
+  "verification": {
+    "all_public_exports_replay": true,
+    "boundary_probes_zero_and_excluded": true,
+    "changed_physical_state_pairs": 5,
+    "core_suite_optional_skips": 9,
+    "core_suite_tests": 281,
+    "elapsed_seconds": 135.787,
+    "flat_enabled_and_disabled_kernel_matches_inherited_fire": true,
+    "localhost_boundary_probes": 2,
+    "localhost_regular_episodes": 12,
+    "new_adapter_tests": 9,
+    "new_compiler_tests": 24,
+    "new_core_tests": 8,
+    "peak_process_rss_bytes": 75472896,
+    "primary_rollouts": 38,
+    "regular_cases_boundary_censored": 0,
+    "repeated_rollouts": 38,
+    "same_seed_policy_domain_comparisons": 18,
+    "separate_dependency_free_wheel_client": true,
+    "workers": 1
+  },
+  "version": "wildfire-topographic-runtime-audit-v1"
+}

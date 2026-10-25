@@ -535,6 +535,14 @@ enable runtime slope, approve all terrain, or establish a calibrated relationshi
 between gradient and fire/vehicle movement. That integration remains a separate
 versioned task; existing simulation inputs, rewards and traces remain unchanged.
 
+For the separate opt-in slope implementation, see the
+[complete-support topographic experiment](../malaga_2021/TOPOGRAPHIC_EXPERIMENT.md).
+It uses one shared height surface over a fully supported37×36 subdomain, never
+neutral slope on unknown cells. A two-cell boundary guard censors unmodelled
+outcomes rather than rewarding artificial containment. Legacy modes and the
+earlier offline-candidate approval flags remain unchanged; this is an explicitly
+synthetic experimental coupling, not historical or operational validation.
+
 ## Rights and retention
 
 ICS-209-PLUS v3 metadata declares CC BY 4.0; retain dataset attribution and DOI.

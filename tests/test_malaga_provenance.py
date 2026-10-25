@@ -33,7 +33,7 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(encoded(document), encoded(self.document()))
         self.assertEqual(document['sha256'], fingerprint(document))
         entries = {entry['id']: entry for entry in document['entries']}
-        self.assertEqual(len(entries), 13)
+        self.assertEqual(len(entries), 14)
         self.assertEqual(entries['weather-measured']['evidence_class'], 'measured')
         self.assertEqual(entries['weather-normalized']['evidence_class'], 'derived')
         self.assertEqual(entries['generated-exercise-inputs']['evidence_class'], 'synthetic')

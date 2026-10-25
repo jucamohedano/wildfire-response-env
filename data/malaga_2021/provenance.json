@@ -879,6 +879,149 @@
       ],
       "units_crs": {},
       "used_by_current_runtime": false
+    },
+    {
+      "actor_input_eligible": false,
+      "derived_artifacts": [
+        {
+          "bytes": 54415,
+          "integrity": "pinned_match",
+          "path": ".runtime/topographic-comparison-v2/summary.json",
+          "sha256": "43ac44499415f9c776b0141c01321b701b7131379e076f6523725a865a85c502"
+        },
+        {
+          "bytes": 13358,
+          "integrity": "pinned_match",
+          "path": ".runtime/topographic-openenv-report-v2.json",
+          "sha256": "97e2aa39be349b87156b5d73f2b488d82e93cd9e86a4c2d82c34cb4b78af71b0"
+        },
+        {
+          "bytes": 438,
+          "integrity": "pinned_match",
+          "path": ".runtime/topographic-wheel-client-v2.json",
+          "sha256": "fedfd8ecdcb750fac39f677768c99963cf611101ef81388eb01b6b163fe88aa1"
+        },
+        {
+          "bytes": 2689,
+          "integrity": "pinned_match",
+          "path": ".runtime/topographic-core-tests-v2.log",
+          "sha256": "41e22e26b2e4067644730c93fe09579cc39997b4be0dbd1f561eed99e781a552"
+        },
+        {
+          "bytes": 3382,
+          "integrity": "pinned_match",
+          "path": ".runtime/topographic-openenv-unit-tests.log",
+          "sha256": "c75a09193106c98d12e41e41d5388630fe5b351297342e761dbf719a86a60933"
+        },
+        {
+          "bytes": 330359,
+          "integrity": "pinned_match",
+          "path": ".runtime/topographic-wheel-v2/wildfire_response_core-0.1.0-py3-none-any.whl",
+          "sha256": "ea96700fd37981db82f9bd8b758a440a0ae2e89837375c512e452d20a4452851"
+        }
+      ],
+      "domain": {
+        "active_cells": 1332,
+        "all_active_height_support": true,
+        "boundary_guard_cells": 2,
+        "boundary_policy": "censor_and_exclude_training; not_a_firebreak",
+        "rectangle_selection": "Deterministic largest positive-height supported rectangle; not chosen by policy outcome",
+        "unknown_height_fill": false
+      },
+      "evidence_class": "mixed",
+      "id": "topographic-experiment",
+      "limitations": [
+        "Explicit complete-support experimental mode, not a historical forecast or native void certification."
+      ],
+      "metadata": {
+        "bytes": 7119,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": "data/malaga_2021/topographic_runtime_v1.json",
+        "sha256": "4eb00a43ab818f92e54cd93dff925279406e0ec047f28d07494a01698262d8bb"
+      },
+      "opt_in_runtime_usage": {
+        "experimental_slope_available": true,
+        "kernel_version": "wildfire-topographic-probability-v1",
+        "legacy_modes_unchanged": true,
+        "measured_weather_physics": false,
+        "physics_coupling": {
+          "beta": 3.0,
+          "grade_clip": 0.5,
+          "modifies": "eligible ignition probability, not wind interval or ground transit",
+          "physical_calibration": false
+        },
+        "requires_explicit_slope_boolean": true,
+        "terrain_based_ground_travel": false
+      },
+      "raw_artifacts": [
+        {
+          "bytes": 59047,
+          "integrity": "pinned_match",
+          "path": ".runtime/topographic-inputs-v1/inputs.json",
+          "sha256": "b4585046b95d9bccc1c7701a95d15b9ca59120cbbd49f5bf080f9e146ad0f355"
+        }
+      ],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [],
+      "status": "complete_support_experimental_slope_on_off_verified",
+      "transformations": [
+        {
+          "bytes": 85,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/topographic/__init__.py",
+          "sha256": "19f1552fcba3b93cc7132154d113f0f9305e48907b36deac848d82bee8226af7"
+        },
+        {
+          "bytes": 4755,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/topographic/data.py",
+          "sha256": "7fea7b23ae5784ade95b9bd957873256eb9fae4c50bc189dbe4a128111fad83d"
+        },
+        {
+          "bytes": 6211,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/topographic/fire.py",
+          "sha256": "895ca31e72805f9d3423a8a663c28866f079f451f77e6386bf983b7ec7192042"
+        },
+        {
+          "bytes": 12628,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/topographic/environment.py",
+          "sha256": "7219155f7995fe4ed16415c4859e15a06683d7c87511539b337c1713a61915b8"
+        },
+        {
+          "bytes": 6525,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/topographic/run.py",
+          "sha256": "3f835cb10286f4725bf08d77f0495593645b4296e736e5abcbfee929dc1895fa"
+        },
+        {
+          "bytes": 528,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/core/src/wildfire_core/topographic.py",
+          "sha256": "f801be083de879f739868b26bda0db029db2a280d8485872aee86459c9c82f44"
+        },
+        {
+          "bytes": 13004,
+          "integrity": "pinned_match",
+          "path": "eval/compile_topographic_domain.py",
+          "sha256": "028733cfe150f9a088e3149edfb4216696316d8f759abc7583c2e5463b3dc8eb"
+        },
+        {
+          "bytes": 13517,
+          "integrity": "pinned_match",
+          "path": "eval/check_topographic_openenv.py",
+          "sha256": "5174d0077674233f548179ae83f601c3bf1ea310feb4ffa6ff6752bfb5803efa"
+        },
+        {
+          "bytes": 4042,
+          "integrity": "pinned_match",
+          "path": "envs/wildfire_response/openenv/wildfire_openenv/topographic.py",
+          "sha256": "db0caf891f5271ac94a06180e0dbbe8727503b1afd4dae5c5ed46facde6b631d"
+        }
+      ],
+      "units_crs": {},
+      "used_by_current_runtime": false
     }
   ],
   "evidence_policy": {
@@ -889,10 +1032,10 @@
     "synthetic": "Explicit exercise assumptions; never relabelled observed historical events"
   },
   "generator": {
-    "bytes": 23042,
+    "bytes": 24215,
     "integrity": "locally_hashed_not_source_authenticated",
     "path": "eval/build_malaga_provenance.py",
-    "sha256": "41a71e65eacf0eabb3c7bf07107f76acafd325b8b438ff509dfff2a680d6c32d"
+    "sha256": "ff1da1b5f82206e93b8d629472c87a4a8e58977c3ad7d2837e9c0b26d0fe3e3c"
   },
   "incident": {
     "event_year": 2021,
@@ -942,6 +1085,14 @@
       "inputs": [],
       "output": "relative-gradient-validation",
       "relation": "Separate documented MDT05 product sampled at25m; no MDT25 reclassification"
+    },
+    {
+      "inputs": [
+        "prepared-integration",
+        "relative-gradient-validation"
+      ],
+      "output": "topographic-experiment",
+      "relation": "Parent exercise inputs and same documented raw MDT05 source; mean slope angles are not used as edge grades"
     }
   ],
   "open_gates": [
@@ -956,10 +1107,11 @@
     "historical_replay_ready": false,
     "normalized_weather_or_landscape_activated_in_legacy_mode": false,
     "opt_in_prepared_mode_available": true,
+    "opt_in_topographic_mode_available": true,
     "real_world_operational_validity_established": false
   },
   "role": "operator_and_evaluator_reference_not_actor_observation",
-  "sha256": "bcdaf97d01cf83e4b6b3edb5a0fdcc01ba7ce067e344febfc64855dc5d099392",
+  "sha256": "61aedc3bfe90d6568a069c3185b8acb0026f649e40dac2dc6f19f655e52f5a93",
   "snapshot_date": "2026-10-25",
   "synthetic_profile_sha256": "e46ab752ff31731b7ba294eff364cd3d16ff1d319b354e996c4c2ab8965a9350",
   "version": "wildfire-data-provenance-v1"

@@ -248,12 +248,23 @@ def build_document(root, snapshot_date, profile):
         gradients['checks'] = gradient_value['checks']
         gradients['gate_decision'] = gradient_value['gate_decision']
     entries.append(gradients)
+    topographic, topographic_value = _entry(root, 'topographic-experiment', 'mixed', 'topographic_runtime_v1.json',
+        limitations=('Explicit complete-support experimental mode, not a historical forecast or native void certification.',))
+    if topographic_value:
+        item = topographic_value['runtime_input']
+        topographic['raw_artifacts'] = [artifact(root, item['path'], item)]
+        topographic['derived_artifacts'] = [artifact(root, item['path'], item) for item in topographic_value['validation_artifacts']]
+        topographic['transformations'] = [artifact(root, item['path'], item) for item in topographic_value['implementation_files']]
+        topographic['opt_in_runtime_usage'] = topographic_value['runtime_usage']
+        topographic['domain'] = topographic_value['domain']
+    entries.append(topographic)
     document = dict(version=VERSION, snapshot_date=snapshot_date,
         role='operator_and_evaluator_reference_not_actor_observation',
         incident=dict(name='Sierra Bermeja, Malaga', event_year=2021),
         readiness=dict(current_declared_synthetic_mode_runs=True,
             normalized_weather_or_landscape_activated_in_legacy_mode=False,
-            opt_in_prepared_mode_available=value is not None, historical_replay_ready=False,
+            opt_in_prepared_mode_available=value is not None,
+            opt_in_topographic_mode_available=topographic_value is not None, historical_replay_ready=False,
             real_world_operational_validity_established=False),
         evidence_policy=dict(measured='Source-reported measurements with their resolution/limitations retained',
             derived='Reproducible transformations with pinned inputs; no automatic truth upgrade',
@@ -270,7 +281,9 @@ def build_document(root, snapshot_date, profile):
                  dict(inputs=[], output='clean-terrain-candidate', prompted_by='terrain-candidate',
                       relation='Independent authoritative acquisition; no earlier contaminated values reused'),
                  dict(inputs=[], output='relative-gradient-validation',
-                      relation='Separate documented MDT05 product sampled at25m; no MDT25 reclassification')],
+                      relation='Separate documented MDT05 product sampled at25m; no MDT25 reclassification'),
+                 dict(inputs=['prepared-integration', 'relative-gradient-validation'], output='topographic-experiment',
+                      relation='Parent exercise inputs and same documented raw MDT05 source; mean slope angles are not used as edge grades')],
         synthetic_profile_sha256=profile['sha256'],
         open_gates=['Verify data clocks/quality masks before any separately versioned runtime adapter.',
                     'No historical initial fleet or full delivery logs found; retain declared generated states.',
