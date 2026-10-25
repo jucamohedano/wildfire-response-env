@@ -489,6 +489,52 @@ Slope stays disabled and the candidate does not enter actor observations, fire,
 movement or rewards. The provenance JSON links this candidate separately from
 the existing prepared runtime, whose input bundle and trajectories are unchanged.
 
+## MDT05 format metadata and restricted relative-gradient validation
+
+The [MDT05 validation record](../malaga_2021/terrain_metadata_validation_v2.json)
+adds separate evidence rather than retroactively changing the previous MDT25
+candidate. IGN's2017 WCS presentation, PDF page10, explicitly documents metre
+heights in the MDT05 ASCII format; page19 identifies the service's terrain
+products. A new request for `Elevacion25830_5` returns a25m nearest-neighbour
+sampling of that nominal5m product. It is **not native5m terrain**. The
+floating-point ASCII and integer GeoTIFF encode all670,800 samples consistently
+at unit scale, with at most0.5m integer rounding. We retain the floating-point
+values, rather than claiming integer output has millimetre precision. Product
+documentation is the unit basis; missing band tags and the generic SWE radiance
+UOM are not silently repaired or claimed corrected by IGN.
+
+For restricted diagnostics, nonpositive values are deliberately excluded and any
+3×3 gradient stencil touching them is masked. This excludes genuine sea-level
+and negative terrain too: it is an **analysis restriction, not authenticated
+native NoData**. No interpolation or zero filling occurs. Horn gradients are
+computed at the returned25m spacing before mean local angles are aggregated to
+500m. All coarse cells with incomplete gradient coverage stay masked. The record
+reports650,497 valid local gradients and1,482 fully covered cells of1,517.
+
+Twenty-one analytic tests cover flat/tilted/diagonal planes, explicit unit scales,
+constant-offset invariance, borders and missing samples. Four encoding tests
+reject inconsistent scaling and invalid data. An independent float64 NumPy
+implementation agrees with all valid gradients within1e-10degrees. All four
+derived rasters reproduce byte-for-byte. To rebuild in the isolated data runtime:
+
+```sh
+.runtime/malaga-data-venv/bin/python -m eval.validate_malaga_terrain_metadata \
+  --output .runtime/mdt05-gradient-refresh
+```
+
+Restore the pinned new inputs first and choose a fresh destination. A public IGN
+geodetic-name lookup for Reales returned a temporarily unavailable portlet; no
+independent survey control point was obtained. Encoding agreement is not an
+independent elevation measurement. Exact local survey date, vertical datum and
+native void semantics remain unknown. A constant height offset cancels in local
+slope, but varying corrections or mosaics cannot be assumed harmless. No new
+absolute-height or historical-reconstruction claim is made.
+
+This advances documented units, scaling and algorithm validation. It does not
+enable runtime slope, approve all terrain, or establish a calibrated relationship
+between gradient and fire/vehicle movement. That integration remains a separate
+versioned task; existing simulation inputs, rewards and traces remain unchanged.
+
 ## Rights and retention
 
 ICS-209-PLUS v3 metadata declares CC BY 4.0; retain dataset attribution and DOI.

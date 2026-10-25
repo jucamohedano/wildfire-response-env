@@ -1,0 +1,170 @@
+{
+  "acquisition": [
+    {
+      "bytes": 5303587,
+      "content_type": "application/asc",
+      "path": ".runtime/malaga-terrain-validation-v2/mdt05-sampled25m-halo.asc",
+      "sha256": "1b2e4f470bf456b0189cf22e60dddcf09af413617eb9b76f5a2c1650be70e917",
+      "url": "https://servicios.idee.es/wcs-inspire/mdt?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&COVERAGE=Elevacion25830_5&CRS=EPSG%3A25830&RESPONSE_CRS=EPSG%3A25830&BBOX=296500%2C4033500%2C316000%2C4055000&RESX=25&RESY=25&FORMAT=ArcGrid&INTERPOLATION=nearest+neighbor"
+    },
+    {
+      "bytes": 1343432,
+      "content_type": "image/tiff",
+      "path": ".runtime/malaga-terrain-validation-v2/mdt05-sampled25m-halo.tif",
+      "sha256": "8b2e91a5f486358a75a00af8820e65e5b899ecf6a0f909fa39484906eeef65a7",
+      "url": "https://servicios.idee.es/wcs-inspire/mdt?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&COVERAGE=Elevacion25830_5&CRS=EPSG%3A25830&RESPONSE_CRS=EPSG%3A25830&BBOX=296500%2C4033500%2C316000%2C4055000&RESX=25&RESY=25&FORMAT=GEOTIFFINT16&INTERPOLATION=nearest+neighbor"
+    },
+    {
+      "bytes": 3046,
+      "content_type": "text/xml; charset=UTF-8",
+      "path": ".runtime/malaga-terrain-validation-v2/mdt05-description.xml",
+      "sha256": "a92a29c071dcdb991fea98a89dd1105d1fd85bc81702b01f787ebffb4b40de04",
+      "url": "https://servicios.idee.es/wcs-inspire/mdt?SERVICE=WCS&VERSION=1.0.0&REQUEST=DescribeCoverage&COVERAGE=Elevacion25830_5"
+    },
+    {
+      "bytes": 2947389,
+      "content_type": "application/pdf",
+      "path": ".runtime/malaga-terrain-validation-v2/ign-wcs-2017-slides.pdf",
+      "sha256": "af354454dc544a12bd90d60219dde2181bbc1f5689af0c9fbbe6e0fae72f4b61",
+      "url": "https://www.idee.es/resources/presentaciones/JIIDE17/Apresentacoes_JIIDE2017_WCS_Inspire_modelos_digitales_terreno_IGN_Carolina_Soteres.pdf"
+    }
+  ],
+  "actor_input_eligible": false,
+  "checked_on": "2026-10-25",
+  "checks": {
+    "analytic_fixture_tests": 21,
+    "constant_vertical_offset_cancels_in_tests": true,
+    "gradient_computed_before_500m_aggregation": true,
+    "independent_vectorized_max_error_degrees": 7.105427357601002e-15,
+    "masked_cells_not_filled": true,
+    "physics_approval": false
+  },
+  "encoding": {
+    "applied_height_scale": 1.0,
+    "compared_cells": 670800,
+    "interpretation": "Encoding consistency, not independent height accuracy or producer correction of band metadata",
+    "max_absolute_difference_metres": 0.5,
+    "within_half_metre_rounding": true
+  },
+  "gate_decision": {
+    "exact_vertical_datum": "unknown; not required for constant-offset-invariant diagnostic, not authorized for merging sources",
+    "prior_MDT25_band_unit_status": "unchanged_unverified_no_cross_product_relabelling",
+    "relative_gradient_diagnostics": "allowed only under documented MDT05 metre interpretation and declared restricted mask",
+    "runtime_slope": "disabled; requires separate versioned coupling and evaluation",
+    "source_void_semantics": "still_unverified; nonpositive values deliberately excluded rather than relabelled NoData"
+  },
+  "height_units": {
+    "basis": "Explicit IGN producer MDT05 ASCII-format statement",
+    "evidence_url": "https://www.idee.es/resources/presentaciones/JIIDE17/Apresentacoes_JIIDE2017_WCS_Inspire_modelos_digitales_terreno_IGN_Carolina_Soteres.pdf",
+    "live_service_uom_conflict_resolved_by_producer": false,
+    "locator": "Page10 MDT5 heading and z11/z12 range-value description; page19 identifies WCS products",
+    "pdf_pages": [
+      10,
+      19
+    ],
+    "previous_MDT25_candidate_relabelled": false,
+    "source_band_unit_tag_present": false,
+    "value": "metre"
+  },
+  "historical_replay_ready": false,
+  "implementation_files": [
+    {
+      "bytes": 10530,
+      "path": "eval/validate_malaga_terrain_metadata.py",
+      "sha256": "843204edf4075bcb49b71dc2cc05032a94cbfd0d33141bfba432c13c81145182"
+    },
+    {
+      "bytes": 6618,
+      "path": "eval/check_terrain_gradients.py",
+      "sha256": "6771e623130a8cf35cb3585c8a931ea2f1afc237f7bdc44055ecf57f44446cd6"
+    }
+  ],
+  "independent_elevation_control": {
+    "attempted_source": "https://www.ign.es/web/ign/portal/gds-vertices",
+    "contacts_or_information_requests_sent": false,
+    "ground_truth_verified": false,
+    "outcome": "Public name-search form for Reales returned Portlets no esta disponible temporalmente; no control-point result acquired",
+    "status": "not_completed"
+  },
+  "input_files": [
+    {
+      "bytes": 5303587,
+      "path": ".runtime/malaga-terrain-validation-v2/mdt05-sampled25m-halo.asc",
+      "sha256": "1b2e4f470bf456b0189cf22e60dddcf09af413617eb9b76f5a2c1650be70e917"
+    },
+    {
+      "bytes": 1343432,
+      "path": ".runtime/malaga-terrain-validation-v2/mdt05-sampled25m-halo.tif",
+      "sha256": "8b2e91a5f486358a75a00af8820e65e5b899ecf6a0f909fa39484906eeef65a7"
+    },
+    {
+      "bytes": 3046,
+      "path": ".runtime/malaga-terrain-validation-v2/mdt05-description.xml",
+      "sha256": "a92a29c071dcdb991fea98a89dd1105d1fd85bc81702b01f787ebffb4b40de04"
+    },
+    {
+      "bytes": 2947389,
+      "path": ".runtime/malaga-terrain-validation-v2/ign-wcs-2017-slides.pdf",
+      "sha256": "af354454dc544a12bd90d60219dde2181bbc1f5689af0c9fbbe6e0fae72f4b61"
+    }
+  ],
+  "limitations": [
+    "Encoding comparison shares one provider; it is not independent surveying or ground truth.",
+    "Heights in metres are documented for MDT05 ASCII; missing native tags and SWE radiance default remain recorded.",
+    "The restriction masks genuine sea-level/negative heights as well as possible voids; no values are repaired.",
+    "Exact vertical datum, local survey date, live source edition and historical availability are unknown.",
+    "A constant height offset cancels in local gradients; varying datum transformations or source mosaics still require care.",
+    "Sampled25m slopes omit5m detail; mean local slopes are not the slope of500m mean elevation.",
+    "Runtime slope and slope-to-fire/movement coupling remain disabled and uncalibrated."
+  ],
+  "masks": {
+    "excluded_nonpositive_samples": 16999,
+    "full_coverage_500m_cells": 1482,
+    "producer_void_semantics_verified": false,
+    "restricted_analysis_rule": "Exclude nonpositive heights and any stencil touching them; keep outer border masked. This is deliberate analysis exclusion, NOT a native NoData claim.",
+    "source_nodata_declared": false,
+    "total_500m_cells": 1517,
+    "valid_gradient_samples": 650497
+  },
+  "output_files": [
+    {
+      "bytes": 2319782,
+      "path": ".runtime/malaga-gradient-validation-v1/diagnostic_slope_degrees_sampled25m.tif",
+      "sha256": "fa5b6146fa3bca1be776d203e129facefafa0f515709c9a6c473d3fb639fb1b7"
+    },
+    {
+      "bytes": 6700,
+      "path": ".runtime/malaga-gradient-validation-v1/restricted_gradient_mask_sampled25m.tif",
+      "sha256": "b9c4a7800bfbee053e9f593c3ce7babfe06e4bda19bf54dfec1e7d24655836a3"
+    },
+    {
+      "bytes": 6240,
+      "path": ".runtime/malaga-gradient-validation-v1/mean_sampled_slope_degrees_500m.tif",
+      "sha256": "6d751e99d4f9acdbb6655df0dc99c2ad0b1d4d889945b4b32c4cf291b06722d1"
+    },
+    {
+      "bytes": 1168,
+      "path": ".runtime/malaga-gradient-validation-v1/gradient_coverage_fraction_500m.tif",
+      "sha256": "37df3f064ce1e93e9f964832dde44ac6ef17701a2701186f7552aaafad8fec20"
+    }
+  ],
+  "product": {
+    "coverage": "Elevacion25830_5",
+    "crs_basis": "Matching request/GeoTIFF bounds and affine transform",
+    "epsg": 25830,
+    "nominal_resolution_metres": 5,
+    "resampling": "WCS nearest neighbor; not native5m or native25m coverage",
+    "returned_sample_spacing_metres": 25,
+    "source_ascii_has_crs": false
+  },
+  "role": "evaluator_diagnostic",
+  "simulator_input_eligible": false,
+  "slope_enabled": false,
+  "status": "documented_metre_units_and_encoding_checked_restricted_gradients_only",
+  "validation": {
+    "new_tests_passed": 25,
+    "previous_runtime_unchanged": true,
+    "reproduced_rasters": 4
+  },
+  "version": "wildfire-mdt05-relative-gradient-validation-v1"
+}

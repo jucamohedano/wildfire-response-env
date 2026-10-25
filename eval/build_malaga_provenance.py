@@ -238,6 +238,16 @@ def build_document(root, snapshot_date, profile):
         clean_terrain['checks'] = clean_value['checks']
         clean_terrain['limitations'].extend(clean_value['remaining_gates'])
     entries.append(clean_terrain)
+    gradients, gradient_value = _entry(root, 'relative-gradient-validation', 'derived', 'terrain_metadata_validation_v2.json',
+        limitations=('Restricted offline MDT05 analysis only; no older MDT25 relabelling or simulator slope activation.',))
+    if gradient_value:
+        gradients['source_urls'] = [item['url'] for item in gradient_value['acquisition']]
+        gradients['raw_artifacts'] = [artifact(root, item['path'], item) for item in gradient_value['input_files']]
+        gradients['derived_artifacts'] = [artifact(root, item['path'], item) for item in gradient_value['output_files']]
+        gradients['transformations'] = [artifact(root, item['path'], item) for item in gradient_value['implementation_files']]
+        gradients['checks'] = gradient_value['checks']
+        gradients['gate_decision'] = gradient_value['gate_decision']
+    entries.append(gradients)
     document = dict(version=VERSION, snapshot_date=snapshot_date,
         role='operator_and_evaluator_reference_not_actor_observation',
         incident=dict(name='Sierra Bermeja, Malaga', event_year=2021),
@@ -258,7 +268,9 @@ def build_document(root, snapshot_date, profile):
                  dict(inputs=['episode-configuration', 'weather-normalized', 'landscape-prepared'],
                       output='prepared-integration'),
                  dict(inputs=[], output='clean-terrain-candidate', prompted_by='terrain-candidate',
-                      relation='Independent authoritative acquisition; no earlier contaminated values reused')],
+                      relation='Independent authoritative acquisition; no earlier contaminated values reused'),
+                 dict(inputs=[], output='relative-gradient-validation',
+                      relation='Separate documented MDT05 product sampled at25m; no MDT25 reclassification')],
         synthetic_profile_sha256=profile['sha256'],
         open_gates=['Verify data clocks/quality masks before any separately versioned runtime adapter.',
                     'No historical initial fleet or full delivery logs found; retain declared generated states.',
