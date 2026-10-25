@@ -267,6 +267,50 @@ floating-point or cross-hardware determinism. Missing CUDA-enabled PyTorch
 returns an explicit unavailable status, not a pass; it never installs drivers or
 downloads model weights. No core dependencies are added for this probe.
 
+## Additional missing-data discoveries
+
+The [half-hourly weather acquisition](../malaga_2021/halfhour_weather_v1.json)
+records 384 measured SiAR rows for MA04 Estepona, requested for 8–15 September
+2021: temperature, relative humidity, wind speed/direction and rain. An anonymous
+read-only public form query worked without CDS or SiAR API credentials. The
+[daily IFAPA audit](../malaga_2021/station_weather_search_v1.json) separately
+retains eight daily records and station metadata. The station is a 185 m
+coastal/agricultural site, not a mountain fire-front measurement. Manual pages
+22/25 establish UTC for post-April2014 subdaily queries, but eight midnight rows
+combine a next-day date and24:00. Original labels stay intact; no UTC receipt or
+fully normalized observation clock is invented. Mean wind is not gust data, and
+the measurement height/directional convention remain separate checks.
+
+The [terrain/fuel audit](../malaga_2021/terrain_fuel_search_v1.json) adds an official
+PNOA2020–21 terrain candidate whose collection predates the fire, unlike the
+previous WCS grid's unknown epoch. Only a small25m window was saved from the
+range-readable regional COG. It is quarantined: band nodata is255, while extreme
+negative sentinel-like values survive in the derived raster. Do not interpret
+those as real height, erase them with zeros, or use the raster in physics until
+mask/vertical metadata and resampling are reviewed. This discovery does not
+change the metadata or hashes of earlier terrain artifacts.
+
+An actual EFFIS NFFL fuel-type map and native250m Málaga excerpt were acquired,
+with numeric class codes and the publisher's legend. The map is cited as2017,
+but its vegetation-observation epoch remains unverified and its filename contains
+2000; it is not a measured2021 fuel/moisture inventory. There are850 nodata cells
+in the7470-cell rectangle. No filling or land-cover-to-fuel conversion was applied.
+The official UCO40 manual is a useful parameter-identification reference, not
+proof of2021 field conditions.
+
+The [operational evidence audit](../malaga_2021/operations_search_v1.json) retains
+34 retrospective fact records and14 operational-plan entries, including a
+12-code first-attack assignment list. Assignment, planned allocation, deployment,
+arrival, availability and message receipt stay different evidence types. A
+timestamped initial dispatchable roster, code-to-unit dictionary, unit arrival/
+release timelines and command delivery/readback logs were not found in the
+reviewed public sources. No agency was contacted or information request sent.
+
+These are new evaluator-side candidates, not changes to the locked evidence
+bundle, episode configuration, synthetic-condition runtime or reward. Raw source
+files and derived rasters/weather remain in ignored local storage; public metadata
+does not establish redistribution clearance or real operational effectiveness.
+
 ## Rights and retention
 
 ICS-209-PLUS v3 metadata declares CC BY 4.0; retain dataset attribution and DOI.

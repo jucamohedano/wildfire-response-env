@@ -1,0 +1,169 @@
+{
+  "version": "wildfire-malaga-terrain-fuel-search-v1",
+  "checked_on": "2026-10-25",
+  "role": "retrospective_evaluator_candidates",
+  "actor_input_eligible": false,
+  "simulator_input_eligible": false,
+  "historical_replay_ready": false,
+  "terrain": {
+    "source_url": "https://portalrediam.cica.es/repositorio/01_CARACTERIZACION_TERRITORIO/07_BASES_REF_ELEV/01_ELEVACIONES/01_PROYECTOS_REGIONALES/2020_AND_PNOA_LIDAR_V226_el/InfGeografica/InfRaster/MDT/ETRS89_h30_Horto/COG/Mos_1m/Mos_MDT_1m_COG.tif",
+    "source_epoch_label": "PNOA2020-21 / V226",
+    "source_epoch_evidence": "REDIAM May2023 bulletin states collection captured July2020-May2021",
+    "publication_is_pre_incident": false,
+    "actor_input_eligible": false,
+    "source_driver": "GTiff",
+    "source_crs": "EPSG:25830",
+    "source_resolution": [
+      1.0000000000000004,
+      0.9999999999999131
+    ],
+    "source_dtype": [
+      "float32"
+    ],
+    "source_nodata": 255,
+    "source_units": [
+      null
+    ],
+    "source_overviews": [
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "source_tags": {
+      "AREA_OR_POINT": "Area"
+    },
+    "status": "downloaded_subset_quarantined",
+    "filename": "pnoa2020-21-dtm-aoi25m.tif",
+    "bytes": 2063043,
+    "sha256": "1632268aa51a18884b05a8984e64e86b2c1df528b376315781cdbc06f82ad675",
+    "shape": [
+      793,
+      728
+    ],
+    "bbox_epsg25830": [
+      297125,
+      4034450,
+      315325,
+      4054275
+    ],
+    "output_cell_metres": 25,
+    "resampling": "GDAL average, may use source overviews; not an exact native-pixel aggregation claim",
+    "valid_cells": 577304,
+    "masked_cells": 0,
+    "numeric_range": [
+      -32767,
+      1446.66455078125
+    ],
+    "vertical_unit_explicit_in_band": false,
+    "vertical_datum_from_source_path": "Horto; requires metadata review",
+    "quality": {
+      "declared_nodata": 255,
+      "cells_equal_minus32767": 284,
+      "cells_below_minus1000": 354,
+      "cells_equal_declared_nodata": 0,
+      "numeric_min": -32767,
+      "status": "quarantine_pending_nodata_and_resampling_review",
+      "actor_input_eligible": false,
+      "physics_input_eligible": false,
+      "explanation": "Extreme negative sentinel-like heights survive the declared mask; average resampling may propagate unmasked sentinel values. Do not treat these as real elevation or repair with zero."
+    },
+    "producer_catalog": "https://www.juntadeandalucia.es/medioambiente/portal/acceso-rediam/geoportal/raster-formato-cog/bases-referencia-y-elevaciones/modelos-digitales-elevaciones",
+    "collection_epoch_evidence": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/67875318/Boletin_Rediam_mayo_2023_blog..pdf/9c26a5ff-8276-c7e1-f2e7-182ab743dcc5?t=1684738946073",
+    "collection_epoch_evidence_locator": "PDF page1: lidar captured July2020-May2021; published May2023.",
+    "source_whole_file_bytes": 202860702018,
+    "download_method": "Range-capable COG; only requested study window and overviews read. Whole-file size is not the downloaded byte count.",
+    "limitations": [
+      "Original1m dataset reduced to25m using GDAL average and available overviews. This is not an exact native-pixel arithmetic-average guarantee.",
+      "Band metadata says nodata255, but the derived subset contains extreme negative sentinel-like heights. No inferred replacement mask or zero filling applied.",
+      "Survey collection predates September2021 according to producer bulletin; later publication is not available-at-event terrain information.",
+      "Do not retroactively assign this epoch to the previously downloaded anonymous-edition IGN WCS grid."
+    ]
+  },
+  "fuel": {
+    "id": "effis-fuel-aoi",
+    "archive_sha256": "ed06080d81048de18dc34caf0f4fcc2f26d626f020bf132277d4e470a71a83d8",
+    "member": "FuelMap2000_NFFL_LAEA.tif",
+    "citation_year": 2017,
+    "vegetation_observation_epoch_verified": false,
+    "actor_input_eligible": false,
+    "status": "subset_acquired",
+    "source_crs": "EPSG:3035",
+    "source_resolution": [
+      250,
+      250
+    ],
+    "source_nodata": 0,
+    "source_dtype": [
+      "uint8"
+    ],
+    "shape": [
+      90,
+      83
+    ],
+    "cell_values_and_counts": {
+      "0": 850,
+      "2": 1768,
+      "4": 3398,
+      "5": 172,
+      "7": 175,
+      "8": 303,
+      "9": 61,
+      "10": 743
+    },
+    "masked_cells": 850,
+    "source_tags": {
+      "AREA_OR_POINT": "Area"
+    },
+    "filename": "effis-fuel-aoi-native.tif",
+    "bytes": 1686,
+    "sha256": "4cc9b17c7f738af14d1f12302b4e8c9f958608023c600d8668864954d95cd308",
+    "interpretation": "Numeric NFFL class codes, not live/dead fuel moisture, biomass load or verified2021 local fuel state. Citation2017 does not establish surveyyear; filename includes2000.",
+    "archive": {
+      "id": "effis-fuel2017",
+      "url": "https://forest-fire.emergency.copernicus.eu/effis/applications/data-and-services/FuelMap_LAEA.zip",
+      "effective_url": "https://data.effis.emergency.copernicus.eu/effis/applications/data-and-services/FuelMap_LAEA.zip",
+      "bytes": 18226545,
+      "sha256": "ed06080d81048de18dc34caf0f4fcc2f26d626f020bf132277d4e470a71a83d8",
+      "members": [
+        {
+          "name": "FuelMap2000_NFFL_LAEA.tif",
+          "bytes": 621969457
+        },
+        {
+          "name": "README.txt",
+          "bytes": 1484
+        },
+        {
+          "name": "var-fuels_lin-EFFIS_ty-2017__legend.png",
+          "bytes": 18693
+        },
+        {
+          "name": "var-fuels_lin-EFFIS_ty-2017__legend.qml",
+          "bytes": 2215
+        }
+      ],
+      "actor_input_eligible": false,
+      "scope": "Fuel types, not observed2021 fuel moisture, treatment history or calibrated engine parameters"
+    },
+    "documentation": "https://forest-fire.emergency.copernicus.eu/about-effis/technical-background/fuels",
+    "legend": "var-fuels_lin-EFFIS_ty-2017__legend.qml",
+    "limitations": [
+      "Citation2017 is not the vegetation survey date. FilenameFuelMap2000_NFFL_LAEA.tif is retained without inventing its epoch.",
+      "NFFL model codes are not measured fuel loads, live/dead moisture or calibrated spread parameters.",
+      "850 of7470 selected cells are nodata; no gap filling or land-cover substitution performed.",
+      "Rectangular native250m excerpt inEPSG3035, not clipped/reprojected to the simulator grid."
+    ]
+  },
+  "parameter_reference": {
+    "url": "https://www.juntadeandalucia.es/organismos/ema/areas/incendios-forestales/prevencion/participacion-social/paginas/manual-modelos-de-combustible.html",
+    "name": "Andalusia UCO40 field identification/characterization manual",
+    "status": "official_reference_identified_not_downloaded",
+    "limitations": "2025manual reference, not a verified2021 field fuel survey. Do not infer historical fuel state from later measurement products."
+  },
+  "changes_to_existing_simulator_or_source_lock": false
+}

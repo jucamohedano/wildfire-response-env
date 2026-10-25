@@ -1,0 +1,77 @@
+{
+  "version": "malaga-siar-halfhourly-acquisition-v1",
+  "station": "MA04 Estepona",
+  "landing_url": "https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio",
+  "query_url": "https://servicio.mapa.gob.es/siarweb/consultaDatos/consultaDatos",
+  "query_method": "POST read-only public query",
+  "request_parameters": {
+    "variablesSeleccionadas": "9,2,3,4,24",
+    "idEstaciones": "29-4",
+    "accionHidden": "resultadoConsultaDatos",
+    "fechaInicial": "2021-09-08",
+    "fechaFinal": "2021-09-15",
+    "tipoCalculo": "1",
+    "tipoFiltroEstaciones": "provincias",
+    "consultaPersonalizada": "false",
+    "peticion.id": "",
+    "peticion.idTipoPeticion": "",
+    "idCCAA": "",
+    "idProvs": "",
+    "idComRegantes": ""
+  },
+  "requested_dates": [
+    "2021-09-08",
+    "2021-09-15"
+  ],
+  "records": 384,
+  "finite_and_plausibility_checks_passed": true,
+  "unique_source_label_pairs": true,
+  "source_clock_period": "00:30 through23:30 plus24:00 labels each day; half-hour cadence",
+  "first_source_label": [
+    "08/09/2021",
+    "0:30"
+  ],
+  "last_source_label": [
+    "16/09/2021",
+    "24:00"
+  ],
+  "ambiguous_24h_rows": 8,
+  "timezone_verified": true,
+  "interval_start_end_semantics_verified": false,
+  "actor_input_eligible": false,
+  "simulator_input_eligible": false,
+  "historical_replay_ready": false,
+  "files": [
+    {
+      "path": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.html",
+      "bytes": 1196036,
+      "sha256": "81877de9b665ae1ba0af0d6430819bb9189f4369f55fa991aa7f7ac195e928fd"
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+      "bytes": 155732,
+      "sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223"
+    }
+  ],
+  "limitations": [
+    "Official manual establishesUTC for this post2014 subdaily query. Eight24:00 rows carry next-day calendar labels and require explicit boundary interpretation before normalization.",
+    "Current historical export is not proof of2021 publication or decision-maker receipt.",
+    "Coastal185m station is not a ridge/fire-front measurement; sensor height and wind FROM/TO convention unverified.",
+    "Half-hour mean wind is not gust data or an engine relative wind index.",
+    "No missing numeric cells in384 selected rows does not certify all underlying sensor samples or quality flags."
+  ],
+  "clock_convention_documented": "UTC for hourly/subdaily records after2014-04-01, per official SiAR user manual; does not resolve24:00 calendar-boundary formatting.",
+  "timezone_evidence": {
+    "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualUsoWebSiAR.pdf",
+    "edition": "September2025",
+    "pdf_pages": [
+      22,
+      25
+    ],
+    "manual_sha256": "3a55586b1e3ccde386a2f9f4875c9aa45e74241598a04b8ebfcfe974db738264"
+  },
+  "fully_normalized_observation_timestamps": false,
+  "utc_timestamp_policy": "Raw source labels retained; all observed_at_utc and available_at_utc fields remain null pending interval/boundary review. Do not add a day blindly to date+24:00.",
+  "station_metadata_reference": "station_weather_search_v1.json",
+  "mapping_to_engine_wind_index_performed": false
+}
