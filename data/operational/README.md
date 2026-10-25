@@ -454,6 +454,41 @@ localhost startup and the real client/server comparison runner. The original nin
 optional checks are exercised against their own legacy servers, not silently
 substituted with the new adapter tests. No HappyRobot connection is required.
 
+## New numeric elevation candidate (not active slope)
+
+The [clean-elevation audit](../malaga_2021/clean_elevation_v1.json) records a new,
+bounded IGN WCS25m numeric GeoTIFF covering the common grid plus a500m halo. Its
+1,343,432bytes contain670,800 integer values ranging0–1450, with no extreme
+negative sentinels. This is a separate acquisition; the old contaminated REDIAM
+subset and all locked inputs remain unchanged. No negative values were erased
+or gaps filled. Zeros remain unchanged rather than being guessed missing.
+
+Three small candidate rasters provide500m source-value averages, numeric-coverage
+mask and a separate all-zero physics-approval mask. All1,517 averages match direct
+20×20 source-window means, and all three outputs rebuild byte-for-byte. Optional
+NumPy/rasterio are required only for offline preparation:
+
+```sh
+.runtime/malaga-data-venv/bin/python -m eval.prepare_clean_malaga_terrain \
+  --output .runtime/clean-terrain-refresh
+```
+
+Restore the pinned cached inputs first and use a fresh output directory. These
+files deliberately say **source values**, not authenticated metre heights. IGN's
+service describes orthometric terrain, but the returned band's units and NoData
+are absent, while its WCS2 range UOM says `W.m-2.Sr-1`. MapServer documents this
+as its default unspecified UOM; that explains a plausible metadata error, not a
+producer-confirmed correction. Product-level metric accuracy descriptions are
+not this integer output's precision. Exact vertical datum, local survey date and
+native void semantics remain unresolved. Do not borrow REDIAM's epoch or the
+separate second-coverage Alicante datum. The OGC API's catalogue worked, but its
+bounded COG requests failed; no raster from that route is claimed.
+
+Thus **numeric screening passes, scientific metadata validation is pending**.
+Slope stays disabled and the candidate does not enter actor observations, fire,
+movement or rewards. The provenance JSON links this candidate separately from
+the existing prepared runtime, whose input bundle and trajectories are unchanged.
+
 ## Rights and retention
 
 ICS-209-PLUS v3 metadata declares CC BY 4.0; retain dataset attribution and DOI.
