@@ -1,3 +1,5 @@
+from functools import cache
+import json
 import unittest
 
 from wildfire_core import OpsControlCenterEnv
@@ -31,7 +33,8 @@ def on_scene(kind='engine', mission='recon', sector_id='sector-west'):
     return {'state': 'on_scene', 'kind': kind, 'mission': mission, 'sector_id': sector_id}
 
 
-def completed_ops_002_trajectory():
+@cache
+def _completed_ops_002_json():
     env = OpsControlCenterEnv(ticks_per_action=2)
     env.reset('ops-002', 20002)
     result = env.request_resources([
@@ -45,10 +48,21 @@ def completed_ops_002_trajectory():
     env.release_resources(['engine-valverde'])
     while not env._core.terminated and not env._core.truncated:
         env.advance()
-    return env.trajectory()
+    return json.dumps(env.trajectory())
+
+
+def completed_ops_002_trajectory():
+    return json.loads(_completed_ops_002_json())
 
 
 class OpsObjectiveTests(unittest.TestCase):
+    def test_cached_trajectory_returns_independent_mutable_copies(self):
+        first = completed_ops_002_trajectory()
+        expected = completed_ops_002_trajectory()
+        first['transitions'][0]['observation']['resources'][0]['state'] = 'tampered'
+        first['objectives'].clear()
+        self.assertEqual(completed_ops_002_trajectory(), expected)
+
     def test_success_and_reward_version(self):
         newly_completed, reward = objective_step(
             observation(10, [on_scene()]), [objective()], [])

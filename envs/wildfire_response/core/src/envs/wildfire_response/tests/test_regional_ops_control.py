@@ -1,4 +1,5 @@
 import copy
+from functools import cache
 import json
 import unittest
 
@@ -33,6 +34,16 @@ def rollout(policy, task_id='control-002'):
         if terminated or truncated:
             break
     return env, env.verify_episode()
+
+
+@cache
+def _false_alarm_control_json():
+    trace, summary, _ = run_episode('control-002', 'control')
+    return json.dumps([trace, summary])
+
+
+def false_alarm_control():
+    return json.loads(_false_alarm_control_json())
 
 
 class BroaderObjectiveTests(unittest.TestCase):
@@ -195,7 +206,7 @@ class BroaderControlRolloutTests(unittest.TestCase):
         self.assertLess(arrivals['objective_score'], good['objective_score'])
 
     def test_false_alarm_restraint_beats_indiscriminate_warnings(self):
-        _, restrained, _ = run_episode('control-002', 'control')
+        _, restrained = false_alarm_control()
         _, blanket, _ = run_episode('control-002', 'blanket_warning')
         self.assertEqual(restrained['diagnostics']['unnecessary_evacuation'], 0)
         self.assertTrue(restrained['objective_components']['communication_discipline'])
@@ -224,12 +235,12 @@ class BroaderControlRolloutTests(unittest.TestCase):
             return action
 
         _, repeated = rollout(repeated_notices)
-        _, normal, _ = run_episode('control-002', 'control')
+        _, normal = false_alarm_control()
         self.assertFalse(repeated['objective_result']['by_kind']['communication_discipline'])
         self.assertLess(repeated['objective_score'], normal['objective_score'])
 
     def test_public_trace_replay_rejects_fabricated_evidence_and_reward(self):
-        trace, summary, _ = run_episode('control-002', 'control')
+        trace, summary = false_alarm_control()
         self.assertEqual(verify_ops_trajectory(json.loads(json.dumps(trace)))['total_score'], 1)
         self.assertEqual(summary['invalid_actions'], 0)
         before_end = trace['transitions'][:-1]

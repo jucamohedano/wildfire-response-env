@@ -183,9 +183,10 @@ class TopographicAdapterTests(unittest.TestCase):
                     exported = json.loads(json.dumps(trace, allow_nan=False))
                     self.assertEqual(exported, trace)
                     self.assertEqual(total_reward, local.reward)
-                    self.assertEqual(adapter.core.verify_episode(), local.verify_episode())
+                    verified = local.verify_episode()
+                    self.assertEqual(adapter.core.verify_episode(), verified)
                     self.assertEqual(replay_export(exported, lambda: self.core(slope_enabled)),
-                                     local.verify_episode())
+                                     verified)
                     changed = copy.deepcopy(exported)
                     changed['transitions'][-1]['objective_reward'] += 1
                     with self.assertRaises(RuntimeError):
