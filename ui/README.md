@@ -140,3 +140,11 @@ fields, reset/stale request isolation, import and export, private-state separati
 body/Origin guards and default truth denial. Terrain tests verify geometry, crop,
 analytical shading, deterministic PNG, finite supported data and labelled fallback.
 The physics, reward and existing trajectory digests are unchanged by this UI.
+
+The recorded first validation passed38 isolated Python UI/terrain tests and7
+frontend tests, plus282 core and239 root regression methods (optional skips are
+reported separately). Browser checks exercised manual dispatch/readbacks and the
+protection lifecycle, a complete two-fire scripted episode with verified score1,
+read-only history/import, malformed drafts, numeric-token-preserving archive
+transport, and narrow/desktop layouts. See `../data/ui_v1/validation.json` for the
+source/artifact hashes and exact scope; passing UI checks is not physical validation.
