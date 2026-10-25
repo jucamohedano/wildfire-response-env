@@ -1,0 +1,49 @@
+{
+  "version": "wildfire-ui-map-refinement-v1",
+  "validated_on": "2026-10-25",
+  "scope": "Display-only map refinement; simulator, observations, inputs and rewards are unchanged.",
+  "sources": [
+    {
+      "provider": "Instituto Geografico Nacional, Spain",
+      "documentation": "https://www.ign.es/web/es/ign/portal/ide-area-nodo-ide-ign",
+      "tile_url": "https://tms-mapa-raster.ign.es/1.0.0/mapa-raster/{z}/{x}/{-y}.jpeg",
+      "role": "Optional current national cartographic context beneath the pinned domain terrain image",
+      "row_convention": "TMS flipped tile row",
+      "historical_evidence": false,
+      "simulator_input": false,
+      "limitations": "Live service, not a frozen 2021 map, routing dataset or extension of simulation coverage. No bulk download. Offline terrain and simulation do not depend on tile availability."
+    }
+  ],
+  "navigation": {
+    "min_zoom": 2,
+    "max_zoom": 18,
+    "spain_extent_wgs84": [-18.3, 27.4, 4.7, 44.4],
+    "national_locator": "Simulation domain, derived only from public map metadata",
+    "regional_overlays_hidden_above_resolution_metres_per_pixel": 300
+  },
+  "display": {
+    "terrain_contrast": 1.3,
+    "terrain_saturation": 0.85,
+    "national_context_contrast": 1.12,
+    "fire_evolution": "Rebuild burning-cell fills and their shared external edges from each selected frame; no interpolated propagation or continuous animation",
+    "actor_view": "Only burning sensor observations received by the frame time; stale after four model minutes. No invented intensity, burn scars, ignition times or containment claims.",
+    "evaluator_view": "Explicit existing live-only truth gate; private simulator heat and inactive burned cells, never used in actor history or public exports."
+  },
+  "checks": {
+    "frontend_tests_passed": 12,
+    "python_ui_terrain_tests_passed": 38,
+    "typescript_and_production_build": "passed; existing large-bundle advisory remains",
+    "frontend_command": "cd ui && npm test && npm run build",
+    "python_command": "PYTHONPATH=envs/wildfire_response/core/src .runtime/ui-venv/bin/python -m unittest tests.test_ui_server tests.test_ui_terrain -q",
+    "browser": [
+      "Full Spain overview includes mainland, Balearics and Canaries; Fit domain returns to local shaded terrain",
+      "National view keeps the domain locator without regional marker clutter",
+      "Stepped topo-dev-000 and stress-train-819509b0e2b7a8e0-v0 through real simulator decisions, with playback paused",
+      "Explicit evaluator view rendered active heat and subsequent inactive burned cells",
+      "History at decision zero hides live private truth and disables mutations; return to live restores the current frame",
+      "Final preview is actor-only, paused, at the national overview"
+    ],
+    "screenshot": ".runtime/ui-map-refinement/spain-overview.jpg",
+    "limitations": "Visual smoke checks and deterministic frontend/backend tests, not new physical validation or held-out policy evaluation."
+  }
+}

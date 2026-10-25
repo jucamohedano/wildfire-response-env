@@ -64,6 +64,21 @@ no globe, camera pitch, rotation, 3D terrain mesh or extrusions.
 - **History:** the slider and decision list select recorded past states only.
   Past/imported frames disable all live mutations. Return to live refreshes the
   current server state; it does not rewind the simulator.
+- **Map:** zoom out to level2, or use **Spain** to fit mainland Spain, the
+  Balearic and Canary islands, Ceuta and Melilla. **Fit domain** returns to the
+  supported simulation area. A domain locator remains visible at national scale;
+  operational markers/grid are hidden there to avoid overlapping labels. The
+  simulator is still local to its pinned domain, not a national fire model.
+- **Fire evolution:** contiguous fresh burning observations have a shared outer
+  cell-edge outline, rather than a border around every square. Older observations
+  become muted/dashed after four model minutes. The frame time and cell counts
+  update with stepping, playback and history. A disappeared/stale observation
+  does not establish containment, and new evidence does not establish ignition
+  time. Public observations have no heat or burned-fraction measurements, so the
+  UI does not invent them. Only the explicitly enabled live evaluator overlay
+  colours actual simulator heat red-to-yellow and shows burned inactive cells.
+  Cell edges are not a measured continuous fire perimeter. There is no cosmetic
+  spread interpolation, flickering flame or continuous animation/render loop.
 - **Export/open:** export a complete public canonical JSON trace, or import a
   completed `.json`/`.json.gz` trace. Imports are bounded, independently replayed
   against current caller-pinned inputs/settings, and read-only. In-progress exports
@@ -94,13 +109,16 @@ plane. When that optional raw ASC is absent, an explicitly labelled coarse500m
 domain-height image is used. Present corrupt/changed raw data fails closed; no
 unknown elevations are filled. Neither image modifies physics or the input bundle.
 
-Optional `IGNBaseSimplificado` labels/roads are requested directly from the
+Optional national `mapa-raster` context and `IGNBaseSimplificado` labels/roads are requested directly from the
 [official IGN service](https://www.ign.es/web/ign/portal/ide-area-nodo-ide-ign),
 using the documented transparent TMS layer with a flipped tile-row convention.
 Attribution is visible. These are current cartographic context, not authenticated
 2021 roads, simulated routes or resource positions. Network failure affects only
 that optional layer; turning it off leaves terrain and simulation fully local.
 No bulk tile download, Google Maps billing, key provisioning or tile proxy is used.
+Terrain hillshade has higher display contrast, labels are fully opaque, and
+domain/grid/guard lines are darker. Display filters do not alter input elevations
+or simulation physics and do not apply to the operational overlays.
 
 Clicking a received report centres its claimed location. Pointing at a cell reads
 its mean elevation/fuel class from the pinned public500m grid, never from colours
