@@ -1,0 +1,223 @@
+{
+  "version": "wildfire-malaga-evidence-v1",
+  "incident_id": "ES-MA-SIERRA-BERMEJA-2021",
+  "reviewed_on": "2026-10-25",
+  "actor_input_eligible": false,
+  "historical_replay_ready": false,
+  "files": [
+    {
+      "id": "emsr545-aoi01-del-monit01",
+      "filename": "EMSR545_AOI01_DEL_MONIT01_r1_RTP01_v1_vector.zip",
+      "url": "https://cems-mapping-website.s3.eu-west-1.amazonaws.com/static/activations/EMSR545/EMSR545_AOI01_DEL_MONIT01_r1_RTP01_v1_vector.zip",
+      "bytes": 5823363,
+      "sha256": "028299294aa4bf63acb0542a891008555f04dc80ef7a85ae484637196f068c69",
+      "format": "zip"
+    },
+    {
+      "id": "emsr545-aoi01-del-monit02",
+      "filename": "EMSR545_AOI01_DEL_MONIT02_r1_RTP01_v1_vector.zip",
+      "url": "https://cems-mapping-website.s3.eu-west-1.amazonaws.com/static/activations/EMSR545/EMSR545_AOI01_DEL_MONIT02_r1_RTP01_v1_vector.zip",
+      "bytes": 6225565,
+      "sha256": "088f6f6e22ee76be30b2df2687b03039750480b69b559ccaabcdbabcd97592fb",
+      "format": "zip"
+    },
+    {
+      "id": "emsr545-aoi01-del-product",
+      "filename": "EMSR545_AOI01_DEL_PRODUCT_r1_RTP01_v1_vector.zip",
+      "url": "https://cems-mapping-website.s3.eu-west-1.amazonaws.com/static/activations/EMSR545/EMSR545_AOI01_DEL_PRODUCT_r1_RTP01_v1_vector.zip",
+      "bytes": 5210194,
+      "sha256": "e1ff1466784cb3de2e174ef48f1ddaa3389b1d76748d3141d45b686cda7feca1",
+      "format": "zip"
+    },
+    {
+      "id": "emsr545-aoi01-fep-product",
+      "filename": "EMSR545_AOI01_FEP_PRODUCT_r1_RTP01_v1_vector.zip",
+      "url": "https://cems-mapping-website.s3.eu-west-1.amazonaws.com/static/activations/EMSR545/EMSR545_AOI01_FEP_PRODUCT_r1_RTP01_v1_vector.zip",
+      "bytes": 796976,
+      "sha256": "0b05ff77cfa7d4ddfd250a69426193b506187207ab52e07b06a2ce5d27b0a9d2",
+      "format": "zip"
+    },
+    {
+      "id": "emsr545-aoi01-gra-product",
+      "filename": "EMSR545_AOI01_GRA_PRODUCT_r1_RTP01_v3_vector.zip",
+      "url": "https://cems-mapping-website.s3.eu-west-1.amazonaws.com/static/activations/EMSR545/EMSR545_AOI01_GRA_PRODUCT_r1_RTP01_v3_vector.zip",
+      "bytes": 26762209,
+      "sha256": "a6663b800364f87098dc613e44d3d4fa2552114e19b4285a2f0e550c99dffcec",
+      "format": "zip"
+    },
+    {
+      "id": "technical-report",
+      "filename": "technical_report.pdf",
+      "url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "bytes": 6521273,
+      "sha256": "a001d108856e1637262b9ec16b860e88b5b1c2ba8101a28f293bc7a966c1b6a8",
+      "format": "pdf"
+    },
+    {
+      "id": "cems-activation",
+      "filename": "cems_page.html",
+      "url": "https://mapping.emergency.copernicus.eu/activations/EMSR545/",
+      "bytes": 27336,
+      "sha256": "0bbea365a07fb8c383dba535080bf18143398f7bb3140a2a9641a027c28d0983",
+      "format": "html"
+    },
+    {
+      "id": "official-extinction",
+      "filename": "official_extinction.html",
+      "url": "https://www.juntadeandalucia.es/presidencia/portavoz/tierraymar/165737/fuego/Infoca/incendio/desarrollosostenible/medioambiente/SierraBermeja/Jubrique",
+      "bytes": 150163,
+      "sha256": "aff0f48ff406ee2967886f72f34a2f40338dd28c592f0b9b12a22b52be68384b",
+      "format": "html"
+    },
+    {
+      "id": "cems-map-monit02",
+      "filename": "map_monit02.pdf",
+      "url": "https://cems-mapping-website.s3.eu-west-1.amazonaws.com/static/activations/EMSR545/EMSR545_AOI01_DEL_MONIT02_r1_RTP01_v1.pdf",
+      "bytes": 9569945,
+      "sha256": "2bfb6a00a55552bd697f63b14211b39d9f606017c9e06e1c6ba705dbd01bc77b",
+      "format": "pdf"
+    },
+    {
+      "id": "ine-population",
+      "filename": "ine-2882.csv",
+      "url": "https://www.ine.es/jaxiT3/files/t/csv_bdsc/2882.csv",
+      "bytes": 335371,
+      "sha256": "77c670ebe8c1cc23cec1a1ba0e6439ff8bfaafaf725352ca27194f9404fd15f7",
+      "format": "csv",
+      "reference_date": "2021-01-01",
+      "publication_date": "2021-12-23",
+      "snapshot": "Current historical series; only 2021 rows extracted."
+    },
+    {
+      "id": "terrain-aoi",
+      "filename": "terrain_union.asc",
+      "url": "https://servicios.idee.es/wcs-inspire/mdt?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&COVERAGE=Elevacion25830_25&CRS=EPSG%3A25830&RESPONSE_CRS=EPSG%3A25830&BBOX=297125%2C4034450%2C315325%2C4054275&RESX=25&RESY=25&FORMAT=ArcGrid",
+      "bytes": 4587880,
+      "sha256": "44fbf4d4fc909b91d948cae6798ea38dfaba33a8aacf9bcbaa99e9c0be078488",
+      "format": "arcgrid",
+      "horizontal_crs": "EPSG:25830",
+      "survey_epoch_verified": false,
+      "vertical_units_verified": false,
+      "union_bbox_crs84": [
+        -5.263180459999944,
+        36.437454941000055,
+        -5.065065475999972,
+        36.61232644100005
+      ],
+      "bbox_epsg25830": [
+        297125,
+        4034450,
+        315325,
+        4054275
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "del-monit01",
+      "source_id": "emsr545-aoi01-del-monit01",
+      "member_prefix": "EMSR545_AOI01_DEL_MONIT01",
+      "include_context": true,
+      "delivery_source_timestamp": "2021-09-11T20:20:48"
+    },
+    {
+      "id": "del-monit02",
+      "source_id": "emsr545-aoi01-del-monit02",
+      "member_prefix": "EMSR545_AOI01_DEL_MONIT02",
+      "include_context": false,
+      "delivery_source_timestamp": "2021-09-12T19:52:35"
+    },
+    {
+      "id": "del-product",
+      "source_id": "emsr545-aoi01-del-product",
+      "member_prefix": "EMSR545_AOI01_DEL_PRODUCT",
+      "include_context": false,
+      "delivery_source_timestamp": "2021-09-10T21:27:22"
+    },
+    {
+      "id": "fep-product",
+      "source_id": "emsr545-aoi01-fep-product",
+      "member_prefix": "EMSR545_AOI01_FEP_PRODUCT",
+      "include_context": false,
+      "delivery_source_timestamp": "2021-09-09T20:13:47"
+    },
+    {
+      "id": "gra-product",
+      "source_id": "emsr545-aoi01-gra-product",
+      "member_prefix": "EMSR545_AOI01_GRA_PRODUCT",
+      "include_context": false,
+      "delivery_source_timestamp": "2021-09-20T22:17:38"
+    }
+  ],
+  "egif": {
+    "id": "egif",
+    "filename": "egif-spain-2021.zip",
+    "bytes": 2142749,
+    "sha256": "316e34acf653079efd6ea895f0991681468af6c9bc84897030a9bbde220d60e0",
+    "url": "https://servicio.mapa.gob.es/incendios/Search/Publico",
+    "year": 2021,
+    "redistribution_cleared": false
+  },
+  "uncached_sources": {
+    "red-cross": {
+      "url": "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja",
+      "published_date": "2021-10-05",
+      "status": "Public text read through web research; direct raw acquisition returned HTTP 403. Claims are curated, not raw-snapshot verified.",
+      "sha256": null
+    }
+  },
+  "remaining_gates": [
+    {
+      "id": "weather",
+      "status": "request_prepared_no_data",
+      "next": "Acquire the ERA5-Land window only after CDS access and terms are confirmed; decode accumulation, missingness and unit conventions. Reanalysis remains retrospective."
+    },
+    {
+      "id": "population",
+      "status": "official_2021_municipal_totals_acquired_after_incident_publication",
+      "next": "Seven municipal resident counts are independently reconciled to the raw2021 INE rows. Published23December2021, so not an available-at-incident snapshot. Settlement allocation and people-present estimates remain missing."
+    },
+    {
+      "id": "terrain",
+      "status": "25m_aoi_grid_acquired_survey_epoch_and_vertical_metadata_unverified",
+      "next": "Verify vertical units/datum, survey/product epoch and absent nodata declaration before slope/physics integration. The modern snapshot is contextual terrain, not certified2021 surface conditions."
+    },
+    {
+      "id": "fuel",
+      "status": "cems_2018_land_cover_context_only",
+      "next": "CEMS bundles include reference CLC2018-derived context. No measured fuel loads, moisture or calibrated combustibility mapping."
+    },
+    {
+      "id": "roads",
+      "status": "cems_2021_reference_geometry_acquired",
+      "next": "Validate a routable graph, source epoch and access/closures; the CEMS source table labels OSM2021-09-09, after detection."
+    },
+    {
+      "id": "clocks",
+      "status": "interpretations_and_conflicts_preserved",
+      "next": "Confirm web-delivery timezone and publication/receipt times. Incident local-clock conversion is an explicit Europe/Madrid interpretation, not timezone metadata from EGIF."
+    },
+    {
+      "id": "operations",
+      "status": "retrospective_milestones_not_action_logs",
+      "next": "Interpret resource categories and readiness; no complete dispatcher action log, minute-level call transcripts, delivery/readback evidence or population compliance data."
+    },
+    {
+      "id": "integration",
+      "status": "not_ready",
+      "next": "Resolve evidence conflicts, define bounded decision windows and separately version initial-state, actor-observation and scoring adapters. No hidden future outcome becomes initial evidence."
+    },
+    {
+      "id": "rights",
+      "status": "not_cleared_for_publication",
+      "next": "Retain source-specific attribution and licensing. Raw archives and derived geographic outputs stay local evaluator artifacts."
+    }
+  ],
+  "limitations": [
+    "Same incident and year does not mean equal measurement definitions or fully matched source clocks.",
+    "Map source DBF tables retain explicit satellite UTC acquisition clocks and per-feature source references; product delivery clocks are separate.",
+    "The grading product is revised v3; the page delivery date does not authenticate the release time of each feature or every revision.",
+    "The map PDF event label is 2021-09-08 22:30 UTC, which conflicts with the EGIF detection-clock interpretation; it is not substituted as ignition.",
+    "No new data enters simulator observations, benchmark scenarios, training labels or reward."
+  ]
+}

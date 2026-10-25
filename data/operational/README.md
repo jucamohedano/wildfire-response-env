@@ -105,6 +105,90 @@ ERA5-Land is a possible hourly reanalysis source, not historically available
 operational weather. Download small incident-area/window subsets once location
 and timezone are verified, then cache derived packs for CPU-only episode runs.
 
+## Sierra Bermeja, Málaga: aligned 2021 evidence bundle
+
+The next pilot is one incident, not all Málaga fires: Sierra Bermeja, detected
+8 September 2021. Its [source lock](../malaga_2021/sources.lock.json),
+[curated claims](../malaga_2021/claims.json),
+[population provenance](../malaga_2021/population_sources.json) and
+[weather request](../malaga_2021/era5_request.json) keep different evidence roles
+and clocks separate. No Huelva arena or 2026 roads are substituted as its history.
+
+Implemented preparation:
+
+- Download and pin five CEMS EMSR545 vector packages, the technical report,
+  an institutional final-extinction update and supporting map metadata. Preserve
+  source hashes and each feature's reference/damage-source identifiers. The
+  satellite source tables provide explicit UTC acquisition clocks; webpage
+  delivery times do not establish a verified timezone or actual actor receipt.
+- Match exactly one existing EGIF record by Málaga province and detection time,
+  then independently check its control and final-extinction milestones. Preserve
+  its final forest area separately from the technical report's affected area.
+- Export CRS84 map layers and selected reference context without contact fields.
+  The revised grading product omits a CRS member: RFC7946 defaults are accepted
+  only after independently checking its accompanying WGS84 PRJ. This is not
+  implicit conversion of metre coordinates or a topology/routing certificate.
+- Extract seven official municipal population totals from the January 2021 INE
+  reference period. Their release followed the incident on 23 December 2021.
+  They remain evaluator context, not historically available population telemetry,
+  people present, at-risk counts or inferred evacuation demand.
+- Acquire a 25 m terrain grid covering the union of the five mapped areas and
+  fire polygons. Check every retained AOI/fire vertex against the grid in UTM30N,
+  with explicit longitude/latitude axis order and an independently pinned grid.
+  This checks horizontal coverage only: survey epoch, vertical units/datum and
+  absent nodata declarations remain unresolved.
+- Retain 18 structured retrospective claims with source locators, separate
+  local-clock interpretations and null receipt times. A raw Red Cross HTTP
+  download returned 403; its public chronology was read through web research,
+  but these curated claims are explicitly not raw-snapshot verified.
+
+Five discrepancies stay visible rather than being repaired: EGIF versus report
+area definitions, conflicting responder extinction wording, the CEMS map's event
+clock, the first daily-area table's date, and delivery/revision availability.
+The technical PDF describes the 2021 incident but was created in 2022; creation
+does not establish publication. Reference layers also carry their own vintages,
+including CLC2018 and an OSM snapshot labelled 9 September 2021. No historical
+outcome forces the future of a simulation, and no record is currently eligible
+as an actor observation, optimal-action label or training demonstration.
+
+The main builder uses the standard library. The optional cross-CRS check uses
+the separate, tested data-only dependency; it is not added to the demo/core:
+
+```sh
+uv venv .runtime/malaga-data-venv
+uv pip install --python .runtime/malaga-data-venv/bin/python -r data/malaga_2021/requirements.txt
+python -m eval.prepare_malaga_2021 \
+  --inputs .runtime/malaga-2021-inputs \
+  --egif-zip .runtime/malaga-2021-inputs/egif-spain-2021.zip \
+  --output .runtime/malaga-2021-prepared
+.runtime/malaga-data-venv/bin/python -m eval.check_malaga_geography \
+  .runtime/malaga-2021-prepared
+PYTHONPATH=envs/wildfire_response/core/src python -m unittest discover -s tests -q
+```
+
+Inputs must have the exact locked filenames/hashes; preserve original bytes.
+Use a fresh output directory. Reacquisition from a changed current service is a
+new evidence collection, not an exact-byte rebuild. `audit.json` excludes timing
+from the deterministic content fingerprint. Private source IDs and evaluator
+artifacts are separate from the manifest; observation privacy is not an OS
+sandbox. Raw evidence and prepared artifacts remain in ignored local storage.
+
+Remaining sequence before simulator integration:
+
+1. Acquire the small, prepared 8–15 September hourly ERA5-Land window after CDS
+   access and dataset terms are confirmed. Retain reanalysis status, missingness,
+   physical units and accumulation semantics; interpolation cannot create minute
+   gust observations. Do not invent historical publication/receipt timestamps.
+2. Resolve or explicitly bound clock/area conflicts, terrain metadata, actual
+   exposed settlement populations, road accessibility, fuel assumptions and
+   initial unit readiness. These are not supplied by municipal totals or a map.
+3. Define bounded decision windows without compressing six days into an existing
+   two-hour episode. Build separately versioned initial-state, observation and
+   scoring adapters; final perimeters and later reports cannot be early evidence.
+4. Run CPU replay, visibility/leakage checks and baseline comparisons before
+   model training. Keep incident groups separate for future held-out evaluation;
+   wording/weather variants of this one fire do not create independent incidents.
+
 ## Rights and retention
 
 ICS-209-PLUS v3 metadata declares CC BY 4.0; retain dataset attribution and DOI.
