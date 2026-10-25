@@ -35,7 +35,17 @@ tests/                          standalone extraction checks
 No PortSim source, Barcelona records or assets were copied. We do not inherit its
 CP-SAT optimality guarantee or claim a trained wildfire director. Our grader checks
 outcome accounting/lifecycle invariants and replay, not physical realism or an
-optimal policy. A public Space, AgentEnv/Harbor adapter and viewer are not claimed.
+optimal policy. A public Space or AgentEnv/Harbor adapter is not claimed. The
+optional local operator UI below is not publicly deployed.
+
+## Local 2D control-centre UI
+
+The optional [UI](ui/README.md) adds a flat source-derived terrain map, official
+IGN labels, report/triage and clarification controls, base offers/readbacks and
+resource authorization, population protection, scripted playback and verified
+read-only trace replay. It uses the existing Python API; it does not duplicate
+the simulator or change physics/rewards. Its dependencies remain isolated from
+the core and training packages. Run it locally; no public deployment is implied.
 
 ## CPU quickstart
 
