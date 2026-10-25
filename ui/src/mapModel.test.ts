@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import View from 'ol/View.js';
-import {transformExtent} from 'ol/proj.js';
-import {fireBoundary,fireCells,mapViewOptions,spainExtent} from './mapModel';
+import {transform,transformExtent} from 'ol/proj.js';
+import {fireBoundary,fireCells,mapViewOptions,spainExtent,mapProjection,limitCountryZoom} from './mapModel';
 
 describe('fire evolution display',()=>{
   const sample=(x:number,y:number,observed_at=8,burning=true)=>({x,y,burning,observed_at});
@@ -45,8 +45,8 @@ describe('fire evolution display',()=>{
 });
 
 describe('national map navigation',()=>{
-  it('fits the mainland, Balearics, Canaries and autonomous cities even in a narrow map',()=>{
-    const extent=transformExtent(spainExtent,'EPSG:4326','EPSG:3857');
+  it('fits a tighter mainland/Balearic overview and limits zoom-out to that scale',()=>{
+    const extent=transformExtent(spainExtent,'EPSG:4326',mapProjection,16);
     for(const size of [[1100,650],[320,300]]){
       const view=new View(mapViewOptions);
       view.fit(extent,{size,padding:[25,25,25,25]});
@@ -56,8 +56,33 @@ describe('national map navigation',()=>{
       expect(visible[1]).toBeLessThanOrEqual(extent[1]);
       expect(visible[2]).toBeGreaterThanOrEqual(extent[2]);
       expect(visible[3]).toBeGreaterThanOrEqual(extent[3]);
-      expect(view.getMinZoom()).toBe(2);
-      expect(view.getMaxZoom()).toBe(18);
+      const countryZoom=view.getZoom()!;
+      view.setMinZoom(countryZoom);
+      view.setZoom(countryZoom-3);
+      expect(view.getZoom()).toBeCloseTo(countryZoom);
+      expect(view.getMaxZoom()).toBeGreaterThan(17);
+      expect(view.getMaxZoom()).toBeLessThanOrEqual(18);
+    }
+  });
+  it('keeps native terrain and fire-cell edges square, without rotating or shifting the map',()=>{
+    const view=new View(mapViewOptions);
+    expect(view.getProjection().getCode()).toBe('EPSG:25830');
+    expect(view.getRotation()).toBe(0);
+    const corners=[[297000,4054500],[297500,4054500],[297500,4054000]].map(point=>transform(point,'EPSG:25830',view.getProjection()));
+    const horizontal=[corners[1][0]-corners[0][0],corners[1][1]-corners[0][1]];
+    const vertical=[corners[2][0]-corners[1][0],corners[2][1]-corners[1][1]];
+    expect(horizontal).toEqual([500,0]);expect(vertical).toEqual([0,-500]);
+    expect(horizontal[0]*vertical[0]+horizontal[1]*vertical[1]).toBe(0);
+  });
+  it('recomputes the country zoom-out limit when the same map becomes narrower',()=>{
+    const view=new View(mapViewOptions),extent=transformExtent(spainExtent,'EPSG:4326',mapProjection,16);
+    for(const size of [[1100,650],[320,300],[1100,650]]){
+      limitCountryZoom(view,size);
+      view.fit(extent,{size,padding:[25,25,25,25]});
+      const visible=view.calculateExtent(size);
+      expect(visible[0]).toBeLessThanOrEqual(extent[0]);expect(visible[2]).toBeGreaterThanOrEqual(extent[2]);
+      expect(visible[1]).toBeLessThanOrEqual(extent[1]);expect(visible[3]).toBeGreaterThanOrEqual(extent[3]);
+      expect(view.getZoom()).toBeCloseTo(view.getMinZoom());
     }
   });
 });

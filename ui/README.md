@@ -55,20 +55,34 @@ no globe, camera pitch, rotation, 3D terrain mesh or extrusions.
   the combined draft, subject to the engine's three-check budget. Apply commits
   once and advances two assumed model minutes. Advanced JSON exposes all current
   action fields, including combined and grouped triage operations.
-- **Play/step:** manual mode waits without new orders; scripted evacuation,
+- **Run live/step:** manual mode waits without new orders; scripted evacuation,
   shelter or passive policies can run the current episode. These are deterministic
   baselines, not language models. Clear/apply drafts before playback. Reset before
   comparing policies; switching policy in mid-episode creates a mixed-controller
   trace, not a fair standalone policy benchmark. Speed controls presentation pace,
   not physics or the model-minute conversion.
-- **History:** the slider and decision list select recorded past states only.
-  Past/imported frames disable all live mutations. Return to live refreshes the
-  current server state; it does not rewind the simulator.
-- **Map:** zoom out to level2, or use **Spain** to fit mainland Spain, the
-  Balearic and Canary islands, Ceuta and Melilla. **Fit domain** returns to the
-  supported simulation area. A domain locator remains visible at national scale;
-  operational markers/grid are hidden there to avoid overlapping labels. The
-  simulator is still local to its pinned domain, not a national fire model.
+- **Full trajectory:** **Run to end** explicitly computes the remaining real
+  decisions with the selected policy, stops at natural completion/truncation or
+  the decision limit, and opens the finished run at its first frame. It resumes
+  the existing episode rather than silently resetting it. **Stop generation**
+  stops after any in-flight decision is recorded. Clear/apply drafts first;
+  changing the policy mid-episode still creates a mixed-controller trace.
+- **History/replay:** the prominent slider above the map and **Start/Finish**
+  buttons traverse the recorded trajectory. **Play replay** animates those
+  recorded frames at the selected speed, without calling the simulator. Scrubbing
+  pauses replay. In-progress runs expose only recorded frames, not guessed future
+  states. Past/imported frames disable live mutations and private fire truth.
+  Return to live refreshes the current server state; it does not rewind the engine.
+- **Map:** the app opens at a tighter mainland Spain/Balearic overview, then
+  automatically fits the incident domain after a short introductory pause. Manual
+  map interaction cancels the transition; reduced-motion users get no animated
+  zoom. New/reset episodes fit the domain immediately. **Spain** returns to that
+  overview; **Fit domain** returns to the incident. Zoom-out is limited to the
+  opening country scale rather than a world view. The overview intentionally
+  omits the Canaries to avoid a large Africa/ocean frame for this Malaga episode;
+  they remain reachable by panning the worldwide street layer. A domain locator
+  remains visible at national scale; operational markers/grid are hidden there
+  to avoid overlapping labels. Simulation coverage is unchanged.
 - **Fire evolution:** contiguous fresh burning observations have a shared outer
   cell-edge outline, rather than a border around every square. Older observations
   become muted/dashed after four model minutes. The frame time and cell counts
@@ -102,23 +116,34 @@ held-out evaluations or entries in an experience bank.
 
 ## Terrain and map sources
 
-The default background is an offline display-only PNG rendered from the exact
+The terrain overlay is an offline display-only PNG rendered from the exact
 pinned IGN MDT05 ASC sampled at25m, cropped with complete stencil support to the
 same EPSG:25830 domain. Elevation appears only as colour and hillshade on a flat
 plane. When that optional raw ASC is absent, an explicitly labelled coarse500m
 domain-height image is used. Present corrupt/changed raw data fails closed; no
 unknown elevations are filled. Neither image modifies physics or the input bundle.
 
-Optional national `mapa-raster` context and `IGNBaseSimplificado` labels/roads are requested directly from the
-[official IGN service](https://www.ign.es/web/ign/portal/ide-area-nodo-ide-ign),
-using the documented transparent TMS layer with a flipped tile-row convention.
-Attribution is visible. These are current cartographic context, not authenticated
-2021 roads, simulated routes or resource positions. Network failure affects only
-that optional layer; turning it off leaves terrain and simulation fully local.
-No bulk tile download, Google Maps billing, key provisioning or tile proxy is used.
-Terrain hillshade has higher display contrast, labels are fully opaque, and
-domain/grid/guard lines are darker. Display filters do not alter input elevations
-or simulation physics and do not apply to the operational overlays.
+The default **Street map** is OpenStreetMap's familiar worldwide raster style,
+not Google's proprietary tiles or the dense IGN topographic chart. Interface
+labels are English; geographic place names retain the provider's local names.
+The optional **Terrain** overlay is blended at38% over streets, or fully opaque
+when streets are off. No source elevations are changed. The map view uses native
+EPSG:25830, with rotation disabled, so domain/fire/grid edges meet at90degrees;
+the basemap is reprojected to the terrain, not the reverse. Grid north is not
+exactly geographic true north. The national view is cartographic context, not a
+geodetic measurement outside this projection's area of use.
+
+Attribution is always visible. Streets are current cartographic context, not
+authenticated2021 roads, simulated routes or resource positions. The browser
+requests only visible tiles and uses normal HTTP caching; no tile proxy, bulk
+download, offline map archive, training-image harvesting, key or paid Google SDK
+is used. This local interactive demo must follow the
+[OSMF tile policy](https://operations.osmfoundation.org/policies/tiles/).
+Use an appropriately licensed/self-hosted provider for scaled deployments or
+offline cartography; the community service is best-effort. Turning streets off
+leaves source-derived terrain and simulation local. Terrain hillshade retains
+higher display contrast and domain/grid/guard lines remain dark. Display filters
+do not apply to operational overlays or alter simulation physics.
 
 Clicking a received report centres its claimed location. Pointing at a cell reads
 its mean elevation/fuel class from the pinned public500m grid, never from colours
@@ -143,7 +168,7 @@ reduce accidental cross-site/stale operations; they are not a security boundary
 between untrusted local users. Do not expose it publicly. For agent-facing use,
 omit the evaluator flag, whitelist only public operations, and keep the agent away
 from the evaluator configuration/filesystem. Visual-policy experiments would also
-need pinned map context or disabled live labels to avoid time-dependent map inputs.
+need pinned map context or disabled live streets to avoid time-dependent map inputs.
 
 ## Tests
 

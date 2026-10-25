@@ -1,0 +1,66 @@
+{
+  "version": "wildfire-ui-map-playback-v2",
+  "validated_on": "2026-10-26",
+  "supersedes_display_configuration": "map_refinement.json",
+  "scope": "Display and client-side playback only; no simulator, reward, observation, source-elevation or server API changes.",
+  "sources": [
+    {
+      "provider": "OpenStreetMap Foundation / OpenStreetMap contributors",
+      "role": "Optional worldwide street-map backdrop replacing the dense IGN raster chart and labels",
+      "tile_url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      "usage_policy": "https://operations.osmfoundation.org/policies/tiles/",
+      "attribution": "https://www.openstreetmap.org/copyright",
+      "access": "Direct browser viewport requests with normal browser identification, referrer and HTTP caching; no proxy, bulk collection, offline map packaging or training-image harvesting",
+      "availability": "Best effort community service for this interactive local prototype; use an appropriately licensed or self-hosted provider before scaling",
+      "historical_evidence": false,
+      "simulator_input": false,
+      "place_names": "Provider-local geographic names; the UI is English, but the raster is not claimed to be English-localized"
+    },
+    {
+      "provider": "Instituto Geografico Nacional, Spain",
+      "role": "Unchanged pinned MDT05-derived display terrain; existing acquisition and elevation provenance remains authoritative",
+      "terrain_opacity_over_streets": 0.38,
+      "terrain_opacity_without_streets": 1.0,
+      "display_contrast": 1.3,
+      "source_elevations_modified": false
+    }
+  ],
+  "map": {
+    "view_projection": "EPSG:25830",
+    "orientation": "Unrotated grid north; not a claim that grid north equals geographic true north",
+    "geometry": "Terrain, domain, fire cells and censor guard stay in their native metric plane, with perpendicular grid edges. Street tiles are reprojected to that plane.",
+    "opening_extent_wgs84": [-9.7, 35.3, 4.5, 44.3],
+    "opening_extent_scope": "Mainland Spain, Balearics and autonomous cities; Canaries intentionally excluded from this Malaga-focused camera fit to avoid a broad Africa/ocean frame, but reachable by panning",
+    "opening_sequence": "Country fit; 1800 ms pause; 900 ms fit to public domain metadata. User map interaction cancels the transition. Reduced motion disables animated zoom.",
+    "zoom_out_limit": "Country-fit scale recalculated for the current viewport size",
+    "new_episode": "Fit the domain immediately",
+    "geographic_limitation": "Worldwide cartographic context does not extend the simulation or make this UTM projection a measurement tool beyond its area of use"
+  },
+  "trajectory": {
+    "generation": "Explicit Run to end resumes the current episode with its selected public baseline, committing and recording each real decision sequentially up to completion, truncation, a new invalid action, cancellation or the decision limit",
+    "cancellation": "An in-flight decision may complete and is recorded before generation stops",
+    "replay": "Start/Finish, slider and timed playback read recorded public frames only; no advance requests, future-state interpolation or private fire truth",
+    "limits": "A previously rejected action may be followed by a valid baseline decision. Unexpected episode/decision tokens and transport errors stop generation without hidden retries. Mixed-controller trajectories are not fair standalone policy benchmarks.",
+    "storage": "Existing single-session server frames and canonical trace export; no automatic training-data promotion or persistent save is added"
+  },
+  "validation": {
+    "frontend_tests_passed": 20,
+    "python_ui_terrain_tests_passed": 38,
+    "typescript_and_production_build": "passed; existing large-bundle advisory remains",
+    "frontend_command": "cd ui && npm test && npm run build",
+    "python_command": "PYTHONPATH=envs/wildfire_response/core/src .runtime/ui-venv/bin/python -m unittest tests.test_ui_server tests.test_ui_terrain -q",
+    "browser_case": "topo-dev-003",
+    "generation_policy": "Scripted evacuation",
+    "complete_run": {"model_minutes": 52, "decisions": 26, "public_frames_including_initial": 27},
+    "browser_checks": [
+      "Street backdrop, blended source terrain, visible attribution and axis-aligned local domain",
+      "Tighter Spain overview, incident fit and native orthogonal grid geometry",
+      "Run to end completed and rewound to the initial public frame",
+      "Finish reached minute52; Start returned to minute0; keyboard slider movement selected minute2",
+      "Read-only replay progressed and paused; advance-request log count remained54 before and after replay",
+      "Live mutations and evaluator truth remained disabled in history"
+    ],
+    "screenshot": ".runtime/ui-map-refinement/map-and-timeline-v2.jpg",
+    "limitations": "Interactive visual smoke and regression checks, not new physics validation, historical reconstruction, model evaluation or a held-out benchmark. No GPU, model inference or live dispatch was used."
+  }
+}

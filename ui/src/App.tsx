@@ -3,6 +3,7 @@ import type {FormEvent,ReactNode} from 'react';
 import MapView from './MapView';
 import {request,requestText} from './api';
 import {currentWorld,groupName,parseAction,pretty,stageAction} from './model';
+import {finishEpisode} from './playback';
 import type {Action,Check,Config,Envelope,Frame,History,Imported,MapMetadata,Observation,World} from './types';
 
 const initialDraft='{}';
@@ -15,9 +16,10 @@ export default function App(){
   const [config,setConfig]=useState<Config|null>(null),[metadata,setMetadata]=useState<MapMetadata|null>(null),[live,setLive]=useState<Envelope|null>(null);
   const [frames,setFrames]=useState<Frame[]>([]),[imported,setImported]=useState<Imported|null>(null),[viewMode,setViewMode]=useState<'live'|'history'|'imported'>('live'),[frameIndex,setFrameIndex]=useState(0);
   const [tab,setTab]=useState('Reports'),[scenario,setScenario]=useState(''),[policy,setPolicy]=useState('manual'),[playing,setPlaying]=useState(false),[speed,setSpeed]=useState(700);
+  const [generating,setGenerating]=useState(false),[replaying,setReplaying]=useState(false);
   const [draft,setDraft]=useState(initialDraft),[check,setCheck]=useState<Check|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[verification,setVerification]=useState<unknown>(null);
   const [selectedReport,setSelectedReport]=useState(''),[selectedResource,setSelectedResource]=useState(''),[selectedDistrict,setSelectedDistrict]=useState(''),[world,setWorld]=useState<World|null>(null),[showTruth,setShowTruth]=useState(false);
-  const episode=useRef(''),fileInput=useRef<HTMLInputElement>(null);
+  const episode=useRef(''),fileInput=useRef<HTMLInputElement>(null),stopGeneration=useRef(false);
   const displayedFrames=viewMode==='imported'?imported?.frames??[]:frames;
   const current=viewMode==='live'&&live?frameOf(live):displayedFrames[frameIndex];
   const observation=current?.observation;
@@ -33,7 +35,7 @@ export default function App(){
   }
   async function operate(operation:()=>Promise<void>){
     setBusy(true);setError('');setNotice('');
-    try{await operation();}catch(error){setError(error instanceof Error?error.message:String(error));setPlaying(false);}finally{setBusy(false);}
+    try{await operation();}catch(error){setError(error instanceof Error?error.message:String(error));setPlaying(false);setReplaying(false);}finally{setBusy(false);}
   }
   useEffect(()=>{
     void operate(async()=>{const [configuration,map,state,history]=await Promise.all([request<Config>('config'),request<MapMetadata>('map'),request<Envelope>('state'),request<History>('history')]);setConfig(configuration);setMetadata(map);apply(state,true);setFrames(history.frames);setScenario(state.observation.task_id);});
@@ -49,6 +51,31 @@ export default function App(){
     return()=>window.clearTimeout(timer);
   },[playing,busy,live,speed,readOnly,done]);
   useEffect(()=>{
+    if(!replaying||!readOnly||busy)return;
+    if(frameIndex>=displayedFrames.length-1){setReplaying(false);return;}
+    const timer=window.setTimeout(()=>setFrameIndex(index=>index+1),speed);
+    return()=>window.clearTimeout(timer);
+  },[replaying,readOnly,busy,frameIndex,displayedFrames.length,speed]);
+  function selectFrame(index:number){setPlaying(false);setReplaying(false);setFrameIndex(index);if(viewMode==='live')setViewMode('history');setShowTruth(false);}
+  function replay(){
+    if(replaying){setReplaying(false);return;}
+    if(viewMode==='live'||frameIndex>=displayedFrames.length-1)selectFrame(0);
+    setReplaying(true);
+  }
+  async function generate(){
+    if(!live||!config||busy||readOnly||done||hasDraft||playing)return;
+    setGenerating(true);setPlaying(false);setReplaying(false);setShowTruth(false);stopGeneration.current=false;
+    await operate(async()=>{
+      const final=await finishEpisode(live,config.max_decisions,
+        state=>request<Envelope>('advance',{episode_id:state.episode_id,expected_decision:state.observation.decision,policy:policy==='manual'?'passive':policy}),
+        state=>apply(state),()=>stopGeneration.current);
+      if(final.info.error)return;
+      if(final.terminated||final.truncated){setViewMode('history');setFrameIndex(0);setNotice('Full trajectory ready. Drag Start → Finish or play the read-only replay.');}
+      else setNotice(`Generation stopped at ${final.observation.minute} model minutes. Recorded decisions are available on the slider.`);
+    });
+    setGenerating(false);
+  }
+  useEffect(()=>{
     let active=true;
     if(!showTruth||!live||readOnly){setWorld(null);return;}
     request<World>('evaluator').then(value=>{if(active&&value.episode_id===live.episode_id&&value.decision===live.observation.decision)setWorld(value);}).catch(error=>{if(active){setShowTruth(false);setError(String(error));}});
@@ -58,11 +85,11 @@ export default function App(){
   function form(event:FormEvent<HTMLFormElement>,field:string,build:(data:FormData)=>unknown){event.preventDefault();try{stage(field,build(new FormData(event.currentTarget)));}catch(error){setError(String(error));}}
   async function checkDraft(){if(!canAct||!live)return;await operate(async()=>{const action=parseAction(draft);const result=await request<{action_check:Check}>('check',{episode_id:live.episode_id,expected_decision:live.observation.decision,action});setCheck(result.action_check);});}
   async function commit(){if(!canAct||!live)return;await operate(async()=>{const action=parseAction(draft);const next=await request<Envelope>('action',{episode_id:live.episode_id,expected_decision:live.observation.decision,action});apply(next);if(!next.info.error){setDraft(initialDraft);setNotice('Draft committed. Time advanced by two model minutes.');}});}
-  async function reset(){setPlaying(false);await operate(async()=>{const state=await request<Envelope>('reset',{task_id:scenario});apply(state,true);setNotice('New episode started.');});}
-  async function returnLive(){setPlaying(false);await operate(async()=>{const [state,history]=await Promise.all([request<Envelope>('state'),request<History>('history')]);apply(state);setFrames(history.frames);setViewMode('live');setImported(null);setFrameIndex(history.frames.length-1);setScenario(state.observation.task_id);});}
+  async function reset(){setPlaying(false);setReplaying(false);await operate(async()=>{const state=await request<Envelope>('reset',{task_id:scenario});apply(state,true);setNotice('New episode started.');});}
+  async function returnLive(){setPlaying(false);setReplaying(false);await operate(async()=>{const [state,history]=await Promise.all([request<Envelope>('state'),request<History>('history')]);apply(state);setFrames(history.frames);setViewMode('live');setImported(null);setFrameIndex(history.frames.length-1);setScenario(state.observation.task_id);});}
   async function exportTrace(){await operate(async()=>{const text=await requestText('trajectory');const url=URL.createObjectURL(new Blob([text],{type:'application/json'}));const anchor=document.createElement('a');anchor.href=url;anchor.download=`${live?.observation.task_id??'wildfire'}-trajectory.json`;anchor.click();window.setTimeout(()=>URL.revokeObjectURL(url),1000);setNotice(done?'Public trajectory exported. Private evaluator evidence is excluded.':'In-progress public trace exported; only completed traces can be imported or verified.');});}
   async function openTrace(file:File){
-    setPlaying(false);
+    setPlaying(false);setReplaying(false);
     await operate(async()=>{
       if(file.size>19_000_000)throw new Error('Trace file exceeds 19 MB.');
       const stream=file.name.endsWith('.gz')?file.stream().pipeThrough(new DecompressionStream('gzip')):file.stream();
@@ -79,6 +106,7 @@ export default function App(){
   const lastWeather=observation.weather_context.records.at(-1),district=observation.districts.find(group=>group.id===selectedDistrict)??observation.districts[0];
   const selectedCase=config.cases.find(item=>item.id===scenario),draftCount=(()=>{try{return Object.values(parseAction(draft)).reduce<number>((count,value)=>count+(Array.isArray(value)?value.length:1),0);}catch{return 0;}})();
   const visibleWorld=currentWorld(world,live?.episode_id,observation.decision,readOnly,showTruth);
+  const lastRecorded=displayedFrames.at(-1),completeRun=!!lastRecorded&&(lastRecorded.terminated||lastRecorded.truncated);
   return <div className="app">
     <header className="app-header"><div className="identity"><h1>Wildfire Ops</h1><span className="tag">Synthetic simulation</span></div><div className="scenario-control"><label>Scenario <select aria-label="Scenario" value={scenario} disabled={busy||playing||readOnly} onChange={event=>setScenario(event.target.value)}><optgroup label="Development">{config.cases.filter(item=>item.mode==='development').map(item=><option key={item.id}>{item.id}</option>)}</optgroup><optgroup label="Training stress smoke">{config.cases.filter(item=>item.mode==='stress').map(item=><option key={item.id}>{item.id}</option>)}</optgroup></select></label><button disabled={busy||readOnly} onClick={()=>void reset()}>{scenario===live?.observation.task_id?'Reset episode':'Load selected'}</button></div></header>
     <div className="status-strip"><span><b>{String(Math.floor(observation.minute/60)).padStart(2,'0')}:{String(observation.minute%60).padStart(2,'0')}</b> model time · decision {observation.decision}/{config.max_decisions}</span><span>{observation.daylight?'Daylight':'Night response'} · aircraft {observation.aircraft_operable?'operable':'grounded'}</span><span>Slope {observation.landscape.slope_enabled?'experimental · on':'off'}</span><span className={readOnly?'badge amber':'badge'}>{readOnly?'Read-only replay':current.terminated?'Episode complete':current.truncated?'Episode truncated':'Live episode'}</span>{config.evaluation_available&&<label className="truth-switch"><input type="checkbox" checked={showTruth&&!readOnly} disabled={readOnly} onChange={event=>setShowTruth(event.target.checked)}/> Evaluator truth</label>}</div>
@@ -87,7 +115,14 @@ export default function App(){
     {visibleWorld&&<div className="banner warning">Evaluator-only fire truth is visible. It is not part of the actor observation or public export.</div>}
     {!readOnly&&scenario!==live?.observation.task_id&&<div className="banner">Selected scenario is not loaded yet. Press Load selected; current controls still operate on {live?.observation.task_id}.</div>}
     <div className="workspace">
-      <MapView metadata={metadata} observation={observation} world={visibleWorld} selectedReport={selectedReport} onSelect={selection=>{if(selection.type==='report'){setSelectedReport(selection.id);setTab('Reports');}else if(selection.type==='resource'){setSelectedResource(selection.id);setTab('Resources');}else{setSelectedDistrict(selection.id);setTab('Orders');}}}/>
+      <div className="map-workspace">
+      <section className="trajectory" aria-label="Full trajectory replay">
+        <div className="trajectory-heading"><strong>Trajectory · {generating?'generating…':completeRun?lastRecorded?.truncated?'truncated':'complete':'partly recorded'}</strong><div><button disabled={busy||displayedFrames.length<2} onClick={replay}>{replaying?'Pause replay':'Play replay'}</button>{generating?<button onClick={()=>{stopGeneration.current=true;}}>Stop generation</button>:<button className="primary" disabled={busy||readOnly||done||playing||hasDraft} onClick={()=>void generate()}>Run to end</button>}</div></div>
+        <div className="trajectory-slider"><button disabled={busy||displayedFrames.length<2} onClick={()=>selectFrame(0)}>Start</button><input id="timeline" aria-label="Trajectory position" aria-valuetext={`${observation.minute} model minutes, decision ${observation.decision}`} type="range" min={0} max={Math.max(0,displayedFrames.length-1)} value={viewMode==='live'?displayedFrames.length-1:frameIndex} disabled={busy||displayedFrames.length<2} onChange={event=>selectFrame(Number(event.target.value))}/><button disabled={busy||displayedFrames.length<2} onClick={()=>selectFrame(displayedFrames.length-1)}>Finish</button></div>
+        <p>{observation.minute} / {lastRecorded?.observation.minute??0} recorded model min · {displayedFrames.length} frames. {completeRun?'Read-only scrubbing never advances the simulator.':`Run to end generates the remaining decisions using ${policy==='manual'?'Manual / wait':pretty(policy)}; no future frames are invented.`}</p>
+      </section>
+      <MapView metadata={metadata} observation={observation} world={visibleWorld} selectedReport={selectedReport} focusKey={viewMode==='imported'?`imported:${imported?.task_id}`:live?.episode_id??''} onSelect={selection=>{if(selection.type==='report'){setSelectedReport(selection.id);setTab('Reports');}else if(selection.type==='resource'){setSelectedResource(selection.id);setTab('Resources');}else{setSelectedDistrict(selection.id);setTab('Orders');}}}/>
+      </div>
       <aside className="inspector"><nav className="tabs" aria-label="Control centre panels">{['Reports','Resources','Orders','History'].map(name=><button key={name} className={tab===name?'active':''} onClick={()=>setTab(name)}>{name}</button>)}</nav>
       <div className="panel-content">
       {tab==='Reports'&&<>
@@ -114,13 +149,13 @@ export default function App(){
         <details><summary>Pending deliveries ({observation.pending_deliveries.length})</summary><pre>{JSON.stringify(observation.pending_deliveries,null,2)}</pre></details>
       </>}
       {tab==='History'&&<>
-        <h2>Recorded decisions</h2><p className="muted">Only received evidence and committed actions. Selecting a past frame is read-only.</p><div className="decision-list">{displayedFrames.map((frame,index)=><button key={index} className={readOnly&&index===frameIndex?'selected':''} onClick={()=>{setPlaying(false);setFrameIndex(index);if(viewMode==='live')setViewMode('history');setShowTruth(false);}}>Decision {frame.observation.decision} · {frame.observation.minute}m <span>+{frame.reward.toFixed(2)}</span></button>)}</div><h3>Selected committed action</h3><pre>{current.action===null?'Initial state or action available in the exported trace.':JSON.stringify(current.action,null,2)}</pre><h3>Events & acknowledgements</h3>{events.map((event,index)=><div className="event" key={index}><time>{event.minute}m</time><div><strong>{pretty(event.kind)}</strong><small>{event.resource_id??event.order_id??event.recipient??event.source??''}</small></div></div>)}{!events.length&&<Empty>No events received yet.</Empty>}
+        <h2>Recorded decisions</h2><p className="muted">Only received evidence and committed actions. Selecting a past frame is read-only.</p><div className="decision-list">{displayedFrames.map((frame,index)=><button key={index} className={readOnly&&index===frameIndex?'selected':''} onClick={()=>selectFrame(index)}>Decision {frame.observation.decision} · {frame.observation.minute}m <span>+{frame.reward.toFixed(2)}</span></button>)}</div><h3>Selected committed action</h3><pre>{current.action===null?'Initial state or action available in the exported trace.':JSON.stringify(current.action,null,2)}</pre><h3>Events & acknowledgements</h3>{events.map((event,index)=><div className="event" key={index}><time>{event.minute}m</time><div><strong>{pretty(event.kind)}</strong><small>{event.resource_id??event.order_id??event.recipient??event.source??''}</small></div></div>)}{!events.length&&<Empty>No events received yet.</Empty>}
       </>}
       </div>
       <div className="draft"><div className="section-heading"><strong>Action draft</strong><span>{draftCount} staged</span></div><details><summary>Advanced JSON · all action fields</summary><p className="hint">Requests, authorizations, releases, messages, readback confirmations/corrections, triage, clarifications and protection_orders can share one committed action.</p><textarea aria-label="Action JSON" spellCheck={false} rows={9} value={draft} disabled={controlDisabled} onChange={event=>{setDraft(event.target.value);setCheck(null);}}/></details><div className="draft-buttons"><button disabled={controlDisabled} onClick={()=>void checkDraft()}>Check draft</button><button className="primary" disabled={controlDisabled} onClick={()=>void commit()}>Apply draft · +2m</button><button disabled={controlDisabled} onClick={()=>{setDraft(initialDraft);setCheck(null);}}>Clear</button></div>{check&&<p className={check.valid?'check-good':'danger'}>{check.valid?'Valid at this decision':check.error} · checks left {String(check.remaining_checks??'—')}</p>}</div>
       </aside>
     </div>
-    <section className="playback" aria-label="Simulation controls"><div className="run-controls"><button className="primary" disabled={!playing&&(busy||readOnly||done||hasDraft)} onClick={()=>setPlaying(value=>!value)}>{playing?'Pause':'Play'}</button><button disabled={busy||playing||readOnly||done||hasDraft} onClick={()=>void advance()}>Step · +2m</button><label>Policy <select aria-label="Playback policy" disabled={playing||busy||readOnly} value={policy} onChange={event=>setPolicy(event.target.value)}><option value="manual">Manual / wait</option><option value="evacuate">Scripted evacuation</option><option value="shelter">Scripted shelter</option><option value="passive">Passive</option></select></label><label>Speed <select aria-label="Playback speed" value={speed} onChange={event=>setSpeed(Number(event.target.value))}><option value={1400}>1×</option><option value={700}>2×</option><option value={200}>5×</option></select></label></div><div className="scrub"><label htmlFor="timeline">Recorded decisions · {observation.minute}m</label><input id="timeline" aria-label="Recorded decision" type="range" min={0} max={Math.max(0,displayedFrames.length-1)} value={viewMode==='live'?displayedFrames.length-1:frameIndex} onChange={event=>{setPlaying(false);setFrameIndex(Number(event.target.value));if(viewMode==='live')setViewMode('history');setShowTruth(false);}}/><span>{current.terminated?'Complete':current.truncated?'Truncated':`${observation.minute} / 120m`}</span></div><div className="file-controls"><button disabled={busy||readOnly} onClick={()=>void exportTrace()}>Export trace</button><button disabled={busy||playing} onClick={()=>fileInput.current?.click()}>Open trace</button><input className="file-input" ref={fileInput} type="file" accept=".json,.gz,application/json,application/gzip" onChange={event=>{const file=event.target.files?.[0];event.target.value='';if(file)void openTrace(file);}}/><button disabled={busy||readOnly||!done} onClick={()=>void operate(async()=>setVerification(await request('verify',{episode_id:live!.episode_id,expected_decision:live!.observation.decision})))}>Verify outcome</button></div></section>
+    <section className="playback" aria-label="Simulation controls"><div className="run-controls"><button className="primary" disabled={!playing&&(busy||readOnly||done||hasDraft)} onClick={()=>setPlaying(value=>!value)}>{playing?'Pause live':'Run live'}</button><button disabled={busy||playing||readOnly||done||hasDraft} onClick={()=>void advance()}>Step · +2m</button><label>Policy <select aria-label="Playback policy" disabled={playing||busy||readOnly} value={policy} onChange={event=>setPolicy(event.target.value)}><option value="manual">Manual / wait</option><option value="evacuate">Scripted evacuation</option><option value="shelter">Scripted shelter</option><option value="passive">Passive</option></select></label><label>Speed <select aria-label="Playback speed" value={speed} onChange={event=>setSpeed(Number(event.target.value))}><option value={1400}>1×</option><option value={700}>2×</option><option value={200}>5×</option></select></label></div><div className="file-controls"><button disabled={busy||readOnly} onClick={()=>void exportTrace()}>Export trace</button><button disabled={busy||playing||replaying} onClick={()=>fileInput.current?.click()}>Open trace</button><input className="file-input" ref={fileInput} type="file" accept=".json,.gz,application/json,application/gzip" onChange={event=>{const file=event.target.files?.[0];event.target.value='';if(file)void openTrace(file);}}/><button disabled={busy||readOnly||!done} onClick={()=>void operate(async()=>setVerification(await request('verify',{episode_id:live!.episode_id,expected_decision:live!.observation.decision})))}>Verify outcome</button></div></section>
     {(current.terminated||current.truncated)&&<div className="outcome"><strong>Recorded objective score: {current.total_reward.toFixed(2)}</strong>{observation.topographic_status.boundary_censored?' · Boundary-censored: excluded from learning labels.':' · Synthetic exercise outcomes, not real-world effectiveness.'}{verification!==null&&<pre>{JSON.stringify(verification,null,2)}</pre>}</div>}
     <footer>Source-grounded synthetic simulation · not a live forecast. Every commit advances two assumed model minutes. Displayed roads do not determine travel. Live messaging and model inference are disabled. {selectedCase?.mode==='stress'?'Training smoke catalog; held-out scenarios are not exposed.':''}</footer>
   </div>;

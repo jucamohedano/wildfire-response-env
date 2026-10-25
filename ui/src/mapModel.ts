@@ -1,8 +1,21 @@
 import type {Observation,Position,World} from './types';
+import proj4 from 'proj4';
+import {register} from 'ol/proj/proj4.js';
+import {transformExtent} from 'ol/proj.js';
+import type View from 'ol/View.js';
 
-export const mapViewOptions={minZoom:2,maxZoom:18,enableRotation:false};
-export const spainExtent: [number,number,number,number]=[-18.3,27.4,4.7,44.4];
-export const ignContextUrl='https://tms-mapa-raster.ign.es/1.0.0/mapa-raster/{z}/{x}/{-y}.jpeg';
+proj4.defs('EPSG:25830','+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs');
+register(proj4);
+export const mapProjection='EPSG:25830';
+export const mapViewOptions={projection:mapProjection,minZoom:2,maxZoom:18,enableRotation:false};
+export const spainExtent: [number,number,number,number]=[-9.7,35.3,4.5,44.3];
+
+export function limitCountryZoom(view:View,size:number[]):void {
+  const extent=transformExtent(spainExtent,'EPSG:4326',mapProjection,16);
+  const resolution=view.getResolutionForExtent(extent,[Math.max(1,size[0]-50),Math.max(1,size[1]-50)]);
+  const zoom=view.getZoomForResolution(resolution);
+  if(zoom!==undefined)view.setMinZoom(zoom);
+}
 
 export interface FireCell {column:number;row:number;kind:'fire'|'stale'|'burned';heat:number|null;burned:number;observedAt:number|null}
 
