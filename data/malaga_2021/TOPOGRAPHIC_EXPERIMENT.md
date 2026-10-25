@@ -78,6 +78,36 @@ It defaults to127.0.0.1:8003 and one active episode. The factory instead require
 `--diagnostic-probe`, `--report` and `--trajectory-dir`; without a slope choice it
 compares both settings through real localhost clients and exported JSON replay.
 
+## Watch one simple scenario
+
+Generate a self-contained, local HTML replay of `topo-dev-000` with both the
+deterministic protection baseline and a passive comparison:
+
+```sh
+PYTHONPATH=envs/wildfire_response/core/src python -m eval.render_topographic_replay \
+  --prepared-inputs .runtime/malaga-prepared-inputs-v1/inputs.json \
+  --prepared-sha256 ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108 \
+  --topographic-inputs .runtime/topographic-inputs-v1/inputs.json \
+  --topographic-sha256 e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd \
+  --output .runtime/topographic-replay-new
+python -m http.server 8766 --bind 127.0.0.1 --directory .runtime/topographic-replay-new
+```
+
+Open `http://127.0.0.1:8766`, press Play, or seek through committed decision
+frames. Switch policies to compare the same starting scenario, or switch the map
+from evaluator truth to received report/sensor evidence. The complete file is an
+**evaluator artifact**, even in evidence view: private fire truth is embedded in
+the document. Never send it to a model, retrieval bank or public dataset. Keep
+the generated HTML/JSON in ignored local storage; only the renderer and template
+are source-controlled. No model, API key, GPU or live messaging is used.
+
+These are verified recorded engine states, not an interactive policy editor,
+live forecast or historical reconstruction. Source-derived elevations are real
+map data; population, resources, communication and fire dynamics are synthetic.
+Vehicle locations are only drawn when the engine confirms arrival, without
+invented roads or travel animations. Grounded aircraft remain listed but cannot
+be dispatched by the baseline. Playback speed is not simulation time.
+
 ## Data readiness after this step
 
 CPU simulation, deterministic rewards/replay, complete terrain support and
