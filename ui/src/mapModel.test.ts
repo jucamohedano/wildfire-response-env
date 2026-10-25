@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import View from 'ol/View.js';
 import {transform,transformExtent} from 'ol/proj.js';
-import {fireBoundary,fireCells,mapViewOptions,spainExtent,mapProjection,limitCountryZoom} from './mapModel';
+import {fireBoundary,fireCells,mapViewOptions,spainExtent,mapProjection,limitCountryZoom,aerialTileUrl,terrainOpacity} from './mapModel';
 
 describe('fire evolution display',()=>{
   const sample=(x:number,y:number,observed_at=8,burning=true)=>({x,y,burning,observed_at});
@@ -60,8 +60,8 @@ describe('national map navigation',()=>{
       view.setMinZoom(countryZoom);
       view.setZoom(countryZoom-3);
       expect(view.getZoom()).toBeCloseTo(countryZoom);
-      expect(view.getMaxZoom()).toBeGreaterThan(17);
-      expect(view.getMaxZoom()).toBeLessThanOrEqual(18);
+      expect(view.getMaxZoom()).toBeGreaterThan(19);
+      expect(view.getMaxZoom()).toBeLessThanOrEqual(20);
     }
   });
   it('keeps native terrain and fire-cell edges square, without rotating or shifting the map',()=>{
@@ -84,5 +84,13 @@ describe('national map navigation',()=>{
       expect(visible[1]).toBeLessThanOrEqual(extent[1]);expect(visible[3]).toBeGreaterThanOrEqual(extent[3]);
       expect(view.getZoom()).toBeCloseTo(view.getMinZoom());
     }
+  });
+});
+describe('aerial background display',()=>{
+  it('uses the official PNOA/Sentinel TMS layer and does not assume it is live sensor data',()=>{
+    expect(aerialTileUrl).toBe('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg');
+    expect(terrainOpacity(true,'aerial')).toBe(.12);
+    expect(terrainOpacity(true,'street')).toBe(.38);
+    expect(terrainOpacity(false,'aerial')).toBe(1);
   });
 });

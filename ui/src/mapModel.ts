@@ -7,8 +7,10 @@ import type View from 'ol/View.js';
 proj4.defs('EPSG:25830','+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs');
 register(proj4);
 export const mapProjection='EPSG:25830';
-export const mapViewOptions={projection:mapProjection,minZoom:2,maxZoom:18,enableRotation:false};
+export const mapViewOptions={projection:mapProjection,minZoom:2,maxZoom:20,enableRotation:false};
 export const spainExtent: [number,number,number,number]=[-9.7,35.3,4.5,44.3];
+export const aerialTileUrl='https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg';
+export const terrainOpacity=(enabled:boolean,style:'street'|'aerial')=>enabled?(style==='aerial'?.12:.38):1;
 
 export function limitCountryZoom(view:View,size:number[]):void {
   const extent=transformExtent(spainExtent,'EPSG:4326',mapProjection,16);

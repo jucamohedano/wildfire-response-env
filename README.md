@@ -40,8 +40,8 @@ optional local operator UI below is not publicly deployed.
 
 ## Local 2D control-centre UI
 
-The optional [UI](ui/README.md) adds a flat source-derived terrain map, official
-IGN labels, report/triage and clarification controls, base offers/readbacks and
+The optional [UI](ui/README.md) adds a flat source-derived terrain map, optional
+IGN aerial imagery/OpenStreetMap context, report/triage and clarification controls, base offers/readbacks and
 resource authorization, population protection, scripted playback and verified
 read-only trace replay. It uses the existing Python API; it does not duplicate
 the simulator or change physics/rewards. Its dependencies remain isolated from

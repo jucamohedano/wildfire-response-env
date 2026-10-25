@@ -123,11 +123,22 @@ plane. When that optional raw ASC is absent, an explicitly labelled coarse500m
 domain-height image is used. Present corrupt/changed raw data fails closed; no
 unknown elevations are filled. Neither image modifies physics or the input bundle.
 
-The default **Street map** is OpenStreetMap's familiar worldwide raster style,
-not Google's proprietary tiles or the dense IGN topographic chart. Interface
-labels are English; geographic place names retain the provider's local names.
-The optional **Terrain** overlay is blended at38% over streets, or fully opaque
-when streets are off. No source elevations are changed. The map view uses native
+The **Map style** selector defaults to aerial imagery from the official
+[IGN PNOA/Sentinel-2 service](https://pnoa.ign.es/web/portal/pnoa-imagen/visualizadores-y-servicios-web).
+It uses Sentinel-2 at small scales and PNOA aerial orthophotos at larger scales,
+up to tile level19. Source dates and resolution vary; these are not live images,
+not a verified2021 RGB mosaic and not new simulator measurements. The local
+rasters checked for this update are elevation/fuel/mask products, not such an RGB
+mosaic. No fine-scale flames or temperatures are inferred from photographic
+colour. The fire/sensor grid stays500m and the model-facing observation is still
+structured JSON, not a satellite screenshot.
+
+**Street map** remains available as OpenStreetMap's familiar worldwide raster
+style, not Google's proprietary tiles or the dense IGN chart. Interface labels
+are English; place names retain the provider's local names. **Basemap** toggles
+remote layers; disabling it shows local terrain. **Terrain** is optional and off
+by default, blended at12% over imagery or38% over streets, and fully opaque when
+the basemap is off. No source elevations are changed. The map view uses native
 EPSG:25830, with rotation disabled, so domain/fire/grid edges meet at90degrees;
 the basemap is reprojected to the terrain, not the reverse. Grid north is not
 exactly geographic true north. The national view is cartographic context, not a
@@ -144,6 +155,16 @@ offline cartography; the community service is best-effort. Turning streets off
 leaves source-derived terrain and simulation local. Terrain hillshade retains
 higher display contrast and domain/grid/guard lines remain dark. Display filters
 do not apply to operational overlays or alter simulation physics.
+
+The **Map key** uses larger SVG examples of the actual circles, cell fills and
+boundary lines, with a plain-language label and explanation for each. Residents,
+evacuation destinations, exposed people and responders have separate entries.
+Recent sightings and older observations remain distinct. An empty sensor record
+does not certify no fire. Counts refer to grid cells, not independent incidents.
+The raw cell/elevation/fuel readout and source details are under a collapsed
+**Map data and technical details** disclosure. Boundary lines have a light casing
+so they remain visible over dark imagery. The explicit evaluator key is separate
+and never labels private simulated heat as public observations.
 
 Clicking a received report centres its claimed location. Pointing at a cell reads
 its mean elevation/fuel class from the pinned public500m grid, never from colours
