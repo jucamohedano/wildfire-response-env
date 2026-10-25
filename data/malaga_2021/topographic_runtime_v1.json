@@ -76,6 +76,43 @@
     }
   ],
   "implementation_sha256": "7015d81b99e89a26248b931943293c1c1a3618098284a24957ed7735e20ba88c",
+  "latest_acceptance": {
+    "cached_fixtures": "Immutable serialized traces, freshly decoded per caller; no shared sessions",
+    "core_suite": {
+      "passed": 273,
+      "skipped_optional_adapters": 9,
+      "tests": 282
+    },
+    "date": "2026-10-25",
+    "decision_observations_checked": 1114,
+    "exact_repeat_rollouts": 38,
+    "experimental_component_gate": "pass",
+    "held_out_training_ready": false,
+    "issue": 10,
+    "legacy_external_client_checks": 3,
+    "localhost_boundary_probes": 2,
+    "localhost_regular_episodes": 12,
+    "native_void_and_exact_vertical_realization_verified": false,
+    "optional_adapter_coverage": {
+      "all_exercised_in_isolated_environments": true,
+      "distinct_methods": 25,
+      "legacy_worker_skips": 0,
+      "note": "Optional runs overlap the core/root discovery counts; do not add them as extra distinct tests."
+    },
+    "physical_calibration_established": false,
+    "primary_rollouts": 38,
+    "root_suite": {
+      "passed": 155,
+      "skipped_optional_adapters": 16,
+      "tests": 171
+    },
+    "runtime_implementation_changed": false,
+    "source_survey_diagnostics": "data/malaga_2021/terrain_control_validation_v1.json",
+    "targeted_efficiency_seconds_after": 5.567,
+    "targeted_efficiency_seconds_before": 9.793,
+    "tests_deleted": 0,
+    "throughput_timing_isolated": false
+  },
   "limitations": [
     "One landscape and six synthetic development cases; active baselines still reach the score ceiling on these smoke cases.",
     "Complete support means the declared positive-data restriction, not authenticated producer void semantics or survey certification.",
@@ -139,6 +176,56 @@
       "bytes": 330359,
       "path": ".runtime/topographic-wheel-v2/wildfire_response_core-0.1.0-py3-none-any.whl",
       "sha256": "ea96700fd37981db82f9bd8b758a440a0ae2e89837375c512e452d20a4452851"
+    },
+    {
+      "bytes": 54415,
+      "path": ".runtime/simulation-acceptance-v1/rollouts/summary.json",
+      "sha256": "f4e4c80f29210e6d36c5c1e8d212c8a7ed96ae5a6b744475904688f881fc2e2f"
+    },
+    {
+      "bytes": 13297,
+      "path": ".runtime/simulation-acceptance-v1/components-final.json",
+      "sha256": "b9ead9bee39dc8a49a69061163d52eb925c213091f66034edbc75f99e18e9296"
+    },
+    {
+      "bytes": 13638,
+      "path": ".runtime/simulation-acceptance-v1/openenv.json",
+      "sha256": "daf14857d5f980f9b1d336728940f622a1846919c0d0f5ed0e91b27647db2133"
+    },
+    {
+      "bytes": 413,
+      "path": ".runtime/simulation-acceptance-v1/legacy-openenv.json",
+      "sha256": "a15148983496dbafa1a1c1dd2453962f32a49a25e05acf21a88a2d13ffb8ea0d"
+    },
+    {
+      "bytes": 2690,
+      "path": ".runtime/simulation-acceptance-v1/core-tests-final.log",
+      "sha256": "19a8a89aae4118d01688df84c880fbf4b804b8af16052135d18d169db780f334"
+    },
+    {
+      "bytes": 3449,
+      "path": ".runtime/simulation-acceptance-v1/root-tests-final.log",
+      "sha256": "aaaedbd27261889327b8f19b88e0f380125d7b4669e0a90839e02127f82dfd35"
+    },
+    {
+      "bytes": 1843,
+      "path": ".runtime/simulation-acceptance-v1/topographic-openenv-final.log",
+      "sha256": "deab944993e30cfb43b77a81bcd1c941a6382ec4f22de6f17f627e744f494a22"
+    },
+    {
+      "bytes": 6524,
+      "path": ".runtime/simulation-acceptance-v1/optional-openenv-tests.log",
+      "sha256": "492b90b27ac2410af4cda950ce60eb279c874ebd2d88e6ad5542ddb1671d8cb9"
+    },
+    {
+      "bytes": 138,
+      "path": ".runtime/simulation-acceptance-v1/efficiency-before.log",
+      "sha256": "728e31a16e8ce5b16a6aee09a6869252745aeaec4ed9c1dac57bc533d6e15959"
+    },
+    {
+      "bytes": 138,
+      "path": ".runtime/simulation-acceptance-v1/efficiency-after.log",
+      "sha256": "74c9d3fe1b165020aa29910a3d7415bf80a33812452ce8416ef9df4856975e0e"
     }
   ],
   "verification": {

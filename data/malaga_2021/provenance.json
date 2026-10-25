@@ -882,6 +882,112 @@
     },
     {
       "actor_input_eligible": false,
+      "checks": {
+        "complete_positive_runtime_domain": true,
+        "ellipsoidal_heights_used_as_terrain": false,
+        "monument_offset_applied": false,
+        "terrain_values_modified": false,
+        "unsupported_edge_fallback": false
+      },
+      "derived_artifacts": [
+        {
+          "bytes": 5303587,
+          "integrity": "pinned_match",
+          "path": ".runtime/malaga-terrain-validation-v2/mdt05-sampled25m-halo.asc",
+          "sha256": "1b2e4f470bf456b0189cf22e60dddcf09af413617eb9b76f5a2c1650be70e917"
+        },
+        {
+          "bytes": 59047,
+          "integrity": "pinned_match",
+          "path": ".runtime/topographic-inputs-v1/inputs.json",
+          "sha256": "b4585046b95d9bccc1c7701a95d15b9ca59120cbbd49f5bf080f9e146ad0f355"
+        }
+      ],
+      "evidence_class": "derived",
+      "id": "terrain-survey-diagnostics",
+      "limitations": [
+        "Survey mark diagnostics do not authenticate the extract datum, native voids or bare-ground accuracy.",
+        "Survey marks are not necessarily bare ground; no correction or accuracy threshold is inferred.",
+        "One in-domain ROI mark and one out-of-domain coastal REDNAP mark are spot checks, not domain-wide certification.",
+        "The 500m means are not compared with point heights; only source samples are compared.",
+        "Survey evidence is separate from encoding checks but independence from original production control is unverified.",
+        "Product-level orthometric documentation does not authenticate the exact WCS vertical realization, nil values or survey edition.",
+        "Complete positive support is an explicit analysis restriction, not a source NoData declaration or physical calibration."
+      ],
+      "metadata": {
+        "bytes": 7410,
+        "integrity": "locally_hashed_not_source_authenticated",
+        "path": "data/malaga_2021/terrain_control_validation_v1.json",
+        "sha256": "ad86992cd002917f9864b690091da5a7f79f91e1dba922dfa46b6e3d561e7898"
+      },
+      "raw_artifacts": [
+        {
+          "bytes": 134899,
+          "integrity": "pinned_match",
+          "path": ".runtime/terrain-control-evidence-v1/pnoa-products.html",
+          "sha256": "219ef7153c42be33a96c81ec4130476f03dbe94090dce5eb9dcedb0257ae8e3d"
+        },
+        {
+          "bytes": 5919,
+          "integrity": "pinned_match",
+          "path": ".runtime/terrain-control-evidence-v1/roi.geojson",
+          "sha256": "f0673c77b10eeb4eccbea4c9e6ea5f620f3ecf3b5ccfd550b3411e4c8dbac22e"
+        },
+        {
+          "bytes": 45694,
+          "integrity": "pinned_match",
+          "path": ".runtime/terrain-control-evidence-v1/rednap.geojson",
+          "sha256": "1b1faa6a38b8c4d1d974bc2c1a7671d91f979d749f5f11f5cc8d85dc309d8387"
+        },
+        {
+          "bytes": 1333715,
+          "integrity": "pinned_match",
+          "path": ".runtime/terrain-control-evidence-v1/reales.pdf",
+          "sha256": "8fb67fbf21958422ebf97696ba33711634876c24d017253649846d4cdea9e7e7"
+        },
+        {
+          "bytes": 715482,
+          "integrity": "pinned_match",
+          "path": ".runtime/terrain-control-evidence-v1/ssk163.pdf",
+          "sha256": "3511fe06d26f8a5f0fc8af353e5f0dcb6b8d2909a419fa8ab739649e030a3d14"
+        },
+        {
+          "bytes": 1435,
+          "integrity": "pinned_match",
+          "path": ".runtime/terrain-control-evidence-v1/reales-mdt05-5m.asc",
+          "sha256": "38658bd4f67c9e247f7f6c4957f3223e7a1e96a3e469aa28fea07fbf31e56056"
+        }
+      ],
+      "source_publication_or_receipt_time_verified": false,
+      "source_urls": [
+        "https://pnoa.ign.es/web/portal/pnoa-lidar/productos-a-descarga",
+        "https://api-features.ign.es/collections/red_roi/items?f=json&bbox=-5.28,36.42,-5.05,36.63&limit=100",
+        "https://api-features.ign.es/collections/red_nap/items?f=json&bbox=-5.28,36.42,-5.05,36.63&limit=100",
+        "https://datos-geodesia.ign.es/Red_Geodesica/Hoja1071/107199.pdf",
+        "https://datos-geodesia.ign.es/REDNAP/Lin10636/10636010.pdf",
+        "https://servicios.idee.es/wcs-inspire/mdt?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&COVERAGE=Elevacion25830_5&CRS=EPSG%3A25830&RESPONSE_CRS=EPSG%3A25830&BBOX=302150%2C4039910%2C302210%2C4039970&RESX=5&RESY=5&FORMAT=ArcGrid&INTERPOLATION=nearest+neighbor"
+      ],
+      "status": "survey_diagnostics_completed_not_accuracy_certified",
+      "transformations": [
+        {
+          "bytes": 10224,
+          "integrity": "pinned_match",
+          "path": "eval/validate_terrain_controls.py",
+          "sha256": "89861d3082b9079045d0b23dd2127f628724ed00ba81058a84f267205dac3fd3"
+        }
+      ],
+      "units_crs": {},
+      "used_by_current_runtime": false,
+      "vertical_reference": {
+        "extract_specific_vertical_realization_verified": false,
+        "native_void_semantics_verified": false,
+        "product_height_type": "orthometric",
+        "product_statement_verified": true,
+        "survey_edition_of_extract_verified": false
+      }
+    },
+    {
+      "actor_input_eligible": false,
       "derived_artifacts": [
         {
           "bytes": 54415,
@@ -918,6 +1024,66 @@
           "integrity": "pinned_match",
           "path": ".runtime/topographic-wheel-v2/wildfire_response_core-0.1.0-py3-none-any.whl",
           "sha256": "ea96700fd37981db82f9bd8b758a440a0ae2e89837375c512e452d20a4452851"
+        },
+        {
+          "bytes": 54415,
+          "integrity": "pinned_match",
+          "path": ".runtime/simulation-acceptance-v1/rollouts/summary.json",
+          "sha256": "f4e4c80f29210e6d36c5c1e8d212c8a7ed96ae5a6b744475904688f881fc2e2f"
+        },
+        {
+          "bytes": 13297,
+          "integrity": "pinned_match",
+          "path": ".runtime/simulation-acceptance-v1/components-final.json",
+          "sha256": "b9ead9bee39dc8a49a69061163d52eb925c213091f66034edbc75f99e18e9296"
+        },
+        {
+          "bytes": 13638,
+          "integrity": "pinned_match",
+          "path": ".runtime/simulation-acceptance-v1/openenv.json",
+          "sha256": "daf14857d5f980f9b1d336728940f622a1846919c0d0f5ed0e91b27647db2133"
+        },
+        {
+          "bytes": 413,
+          "integrity": "pinned_match",
+          "path": ".runtime/simulation-acceptance-v1/legacy-openenv.json",
+          "sha256": "a15148983496dbafa1a1c1dd2453962f32a49a25e05acf21a88a2d13ffb8ea0d"
+        },
+        {
+          "bytes": 2690,
+          "integrity": "pinned_match",
+          "path": ".runtime/simulation-acceptance-v1/core-tests-final.log",
+          "sha256": "19a8a89aae4118d01688df84c880fbf4b804b8af16052135d18d169db780f334"
+        },
+        {
+          "bytes": 3449,
+          "integrity": "pinned_match",
+          "path": ".runtime/simulation-acceptance-v1/root-tests-final.log",
+          "sha256": "aaaedbd27261889327b8f19b88e0f380125d7b4669e0a90839e02127f82dfd35"
+        },
+        {
+          "bytes": 1843,
+          "integrity": "pinned_match",
+          "path": ".runtime/simulation-acceptance-v1/topographic-openenv-final.log",
+          "sha256": "deab944993e30cfb43b77a81bcd1c941a6382ec4f22de6f17f627e744f494a22"
+        },
+        {
+          "bytes": 6524,
+          "integrity": "pinned_match",
+          "path": ".runtime/simulation-acceptance-v1/optional-openenv-tests.log",
+          "sha256": "492b90b27ac2410af4cda950ce60eb279c874ebd2d88e6ad5542ddb1671d8cb9"
+        },
+        {
+          "bytes": 138,
+          "integrity": "pinned_match",
+          "path": ".runtime/simulation-acceptance-v1/efficiency-before.log",
+          "sha256": "728e31a16e8ce5b16a6aee09a6869252745aeaec4ed9c1dac57bc533d6e15959"
+        },
+        {
+          "bytes": 138,
+          "integrity": "pinned_match",
+          "path": ".runtime/simulation-acceptance-v1/efficiency-after.log",
+          "sha256": "74c9d3fe1b165020aa29910a3d7415bf80a33812452ce8416ef9df4856975e0e"
         }
       ],
       "domain": {
@@ -934,10 +1100,10 @@
         "Explicit complete-support experimental mode, not a historical forecast or native void certification."
       ],
       "metadata": {
-        "bytes": 7119,
+        "bytes": 10379,
         "integrity": "locally_hashed_not_source_authenticated",
         "path": "data/malaga_2021/topographic_runtime_v1.json",
-        "sha256": "4eb00a43ab818f92e54cd93dff925279406e0ec047f28d07494a01698262d8bb"
+        "sha256": "e6a143dd94c1eec5ad99802317f1c1633d1939c22f3d50275ad1b3ba683f13b0"
       },
       "opt_in_runtime_usage": {
         "experimental_slope_available": true,
@@ -1032,10 +1198,10 @@
     "synthetic": "Explicit exercise assumptions; never relabelled observed historical events"
   },
   "generator": {
-    "bytes": 24215,
+    "bytes": 25466,
     "integrity": "locally_hashed_not_source_authenticated",
     "path": "eval/build_malaga_provenance.py",
-    "sha256": "ff1da1b5f82206e93b8d629472c87a4a8e58977c3ad7d2837e9c0b26d0fe3e3c"
+    "sha256": "57e248a968ec864e603dc08f61870b5c7ba44680317a1be75076df933195b5b7"
   },
   "incident": {
     "event_year": 2021,
@@ -1088,6 +1254,13 @@
     },
     {
       "inputs": [
+        "relative-gradient-validation"
+      ],
+      "output": "terrain-survey-diagnostics",
+      "relation": "Official survey marks and a small5m WCS patch; diagnostics only, no terrain correction"
+    },
+    {
+      "inputs": [
         "prepared-integration",
         "relative-gradient-validation"
       ],
@@ -1111,7 +1284,7 @@
     "real_world_operational_validity_established": false
   },
   "role": "operator_and_evaluator_reference_not_actor_observation",
-  "sha256": "61aedc3bfe90d6568a069c3185b8acb0026f649e40dac2dc6f19f655e52f5a93",
+  "sha256": "7febaf69edcd43512ebeca627704b86ded6f1987e80a8b894333f518e79bfe9a",
   "snapshot_date": "2026-10-25",
   "synthetic_profile_sha256": "e46ab752ff31731b7ba294eff364cd3d16ff1d319b354e996c4c2ab8965a9350",
   "version": "wildfire-data-provenance-v1"

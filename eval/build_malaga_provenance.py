@@ -248,6 +248,18 @@ def build_document(root, snapshot_date, profile):
         gradients['checks'] = gradient_value['checks']
         gradients['gate_decision'] = gradient_value['gate_decision']
     entries.append(gradients)
+    controls, control_value = _entry(root, 'terrain-survey-diagnostics', 'derived', 'terrain_control_validation_v1.json',
+        limitations=('Survey mark diagnostics do not authenticate the extract datum, native voids or bare-ground accuracy.',))
+    if control_value:
+        controls['source_urls'] = [item['source_url'] for item in control_value['input_files']]
+        controls['raw_artifacts'] = [artifact(root, item['path'], item) for item in control_value['input_files']]
+        controls['derived_artifacts'] = [artifact(root, item['path'], item) for item in
+                                        (control_value['source_raster'], control_value['runtime_domain'])]
+        controls['transformations'] = [artifact(root, item['path'], item) for item in control_value['implementation_files']]
+        controls['checks'] = control_value['checks']
+        controls['vertical_reference'] = control_value['vertical_reference']
+        controls['limitations'].extend(control_value['limitations'])
+    entries.append(controls)
     topographic, topographic_value = _entry(root, 'topographic-experiment', 'mixed', 'topographic_runtime_v1.json',
         limitations=('Explicit complete-support experimental mode, not a historical forecast or native void certification.',))
     if topographic_value:
@@ -282,6 +294,8 @@ def build_document(root, snapshot_date, profile):
                       relation='Independent authoritative acquisition; no earlier contaminated values reused'),
                  dict(inputs=[], output='relative-gradient-validation',
                       relation='Separate documented MDT05 product sampled at25m; no MDT25 reclassification'),
+                 dict(inputs=['relative-gradient-validation'], output='terrain-survey-diagnostics',
+                      relation='Official survey marks and a small5m WCS patch; diagnostics only, no terrain correction'),
                  dict(inputs=['prepared-integration', 'relative-gradient-validation'], output='topographic-experiment',
                       relation='Parent exercise inputs and same documented raw MDT05 source; mean slope angles are not used as edge grades')],
         synthetic_profile_sha256=profile['sha256'],

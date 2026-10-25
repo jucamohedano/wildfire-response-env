@@ -134,7 +134,12 @@ dataset**. The next release gates are:
    rights and reproducible commands. Clear redistribution rights before public
    dataset/Space publication; running a private simulator is a different claim.
 
-Exact local survey edition, native void semantics and independent survey checks
-remain confidence/realism work under issue8. The positive-data restriction and
-complete-domain choice do not certify producer NoData or real-world operational
-validity. Real emergency use would require substantially different validation.
+Official survey-mark comparisons are now recorded in
+`terrain_control_validation_v1.json`; they do not certify terrain accuracy.
+Reales is inside the active domain; the coastal REDNAP mark is outside its crop.
+The producer documents orthometric heights for the MDT05 product, but the exact
+WCS vertical realization, local survey edition, native void semantics and
+mark-to-bare-ground offsets remain unresolved under issue8. The positive-data
+restriction and complete-domain choice do not certify producer NoData or
+real-world operational validity. See `SIMULATION_ACCEPTANCE.md` for the current
+component gate. Real emergency use requires substantially different validation.
