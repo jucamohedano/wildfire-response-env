@@ -77,6 +77,34 @@ The follow-on [Spanish development bridge](../../envs/wildfire_response/core/src
 now implements a small opt-in pack; it does not replace this source audit or claim
 to have completed the remaining geographic, weather and protection-mechanic gates.
 
+## External context acquisition pilot
+
+The [context source catalog](context_sources_v1.json) records official weather,
+terrain, land-cover, population, road and response-capability sources, together
+with access constraints and the next integration gates. This is a separate data
+acquisition increment; it does not change simulator observations or scores.
+
+On 2026-10-25, three bounded DERA WFS extracts downloaded 495,274 payload bytes:
+20 public fire-station locations, two emergency coordination sites and 1,058 road
+features. Eleven returned fire stations have Huelva province labels; the broad
+selection also includes neighboring provinces. The coordination sites are 112
+and maritime coordination, not identified CEDEFO bases or available fire crews.
+Hashes, exact requests, counts, unique feature IDs, returned CRS and finite
+coordinate bounds were checked. No contact details were requested or retained.
+Two returned station points lie outside the requested bbox, so service spatial
+selection must be checked and filtered locally before any exact geographic join.
+Road geometries are not clipped and do not yet form a validated routing graph.
+
+Raw GeoJSON and the acquisition manifest are retained locally under
+`.runtime/context-acquisition-v1/`; they are not committed. The tracked catalog
+records their hashes and request URLs. Current service snapshots do not establish
+the same facilities or roads existed during a 2021 incident. No existing anchor
+has a verified geographic join, and no new terrain or weather file was acquired.
+Weather API access and historical hourly station coverage remain separate gates;
+ERA5-Land is a possible hourly reanalysis source, not historically available
+operational weather. Download small incident-area/window subsets once location
+and timezone are verified, then cache derived packs for CPU-only episode runs.
+
 ## Rights and retention
 
 ICS-209-PLUS v3 metadata declares CC BY 4.0; retain dataset attribution and DOI.
