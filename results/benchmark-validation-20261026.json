@@ -6,7 +6,7 @@
     "test_benchmark_core.py": 22,
     "test_benchmark_model.py": 3,
     "test_benchmark_openenv.py": 8,
-    "test_benchmark_runner.py": 3,
+    "test_benchmark_runner.py": 4,
     "test_benchmark_training.py": 33
   },
   "elapsed_seconds": 2555.112,
@@ -576,6 +576,8 @@
     }
   },
   "static_checks": {
+    "frozen_trace_cadence_verified": 428,
+    "cadence_guard_added_after_frozen_runs": true,
     "ignitions_checked": 282,
     "nonburnable_ignition_cases": 0
   },

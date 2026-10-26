@@ -36,6 +36,10 @@ pins task IDs, profile, catalog, implementation and policy/runner source hashes.
 Any changed policy requires a new registered experiment. Test outcomes must not
 be used to tune policies or training. A limited split, incomplete matrix,
 censored case or abandoned policy cannot qualify for a full benchmark ranking.
+Ranked runs require60two-minute decisions; the120one-minute diagnostic mode
+cannot enter a ranked experiment. The frozen evaluation's428trajectory headers
+were checked against this cadence. Its earlier recorded code hashes remain the
+source of truth; this later guard does not change or regrade those outcomes.
 
 Headline ranking prioritizes zero-exposure completion, then protected population,
 then lower additional burned footprint. The separate training score is80%
