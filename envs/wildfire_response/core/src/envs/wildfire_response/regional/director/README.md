@@ -110,6 +110,16 @@ counts. Failed or missing-usage calls retain their reservation. This deliberatel
 may stop early. Report the price source, token counts and estimate separately from
 actual provider billing. Request/token/time caps remain independent safeguards.
 
+Slow non-streaming responses may use `--request-timeout 180` (maximum180seconds).
+An interrupted current-contract episode can be continued with
+`--resume-from <previous-output>/<task-id>` in a fresh output directory. The
+runner replays and compares every saved canonical transition before calling the
+model, rejects changed or finished traces, and restores only prior submitted
+public proposals as short-term memory. No scored outcome is fabricated from a
+partial run. Always subtract all earlier conservative usage/reservations from
+the original authorized spending cap and reduce the remaining request/time caps
+before a manual continuation; the new run does not silently reset that allowance.
+
 ### Original regional interface
 
 `RegionalDirectorPolicy` replaces neither the simulator nor the director's choices.

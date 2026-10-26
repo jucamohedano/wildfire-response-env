@@ -15,6 +15,7 @@ from urllib.request import urlopen
 
 from envs.wildfire_response.director.policy import OpenRouterTransport, ProviderHTTPError
 from envs.wildfire_response.regional.ops.model import OpsModelPolicy, CONTRACT_VERSION
+from envs.wildfire_response.regional.ops.generator import digest
 from wildfire_core.topographic import TopographicEnv, ProtectionBaseline
 
 
@@ -104,9 +105,25 @@ def stop_preview(pid_file):
     return 'termination_pending'
 
 
+def restore_partial(env, trace):
+    expected = env.trajectory()
+    if digest({key: value for key, value in trace.items() if key != 'transitions'}) != digest({
+            key: value for key, value in expected.items() if key != 'transitions'}):
+        raise ValueError('Resume trace does not match canonical current environment metadata')
+    observation, info = env.get_situation(), {}
+    for recorded in trace['transitions']:
+        observation, _, terminated, truncated, info = env.step(recorded['action'])
+        if digest(recorded) != digest(env.trajectory()['transitions'][-1]):
+            raise ValueError('Resume trace does not replay exactly')
+        if terminated or truncated:
+            raise ValueError('Resume only unfinished episodes')
+    return observation, info
+
+
 def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
         seconds=1200, interval=3.2, preview_pid=None, provider_trial=False,
-        policy_type=OpsModelPolicy, policy_options=None, provider='openrouter', allow_nonzero_cost=False):
+        policy_type=OpsModelPolicy, policy_options=None, provider='openrouter', allow_nonzero_cost=False,
+        resume_from=None):
     output = Path(output)
     if output.exists():
         raise ValueError('Choose a fresh output directory')
@@ -124,8 +141,18 @@ def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/director/policy.py']
     summary['source_sha256'] = {name: hashlib.sha256((root/name).read_bytes()).hexdigest() for name in source_files}
     started = time.monotonic()
+    resumed_trace = resumed_requests = None
+    if resume_from is not None:
+        resume_root = Path(resume_from)
+        resumed_trace = json.loads((resume_root/'partial-trajectory.json').read_text())
+        resumed_requests = json.loads((resume_root/'requests.json').read_text())
+        if resumed_trace['task_id'] not in CASES:
+            raise ValueError('Resume only one of the four development cases')
+        summary['resume_from'] = str(resume_root)
     try:
         for task_id in CASES:
+            if resumed_trace is not None and CASES.index(task_id) < CASES.index(resumed_trace['task_id']):
+                continue
             if bounded.calls >= max_requests or time.monotonic() >= bounded.deadline:
                 summary.update(status='stopped', stop_reason=dict(error_type='GlobalBudgetExhausted', http_status=None))
                 break
@@ -146,10 +173,18 @@ def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
                 dump(case/name/'trajectory.json', env.trajectory())
             env = factory()
             observation, info = env.reset(task_id)
+            resumed_decisions = 0
+            if resumed_trace is not None and task_id == resumed_trace['task_id']:
+                observation, info = restore_partial(env, resumed_trace)
+                resumed_decisions = len(resumed_trace['transitions'])
             actor = policy_type(model=model, transport=bounded, interval=0, tool_mode='auto',
                 max_calls=max_requests, max_tokens=max_tokens, decision_limit=60, **(policy_options or {}))
+            if resumed_decisions:
+                actor.history = [record['proposal'] for record in resumed_requests
+                                 if record.get('tool') == 'submit_action' and record.get('proposal')][-3:]
             entry = dict(task_id=task_id, status='running', scored=False, baselines=baseline_results,
-                reward_version=env.trajectory()['reward_version'], reward_weights=observation['reward_weights'])
+                reward_version=env.trajectory()['reward_version'], reward_weights=observation['reward_weights'],
+                resumed_decisions=resumed_decisions)
             summary['episodes'].append(entry)
             print(json.dumps(dict(event='starting', task_id=task_id, requests_used=bounded.calls)), flush=True)
             try:

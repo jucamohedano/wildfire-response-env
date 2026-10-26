@@ -7,7 +7,7 @@ import unittest
 from wildfire_core.ops_model import OpsModelPolicy, CONTRACT_VERSION, action_schema, parse_action, public_context
 from envs.wildfire_response.regional.ops.model import LIMITS, ScriptedOpsTransport
 from envs.wildfire_response.tests.test_prepared_development import create
-from eval.run_ops_model import BoundedTransport, read_key, run
+from eval.run_ops_model import BoundedTransport, read_key, run, restore_partial
 from envs.wildfire_response.director.policy import ProviderHTTPError
 
 
@@ -192,6 +192,22 @@ class OpsModelTests(unittest.TestCase):
             self.assertFalse(summary['episodes'][0]['scored'])
             self.assertEqual(summary['stop_reason']['http_status'], 429)
             self.assertTrue((Path(directory)/'trial'/'topo-dev-001'/'partial-trajectory.json').exists())
+
+    def test_resume_restores_only_exact_unfinished_canonical_state_without_provider_calls(self):
+        self.env.advance()
+        self.env.step({'unknown': True})
+        trace = self.env.trajectory()
+        recovered = create()
+        recovered.reset('prepared-dev-003')
+        observation, _ = restore_partial(recovered, trace)
+        self.assertEqual(observation, self.env.get_situation())
+        self.assertEqual(recovered.trajectory(), trace)
+        bad = copy.deepcopy(trace)
+        bad['transitions'][0]['observation']['minute'] += 1
+        rejected = create()
+        rejected.reset('prepared-dev-003')
+        with self.assertRaises(ValueError):
+            restore_partial(rejected, bad)
 
 
 if __name__ == '__main__':

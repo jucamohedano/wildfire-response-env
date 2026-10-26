@@ -27,13 +27,15 @@ def main():
     parser.add_argument('--max-requests', type=int, default=160)
     parser.add_argument('--max-tokens', type=int, default=4096)
     parser.add_argument('--seconds', type=int, default=1200)
+    parser.add_argument('--request-timeout', type=int, default=180)
+    parser.add_argument('--resume-from')
     parser.add_argument('--stop-preview-pid-file')
     args = parser.parse_args()
     atexit.register(stop_preview, args.stop_preview_pid_file)
     def interrupted(signum, frame):
         raise KeyboardInterrupt
     signal.signal(signal.SIGTERM, interrupted)
-    if not 0 < args.usd_cap <= 5 or not 1 <= args.max_requests <= 160 or not 256 <= args.max_tokens <= 4096 or not 1 <= args.seconds <= 1800:
+    if not 0 < args.usd_cap <= 5 or not 1 <= args.max_requests <= 160 or not 256 <= args.max_tokens <= 4096 or not 1 <= args.seconds <= 1800 or not 30 <= args.request_timeout <= 180:
         parser.error('Invalid explicitly bounded CloudRift evaluation budget')
     with urlopen(BASE_URL+'/models', timeout=25) as response:
         models = json.load(response)['data']
@@ -41,7 +43,8 @@ def main():
     if metadata is None:
         parser.error('The requested CloudRift model is not listed; no substitution attempted')
     key = getpass.getpass('CloudRift inference key (hidden, not stored): ') if args.key_stdin else os.environ.get('CLOUDRIFT_INFERENCE_KEY')
-    transport = CloudRiftTransport(api_key=key, model_metadata=metadata, usd_cap=args.usd_cap)
+    transport = CloudRiftTransport(api_key=key, model_metadata=metadata, usd_cap=args.usd_cap,
+                                   timeout=args.request_timeout)
     del key
     def factory():
         return TopographicEnv(args.prepared_inputs, args.topographic_inputs,
@@ -51,7 +54,7 @@ def main():
         policy_type=CloudRiftOpsPolicy, policy_options=dict(allow_cloudrift=True),
         provider='cloudrift', allow_nonzero_cost=True, provider_trial=True,
         max_requests=args.max_requests, max_tokens=args.max_tokens, seconds=args.seconds,
-        preview_pid=args.stop_preview_pid_file)
+        preview_pid=args.stop_preview_pid_file, resume_from=args.resume_from)
     print(json.dumps(result), flush=True)
 
 
