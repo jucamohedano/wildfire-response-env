@@ -54,11 +54,11 @@ def render(summary, output):
             +'</ol><p><a href="'+html.escape(episode['task_id'])+'/model/trajectory.json.gz">Recorded trajectory</a> · '
             +'<a href="'+html.escape(episode['task_id'])+'/model/requests.json">Tool calls and rejected-response diagnostics</a></p></section>')
     (output/'report.html').write_text('<!doctype html><html lang="en"><meta charset="utf-8">'
-        '<meta name="viewport" content="width=device-width,initial-scale=1"><title>DeepSeek benchmark trial</title>'
+        '<meta name="viewport" content="width=device-width,initial-scale=1"><title>Model benchmark trial</title>'
         '<style>body{font:16px/1.6 system-ui;background:#f6f4ee;color:#24362d;max-width:1050px;margin:auto;padding:32px}'
         'section{background:white;border:1px solid #d9d9ce;border-radius:12px;padding:24px;margin:24px 0}'
         'li{border-left:2px solid #708577;padding:12px 20px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}'
-        'strong{color:#a94432}summary{cursor:pointer}a{color:#356653}</style><h1>DeepSeek · new benchmark trial</h1><p>'
+        'strong{color:#a94432}summary{cursor:pointer}a{color:#356653}</style><h1>Model · new benchmark trial</h1><p>'
         +html.escape(f"{summary['model']} · {summary['status']} · {summary['requests']} provider attempts")
         +'</p><p>Development smoke test, not a held-out leaderboard. No training or scripted completion of model episodes. '
         'Exposure means synthetic exposure, not deaths. Incomplete runs have no outcome score.</p><pre>'
@@ -67,7 +67,8 @@ def render(summary, output):
 
 
 def run(output, factory, transport, *, families=FAMILIES, max_requests=160, max_tokens=2048,
-        seconds=1800, provider_trial=False):
+        seconds=1800, provider_trial=False, model=MODEL, policy_type=BenchmarkCloudRiftPolicy,
+        policy_options=None, agent_metadata=None):
     if (not families or len(set(families)) != len(families) or not set(families) <= set(FAMILIES)
             or type(max_requests) is not int or not 1 <= max_requests <= 240
             or type(max_tokens) is not int or not 256 <= max_tokens <= 4096
@@ -86,9 +87,9 @@ def run(output, factory, transport, *, families=FAMILIES, max_requests=160, max_
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/compact_model.py',
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/director/policy.py',
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/director/diagnostics.py')
-    summary = dict(version='wildfire-benchmark-cloudrift-evaluation-v1', model=MODEL,
-        mode='provider_trial' if provider_trial else 'injected_transport_test',
-        contract_version=BenchmarkCloudRiftPolicy.contract_version, status='running',
+    summary = dict(version='wildfire-benchmark-cloudrift-evaluation-v1', model=model,
+        mode='subagent_trial' if agent_metadata else 'provider_trial' if provider_trial else 'injected_transport_test',
+        contract_version=policy_type.contract_version, status='running',
         experiment=experiment, planned_families=list(families), episodes=[], requests=0,
         source_revision=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
         source_sha256={name: hashlib.sha256((root/name).read_bytes()).hexdigest() for name in sources},
@@ -96,6 +97,9 @@ def run(output, factory, transport, *, families=FAMILIES, max_requests=160, max_
         rank_eligible=False, training_eligible=False,
         sampling=dict(temperature=1., top_p=1., n=1, stream=False,
                       presence_penalty=0., frequency_penalty=0.), endpoint=BASE_URL)
+    if agent_metadata:
+        summary.update(version='wildfire-benchmark-subagent-evaluation-v1',
+                       agent_metadata=agent_metadata, sampling=None, endpoint='local_public_observation_bridge')
     output.mkdir(parents=True, mode=0o700)
     dump(output/'plan.json', summary)
     bounded = BoundedTransport(transport, max_requests=max_requests, seconds=seconds,
@@ -123,7 +127,8 @@ def run(output, factory, transport, *, families=FAMILIES, max_requests=160, max_
                 save_trace(output/case['id']/name, reference)
             environment = factory()
             observation, feedback = environment.reset(case['id'])
-            actor = BenchmarkCloudRiftPolicy(model=MODEL, transport=bounded, allow_cloudrift=True,
+            actor = policy_type(model=model, transport=bounded,
+                **(dict(allow_cloudrift=True) if policy_options is None else policy_options),
                 interval=0, tool_mode='auto', max_calls=max_requests, max_tokens=max_tokens, decision_limit=60)
             directory = output/case['id']/'model'
             print(json.dumps(dict(event='starting', family=case['family'], task_id=case['id'])), flush=True)
