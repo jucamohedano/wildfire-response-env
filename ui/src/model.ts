@@ -33,7 +33,8 @@ export function cellAt(grid:Geography, east:number, north:number):Position|null 
 }
 
 export function pretty(value:string|undefined|null):string {return (value??'—').replaceAll('_',' ');}
-export function groupName(value:string):string {return value.endsWith('west')?'West group':value.endsWith('east')?'East group':pretty(value);}
+export function groupName(value:string):string {return value.endsWith('west')?'West settlement':value.endsWith('east')?'East settlement':pretty(value);}
+export function resourceKindName(value:string):string {return value==='engine'?'Fire truck':value==='crew'?'Fire crew':value==='aircraft'?'Aircraft':pretty(value);}
 
 export function currentWorld(world:World|null,episodeId:string|undefined,decision:number,readOnly:boolean,enabled:boolean):World|null {
   return enabled&&!readOnly&&world?.episode_id===episodeId&&world?.decision===decision?world:null;
