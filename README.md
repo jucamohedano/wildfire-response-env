@@ -126,6 +126,13 @@ partial trajectory. Three consecutive invalid commits remain a scored abandonmen
 The cap may be insufficient for even one full episode; never present partial
 progress or completed CPU references as a completed model evaluation.
 
+The [2026-10-26 DeepSeek trial](results/deepseek-benchmark-20261026.html) attempted
+all three probes: each ended in protocol abandonment, with no full-horizon model
+completion. Sixteen responses cost an estimated $1.610742 at the API-advertised
+uncached rates. The report includes exact captured tool diagnostics; it does not
+establish firefighting-policy competence. Follow-up integration work is tracked
+in [issue25](https://github.com/jucamohedano/wildfire-response-env/issues/25).
+
 ## Local 2D control-centre UI
 
 The optional [UI](ui/README.md) adds a flat source-derived terrain map, optional

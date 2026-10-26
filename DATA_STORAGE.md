@@ -95,6 +95,24 @@ They remain in ignored runtime logs and are not supplied to the policy. Transpor
 failures without a response still record the exception type only. Earlier runs
 without these diagnostics cannot recover their discarded replies.
 
+### DeepSeek benchmark trial, 2026-10-26
+
+The current-contract run is `.runtime/deepseek-benchmark-20261026/`, separate
+from the older `cloudrift-ops-eval-*` runs. It retains all three model trajectories,
+six complete CPU-reference trajectories, private scoring audits, verification,
+request diagnostics and the pre-run plan. Three model episodes ended in
+three-strike abandonment; none reached the120-minute horizon. Do not relabel
+these as successful demonstrations or natural-horizon wildfire outcomes.
+
+The compact public report under `results/deepseek-benchmark-20261026.{html,json}`
+contains metrics and tool diagnostics, not terrain maps or private audits.
+The complete runtime directory is also backed up with mode0600 at:
+`/home/juancm/hackspain/wildfire-response-env/.runtime/deepseek-benchmark-20261026/trajectories-and-diagnostics.tar.gz`.
+Archive size:5,127,828bytes; SHA256:
+`d4d454566904bbf34bd62e20e4a3b8d3eb81be51bebceeea76f5d491823d9c7c`.
+Pinned input packs remain in the earlier benchmark-release backup. No credential
+is stored in this archive, and no raw runtime artifact was uploaded.
+
 Active development is on `codex/wildfire-ops-control-center` in the standalone
 environment repository. Changes are pushed there; raw data is not committed.
 Local ignored backups and Git bundles are preserved under

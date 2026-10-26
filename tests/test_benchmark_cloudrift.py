@@ -50,6 +50,14 @@ class BenchmarkCloudRiftTests(unittest.TestCase):
             self.assertEqual(len(trace['transitions']), 60)
             self.assertTrue(json.loads((directory/'private'/'verification.json').read_text())['passed'])
             self.assertTrue((output/'report.html').exists())
+            from eval.render_benchmark_cloudrift import render
+            report = Path(temporary)/'public'/'report.html'
+            render(output, report)
+            artifact = json.loads(report.with_suffix('.json').read_text())
+            self.assertIn('0 of 1 attempted episodes abandoned', artifact['interpretation'])
+            self.assertIn('1 reached the full120-minute horizon', artifact['interpretation'])
+            self.assertEqual(artifact['failure_counts'], {})
+            self.assertNotIn('Protocol abandonment score', report.read_text())
 
     def test_rejected_response_details_retained_and_three_strikes_abandon(self):
         def malformed(payload):
