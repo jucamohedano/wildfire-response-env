@@ -54,6 +54,9 @@ adds delayed resident calls, crew support requests, persistent outstanding updat
 and resource arrival estimates. Select `incident-dev-*` in the UI; the optional
 `--reactive` provider-runner flag uses focused v2 tools. The original scenarios
 and tool contract remain available for comparisons and replay.
+The [initial CPU comparison](results/reactive-incidents-20261026.json) records ten
+verified episodes, including delayed protection and a reconnaissance-only support
+request probe. It evaluates simulator mechanics, not a newly trained model.
 
 From this repository root, Python 3.12+:
 
