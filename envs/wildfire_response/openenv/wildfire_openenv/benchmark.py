@@ -18,10 +18,12 @@ from .topographic import configured_slope
 class BenchmarkAction(PreparedAction):
     operation: Literal['advance', 'check', 'situation', 'trajectory', 'reports', 'events'] = 'advance'
     report_ids: list[Identifier] | None = Field(default=None, max_length=20)
+    event_ids: list[Identifier] | None = Field(default=None, max_length=20)
+    after_cursor: int = Field(default=0, strict=True, ge=0)
     limit: int = Field(default=20, strict=True, ge=1, le=20)
 
     def core_action(self):
-        return self.model_dump(exclude={'metadata', 'operation', 'report_ids', 'limit'},
+        return self.model_dump(exclude={'metadata', 'operation', 'report_ids', 'event_ids', 'after_cursor', 'limit'},
                                exclude_unset=True)
 
     @model_validator(mode='after')
@@ -30,6 +32,10 @@ class BenchmarkAction(PreparedAction):
             raise ValueError('Read operations do not accept orders')
         if self.operation != 'reports' and self.report_ids is not None:
             raise ValueError('report_ids is only valid for reports')
+        if self.operation != 'events' and (self.event_ids is not None or 'after_cursor' in self.model_fields_set):
+            raise ValueError('event_ids and after_cursor are only valid for events')
+        if self.event_ids is not None and self.after_cursor != 0:
+            raise ValueError('Event IDs cannot be combined with a nonzero cursor')
         if self.operation not in ('reports', 'events') and 'limit' in self.model_fields_set:
             raise ValueError('limit is only valid for bounded reads')
         return self
@@ -85,8 +91,11 @@ class BenchmarkEnvironment(PreparedEnvironment):
                 done=terminated or truncated, terminated=terminated, truncated=truncated)
         if action.operation in ('reports', 'events'):
             records = (self.core.get_reports(action.report_ids, limit=action.limit) if action.operation == 'reports'
-                       else self.core.get_events(limit=action.limit))
-            return PreparedObservation(data={action.operation: records}, reward=0.0,
+                       else self.core.get_events(action.event_ids, after_cursor=action.after_cursor, limit=action.limit))
+            data = {action.operation: records}
+            if action.operation == 'events':
+                data['next_cursor'] = action.after_cursor + len(records) if action.event_ids is None else None
+            return PreparedObservation(data=data, reward=0.0,
                 done=self._state.terminated or self._state.truncated,
                 terminated=self._state.terminated, truncated=self._state.truncated)
         return super().step(action, timeout_s=timeout_s)

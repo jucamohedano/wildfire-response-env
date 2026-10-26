@@ -69,6 +69,10 @@ class BenchmarkOpenEnvTests(unittest.TestCase):
     def test_bounded_report_event_queries_validate_before_execution(self):
         for payload in (dict(operation='events', limit=21), dict(operation='reports', limit=True),
                         dict(operation='reports', report_ids=['report'] * 21),
+                        dict(operation='events', event_ids=['event'] * 21),
+                        dict(operation='events', after_cursor=-1), dict(operation='events', after_cursor=True),
+                        dict(operation='events', event_ids=['event'], after_cursor=1),
+                        dict(operation='reports', event_ids=['event']), dict(operation='advance', after_cursor=0),
                         dict(operation='events', requests=[dict(resource_id='unit', sector_id='sector', mission='recon')]),
                         dict(operation='advance', limit=2), dict(operation='events', report_ids=['report']),
                         dict(operation='situation', releases=['unit'])):
@@ -83,9 +87,49 @@ class BenchmarkOpenEnvTests(unittest.TestCase):
             with patch.object(adapter.core, 'get_' + operation, return_value=[]) as query:
                 result = adapter.step(BenchmarkAction(operation=operation, limit=2))
                 self.assertEqual(query.call_args.kwargs['limit'], 2)
-                self.assertEqual(result.data, {operation: []})
+                self.assertEqual(result.data, {operation: [], 'next_cursor': 0} if operation == 'events' else {operation: []})
                 self.assertEqual(result.reward, 0)
         self.assertEqual(adapter.state.model_dump(), before)
+
+    def test_real_event_stream_paginates_past_twenty_and_rejects_future_ids(self):
+        adapter = self.adapter()
+        adapter.reset(task_id=self.task_id(adapter.core))
+        core = adapter.core._core
+
+        def emit(index):
+            core.incidents._emit(core, f'pagination-fixture-{index}', index,
+                kind='resource_status_update', source='fixture-radio', role='responder',
+                channel='synthetic_radio', location=[2, 2], text=f'Fixture event {index}', status='resolved')
+
+        for index in range(25):
+            emit(index)
+        with self.assertRaises(ValueError):
+            adapter.step(BenchmarkAction(operation='events', event_ids=['incident-event-1']))
+        adapter.step(BenchmarkAction())
+        expected = adapter.core.get_events()
+        self.assertEqual(len(expected), 25)
+        before = adapter.state.model_dump()
+        first = adapter.step(BenchmarkAction(operation='events', limit=20)).data
+        self.assertEqual(first, dict(events=expected[:20], next_cursor=20))
+        second = adapter.step(BenchmarkAction(operation='events', after_cursor=first['next_cursor'], limit=20)).data
+        self.assertEqual(second, dict(events=expected[20:], next_cursor=25))
+        self.assertEqual(adapter.step(BenchmarkAction(operation='events', after_cursor=25)).data,
+                         dict(events=[], next_cursor=25))
+        identifiers = [expected[0]['id'], expected[-1]['id']]
+        selected = adapter.step(BenchmarkAction(operation='events', event_ids=identifiers))
+        self.assertEqual(selected.data, dict(events=adapter.core.get_events(identifiers), next_cursor=None))
+        self.assertEqual(BenchmarkAction(operation='events', after_cursor=20, limit=2).core_action(), {})
+        self.assertEqual(BenchmarkAction(operation='events', event_ids=identifiers).core_action(), {})
+        emit(25)
+        for action in (BenchmarkAction(operation='events', event_ids=['incident-event-26']),
+                       BenchmarkAction(operation='events', after_cursor=26)):
+            with self.assertRaises(ValueError):
+                adapter.step(action)
+        self.assertEqual(adapter.state.model_dump(), before)
+        adapter.step(BenchmarkAction())
+        next_batch = adapter.step(BenchmarkAction(operation='events', after_cursor=25)).data
+        self.assertEqual([event['id'] for event in next_batch['events']], ['incident-event-26'])
+        self.assertEqual(next_batch['next_cursor'], 26)
 
     def test_local_adapter_matches_direct_core_full_episode_and_invalid_commits(self):
         local, adapter = self.local(), self.adapter()
