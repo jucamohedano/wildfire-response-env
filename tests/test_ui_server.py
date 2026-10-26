@@ -12,7 +12,7 @@ from unittest.mock import patch
 try:
     import httpx
     from fastapi.testclient import TestClient
-    from eval.ui_server import MAX_IMPORT_BYTES, SMOKE_GROUP_INDICES, create_app, main
+    from eval.ui_server import MAX_IMPORT_BYTES, SMOKE_GROUP_INDICES, create_app, main, build_benchmark_catalog, task_ids
     from wildfire_core.stress import StressEnv, build_catalog
     from wildfire_core.topographic import CASE_IDS, ProtectionBaseline, TopographicEnv
     from envs.wildfire_response.tests.test_prepared_development import fixture_inputs
@@ -66,6 +66,23 @@ class UIServerTests(unittest.TestCase):
 
     def state(self):
         return self.client.get('/api/state').json()
+
+    def test_benchmark_initial_unknowns_and_two_minute_updates_use_same_core(self):
+        from wildfire_core.benchmark_v1 import BenchmarkEnv
+        catalog = build_benchmark_catalog(self.prepared,self.domain)
+        identifier = task_ids(catalog,'development')[0]
+        environment = BenchmarkEnv(self.prepared,self.domain,**self.options())
+        expected,_ = environment.reset(identifier)
+        response = self.client.post('/api/reset',json=dict(task_id=identifier))
+        self.assertEqual(response.status_code,200)
+        actual = response.json()['observation']
+        self.assertEqual(actual,expected)
+        self.assertIsNone(actual['districts'][0]['smoke_present'])
+        self.assertIsNone(actual['resources'][0]['state'])
+        self.assert_public(actual)
+        for decision in range(3):
+            expected,*_ = environment.step({})
+            self.assertEqual(self.submit({}).json()['observation'],expected)
 
     def test_reactive_case_api_delivers_updates_and_replays_export(self):
         from wildfire_core.incident import ReactiveOpsEnv
@@ -168,6 +185,7 @@ class UIServerTests(unittest.TestCase):
         from wildfire_core.incident import CASE_IDS as INCIDENT_CASE_IDS
         expected_cases = ([dict(id=identifier, mode='development') for identifier in CASE_IDS]
             + [dict(id=identifier, mode='reactive') for identifier in INCIDENT_CASE_IDS]
+            + [dict(id=identifier, mode='benchmark') for identifier in task_ids(build_benchmark_catalog(self.prepared,self.domain),'development')]
             + [dict(id=self.catalog['groups'][index]['cases'][0]['id'], mode='stress')
                for index in SMOKE_GROUP_INDICES])
         self.assertEqual(config, dict(cases=expected_cases, ticks_per_action=2,

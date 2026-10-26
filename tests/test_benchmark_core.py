@@ -92,6 +92,18 @@ class BenchmarkOutcomeTests(unittest.TestCase):
 
 
 class BenchmarkCoreTests(unittest.TestCase):
+    def test_actor_landscape_mutation_cannot_change_engine_or_recorded_frames(self):
+        environment = create()
+        initial, _ = environment.reset()
+        original = environment.get_situation()['landscape']['elevations_metres'][0][0]
+        initial['landscape']['elevations_metres'][0][0] = -9999
+        self.assertEqual(environment.get_situation()['landscape']['elevations_metres'][0][0], original)
+        self.assertEqual(environment.trajectory()['initial_observation']['landscape']['elevations_metres'][0][0], original)
+        step = environment.step({})[0]
+        step['landscape']['fuel_classes'][0][0] = -9999
+        self.assertNotEqual(environment.get_situation()['landscape']['fuel_classes'][0][0], -9999)
+        self.assertNotEqual(environment.trajectory()['transitions'][0]['observation']['landscape']['fuel_classes'][0][0], -9999)
+
     def test_invalid_horizons_and_unsupported_limits_fail_before_catalog_construction(self):
         invalid = ((60, 1), (59, 2), (61, 2), (120, 2), (0, 2), (-60, -2),
                    (1, 120), (240, .5), (True, 120), (60.0, 2), (60, 2.0), (120, True))

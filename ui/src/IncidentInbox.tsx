@@ -2,6 +2,7 @@ import type {IncidentEvent,Resource} from './types';
 import {pretty} from './model';
 
 export function ResourceTiming({resource}:{resource:Resource}){
+  if(resource.state===null)return <small className="arrival-time">Awaiting base status</small>;
   if(resource.state==='on_scene')return <small className="arrival-time">On scene</small>;
   if(resource.arrival_at!==undefined&&resource.arrival_at!==null)return <small className="arrival-time" title={resource.travel_time_basis}>Estimated arrival {resource.arrival_at}m · {resource.arrival_in_minutes} min remaining</small>;
   return <small className="arrival-time">{resource.due_at===null?'No arrival scheduled':`Next phase at ${resource.due_at}m`}</small>;

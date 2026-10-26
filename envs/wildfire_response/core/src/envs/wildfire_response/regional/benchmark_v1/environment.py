@@ -304,7 +304,8 @@ class BenchmarkEnv(ReactiveOpsEnv):
         return copy.deepcopy(self._catalog)
 
     def _present_episode(self, observation):
-        public = OpsControlCenterEnv._present(observation)
+        public = OpsControlCenterEnv._present({key: value for key, value in observation.items() if key != 'landscape'})
+        public['landscape'] = observation['landscape']
         public.update(task_id=self._task['id'], task_version=TASK_VERSION, task_set=self._task['task_set'],
                       split=self._task.get('split'),
                       ops_interface_version=VERSION, scenario_engine_version=SCENARIO_VERSION,
