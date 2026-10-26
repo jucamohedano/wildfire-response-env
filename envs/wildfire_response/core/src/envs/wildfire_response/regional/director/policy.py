@@ -52,6 +52,18 @@ class RegionalDirectorPolicy:
     def configure_request(self, payload):
         return payload
 
+    def available_tool_names(self, allow_check):
+        return ['submit_action', 'check_action'] if allow_check else ['submit_action']
+
+    def build_tool_schema(self, name, context):
+        return self.build_action_schema(context)
+
+    def parse_tool_action(self, name, arguments):
+        return self.parse_model_action(arguments)
+
+    def is_committing_tool(self, name):
+        return name == 'submit_action'
+
     def validate_model(self, model):
         if not isinstance(model, str) or not model.endswith(':free'):
             raise ValueError('Only explicit :free model IDs are permitted')
@@ -92,13 +104,11 @@ class RegionalDirectorPolicy:
                 raise RuntimeError('Regional director request budget exhausted; episode is incomplete')
             if self.last_call is not None:
                 time.sleep(max(0, self.interval-(time.monotonic()-self.last_call)))
-            names = ['submit_action']
-            if check_action is not None and checks < 3:
-                names.append('check_action')
+            names = self.available_tool_names(check_action is not None and checks < 3)
             tools = [dict(type='function', function=dict(name=name,
-                description='Advance the simulation with this action' if name == 'submit_action' else
+                description='Advance the simulation with this action' if self.is_committing_tool(name) else
                             'Check this draft without advancing time or predicting outcomes',
-                parameters=self.build_action_schema(context))) for name in names]
+                parameters=self.build_tool_schema(name, context))) for name in names]
             payload = dict(model=self.model, temperature=0, max_tokens=self.max_tokens,
                 reasoning=dict(enabled=False), parallel_tool_calls=False,
                 provider=dict(allow_fallbacks=False, require_parameters=True, max_price=dict(prompt=0, completion=0)),
@@ -135,9 +145,9 @@ class RegionalDirectorPolicy:
                 if name not in names or call.get('type') != 'function':
                     raise ValueError('Unknown or unavailable tool')
                 validation_stage = 'action_arguments'
-                action = self.parse_model_action(call['function']['arguments'])
+                action = self.parse_tool_action(name, call['function']['arguments'])
                 record.update(tool=name, proposal=copy.deepcopy(action))
-                if name == 'submit_action':
+                if self.is_committing_tool(name):
                     self.history.append(copy.deepcopy(action))
                     return action
                 validation_stage = 'check_call_id'

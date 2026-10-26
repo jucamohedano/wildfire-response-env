@@ -67,6 +67,31 @@ class UIServerTests(unittest.TestCase):
     def state(self):
         return self.client.get('/api/state').json()
 
+    def test_reactive_case_api_delivers_updates_and_replays_export(self):
+        from wildfire_core.incident import ReactiveOpsEnv
+        environment = ReactiveOpsEnv(self.prepared, self.domain,
+                                    **self.options(), slope_enabled=True, allow_synthetic_conditions=True)
+        initial, _ = environment.reset('incident-dev-000')
+        response = self.client.post('/api/reset', json=dict(task_id='incident-dev-000'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['observation'], initial)
+        expected = environment.step({})
+        actual = self.submit({}).json()
+        self.assertEqual(actual['observation'], expected[0])
+        self.assertTrue(actual['observation']['incident_events'])
+        self.assert_public(actual)
+        self.client.post('/api/reset', json=dict(task_id='incident-dev-001'))
+        environment.reset('incident-dev-001')
+        while True:
+            expected = environment.step({})
+            actual = self.submit({}).json()
+            self.assertEqual(actual['observation'], expected[0])
+            if expected[2] or expected[3]:
+                break
+        imported = self.client.post('/api/import', json=dict(trajectory=environment.trajectory()))
+        self.assertEqual(imported.status_code, 200)
+        self.assertTrue(imported.json()['read_only'])
+
     def test_terrain_validation_failure_is_explicit_and_never_silently_filled(self):
         app = create_app(self.prepared, self.domain, **self.options())
         with TestClient(app, base_url='http://127.0.0.1:8767') as client:
@@ -140,7 +165,9 @@ class UIServerTests(unittest.TestCase):
 
     def test_config_initial_state_map_and_caller_pins(self):
         config = self.client.get('/api/config').json()
+        from wildfire_core.incident import CASE_IDS as INCIDENT_CASE_IDS
         expected_cases = ([dict(id=identifier, mode='development') for identifier in CASE_IDS]
+            + [dict(id=identifier, mode='reactive') for identifier in INCIDENT_CASE_IDS]
             + [dict(id=self.catalog['groups'][index]['cases'][0]['id'], mode='stress')
                for index in SMOKE_GROUP_INDICES])
         self.assertEqual(config, dict(cases=expected_cases, ticks_per_action=2,

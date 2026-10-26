@@ -5,7 +5,7 @@ import unittest
 from urllib.error import HTTPError
 
 from envs.wildfire_response.regional.ops.cloudrift import (
-    BASE_URL, MODEL, CloudRiftHTTPError, CloudRiftOpsPolicy, CloudRiftTransport, NoRedirects,
+    BASE_URL, MODEL, CloudRiftHTTPError, CloudRiftOpsPolicy, CloudRiftTransport, NoRedirects, CompactCloudRiftOpsPolicy,
 )
 from wildfire_core.ops_model import OpsModelPolicy
 from eval.run_ops_model import BoundedTransport
@@ -42,6 +42,15 @@ class Opener:
 
 
 class CloudRiftTests(unittest.TestCase):
+    def test_compact_policy_retains_cloudrift_authorization_and_model_guards(self):
+        with self.assertRaises(ValueError):
+            CompactCloudRiftOpsPolicy(model=MODEL, transport=lambda payload: {})
+        with self.assertRaises(ValueError):
+            CompactCloudRiftOpsPolicy(model='other:free', transport=lambda payload: {}, allow_cloudrift=True)
+        policy = CompactCloudRiftOpsPolicy(model=MODEL, transport=lambda payload: {}, allow_cloudrift=True)
+        self.assertEqual(policy.contract_version, 'wildfire-ops-model-tools-v2')
+        self.assertIn('advance_time', policy.available_tool_names(False))
+
     def transport(self, cap=5):
         return CloudRiftTransport(api_key='rift_fake_test_secret', model_metadata=metadata(), usd_cap=cap)
 

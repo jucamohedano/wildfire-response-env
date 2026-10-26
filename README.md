@@ -49,6 +49,15 @@ the core and training packages. Run it locally; no public deployment is implied.
 
 ## CPU quickstart
 
+The new [reactive incident mode](envs/wildfire_response/core/src/envs/wildfire_response/regional/incident/README.md)
+adds delayed resident calls, crew support requests, persistent outstanding updates
+and resource arrival estimates. Select `incident-dev-*` in the UI; the optional
+`--reactive` provider-runner flag uses focused v2 tools. The original scenarios
+and tool contract remain available for comparisons and replay.
+The [initial CPU comparison](results/reactive-incidents-20261026.json) records ten
+verified episodes, including delayed protection and a reconnaissance-only support
+request probe. It evaluates simulator mechanics, not a newly trained model.
+
 From this repository root, Python 3.12+:
 
 ```sh

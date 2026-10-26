@@ -17,6 +17,8 @@ from envs.wildfire_response.director.policy import OpenRouterTransport, Provider
 from envs.wildfire_response.regional.ops.model import OpsModelPolicy, CONTRACT_VERSION
 from envs.wildfire_response.regional.ops.generator import digest
 from wildfire_core.topographic import TopographicEnv, ProtectionBaseline
+from wildfire_core.incident import ReactiveOpsEnv
+from wildfire_core.compact_ops_model import CompactOpsModelPolicy
 
 
 CASES = ('topo-dev-001', 'topo-dev-000', 'topo-dev-003', 'topo-dev-004')
@@ -123,7 +125,10 @@ def restore_partial(env, trace):
 def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
         seconds=1200, interval=3.2, preview_pid=None, provider_trial=False,
         policy_type=OpsModelPolicy, policy_options=None, provider='openrouter', allow_nonzero_cost=False,
-        resume_from=None):
+        resume_from=None, case_ids=CASES):
+    allowed = {*CASES, *(identifier.replace('topo-', 'incident-') for identifier in CASES)}
+    if not 1 <= len(case_ids) <= 4 or len(set(case_ids)) != len(case_ids) or not set(case_ids) <= allowed:
+        raise ValueError('Choose one to four distinct allowlisted development cases')
     output = Path(output)
     if output.exists():
         raise ValueError('Choose a fresh output directory')
@@ -131,13 +136,14 @@ def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
     bounded = BoundedTransport(transport, max_requests=max_requests, seconds=seconds, interval=interval,
                                allow_nonzero_cost=allow_nonzero_cost)
     summary = dict(mode='provider_trial' if provider_trial else 'injected_transport_test',
-        status='running', model=model, contract_version=CONTRACT_VERSION, cases_planned=list(CASES),
+        status='running', model=model, contract_version=policy_type.contract_version, cases_planned=list(case_ids),
         scope='Four development fixtures on one source region; not held-out evaluation or training',
         max_provider_requests=max_requests, max_tokens=max_tokens, provider=provider, episodes=[])
     root = Path(__file__).resolve().parents[1]
     summary['source_revision'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
     source_files = ['eval/run_ops_model.py',
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/model.py',
+        'envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/compact_model.py',
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/director/diagnostics.py',
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/director/policy.py']
     summary['source_sha256'] = {name: hashlib.sha256((root/name).read_bytes()).hexdigest() for name in source_files}
@@ -146,12 +152,12 @@ def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
     if resume_from is not None:
         resume_root = Path(resume_from)
         resumed_trace = json.loads((resume_root/'partial-trajectory.json').read_text())
-        if resumed_trace['task_id'] not in CASES:
+        if resumed_trace['task_id'] not in case_ids:
             raise ValueError('Resume only one of the four development cases')
         summary['resume_from'] = str(resume_root)
     try:
-        for task_id in CASES:
-            if resumed_trace is not None and CASES.index(task_id) < CASES.index(resumed_trace['task_id']):
+        for task_id in case_ids:
+            if resumed_trace is not None and case_ids.index(task_id) < case_ids.index(resumed_trace['task_id']):
                 continue
             if bounded.calls >= max_requests or time.monotonic() >= bounded.deadline:
                 summary.update(status='stopped', stop_reason=dict(error_type='GlobalBudgetExhausted', http_status=None))
@@ -257,6 +263,7 @@ def main():
     parser.add_argument('--seconds', type=int, default=1200)
     parser.add_argument('--stop-preview-pid-file')
     parser.add_argument('--allow-provider', action='store_true', required=True)
+    parser.add_argument('--reactive', action='store_true', help='Use reactive incident tasks and compact v2 tools')
     args = parser.parse_args()
     atexit.register(stop_preview, args.stop_preview_pid_file)
     def interrupted(signum, frame):
@@ -271,12 +278,15 @@ def main():
             or any(float(selected['pricing'].get(field, -1)) != 0 for field in ('prompt', 'completion'))):
         parser.error('Choose a currently listed zero-price tool-capable :free model')
     transport = OpenRouterTransport(api_key=read_key(args.key_file), timeout=90)
+    environment_type = ReactiveOpsEnv if args.reactive else TopographicEnv
     def factory():
-        return TopographicEnv(args.prepared_inputs, args.topographic_inputs,
+        return environment_type(args.prepared_inputs, args.topographic_inputs,
             expected_prepared_sha256=args.prepared_sha256, expected_topographic_sha256=args.topographic_sha256,
             slope_enabled=True, allow_synthetic_conditions=True)
     result = run(args.output, factory, transport, model=args.model, max_requests=args.max_requests,
-        max_tokens=args.max_tokens, seconds=args.seconds, preview_pid=args.stop_preview_pid_file, provider_trial=True)
+        max_tokens=args.max_tokens, seconds=args.seconds, preview_pid=args.stop_preview_pid_file, provider_trial=True,
+        policy_type=CompactOpsModelPolicy if args.reactive else OpsModelPolicy,
+        case_ids=tuple(identifier.replace('topo-', 'incident-') for identifier in CASES) if args.reactive else CASES)
     print(json.dumps(result), flush=True)
 
 
