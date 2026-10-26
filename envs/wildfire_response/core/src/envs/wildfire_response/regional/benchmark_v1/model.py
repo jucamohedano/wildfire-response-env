@@ -3,6 +3,7 @@ import json
 
 from ..director.policy import RegionalDirectorPolicy
 from ..ops.compact_model import CompactOpsModelPolicy, action_schema, public_context as compact_context
+from ..ops.cloudrift import CloudRiftOpsPolicy
 
 
 CONTRACT_VERSION = 'wildfire-benchmark-model-tools-v1'
@@ -107,3 +108,7 @@ class BenchmarkModelPolicy(CompactOpsModelPolicy):
         tools = {name: (read_schema(), lambda raw, entries=all_public.get(field, []): query(raw, entries))
                  for name, field in (('get_reports', 'reports'), ('get_events', 'incident_events'))}
         return self.core_action(RegionalDirectorPolicy.__call__(self, observation, feedback, check_action, read_tools=tools))
+
+
+class BenchmarkCloudRiftPolicy(BenchmarkModelPolicy, CloudRiftOpsPolicy):
+    pass
