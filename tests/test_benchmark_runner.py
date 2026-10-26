@@ -1,9 +1,15 @@
 import unittest
 
-from eval.run_benchmark import grouped_interval, summarize
+from eval.run_benchmark import experiment_spec, grouped_interval, summarize
 
 
 class BenchmarkRunnerTests(unittest.TestCase):
+    def test_diagnostic_action_cadence_cannot_enter_ranked_evaluation(self):
+        from types import SimpleNamespace
+        diagnostic=SimpleNamespace(_max_decisions=120,_ticks_per_action=1)
+        with self.assertRaisesRegex(ValueError,'two-minute'):
+            experiment_spec(diagnostic,'validation',('passive',),[],False)
+
     def row(self,policy='safe',safe=True,area=100,score=1,group='a'):
         return dict(policy=policy,score_eligible=True,safe_success=safe,
                     protected_population_fraction=1 if safe else .9,

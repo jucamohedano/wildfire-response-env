@@ -7,6 +7,55 @@ There is **no HappyRobot dependency, live dispatch, live messaging or API-key
 requirement** for the CPU environment. This repository is the development source
 of truth; the Hackspain checkout is historical context, not a required service.
 
+## Current benchmark candidate
+
+The current opt-in environment is `wildfire_core.benchmark_v1.BenchmarkEnv`.
+It uses delivered evidence, safety-first outcome ordering and a separate80/20
+population/area learning reward. Its catalog has160training,40validation and40test
+episodes plus12development probes. Older regional, terrain and reactive modes
+remain available as versioned comparisons; their results are not interchangeable.
+
+Start with the [environment card](ENVIRONMENT_CARD.md), [dataset card](DATASET_CARD.md),
+[fidelity limits](FIDELITY.md), and [benchmark commands](data/benchmark_v1/README.md).
+The [staged training recipe](train/BENCHMARK.md) supports CPU preparation and
+explicitly gated Qwen SFT, adapter validation and GRPO. Code readiness is not
+evidence that a trained model improves. Publication still requires the
+[license and asset checks](LICENSE_STATUS.md).
+
+The [frozen CPU validation report](results/benchmark-validation-20261026.html)
+records 428 verified episodes across development, sensitivity, validation and test.
+It reports reference policies only; no trained model has been evaluated.
+
+An offline Python client can use the already prepared, pinned inputs:
+
+```python
+from wildfire_core.benchmark_v1 import BenchmarkEnv
+from envs.wildfire_response.regional.benchmark_v1.catalog import task_ids
+
+environment = BenchmarkEnv(
+    '.runtime/malaga-prepared-inputs-v1/inputs.json',
+    '.runtime/topographic-inputs-v1/inputs.json',
+    expected_prepared_sha256='ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108',
+    expected_topographic_sha256='e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd',
+    allow_synthetic_conditions=True,
+)
+observation, info = environment.reset(task_ids(environment.catalog, 'development')[0])
+while True:
+    observation, reward, terminated, truncated, info = environment.step({})
+    if terminated or truncated:
+        break
+verification = environment.verify_episode()
+assert verification['passed']
+```
+
+The example deliberately waits; it demonstrates the API, not a good response
+policy. Inputs must exist locally with those hashes; no download or substitution
+is performed. For OpenEnv, install the optional package and run
+`python -m wildfire_openenv.benchmark --mode simulation --slope-enabled true`
+with the four `WILDFIRE_PREPARED_*` / `WILDFIRE_TOPOGRAPHIC_*` path/hash variables.
+Use a persistent WebSocket session. The UI's **Benchmark · delivered evidence**
+group exposes development tasks only.
+
 ## Layout, following PortSimEnv
 
 The reference is Adithya S Kolavi's
@@ -48,6 +97,9 @@ the simulator or change physics/rewards. Its dependencies remain isolated from
 the core and training packages. Run it locally; no public deployment is implied.
 
 ## CPU quickstart
+
+The original quickstart below exercises the preserved regional version. Use the
+current benchmark example above for delivered-evidence population/area evaluation.
 
 The new [reactive incident mode](envs/wildfire_response/core/src/envs/wildfire_response/regional/incident/README.md)
 adds delayed resident calls, crew support requests, persistent outstanding updates

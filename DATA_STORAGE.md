@@ -71,6 +71,14 @@ separately. See `data/topographic_stress_v1/provenance.json` for exact byte coun
 
 ## Persistence
 
+Benchmark reference runs add a public ID/split manifest, checksum-pinned
+preregistration for held-out evaluation, compressed actor trajectories, private
+per-minute audits and independent verification. The JSON/HTML report records
+safety-first ordering separately from the graded learning score and includes
+incomplete/censored attempts. Training preparation writes sealed train-only
+demonstrations and frozen retrieval banks; CPU dry runs cannot satisfy model
+readiness gates. See `data/benchmark_v1/README.md` and `train/BENCHMARK.md`.
+
 Model evaluation writes request records to each case's `requests.json`. Rejected
 tool responses now include `response_diagnostics`: the validation stage, exception
 type/message, finish reason, tool name, rejected arguments and ordinary response

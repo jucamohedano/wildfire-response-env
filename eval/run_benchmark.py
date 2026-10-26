@@ -160,11 +160,14 @@ def experiment_spec(environment, split, policies, identifiers, communications_ab
     from envs.wildfire_response.regional.benchmark_v1.environment import implementation_digest
     from envs.wildfire_response.regional.benchmark_v1.calibration import public_profile
     from envs.wildfire_response.regional.ops.generator import digest
+    if environment._max_decisions != 60 or environment._ticks_per_action != 2:
+        raise ValueError('Ranked benchmark experiments require sixty two-minute decisions')
     root=Path(__file__).resolve().parents[1]
     sources=('eval/run_benchmark.py',
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/baselines.py',
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/model.py')
     return dict(version='wildfire-benchmark-experiment-v1', split=split, task_ids=list(identifiers),
+        max_decisions=60, ticks_per_action=2,
         policies=list(policies), communications_ablation=communications_ablation,
         catalog_sha256=environment.catalog['sha256'], environment_implementation_sha256=implementation_digest(),
         profile_sha256=digest(public_profile(environment._profile)),

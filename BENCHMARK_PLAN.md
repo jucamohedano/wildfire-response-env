@@ -23,6 +23,11 @@ assumptions, actor evidence and private evaluator artifacts remain distinct.
 
 ## Execution gates
 
+Implementation is tracked in issue #18 and five stacked draft PRs. The frozen CPU
+validation completed 428 episodes with independent verification and no invalid
+reference actions. Training preparation produced three verified training-only
+trajectories and a frozen 180-case bank. These are not model-learning results.
+
 The current VM is terminated. No GPU rental, paid inference, model download,
 training job or publication is authorized by this code implementation. The pilot
 must first meet valid-action and reward-diversity gates, then receive compute and

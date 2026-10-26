@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wildfire benchmark · release validation</title>
+<style>body{font:16px/1.6 system-ui;background:#f4f5f0;color:#22362a;margin:0;padding:30px}main{max-width:1100px;margin:auto}h1{line-height:1.2}h2{margin-top:32px}.notice{background:#fff8e8;border-left:4px solid #a8692d;padding:16px}.cards{display:flex;gap:16px;flex-wrap:wrap}.card{flex:1;min-width:180px;background:white;padding:18px;border:1px solid #cdd8c8}.card strong{display:block;font-size:27px}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;background:white}td,th{text-align:left;padding:12px;border-bottom:1px solid #cdd8c8}th{background:#e6ecdf}code{overflow-wrap:anywhere}a{color:#286344}.muted{color:#566650;font-size:14px}</style>
+<main><p class="muted">26 October 2026 · frozen CPU reference comparison</p><h1>Wildfire Ops: benchmark validation</h1>
+<div class="notice"><strong>CPU mechanics and references verified. No trained model evaluated.</strong> These are source-grounded synthetic exercises on one Málaga landscape. Population exposure is not a death count; burned footprint follows the simulation grid.</div>
+<h2>What ran</h2><div class="cards"><div class="card"><strong>428 episodes</strong>Development, sensitivity, validation and test</div><div class="card"><strong>25,680 decisions</strong>Independent accounting and exact replay</div><div class="card"><strong>42.6 CPU minutes</strong>One worker · 80.1 MiB peak RSS</div><div class="card"><strong>0 invalid actions</strong>0 censored episodes · no paid inference</div></div>
+<h2>How to read the results</h2><p>Rows rank by safety success first, then protected population and additional burned area. The separate learning score weights unexposed population at80% and unburned footprint at20%. No message-volume or extinction bonus is added.</p>
+<h2>validation central</h2>
+<div class="scroll"><table><tr><th>Reference policy</th><th>Safe episodes</th><th>Unexposed population</th><th>Additional footprint</th><th>Learning score</th></tr>
+<tr><td>dispatcher</td><td>39/40</td><td>98.6%</td><td>103.12 ha</td><td>0.9880</td></tr>
+<tr><td>cooperative</td><td>38/40</td><td>97.1%</td><td>96.88 ha</td><td>0.9766</td></tr>
+<tr><td>indiscriminate</td><td>36/40</td><td>94.3%</td><td>191.25 ha</td><td>0.9531</td></tr>
+<tr><td>passive</td><td>32/40</td><td>88.6%</td><td>191.25 ha</td><td>0.9074</td></tr>
+</table></div>
+<h2>test central</h2>
+<div class="scroll"><table><tr><th>Reference policy</th><th>Safe episodes</th><th>Unexposed population</th><th>Additional footprint</th><th>Learning score</th></tr>
+<tr><td>cooperative</td><td>29/40</td><td>81.4%</td><td>98.12 ha</td><td>0.8508</td></tr>
+<tr><td>dispatcher</td><td>28/40</td><td>81.4%</td><td>100.00 ha</td><td>0.8508</td></tr>
+<tr><td>passive</td><td>25/40</td><td>78.6%</td><td>186.88 ha</td><td>0.8274</td></tr>
+<tr><td>indiscriminate</td><td>19/40</td><td>67.1%</td><td>186.88 ha</td><td>0.7360</td></tr>
+</table></div>
+<h2>development central</h2>
+<div class="scroll"><table><tr><th>Reference policy</th><th>Safe episodes</th><th>Unexposed population</th><th>Additional footprint</th><th>Learning score</th></tr>
+<tr><td>dispatcher</td><td>12/12</td><td>100.0%</td><td>45.83 ha</td><td>0.9997</td></tr>
+<tr><td>cooperative</td><td>11/12</td><td>95.2%</td><td>43.75 ha</td><td>0.9616</td></tr>
+<tr><td>indiscriminate</td><td>11/12</td><td>95.2%</td><td>127.08 ha</td><td>0.9611</td></tr>
+<tr><td>dispatcher without incoming communications</td><td>10/12</td><td>91.7%</td><td>120.83 ha</td><td>0.9326</td></tr>
+<tr><td>passive</td><td>9/12</td><td>86.9%</td><td>127.08 ha</td><td>0.8945</td></tr>
+</table></div>
+<h2>development faster stronger</h2>
+<div class="scroll"><table><tr><th>Reference policy</th><th>Safe episodes</th><th>Unexposed population</th><th>Additional footprint</th><th>Learning score</th></tr>
+<tr><td>dispatcher</td><td>12/12</td><td>100.0%</td><td>47.92 ha</td><td>0.9997</td></tr>
+<tr><td>cooperative</td><td>11/12</td><td>95.2%</td><td>35.42 ha</td><td>0.9617</td></tr>
+</table></div>
+<h2>development slower weaker</h2>
+<div class="scroll"><table><tr><th>Reference policy</th><th>Safe episodes</th><th>Unexposed population</th><th>Additional footprint</th><th>Learning score</th></tr>
+<tr><td>dispatcher</td><td>12/12</td><td>100.0%</td><td>89.58 ha</td><td>0.9995</td></tr>
+<tr><td>cooperative</td><td>11/12</td><td>95.2%</td><td>81.25 ha</td><td>0.9614</td></tr>
+</table></div>
+<h2>Findings</h2><ul><li>The dispatcher protected everyone on12/12development cases; removing incoming reports, calls and smoke telemetry reduced that to10/12. Sensor evidence and operational acknowledgements remained.</li><li>Blanket evacuation is not universally safe: a development route-fire probe exposed200simulated people under indiscriminate evacuation, while informed dispatch avoided exposure.</li><li>The validation-leading dispatcher reached28/40safe test episodes; cooperative response reached29/40. The more elaborate heuristic is not uniformly better. Test results were not used to retune it.</li><li>All282compiled ignition events lie on burnable cells for the pinned inputs.</li></ul>
+<h2>Learning preparation and remaining gates</h2><p>Three replay-verified training-only trajectories yielded180frozen public retrieval cases. A fresh wheel installation completed and independently verified a120-minute episode. OpenEnv WebSocket parity, unknown-state rendering and bounded historical queries are tested.</p><p>Qwen3-1.7B SFT, adapter validation and GRPO are implemented behind explicit compute/budget gates. Actual GPU execution and learned-policy improvement are untested. Code-license and asset review are still required before publication.</p>
+<h2>Provenance and reproduction</h2><p>The JSON record contains task selections, per-profile catalog/implementation/policy hashes, grouped confidence intervals and source revisions. Compressed actor trajectories and private minute audits are retained separately in the local archive.</p><p><a href="benchmark-validation-20261026.json">Machine-readable validation</a> · <a href="../data/benchmark_v1/README.md">Reproduction commands</a> · <a href="../FIDELITY.md">Fidelity limits</a> · <a href="../train/BENCHMARK.md">Staged learning recipe</a></p></main></html>
