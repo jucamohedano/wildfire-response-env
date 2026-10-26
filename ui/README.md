@@ -153,25 +153,30 @@ is used. This local interactive demo must follow the
 Use an appropriately licensed/self-hosted provider for scaled deployments or
 offline cartography; the community service is best-effort. Turning streets off
 leaves source-derived terrain and simulation local. Terrain hillshade retains
-higher display contrast and domain/grid/guard lines remain dark. Display filters
-do not apply to operational overlays or alter simulation physics.
+higher display contrast. Display filters do not apply to operational overlays
+or alter simulation physics.
 
-The **Map key** uses larger SVG examples of the actual circles, cell fills and
-boundary lines, with a plain-language label and explanation for each. Residents,
-evacuation destinations, exposed people and responders have separate entries.
-Recent sightings and older observations remain distinct. An empty sensor record
-does not certify no fire. Counts refer to grid cells, not independent incidents.
-The raw cell/elevation/fuel readout and source details are under a collapsed
-**Map data and technical details** disclosure. Boundary lines have a light casing
-so they remain visible over dark imagery. The explicit evaluator key is separate
-and never labels private simulated heat as public observations.
+The **Map key** uses larger SVG examples of the actual circles and cell fills,
+with a plain-language label and explanation for each. It leaves artificial
+simulation rectangles off the map; the automatic zoom shows the study area.
+Residents, evacuation destinations, exposed people and responders have separate
+entries. Recent sightings and older observations remain distinct. An empty
+sensor record does not certify no fire. Counts refer to grid cells, not
+independent incidents. The raw cell/elevation/fuel readout and source details
+are under a collapsed **Map data and technical details** disclosure. The edge
+buffer remains an uncertainty rule, not a visible firebreak. The explicit
+evaluator key is separate and never labels private simulated heat as public
+observations.
 
 Clicking a received report centres its claimed location. Pointing at a cell reads
 its mean elevation/fuel class from the pinned public500m grid, never from colours
 or remotely sampled map pixels. Population movement uses recorded public positions;
-responders appear only when confirmed on scene. En-route units stay abstract.
-The inner dashed rectangle marks the engine's two-cell censor guard, not a road,
-perimeter or containment line. Outside the terrain rectangle is map context only.
+responders appear as green markers when on scene. Mobilizing or en-route units
+show an amber ring at their assigned target, with an ETA when available; this is
+not the vehicle's current position or a road route. The Resources panel tracks
+Reserved → Mobilizing → En route → On scene and shows the estimated arrival time.
+An ETA that has passed remains pending until a status update confirms arrival.
+Roads and the simulation edge remain context only.
 
 ## Privacy and local scope
 

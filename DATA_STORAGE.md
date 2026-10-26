@@ -113,6 +113,26 @@ Archive size:5,127,828bytes; SHA256:
 Pinned input packs remain in the earlier benchmark-release backup. No credential
 is stored in this archive, and no raw runtime artifact was uploaded.
 
+### GPT-6 Luna subagent trial, 2026-10-26
+
+`.runtime/luna-subagent-benchmark-20261026/` retains three complete120-minute
+model trajectories, six matched reference trajectories, private audits,
+verification and180named-action records. All model traces replay exactly. The
+actor manifest records the requested model/effort, fresh child ID, instruction
+isolation and its self-reported compliance; that self-report is not a security
+audit. Development cases remain ineligible for training-bank updates.
+
+The public report is `results/luna-subagent-benchmark-20261026.{html,json}`.
+It includes the corrected invalid triage action, active-fire outcome and a
+scenario/physics-pin-checked comparison with the differently hosted DeepSeek
+trial. Repeated wait actions are collapsed visually, not removed from records.
+
+A mode0600 local archive is retained at
+`/home/juancm/hackspain/wildfire-response-env/.runtime/luna-subagent-benchmark-20261026/trajectories-and-diagnostics.tar.gz`.
+Archive size:7,268,047bytes; SHA256:
+`48b4cddc7876c26b3a163f0548b670ab87e320a2f777c2070336a9372d4a6ef1`.
+No CloudRift requests were made; Codex usage is not cost-metered by this harness.
+
 Active development is on `codex/wildfire-ops-control-center` in the standalone
 environment repository. Changes are pushed there; raw data is not committed.
 Local ignored backups and Git bundles are preserved under

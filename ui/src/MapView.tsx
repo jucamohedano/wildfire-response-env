@@ -20,7 +20,7 @@ import {defaults as interactions} from 'ol/interaction/defaults.js';
 import {defaults as controls} from 'ol/control/defaults.js';
 import ScaleLine from 'ol/control/ScaleLine.js';
 import 'ol/ol.css';
-import {cellAt,cellCenter,groupName} from './model';
+import {cellAt,cellCenter,groupName,resourceKindName} from './model';
 import {fireCells,fireBoundary,mapViewOptions,spainExtent,mapProjection,limitCountryZoom,aerialTileUrl,terrainOpacity} from './mapModel';
 import MapLegend from './MapLegend';
 import {mapColors} from './mapSymbols';
@@ -31,10 +31,10 @@ type Selection={type:'report'|'district'|'resource';id:string};
 
 function featureStyle(feature:Feature,narrow=false,resolution=0):Style|Style[]|undefined {
   const kind=feature.get('kind') as string;
-  if(resolution>300&&!['domain','locator'].includes(kind))return undefined;
-  if(kind==='locator')return resolution>300?new Style({image:new CircleStyle({radius:6,fill:new Fill({color:'#a72a1c'}),stroke:new Stroke({color:'#fff',width:2})}),text:new Text({text:'Simulation domain',offsetY:-18,font:'600 12px system-ui',fill:new Fill({color:'#172d22'}),stroke:new Stroke({color:'#fff',width:3})}),zIndex:10}):undefined;
+  if(resolution>300&&kind!=='locator')return undefined;
+  if(kind==='locator')return resolution>300?new Style({image:new CircleStyle({radius:6,fill:new Fill({color:'#a72a1c'}),stroke:new Stroke({color:'#fff',width:2})}),text:new Text({text:'Incident area',offsetY:-18,font:'600 12px system-ui',fill:new Fill({color:'#172d22'}),stroke:new Stroke({color:'#fff',width:3})}),zIndex:10}):undefined;
+  if(kind==='arrival-target')return new Style({image:new CircleStyle({radius:10,fill:new Fill({color:'rgba(248,191,91,.2)'}),stroke:new Stroke({color:mapColors.arrival,width:2.5,lineDash:[3,3]})}),text:new Text({text:feature.get('label') as string,offsetY:-20,font:'600 11px system-ui',fill:new Fill({color:'#46300e'}),stroke:new Stroke({color:'rgba(255,255,255,.95)',width:3})}),zIndex:6});
   const color=kind==='claim'?mapColors.claim:kind==='unit'?mapColors.unit:kind==='exposed'?mapColors.exposed:mapColors.population;
-  if(kind==='guard'||kind==='domain')return [new Style({stroke:new Stroke({color:'rgba(255,255,255,.85)',width:4,lineDash:kind==='guard'?[5,5]:undefined})}),new Style({stroke:new Stroke({color:kind==='domain'?mapColors.domain:mapColors.guard,width:1.8,lineDash:kind==='guard'?[5,5]:undefined})})];
   if(kind==='grid')return new Style({stroke:new Stroke({color:'rgba(38,51,36,.5)',width:.8})});
   if(kind==='front')return new Style({stroke:new Stroke({color:mapColors.front,width:2.5}),zIndex:3});
   if(kind==='burned')return new Style({fill:new Fill({color:`rgba(48,34,31,${.28+.52*(feature.get('burned') as number)})`}),zIndex:1});
@@ -109,9 +109,7 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
     const nativeCorner=(column:number,row:number):Position=>[geography.transform[2]+column*500,geography.transform[5]-row*500];
     const rectangle=(column:number,row:number,width=1,height=1)=>new Polygon([[nativeCorner(column,row),nativeCorner(column+width,row),nativeCorner(column+width,row+height),nativeCorner(column,row+height),nativeCorner(column,row)].map(project)]);
     function marker(kind:string,position:Position,label:string,selection?:Selection){const feature=new Feature({geometry:new Point(project(cellCenter(geography,...position))),kind,label,selection});source!.addFeature(feature);}
-    source.addFeature(new Feature({geometry:rectangle(0,0,geography.width,geography.height),kind:'domain'}));
     source.addFeature(new Feature({geometry:new Point(project([(metadata.extent[0]+metadata.extent[2])/2,(metadata.extent[1]+metadata.extent[3])/2])),kind:'locator'}));
-    source.addFeature(new Feature({geometry:rectangle(2,2,geography.width-4,geography.height-4),kind:'guard'}));
     if(grid){
       for(let column=0;column<=geography.width;column++)source.addFeature(new Feature({geometry:new LineString([project(nativeCorner(column,0)),project(nativeCorner(column,geography.height))]),kind:'grid'}));
       for(let row=0;row<=geography.height;row++)source.addFeature(new Feature({geometry:new LineString([project(nativeCorner(0,row)),project(nativeCorner(geography.width,row))]),kind:'grid'}));
@@ -127,8 +125,20 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
       if(grouped.has(key)||fresh)continue;grouped.add(key);
       marker('claim',report.location,report.id===selectedReport?'Selected report':'?',{type:'report',id:report.id});
     }
-    for(const district of observation.districts){marker('refuge',district.refuge,'Refuge');marker(district.exposed?'exposed':'population',district.position??district.home,`${groupName(district.id).replace(' group','')} · ${district.population}${district.position===null?' · home; position unknown':''}`,{type:'district',id:district.id});}
-    for(const unit of observation.resources)if(unit.state!==null&&['on_scene','warning_service'].includes(unit.state)&&unit.target)marker('unit',unit.target,`${unit.kind} · ${unit.home_base}`,{type:'resource',id:unit.id});
+    for(const district of observation.districts){marker('refuge',district.refuge,'Refuge');marker(district.exposed?'exposed':'population',district.position??district.home,`${groupName(district.id)} · ${district.population}${district.position===null?' · home; position unknown':''}`,{type:'district',id:district.id});}
+    const arrivals=new Map<string,typeof observation.resources>();
+    for(const unit of observation.resources){
+      if(unit.state==='on_scene'&&unit.target)marker('unit',unit.target,`${resourceKindName(unit.kind)} · ${unit.home_base}`,{type:'resource',id:unit.id});
+      if(['mobilizing','en_route'].includes(unit.state??'')&&unit.target){
+        const key=unit.target.join(',');arrivals.set(key,[...(arrivals.get(key)??[]),unit]);
+      }
+    }
+    for(const units of arrivals.values()){
+      const remaining=units.map(unit=>unit.arrival_at===null||unit.arrival_at===undefined?null:Math.max(0,unit.arrival_at-observation.minute)).filter((value):value is number=>value!==null);
+      const eta=remaining.length?Math.min(...remaining):null;
+      const label=eta===null?'En-route target':`${units.length>1?`${units.length} units`:resourceKindName(units[0].kind)} · ETA ${eta}m`;
+      source.addFeature(new Feature({geometry:new Point(project(cellCenter(geography,...units[0].target!))),kind:'arrival-target',label,selection:{type:'resource',id:units[0].id}}));
+    }
   },[observation,world,grid,selectedReport]);
   useEffect(()=>{const report=observation.reports.find(report=>report.id===selectedReport);if(report?.location){cancelIntro.current();map.current?.getView().setCenter(project(cellCenter(observation.geography,...report.location)));}},[selectedReport]);
   return <section className="map-panel" aria-label="2D terrain map">
@@ -137,6 +147,6 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
     {showMap&&baseStyle==='aerial'&&<p className="imagery-note">{aerialStatus==='unavailable'?'Aerial imagery unavailable; showing the street-map fallback. Toggle Basemap to retry.':'PNOA aerial / Sentinel-2 background · not live. Fire overlays are simulated on 500 m cells.'}</p>}
     {showMap&&contextStatus==='unavailable'&&(baseStyle==='street'||aerialStatus==='unavailable')&&<p className="map-key-warning" role="status">Street map unavailable. Toggle Basemap to retry; turn it off for the local terrain view.</p>}
     <MapLegend observation={observation} world={world}/>
-    <details className="map-data-details"><summary>Map data and technical details</summary><p>{hover}</p><p>{metadata.source_label}</p><p>500 m simulation cells. Outside the boundary is map context only. Displayed roads do not determine simulated travel.</p></details>
+    <details className="map-data-details"><summary>Map data and technical details</summary><p>{hover}</p><p>{metadata.source_label}</p><p>500 m simulation cells. Only the zoomed study area is simulated; imagery beyond it is context. Displayed roads do not determine simulated travel.</p></details>
   </section>;
 }

@@ -58,6 +58,16 @@ class BenchmarkCloudRiftTests(unittest.TestCase):
             self.assertIn('1 reached the full120-minute horizon', artifact['interpretation'])
             self.assertEqual(artifact['failure_counts'], {})
             self.assertNotIn('Protocol abandonment score', report.read_text())
+            self.assertIn('consecutive wait actions', report.read_text())
+            comparison = Path(temporary)/'comparison.json'
+            comparison.write_text(json.dumps(artifact))
+            render(output, report, comparison)
+            compared = json.loads(report.with_suffix('.json').read_text())
+            self.assertFalse(compared['comparison']['model_only_comparison'])
+            artifact['summary']['experiment']['ticks_per_action'] = 1
+            comparison.write_text(json.dumps(artifact))
+            with self.assertRaisesRegex(ValueError, 'different scenario, clock'):
+                render(output, report, comparison)
 
     def test_rejected_response_details_retained_and_three_strikes_abandon(self):
         def malformed(payload):

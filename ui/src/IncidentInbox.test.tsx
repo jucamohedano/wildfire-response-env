@@ -16,8 +16,8 @@ describe('incident updates and arrival timing',()=>{
   });
   it('distinguishes arrival from a phase deadline',()=>{
     const resource={id:'engine',state:'mobilizing',due_at:6,arrival_at:18,arrival_in_minutes:14} as Resource;
-    expect(renderToStaticMarkup(<ResourceTiming resource={resource}/>)).toContain('Estimated arrival 18m · 14 min remaining');
-    expect(renderToStaticMarkup(<ResourceTiming resource={{...resource,arrival_at:null,state:'refilling'}}/>)).toContain('Next phase at 6m');
+    expect(renderToStaticMarkup(<ResourceTiming resource={resource}/>)).toContain('Estimated arrival at 18m · 14 min remaining');
+    expect(renderToStaticMarkup(<ResourceTiming resource={{...resource,arrival_at:null,state:'refilling'}}/>)).toContain('Next phase expected at 6m');
     expect(renderToStaticMarkup(<ResourceTiming resource={{...resource,state:'on_scene'}}/>)).toContain('On scene');
     expect(renderToStaticMarkup(<ResourceTiming resource={{...resource,state:null}}/>)).toContain('Awaiting base status');
     expect(renderToStaticMarkup(<ResourceTiming resource={resource} minute={8}/>)).toContain('10 min remaining');

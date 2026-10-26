@@ -3,9 +3,10 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import MapLegend from './MapLegend';
 
 describe('plain-language map legend',()=>{
-  it('explains the actual circle, cell and boundary symbols without claiming an empty record means no fire',()=>{
+  it('explains operational symbols without artificial map boundaries or claiming an empty record means no fire',()=>{
     const html=renderToStaticMarkup(<MapLegend observation={{minute:52,sensor_memory:[]}} world={null}/>);
-    for(const text of ['Map key','Fire seen recently','Older fire sighting','Unverified report','People','Evacuation destination','People exposed to fire','Responder on scene','Simulation boundary','Model edge buffer','Unobserved areas may still contain fire','not a firebreak'])expect(html).toContain(text);
+    for(const text of ['Map key','Fire seen recently','Older fire sighting','Unverified report','People','Evacuation destination','People exposed to fire','Responder on scene','En-route target','Unobserved areas may still contain fire','study-area edge may be incomplete'])expect(html).toContain(text);
+    expect(html).not.toContain('Simulation boundary');expect(html).not.toContain('Model edge buffer');
     expect(html).toContain('<circle');expect(html).toContain('stroke-dasharray="4 3"');
     expect(html).not.toContain('Evaluator only');expect(html).not.toContain('Burned ground');
   });
