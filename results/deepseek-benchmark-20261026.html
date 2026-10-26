@@ -1,0 +1,351 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeepSeek · delivered-evidence benchmark evaluation</title><style>body{font:16px/1.6 system-ui;max-width:1150px;margin:auto;padding:32px;background:#f5f2ec;color:#27372e}section{padding:24px;background:#fff;border:1px solid #d8d5cc;border-radius:10px;margin:24px 0}.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:24px}aside{background:#f0eee6;padding:18px;border-radius:8px;align-self:start}aside strong{font-size:36px}dt,small{color:#647365}dd{margin:0 0 12px}ol{list-style:none;margin:0;padding:0 0 0 20px;border-left:2px solid #d1d4c9}li{margin-bottom:16px}ol li{padding:14px;border:1px solid #d1d4c9;border-radius:6px}li.bad{border-left:4px solid #ae6147}li.good{border-left:4px solid #54745b}small{display:block}summary{cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;max-height:420px;overflow:auto}.notice{border-left:4px solid #ae6147;padding:16px;background:#eee9dd}a{color:#325f51}@media(max-width:720px){.layout{grid-template-columns:1fr}body{padding:16px}}</style><h1>DeepSeek · delivered-evidence benchmark</h1><p>deepseek-ai/DeepSeek-V4-Flash-0731</p><p>3 development cases · 16 request attempts · 396.86 seconds · $1.610742 estimated of $5.0 cap.</p><p class="notice">3 of 3 attempted episodes abandoned after three consecutive invalid commits; 0 reached the full120-minute horizon. Abandonment scores are zero by the existing protocol-failure rule, not an observed full-horizon firefighting outcome. Tool-protocol failures identify an end-to-end model/serving/adapter problem; the evidence does not isolate which layer introduced malformed serialization. No retries, repair, fallback, training, or additional provider calls were performed.</p><h2>What failed</h2><ul><li>multiple tool calls: 1</li><li>invalid action arguments: 2</li><li>tool markup in plain text: 7</li></ul><p>4 valid action commits; 2 valid read calls; 10 protocol rejections; 0 transport errors. Completed episodes are independently verified before scoring.</p><section><h2>Uncertain Smoke</h2><div class="layout"><aside><strong>0.0</strong><p>Protocol abandonment score</p><dl><dt>Simulated time</dt><dd>6 /120 minutes</dd><dt>Decisions</dt><dd>3</dd><dt>Invalid commits</dt><dd>3</dd></dl><p>Only full-horizon physical outcomes are comparable to120-minute references.</p></aside><ol><li class="bad"><b>Request 1 · minute 0 · Rejected tool response</b><small>32.802 seconds provider latency</small><details><summary>Exact captured rejection diagnostics</summary><pre>{
+  &quot;choice_count&quot;: 1,
+  &quot;choices&quot;: [
+    {
+      &quot;finish_reason&quot;: &quot;tool_calls&quot;,
+      &quot;index&quot;: 0,
+      &quot;message&quot;: {
+        &quot;content&quot;: &quot;I&#x27;ll start by examining the initial situation. There&#x27;s one report (claim-0) from a resident saying there&#x27;s smoke but it needs clarification. Let me check the report and consider dispatching resources to investigate.\n\nLet me start by requesting clarification on the initial report since there&#x27;s no confirmed fire location yet, and consider sending reconnaissance resources.\n\n&quot;,
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;tool_calls&quot;: [
+          {
+            &quot;function&quot;: {
+              &quot;arguments&quot;: &quot;{\&quot;clarifications\&quot;: [{\&quot;id\&quot;: \&quot;claim-0\&quot;}], \&quot;explanation\&quot;: \&quot;Initial report from resident needs clarification on fire location and severity before committing resources.\&quot;}&quot;,
+              &quot;name&quot;: &quot;clarify_reports&quot;
+            },
+            &quot;id&quot;: &quot;chatcmpl-tool-a0cad6ccb4a1666f&quot;,
+            &quot;type&quot;: &quot;function&quot;
+          },
+          {
+            &quot;function&quot;: {
+              &quot;arguments&quot;: &quot;{\&quot;requests\&quot;: [{\&quot;resource_id\&quot;: \&quot;crew-valverde\&quot;, \&quot;sector_id\&quot;: \&quot;protect:settlement-west\&quot;, \&quot;mission\&quot;: \&quot;recon\&quot;}]}&quot;,
+              &quot;name&quot;: &quot;request_resources&quot;
+            },
+            &quot;id&quot;: &quot;chatcmpl-tool-994d49ee2f9aa914&quot;,
+            &quot;type&quot;: &quot;function&quot;
+          }
+        ]
+      },
+      &quot;tool_call_count&quot;: 2,
+      &quot;tool_calls_type&quot;: &quot;list&quot;
+    }
+  ],
+  &quot;choices_type&quot;: &quot;list&quot;,
+  &quot;error_message&quot;: &quot;Expected exactly one complete tool call&quot;,
+  &quot;error_type&quot;: &quot;ValueError&quot;,
+  &quot;redacted&quot;: false,
+  &quot;response_type&quot;: &quot;dict&quot;,
+  &quot;stage&quot;: &quot;tool_call_envelope&quot;,
+  &quot;text_character_budget&quot;: 65536,
+  &quot;truncated&quot;: false,
+  &quot;version&quot;: &quot;wildfire-model-protocol-diagnostics-v1&quot;
+}</pre></details></li><li class="bad"><b>Request 2 · minute 2 · Rejected tool response</b><small>18.702 seconds provider latency</small><details><summary>Exact captured rejection diagnostics</summary><pre>{
+  &quot;choice_count&quot;: 1,
+  &quot;choices&quot;: [
+    {
+      &quot;finish_reason&quot;: &quot;tool_calls&quot;,
+      &quot;index&quot;: 0,
+      &quot;message&quot;: {
+        &quot;content&quot;: null,
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;tool_calls&quot;: [
+          {
+            &quot;function&quot;: {
+              &quot;arguments&quot;: &quot;{\&quot;requests\&quot;: \&quot;[]\&quot;, \&quot;triage\&quot;: [{\&quot;report_ids\&quot;: [\&quot;claim-0\&quot;], \&quot;assessment\&quot;: \&quot;fire_observed\&quot;}], \&quot;explanation\&quot;: \&quot;Assessing the smoke claim from settlement-west area to confirm fire.\&quot;}&quot;,
+              &quot;name&quot;: &quot;assess_reports&quot;
+            },
+            &quot;id&quot;: &quot;chatcmpl-tool-babff374297e3623&quot;,
+            &quot;type&quot;: &quot;function&quot;
+          }
+        ]
+      },
+      &quot;tool_call_count&quot;: 1,
+      &quot;tool_calls_type&quot;: &quot;list&quot;
+    }
+  ],
+  &quot;choices_type&quot;: &quot;list&quot;,
+  &quot;error_message&quot;: &quot;Action fields: missing=[]; unexpected=[&#x27;requests&#x27;]&quot;,
+  &quot;error_type&quot;: &quot;ValueError&quot;,
+  &quot;redacted&quot;: false,
+  &quot;response_type&quot;: &quot;dict&quot;,
+  &quot;stage&quot;: &quot;action_arguments&quot;,
+  &quot;text_character_budget&quot;: 65536,
+  &quot;truncated&quot;: false,
+  &quot;version&quot;: &quot;wildfire-model-protocol-diagnostics-v1&quot;
+}</pre></details></li><li class="bad"><b>Request 3 · minute 4 · Rejected tool response</b><small>27.744 seconds provider latency</small><details><summary>Exact captured rejection diagnostics</summary><pre>{
+  &quot;choice_count&quot;: 1,
+  &quot;choices&quot;: [
+    {
+      &quot;finish_reason&quot;: &quot;stop&quot;,
+      &quot;index&quot;: 0,
+      &quot;message&quot;: {
+        &quot;content&quot;: &quot;I&#x27;ll start by analyzing the situation. There&#x27;s a smoke report from settlement-west, and the incident is located at [14,18] (same as settlement-west). I need to investigate and protect the population.\n\nLet me dispatch resources to investigate and protect the settlement. First, let me request a reconnaissance mission to the incident location and warn the settlement.\n\n&lt;｜DSML｜invoke name=\&quot;request_resources\&quot;&gt;\n&lt;｜DSML｜parameter name=\&quot;requests\&quot; string=\&quot;false\&quot;&gt;[{\&quot;resource_id\&quot;: \&quot;engine-valverde\&quot;, \&quot;sector_id\&quot;: \&quot;event:incident-event-1\&quot;, \&quot;mission\&quot;: \&quot;suppress\&quot;}, {\&quot;resource_id\&quot;: \&quot;crew-valverde\&quot;, \&quot;sector_id\&quot;: \&quot;protect:settlement-west\&quot;, \&quot;mission\&quot;: \&quot;recon\&quot;}]&lt;/｜DSML｜parameter&gt;\n&lt;｜DSML｜parameter name=\&quot;explanation\&quot;&gt;Smoke reported from settlement-west. Dispatching engine to suppress the incident and crew to assess/protect the settlement.&lt;/｜DSML｜parameter&gt;\n&lt;/｜DSML｜invoke&gt;&quot;,
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;tool_calls&quot;: []
+      },
+      &quot;tool_call_count&quot;: 0,
+      &quot;tool_calls_type&quot;: &quot;list&quot;
+    }
+  ],
+  &quot;choices_type&quot;: &quot;list&quot;,
+  &quot;error_message&quot;: &quot;Expected exactly one complete tool call&quot;,
+  &quot;error_type&quot;: &quot;ValueError&quot;,
+  &quot;redacted&quot;: false,
+  &quot;response_type&quot;: &quot;dict&quot;,
+  &quot;stage&quot;: &quot;tool_call_envelope&quot;,
+  &quot;text_character_budget&quot;: 65536,
+  &quot;truncated&quot;: false,
+  &quot;version&quot;: &quot;wildfire-model-protocol-diagnostics-v1&quot;
+}</pre></details></li></ol></div><details><summary>Complete matched CPU references</summary><ul><li>dispatcher: 100.0% population unexposed; 0.0 additional hectares burned; score 1.000000</li><li>passive: 42.857142857142854% population unexposed; 75.0 additional hectares burned; score 0.542406</li></ul></details></section><section><h2>False Alarm</h2><div class="layout"><aside><strong>0.0</strong><p>Protocol abandonment score</p><dl><dt>Simulated time</dt><dd>12 /120 minutes</dd><dt>Decisions</dt><dd>6</dd><dt>Invalid commits</dt><dd>4</dd></dl><p>Only full-horizon physical outcomes are comparable to120-minute references.</p></aside><ol><li class="good"><b>Request 1 · minute 0 · advance_time</b><small>13.804 seconds provider latency</small><details><summary>Accepted tool arguments</summary><pre>{
+  &quot;authorizations&quot;: [],
+  &quot;clarifications&quot;: [],
+  &quot;explanation&quot;: &quot;&quot;,
+  &quot;messages&quot;: [],
+  &quot;protection_orders&quot;: [],
+  &quot;readback_confirmations&quot;: [],
+  &quot;readback_corrections&quot;: [],
+  &quot;releases&quot;: [],
+  &quot;requests&quot;: [],
+  &quot;triage&quot;: []
+}</pre></details></li><li class="bad"><b>Request 2 · minute 2 · Rejected tool response</b><small>43.013 seconds provider latency</small><details><summary>Exact captured rejection diagnostics</summary><pre>{
+  &quot;choice_count&quot;: 1,
+  &quot;choices&quot;: [
+    {
+      &quot;finish_reason&quot;: &quot;stop&quot;,
+      &quot;index&quot;: 0,
+      &quot;message&quot;: {
+        &quot;content&quot;: &quot;I&#x27;ll start by assessing the situation. There&#x27;s a fire report at a location, and I need to verify it and protect the populations. Let me first check the report and send resources to investigate.\n\nThe report is at [8,15]. I have two settlements at west [14,18] and east [25,18]. Let me dispatch resources to investigate the reported smoke and protect the settlements.\n\nLet me start by dispatching an engine and crew to investigate the report, and consider protection orders for the settlements.\n\nI&#x27;ll request resources to investigate the report location and check on the settlements.\n\n&lt;｜DSML｜invoke name=\&quot;request_resources\&quot;&gt;\n&lt;｜DSML｜parameter name=\&quot;requests\&quot;&gt;[\n  {\n    \&quot;resource_id\&quot;: \&quot;engine-valverde\&quot;,\n    \&quot;sector_id\&quot;: \&quot;report:claim-0\&quot;,\n    \&quot;mission\&quot;: \&quot;suppress\&quot;\n  },\n  {\n    \&quot;resource_id\&quot;: \&quot;crew-valverde\&quot;,\n    \&quot;sector_id\&quot;: \&quot;report:claim-0\&quot;,\n    \&quot;mission\&quot;: \&quot;recon\&quot;\n  },\n  {\n    \&quot;resource_id\&quot;: \&quot;engine-cabezudos\&quot;,\n    \&quot;sector_id\&quot;: \&quot;report:claim-0\&quot;,\n    \&quot;mission\&quot;: \&quot;suppress\&quot;\n  }\n]&lt;/｜DSML｜parameter&gt;\n&lt;｜DSML｜parameter name=\&quot;explanation\&quot;&gt;Investigating the reported smoke at report:claim-0 and positioning resources to respond. Dispatching engine and crew to investigate, plus a second engine for support.&lt;/｜DSML｜parameter&gt;\n&lt;/｜DSML｜invoke&gt;\n&lt;/｜DSML｜tool_calls&gt;&quot;,
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;tool_calls&quot;: []
+      },
+      &quot;tool_call_count&quot;: 0,
+      &quot;tool_calls_type&quot;: &quot;list&quot;
+    }
+  ],
+  &quot;choices_type&quot;: &quot;list&quot;,
+  &quot;error_message&quot;: &quot;Expected exactly one complete tool call&quot;,
+  &quot;error_type&quot;: &quot;ValueError&quot;,
+  &quot;redacted&quot;: false,
+  &quot;response_type&quot;: &quot;dict&quot;,
+  &quot;stage&quot;: &quot;tool_call_envelope&quot;,
+  &quot;text_character_budget&quot;: 65536,
+  &quot;truncated&quot;: false,
+  &quot;version&quot;: &quot;wildfire-model-protocol-diagnostics-v1&quot;
+}</pre></details></li><li class="good"><b>Request 3 · minute 4 · request_resources</b><small>21.12 seconds provider latency</small><details><summary>Accepted tool arguments</summary><pre>{
+  &quot;authorizations&quot;: [],
+  &quot;clarifications&quot;: [],
+  &quot;explanation&quot;: &quot;&quot;,
+  &quot;messages&quot;: [],
+  &quot;protection_orders&quot;: [],
+  &quot;readback_confirmations&quot;: [],
+  &quot;readback_corrections&quot;: [],
+  &quot;releases&quot;: [],
+  &quot;requests&quot;: [
+    {
+      &quot;mission&quot;: &quot;suppress&quot;,
+      &quot;resource_id&quot;: &quot;engine-valverde&quot;,
+      &quot;sector_id&quot;: &quot;report:claim-0&quot;
+    },
+    {
+      &quot;mission&quot;: &quot;recon&quot;,
+      &quot;resource_id&quot;: &quot;crew-valverde&quot;,
+      &quot;sector_id&quot;: &quot;report:claim-0&quot;
+    }
+  ],
+  &quot;triage&quot;: []
+}</pre></details></li><li class="bad"><b>Request 4 · minute 6 · Rejected tool response</b><small>41.73 seconds provider latency</small><details><summary>Exact captured rejection diagnostics</summary><pre>{
+  &quot;choice_count&quot;: 1,
+  &quot;choices&quot;: [
+    {
+      &quot;finish_reason&quot;: &quot;stop&quot;,
+      &quot;index&quot;: 0,
+      &quot;message&quot;: {
+        &quot;content&quot;: &quot;I need to respond to the report of smoke near location [8,15]. Let me assess the situation:\n\n1. There&#x27;s a fire report (claim-0) at [8,15]\n2. Resources requested from valverde: engine and crew, offers are pending with readbacks to confirm\n3. Two settlements exist: settlement-west at [14,18] and settlement-east at [25,18]\n\nThe fire is at [8,15], which is relatively close to settlement-west at [14,18]. I should confirm the readbacks for the pending offers and dispatch resources to investigate/protect.\n\nLet me confirm the readbacks and consider protection orders for settlement-west since the fire is approaching.\n\nLet me first check what&#x27;s happening. The fire report is at [8,15], west of settlement-west at [14,18]. I should:\n1. Confirm the readbacks for engine and crew from valverde\n2. Consider protection for settlement-west\n3. Consider dispatching additional resources\n\nLet me confirm the readbacks first.\n\n&lt;invoke name=\&quot;submit_action\&quot;&gt;\n&lt;parameter name=\&quot;readback_confirmations\&quot;&gt;[\&quot;readback:offer:request-1:1\&quot;, \&quot;readback:offer:request-2:1\&quot;]&lt;/parameter&gt;\n&lt;parameter name=\&quot;explanation\&quot;&gt;Confirm the pending offers for engine and crew to investigate the fire report at [8,15].&lt;/parameter&gt;\n&lt;/invoke&gt;&quot;,
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;tool_calls&quot;: []
+      },
+      &quot;tool_call_count&quot;: 0,
+      &quot;tool_calls_type&quot;: &quot;list&quot;
+    }
+  ],
+  &quot;choices_type&quot;: &quot;list&quot;,
+  &quot;error_message&quot;: &quot;Expected exactly one complete tool call&quot;,
+  &quot;error_type&quot;: &quot;ValueError&quot;,
+  &quot;redacted&quot;: false,
+  &quot;response_type&quot;: &quot;dict&quot;,
+  &quot;stage&quot;: &quot;tool_call_envelope&quot;,
+  &quot;text_character_budget&quot;: 65536,
+  &quot;truncated&quot;: false,
+  &quot;version&quot;: &quot;wildfire-model-protocol-diagnostics-v1&quot;
+}</pre></details></li><li class="bad"><b>Request 5 · minute 8 · Rejected tool response</b><small>11.542 seconds provider latency</small><details><summary>Exact captured rejection diagnostics</summary><pre>{
+  &quot;choice_count&quot;: 1,
+  &quot;choices&quot;: [
+    {
+      &quot;finish_reason&quot;: &quot;stop&quot;,
+      &quot;index&quot;: 0,
+      &quot;message&quot;: {
+        &quot;content&quot;: &quot;\n\n&lt;｜DSML｜tool_calls&gt;\n&lt;｜DSML｜invoke name=\&quot;authorize_dispatch\&quot;&gt;\n  &lt;authorizations&gt;\n    &lt;authorization&gt;offer:request-1&lt;/authorization&gt;\n    &lt;authorization&gt;offer:request-2&lt;/authorization&gt;\n  &lt;/authorizations&gt;\n&lt;/｜DSML｜tool_calls&gt;&quot;,
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;tool_calls&quot;: []
+      },
+      &quot;tool_call_count&quot;: 0,
+      &quot;tool_calls_type&quot;: &quot;list&quot;
+    }
+  ],
+  &quot;choices_type&quot;: &quot;list&quot;,
+  &quot;error_message&quot;: &quot;Expected exactly one complete tool call&quot;,
+  &quot;error_type&quot;: &quot;ValueError&quot;,
+  &quot;redacted&quot;: false,
+  &quot;response_type&quot;: &quot;dict&quot;,
+  &quot;stage&quot;: &quot;tool_call_envelope&quot;,
+  &quot;text_character_budget&quot;: 65536,
+  &quot;truncated&quot;: false,
+  &quot;version&quot;: &quot;wildfire-model-protocol-diagnostics-v1&quot;
+}</pre></details></li><li class="bad"><b>Request 6 · minute 10 · Rejected tool response</b><small>7.312 seconds provider latency</small><details><summary>Exact captured rejection diagnostics</summary><pre>{
+  &quot;choice_count&quot;: 1,
+  &quot;choices&quot;: [
+    {
+      &quot;finish_reason&quot;: &quot;tool_calls&quot;,
+      &quot;index&quot;: 0,
+      &quot;message&quot;: {
+        &quot;content&quot;: null,
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;tool_calls&quot;: [
+          {
+            &quot;function&quot;: {
+              &quot;arguments&quot;: &quot;{}&quot;,
+              &quot;name&quot;: &quot;authorize_dispatch&quot;
+            },
+            &quot;id&quot;: &quot;chatcmpl-tool-a5c27744b140f456&quot;,
+            &quot;type&quot;: &quot;function&quot;
+          }
+        ]
+      },
+      &quot;tool_call_count&quot;: 1,
+      &quot;tool_calls_type&quot;: &quot;list&quot;
+    }
+  ],
+  &quot;choices_type&quot;: &quot;list&quot;,
+  &quot;error_message&quot;: &quot;Action fields: missing=[&#x27;authorizations&#x27;]; unexpected=[]&quot;,
+  &quot;error_type&quot;: &quot;ValueError&quot;,
+  &quot;redacted&quot;: false,
+  &quot;response_type&quot;: &quot;dict&quot;,
+  &quot;stage&quot;: &quot;action_arguments&quot;,
+  &quot;text_character_budget&quot;: 65536,
+  &quot;truncated&quot;: false,
+  &quot;version&quot;: &quot;wildfire-model-protocol-diagnostics-v1&quot;
+}</pre></details></li></ol></div><details><summary>Complete matched CPU references</summary><ul><li>dispatcher: 100.0% population unexposed; 0.0 additional hectares burned; score 1.000000</li><li>passive: 100.0% population unexposed; 0.0 additional hectares burned; score 1.000000</li></ul></details></section><section><h2>Overlapping Fires</h2><div class="layout"><aside><strong>0.0</strong><p>Protocol abandonment score</p><dl><dt>Simulated time</dt><dd>10 /120 minutes</dd><dt>Decisions</dt><dd>5</dd><dt>Invalid commits</dt><dd>3</dd></dl><p>Only full-horizon physical outcomes are comparable to120-minute references.</p></aside><ol><li class="good"><b>Request 1 · minute 0 · get_reports</b><small>13.704 seconds provider latency</small><details><summary>Accepted tool arguments</summary><pre>{
+  &quot;ids&quot;: []
+}</pre></details></li><li class="good"><b>Request 2 · minute 0 · get_events</b><small>8.33 seconds provider latency</small><details><summary>Accepted tool arguments</summary><pre>{
+  &quot;ids&quot;: []
+}</pre></details></li><li class="good"><b>Request 3 · minute 0 · submit_action</b><small>11.213 seconds provider latency</small><details><summary>Accepted tool arguments</summary><pre>{
+  &quot;authorizations&quot;: [],
+  &quot;clarifications&quot;: [],
+  &quot;explanation&quot;: &quot;&quot;,
+  &quot;messages&quot;: [],
+  &quot;protection_orders&quot;: [],
+  &quot;readback_confirmations&quot;: [],
+  &quot;readback_corrections&quot;: [],
+  &quot;releases&quot;: [],
+  &quot;requests&quot;: [],
+  &quot;triage&quot;: []
+}</pre></details></li><li class="good"><b>Request 4 · minute 2 · request_resources</b><small>25.611 seconds provider latency</small><details><summary>Accepted tool arguments</summary><pre>{
+  &quot;authorizations&quot;: [],
+  &quot;clarifications&quot;: [],
+  &quot;explanation&quot;: &quot;There&#x27;s a smoke report at claim-0. Dispatch available resources to investigate and suppress.&quot;,
+  &quot;messages&quot;: [],
+  &quot;protection_orders&quot;: [],
+  &quot;readback_confirmations&quot;: [],
+  &quot;readback_corrections&quot;: [],
+  &quot;releases&quot;: [],
+  &quot;requests&quot;: [
+    {
+      &quot;mission&quot;: &quot;suppress&quot;,
+      &quot;resource_id&quot;: &quot;engine-valverde&quot;,
+      &quot;sector_id&quot;: &quot;report:claim-0&quot;
+    },
+    {
+      &quot;mission&quot;: &quot;recon&quot;,
+      &quot;resource_id&quot;: &quot;crew-valverde&quot;,
+      &quot;sector_id&quot;: &quot;report:claim-0&quot;
+    },
+    {
+      &quot;mission&quot;: &quot;suppress&quot;,
+      &quot;resource_id&quot;: &quot;engine-cabezudos&quot;,
+      &quot;sector_id&quot;: &quot;report:claim-0&quot;
+    }
+  ],
+  &quot;triage&quot;: []
+}</pre></details></li><li class="bad"><b>Request 5 · minute 4 · Rejected tool response</b><small>32.441 seconds provider latency</small><details><summary>Exact captured rejection diagnostics</summary><pre>{
+  &quot;choice_count&quot;: 1,
+  &quot;choices&quot;: [
+    {
+      &quot;finish_reason&quot;: &quot;stop&quot;,
+      &quot;index&quot;: 0,
+      &quot;message&quot;: {
+        &quot;content&quot;: &quot;I need to confirm the readbacks for the offered resources to dispatch them to the reported fire location. Let me authorize the request and confirm the readbacks.\n\nThe offers are for:\n- engine-valverde to suppress at report:claim-0\n- crew-valverde to suppress at report:claim-0\n- engine-cabezudos to suppress at report:claim-0\n\nLet me confirm the readbacks and authorize the dispatches.\n\n&lt;invoke name=\&quot;submit_action\&quot;&gt;\n&lt;parameter name=\&quot;authorizations\&quot;&gt;[\&quot;offer:request-1\&quot;, \&quot;offer:request-2\&quot;, \&quot;offer:request-3\&quot;]&lt;/parameter&gt;\n&lt;parameter name=\&quot;readback_confirmations\&quot;&gt;[\&quot;readback:offer:request-1:1\&quot;, \&quot;readback:offer:request-2:1\&quot;, \&quot;readback:offer:request-3:1\&quot;]&lt;/parameter&gt;\n&lt;parameter name=\&quot;explanation\&quot;&gt;Confirming readbacks and authorizing dispatch of engines and crew to the reported fire location to suppress it.&lt;/parameter&gt;\n&lt;/invoke&gt;&quot;,
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;tool_calls&quot;: []
+      },
+      &quot;tool_call_count&quot;: 0,
+      &quot;tool_calls_type&quot;: &quot;list&quot;
+    }
+  ],
+  &quot;choices_type&quot;: &quot;list&quot;,
+  &quot;error_message&quot;: &quot;Expected exactly one complete tool call&quot;,
+  &quot;error_type&quot;: &quot;ValueError&quot;,
+  &quot;redacted&quot;: false,
+  &quot;response_type&quot;: &quot;dict&quot;,
+  &quot;stage&quot;: &quot;tool_call_envelope&quot;,
+  &quot;text_character_budget&quot;: 65536,
+  &quot;truncated&quot;: false,
+  &quot;version&quot;: &quot;wildfire-model-protocol-diagnostics-v1&quot;
+}</pre></details></li><li class="bad"><b>Request 6 · minute 6 · Rejected tool response</b><small>22.952 seconds provider latency</small><details><summary>Exact captured rejection diagnostics</summary><pre>{
+  &quot;choice_count&quot;: 1,
+  &quot;choices&quot;: [
+    {
+      &quot;finish_reason&quot;: &quot;stop&quot;,
+      &quot;index&quot;: 0,
+      &quot;message&quot;: {
+        &quot;content&quot;: &quot;\n\n&lt;｜DSML｜tool_calls&gt;\n&lt;｜DSML｜invoke name=\&quot;check_action\&quot;&gt;\n  &lt;invoke name=\&quot;authorize_dispatch\&quot;&gt;\n    &lt;requests&gt;[]&lt;/requests&gt;\n    &lt;authorizations&gt;[\&quot;offer:request-1\&quot;, \&quot;offer:request-2\&quot;, \&quot;offer:request-3\&quot;]&lt;/authorizations&gt;\n    &lt;readback_confirmations&gt;[\&quot;readback:offer:request-1:1\&quot;, \&quot;readback:offer:request-2:1\&quot;, \&quot;readback:offer:request-3:1\&quot;]&lt;/readback_confirmations&gt;\n  &lt;/invoke&gt;\n&lt;/｜DSML｜tool_calls&gt;&quot;,
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;tool_calls&quot;: []
+      },
+      &quot;tool_call_count&quot;: 0,
+      &quot;tool_calls_type&quot;: &quot;list&quot;
+    }
+  ],
+  &quot;choices_type&quot;: &quot;list&quot;,
+  &quot;error_message&quot;: &quot;Expected exactly one complete tool call&quot;,
+  &quot;error_type&quot;: &quot;ValueError&quot;,
+  &quot;redacted&quot;: false,
+  &quot;response_type&quot;: &quot;dict&quot;,
+  &quot;stage&quot;: &quot;tool_call_envelope&quot;,
+  &quot;text_character_budget&quot;: 65536,
+  &quot;truncated&quot;: false,
+  &quot;version&quot;: &quot;wildfire-model-protocol-diagnostics-v1&quot;
+}</pre></details></li><li class="bad"><b>Request 7 · minute 8 · Rejected tool response</b><small>29.219 seconds provider latency</small><details><summary>Exact captured rejection diagnostics</summary><pre>{
+  &quot;choice_count&quot;: 1,
+  &quot;choices&quot;: [
+    {
+      &quot;finish_reason&quot;: &quot;stop&quot;,
+      &quot;index&quot;: 0,
+      &quot;message&quot;: {
+        &quot;content&quot;: &quot;I need to authorize the pending dispatch offers. The offers are for request-1, request-2, and request-3, and readbacks are awaiting confirmation. Let me authorize these dispatches to send resources to the reported fire at claim-0.\n\n&lt;｜DSML｜invoke name=\&quot;authorize_dispatch\&quot;&gt;\n&lt;｜DSML｜parameter name=\&quot;authorizations\&quot; string=\&quot;false\&quot;&gt;[\&quot;offer:request-1\&quot;, \&quot;offer:request-2\&quot;, \&quot;offer:request-3\&quot;]&lt;/｜DSML｜parameter&gt;\n&lt;｜DSML｜parameter name=\&quot;readback_confirmations\&quot; string=\&quot;false\&quot;&gt;[\&quot;readback:offer:request-1:1\&quot;, \&quot;readback:offer:request-2:1\&quot;, \&quot;readback:offer:request-3:1\&quot;]&lt;/｜DSML｜parameter&gt;\n&lt;｜DSML｜parameter name=\&quot;explanation\&quot; string=\&quot;true\&quot;&gt;Authorizing dispatch of all three requested resources to the reported fire at claim-0 and confirming the matching readbacks.&lt;/｜DSML｜parameter&gt;\n&lt;/｜DSML｜invoke&gt;\n&lt;/｜DSML｜tool_calls&gt;&quot;,
+        &quot;role&quot;: &quot;assistant&quot;,
+        &quot;tool_calls&quot;: []
+      },
+      &quot;tool_call_count&quot;: 0,
+      &quot;tool_calls_type&quot;: &quot;list&quot;
+    }
+  ],
+  &quot;choices_type&quot;: &quot;list&quot;,
+  &quot;error_message&quot;: &quot;Expected exactly one complete tool call&quot;,
+  &quot;error_type&quot;: &quot;ValueError&quot;,
+  &quot;redacted&quot;: false,
+  &quot;response_type&quot;: &quot;dict&quot;,
+  &quot;stage&quot;: &quot;tool_call_envelope&quot;,
+  &quot;text_character_budget&quot;: 65536,
+  &quot;truncated&quot;: false,
+  &quot;version&quot;: &quot;wildfire-model-protocol-diagnostics-v1&quot;
+}</pre></details></li></ol></div><details><summary>Complete matched CPU references</summary><ul><li>dispatcher: 100.0% population unexposed; 100.0 additional hectares burned; score 0.999399</li><li>passive: 100.0% population unexposed; 350.0 additional hectares burned; score 0.997898</li></ul></details></section><h2>Recommended next experiment</h2><p>Before another simulator trial, validate the serving tool protocol with a tiny standalone contract probe, including one-call enforcement and nested argument schemas. The current CloudRift transport does not forward parallel_tool_calls=False. Investigate support rather than assuming it fixes plain-text DSML. Preserve invalid responses; do not silently execute markup or relabel this run as successful. Expose specific schema errors to the model in a separately versioned adapter experiment before considering environment-policy training.</p><p>Development probes on one source-derived landscape; synthetic operations, not real incident records. Estimated usage uses uncached API token prices, not a billing receipt. This is not a held-out benchmark or training result. Full trajectories, maps and private scoring audits are retained locally, not copied into this public report.</p><p><a href="deepseek-benchmark-20261026.json">Machine-readable report and captured tool diagnostics</a></p></html>

@@ -87,6 +87,52 @@ outcome accounting/lifecycle invariants and replay, not physical realism or an
 optimal policy. A public Space or AgentEnv/Harbor adapter is not claimed. The
 optional local operator UI below is not publicly deployed.
 
+## Bounded DeepSeek benchmark evaluation
+
+`eval.run_benchmark_cloudrift` uses the **current benchmark** observation/tool
+contract, unlike the older `run_cloudrift_ops --reactive` runner. It attempts three
+development probes (uncertain smoke, false alarm, overlapping fires), each with
+the unchanged 60-decision/120-minute horizon and matched passive/dispatcher CPU
+references. This is not a held-out leaderboard or training-data collection.
+
+After explicitly approving a new spending cap and supplying a valid CloudRift
+inference key, run from the repository root:
+
+```sh
+PYTHONPATH=envs/wildfire_response/core/src python -m eval.run_benchmark_cloudrift \
+  --output .runtime/deepseek-benchmark-NEW-RUN \
+  --prepared-inputs .runtime/malaga-prepared-inputs-v1/inputs.json \
+  --prepared-sha256 ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108 \
+  --topographic-inputs .runtime/topographic-inputs-v1/inputs.json \
+  --topographic-sha256 e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd \
+  --allow-cloudrift --key-stdin --usd-cap 5 \
+  --max-requests 160 --max-tokens 2048 --seconds 1800 --request-timeout 180
+```
+
+The hidden prompt keeps the key out of command arguments and artifacts. Alternatively
+use `CLOUDRIFT_INFERENCE_KEY` without `--key-stdin`. Non-streaming calls use only
+`deepseek-ai/DeepSeek-V4-Flash-0731`. The runner reserves a conservative maximum
+estimated charge before each request using the current API-advertised rates;
+unknown-usage failures retain their reserve. This is not a provider billing limit.
+No retries, fallback models, automatic budget increases, or scripted completion
+of partial model episodes occur. Time limits prevent new calls; an in-flight
+request may use its remaining request timeout.
+
+Each run writes `plan.json`, `summary.json`, `report.html`, compressed trajectories,
+and request records including bounded/redacted rejected-response diagnostics.
+Independent evaluator audits stay in separate `private/` folders. A provider
+failure or exhausted budget stops the whole sample, retaining an **unscored**
+partial trajectory. Three consecutive invalid commits remain a scored abandonment.
+The cap may be insufficient for even one full episode; never present partial
+progress or completed CPU references as a completed model evaluation.
+
+The [2026-10-26 DeepSeek trial](results/deepseek-benchmark-20261026.html) attempted
+all three probes: each ended in protocol abandonment, with no full-horizon model
+completion. Sixteen responses cost an estimated $1.610742 at the API-advertised
+uncached rates. The report includes exact captured tool diagnostics; it does not
+establish firefighting-policy competence. Follow-up integration work is tracked
+in [issue25](https://github.com/jucamohedano/wildfire-response-env/issues/25).
+
 ## Local 2D control-centre UI
 
 The optional [UI](ui/README.md) adds a flat source-derived terrain map, optional

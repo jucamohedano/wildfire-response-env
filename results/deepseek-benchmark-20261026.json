@@ -1,0 +1,1248 @@
+{
+  "failure_counts": {
+    "invalid_action_arguments": 2,
+    "multiple_tool_calls": 1,
+    "tool_markup_in_plain_text": 7
+  },
+  "interpretation": "3 of 3 attempted episodes abandoned after three consecutive invalid commits; 0 reached the full120-minute horizon. Abandonment scores are zero by the existing protocol-failure rule, not an observed full-horizon firefighting outcome. Tool-protocol failures identify an end-to-end model/serving/adapter problem; the evidence does not isolate which layer introduced malformed serialization. No retries, repair, fallback, training, or additional provider calls were performed.",
+  "next_step": "Before another simulator trial, validate the serving tool protocol with a tiny standalone contract probe, including one-call enforcement and nested argument schemas. The current CloudRift transport does not forward parallel_tool_calls=False. Investigate support rather than assuming it fixes plain-text DSML. Preserve invalid responses; do not silently execute markup or relabel this run as successful. Expose specific schema errors to the model in a separately versioned adapter experiment before considering environment-policy training.",
+  "requests": {
+    "bench-dev-16f552e5e1561b06": [
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 0,
+        "minute": 0,
+        "proposal": {
+          "authorizations": [],
+          "clarifications": [],
+          "explanation": "",
+          "messages": [],
+          "protection_orders": [],
+          "readback_confirmations": [],
+          "readback_corrections": [],
+          "releases": [],
+          "requests": [],
+          "triage": []
+        },
+        "protocol_error": null,
+        "request": 1,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "seconds": 13.804,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool": "advance_time",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 70,
+          "prompt_tokens": 5971,
+          "prompt_tokens_details": null,
+          "total_tokens": 6041
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 1,
+        "minute": 2,
+        "protocol_error": "missing_or_invalid_named_action",
+        "request": 2,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "response_diagnostics": {
+          "choice_count": 1,
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "message": {
+                "content": "I'll start by assessing the situation. There's a fire report at a location, and I need to verify it and protect the populations. Let me first check the report and send resources to investigate.\n\nThe report is at [8,15]. I have two settlements at west [14,18] and east [25,18]. Let me dispatch resources to investigate the reported smoke and protect the settlements.\n\nLet me start by dispatching an engine and crew to investigate the report, and consider protection orders for the settlements.\n\nI'll request resources to investigate the report location and check on the settlements.\n\n<\uff5cDSML\uff5cinvoke name=\"request_resources\">\n<\uff5cDSML\uff5cparameter name=\"requests\">[\n  {\n    \"resource_id\": \"engine-valverde\",\n    \"sector_id\": \"report:claim-0\",\n    \"mission\": \"suppress\"\n  },\n  {\n    \"resource_id\": \"crew-valverde\",\n    \"sector_id\": \"report:claim-0\",\n    \"mission\": \"recon\"\n  },\n  {\n    \"resource_id\": \"engine-cabezudos\",\n    \"sector_id\": \"report:claim-0\",\n    \"mission\": \"suppress\"\n  }\n]</\uff5cDSML\uff5cparameter>\n<\uff5cDSML\uff5cparameter name=\"explanation\">Investigating the reported smoke at report:claim-0 and positioning resources to respond. Dispatching engine and crew to investigate, plus a second engine for support.</\uff5cDSML\uff5cparameter>\n</\uff5cDSML\uff5cinvoke>\n</\uff5cDSML\uff5ctool_calls>",
+                "role": "assistant",
+                "tool_calls": []
+              },
+              "tool_call_count": 0,
+              "tool_calls_type": "list"
+            }
+          ],
+          "choices_type": "list",
+          "error_message": "Expected exactly one complete tool call",
+          "error_type": "ValueError",
+          "redacted": false,
+          "response_type": "dict",
+          "stage": "tool_call_envelope",
+          "text_character_budget": 65536,
+          "truncated": false,
+          "version": "wildfire-model-protocol-diagnostics-v1"
+        },
+        "seconds": 43.013,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 306,
+          "prompt_tokens": 6558,
+          "prompt_tokens_details": null,
+          "total_tokens": 6864
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 2,
+        "minute": 4,
+        "proposal": {
+          "authorizations": [],
+          "clarifications": [],
+          "explanation": "",
+          "messages": [],
+          "protection_orders": [],
+          "readback_confirmations": [],
+          "readback_corrections": [],
+          "releases": [],
+          "requests": [
+            {
+              "mission": "suppress",
+              "resource_id": "engine-valverde",
+              "sector_id": "report:claim-0"
+            },
+            {
+              "mission": "recon",
+              "resource_id": "crew-valverde",
+              "sector_id": "report:claim-0"
+            }
+          ],
+          "triage": []
+        },
+        "protocol_error": null,
+        "request": 3,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "seconds": 21.12,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool": "request_resources",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 136,
+          "prompt_tokens": 6561,
+          "prompt_tokens_details": null,
+          "total_tokens": 6697
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 3,
+        "minute": 6,
+        "protocol_error": "missing_or_invalid_named_action",
+        "request": 4,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "response_diagnostics": {
+          "choice_count": 1,
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "message": {
+                "content": "I need to respond to the report of smoke near location [8,15]. Let me assess the situation:\n\n1. There's a fire report (claim-0) at [8,15]\n2. Resources requested from valverde: engine and crew, offers are pending with readbacks to confirm\n3. Two settlements exist: settlement-west at [14,18] and settlement-east at [25,18]\n\nThe fire is at [8,15], which is relatively close to settlement-west at [14,18]. I should confirm the readbacks for the pending offers and dispatch resources to investigate/protect.\n\nLet me confirm the readbacks and consider protection orders for settlement-west since the fire is approaching.\n\nLet me first check what's happening. The fire report is at [8,15], west of settlement-west at [14,18]. I should:\n1. Confirm the readbacks for engine and crew from valverde\n2. Consider protection for settlement-west\n3. Consider dispatching additional resources\n\nLet me confirm the readbacks first.\n\n<invoke name=\"submit_action\">\n<parameter name=\"readback_confirmations\">[\"readback:offer:request-1:1\", \"readback:offer:request-2:1\"]</parameter>\n<parameter name=\"explanation\">Confirm the pending offers for engine and crew to investigate the fire report at [8,15].</parameter>\n</invoke>",
+                "role": "assistant",
+                "tool_calls": []
+              },
+              "tool_call_count": 0,
+              "tool_calls_type": "list"
+            }
+          ],
+          "choices_type": "list",
+          "error_message": "Expected exactly one complete tool call",
+          "error_type": "ValueError",
+          "redacted": false,
+          "response_type": "dict",
+          "stage": "tool_call_envelope",
+          "text_character_budget": 65536,
+          "truncated": false,
+          "version": "wildfire-model-protocol-diagnostics-v1"
+        },
+        "seconds": 41.73,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 294,
+          "prompt_tokens": 7610,
+          "prompt_tokens_details": null,
+          "total_tokens": 7904
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 4,
+        "minute": 8,
+        "protocol_error": "missing_or_invalid_named_action",
+        "request": 5,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "response_diagnostics": {
+          "choice_count": 1,
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "message": {
+                "content": "\n\n<\uff5cDSML\uff5ctool_calls>\n<\uff5cDSML\uff5cinvoke name=\"authorize_dispatch\">\n  <authorizations>\n    <authorization>offer:request-1</authorization>\n    <authorization>offer:request-2</authorization>\n  </authorizations>\n</\uff5cDSML\uff5ctool_calls>",
+                "role": "assistant",
+                "tool_calls": []
+              },
+              "tool_call_count": 0,
+              "tool_calls_type": "list"
+            }
+          ],
+          "choices_type": "list",
+          "error_message": "Expected exactly one complete tool call",
+          "error_type": "ValueError",
+          "redacted": false,
+          "response_type": "dict",
+          "stage": "tool_call_envelope",
+          "text_character_budget": 65536,
+          "truncated": false,
+          "version": "wildfire-model-protocol-diagnostics-v1"
+        },
+        "seconds": 11.542,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 63,
+          "prompt_tokens": 7613,
+          "prompt_tokens_details": null,
+          "total_tokens": 7676
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 5,
+        "minute": 10,
+        "protocol_error": "missing_or_invalid_named_action",
+        "request": 6,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "response_diagnostics": {
+          "choice_count": 1,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": null,
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "function": {
+                      "arguments": "{}",
+                      "name": "authorize_dispatch"
+                    },
+                    "id": "chatcmpl-tool-a5c27744b140f456",
+                    "type": "function"
+                  }
+                ]
+              },
+              "tool_call_count": 1,
+              "tool_calls_type": "list"
+            }
+          ],
+          "choices_type": "list",
+          "error_message": "Action fields: missing=['authorizations']; unexpected=[]",
+          "error_type": "ValueError",
+          "redacted": false,
+          "response_type": "dict",
+          "stage": "action_arguments",
+          "text_character_budget": 65536,
+          "truncated": false,
+          "version": "wildfire-model-protocol-diagnostics-v1"
+        },
+        "seconds": 7.312,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 30,
+          "prompt_tokens": 7613,
+          "prompt_tokens_details": null,
+          "total_tokens": 7643
+        }
+      }
+    ],
+    "bench-dev-71f777cb5ff8c9f2": [
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 0,
+        "minute": 0,
+        "protocol_error": "missing_or_invalid_named_action",
+        "request": 1,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "response_diagnostics": {
+          "choice_count": 1,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "I'll start by examining the initial situation. There's one report (claim-0) from a resident saying there's smoke but it needs clarification. Let me check the report and consider dispatching resources to investigate.\n\nLet me start by requesting clarification on the initial report since there's no confirmed fire location yet, and consider sending reconnaissance resources.\n\n",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "function": {
+                      "arguments": "{\"clarifications\": [{\"id\": \"claim-0\"}], \"explanation\": \"Initial report from resident needs clarification on fire location and severity before committing resources.\"}",
+                      "name": "clarify_reports"
+                    },
+                    "id": "chatcmpl-tool-a0cad6ccb4a1666f",
+                    "type": "function"
+                  },
+                  {
+                    "function": {
+                      "arguments": "{\"requests\": [{\"resource_id\": \"crew-valverde\", \"sector_id\": \"protect:settlement-west\", \"mission\": \"recon\"}]}",
+                      "name": "request_resources"
+                    },
+                    "id": "chatcmpl-tool-994d49ee2f9aa914",
+                    "type": "function"
+                  }
+                ]
+              },
+              "tool_call_count": 2,
+              "tool_calls_type": "list"
+            }
+          ],
+          "choices_type": "list",
+          "error_message": "Expected exactly one complete tool call",
+          "error_type": "ValueError",
+          "redacted": false,
+          "response_type": "dict",
+          "stage": "tool_call_envelope",
+          "text_character_budget": 65536,
+          "truncated": false,
+          "version": "wildfire-model-protocol-diagnostics-v1"
+        },
+        "seconds": 32.802,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 215,
+          "prompt_tokens": 6085,
+          "prompt_tokens_details": null,
+          "total_tokens": 6300
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 1,
+        "minute": 2,
+        "protocol_error": "missing_or_invalid_named_action",
+        "request": 2,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "response_diagnostics": {
+          "choice_count": 1,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": null,
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "function": {
+                      "arguments": "{\"requests\": \"[]\", \"triage\": [{\"report_ids\": [\"claim-0\"], \"assessment\": \"fire_observed\"}], \"explanation\": \"Assessing the smoke claim from settlement-west area to confirm fire.\"}",
+                      "name": "assess_reports"
+                    },
+                    "id": "chatcmpl-tool-babff374297e3623",
+                    "type": "function"
+                  }
+                ]
+              },
+              "tool_call_count": 1,
+              "tool_calls_type": "list"
+            }
+          ],
+          "choices_type": "list",
+          "error_message": "Action fields: missing=[]; unexpected=['requests']",
+          "error_type": "ValueError",
+          "redacted": false,
+          "response_type": "dict",
+          "stage": "action_arguments",
+          "text_character_budget": 65536,
+          "truncated": false,
+          "version": "wildfire-model-protocol-diagnostics-v1"
+        },
+        "seconds": 18.702,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 109,
+          "prompt_tokens": 6770,
+          "prompt_tokens_details": null,
+          "total_tokens": 6879
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 2,
+        "minute": 4,
+        "protocol_error": "missing_or_invalid_named_action",
+        "request": 3,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "response_diagnostics": {
+          "choice_count": 1,
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "message": {
+                "content": "I'll start by analyzing the situation. There's a smoke report from settlement-west, and the incident is located at [14,18] (same as settlement-west). I need to investigate and protect the population.\n\nLet me dispatch resources to investigate and protect the settlement. First, let me request a reconnaissance mission to the incident location and warn the settlement.\n\n<\uff5cDSML\uff5cinvoke name=\"request_resources\">\n<\uff5cDSML\uff5cparameter name=\"requests\" string=\"false\">[{\"resource_id\": \"engine-valverde\", \"sector_id\": \"event:incident-event-1\", \"mission\": \"suppress\"}, {\"resource_id\": \"crew-valverde\", \"sector_id\": \"protect:settlement-west\", \"mission\": \"recon\"}]</\uff5cDSML\uff5cparameter>\n<\uff5cDSML\uff5cparameter name=\"explanation\">Smoke reported from settlement-west. Dispatching engine to suppress the incident and crew to assess/protect the settlement.</\uff5cDSML\uff5cparameter>\n</\uff5cDSML\uff5cinvoke>",
+                "role": "assistant",
+                "tool_calls": []
+              },
+              "tool_call_count": 0,
+              "tool_calls_type": "list"
+            }
+          ],
+          "choices_type": "list",
+          "error_message": "Expected exactly one complete tool call",
+          "error_type": "ValueError",
+          "redacted": false,
+          "response_type": "dict",
+          "stage": "tool_call_envelope",
+          "text_character_budget": 65536,
+          "truncated": false,
+          "version": "wildfire-model-protocol-diagnostics-v1"
+        },
+        "seconds": 27.744,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 200,
+          "prompt_tokens": 6770,
+          "prompt_tokens_details": null,
+          "total_tokens": 6970
+        }
+      }
+    ],
+    "bench-dev-d9c78dfb35a04dff": [
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 0,
+        "minute": 0,
+        "proposal": {
+          "ids": []
+        },
+        "protocol_error": null,
+        "query_result": {
+          "next_offset": null,
+          "records": [],
+          "total": 0
+        },
+        "request": 1,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "seconds": 13.704,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool": "get_reports",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 88,
+          "prompt_tokens": 5971,
+          "prompt_tokens_details": null,
+          "total_tokens": 6059
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 0,
+        "minute": 0,
+        "proposal": {
+          "ids": []
+        },
+        "protocol_error": null,
+        "query_result": {
+          "next_offset": null,
+          "records": [],
+          "total": 0
+        },
+        "request": 2,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "seconds": 8.33,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool": "get_events",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 60,
+          "prompt_tokens": 6042,
+          "prompt_tokens_details": null,
+          "total_tokens": 6102
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 0,
+        "minute": 0,
+        "proposal": {
+          "authorizations": [],
+          "clarifications": [],
+          "explanation": "",
+          "messages": [],
+          "protection_orders": [],
+          "readback_confirmations": [],
+          "readback_corrections": [],
+          "releases": [],
+          "requests": [],
+          "triage": []
+        },
+        "protocol_error": null,
+        "request": 3,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "seconds": 11.213,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool": "submit_action",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 82,
+          "prompt_tokens": 6113,
+          "prompt_tokens_details": null,
+          "total_tokens": 6195
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 1,
+        "minute": 2,
+        "proposal": {
+          "authorizations": [],
+          "clarifications": [],
+          "explanation": "There's a smoke report at claim-0. Dispatch available resources to investigate and suppress.",
+          "messages": [],
+          "protection_orders": [],
+          "readback_confirmations": [],
+          "readback_corrections": [],
+          "releases": [],
+          "requests": [
+            {
+              "mission": "suppress",
+              "resource_id": "engine-valverde",
+              "sector_id": "report:claim-0"
+            },
+            {
+              "mission": "recon",
+              "resource_id": "crew-valverde",
+              "sector_id": "report:claim-0"
+            },
+            {
+              "mission": "suppress",
+              "resource_id": "engine-cabezudos",
+              "sector_id": "report:claim-0"
+            }
+          ],
+          "triage": []
+        },
+        "protocol_error": null,
+        "request": 4,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "seconds": 25.611,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool": "request_resources",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 167,
+          "prompt_tokens": 6558,
+          "prompt_tokens_details": null,
+          "total_tokens": 6725
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 2,
+        "minute": 4,
+        "protocol_error": "missing_or_invalid_named_action",
+        "request": 5,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "response_diagnostics": {
+          "choice_count": 1,
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "message": {
+                "content": "I need to confirm the readbacks for the offered resources to dispatch them to the reported fire location. Let me authorize the request and confirm the readbacks.\n\nThe offers are for:\n- engine-valverde to suppress at report:claim-0\n- crew-valverde to suppress at report:claim-0\n- engine-cabezudos to suppress at report:claim-0\n\nLet me confirm the readbacks and authorize the dispatches.\n\n<invoke name=\"submit_action\">\n<parameter name=\"authorizations\">[\"offer:request-1\", \"offer:request-2\", \"offer:request-3\"]</parameter>\n<parameter name=\"readback_confirmations\">[\"readback:offer:request-1:1\", \"readback:offer:request-2:1\", \"readback:offer:request-3:1\"]</parameter>\n<parameter name=\"explanation\">Confirming readbacks and authorizing dispatch of engines and crew to the reported fire location to suppress it.</parameter>\n</invoke>",
+                "role": "assistant",
+                "tool_calls": []
+              },
+              "tool_call_count": 0,
+              "tool_calls_type": "list"
+            }
+          ],
+          "choices_type": "list",
+          "error_message": "Expected exactly one complete tool call",
+          "error_type": "ValueError",
+          "redacted": false,
+          "response_type": "dict",
+          "stage": "tool_call_envelope",
+          "text_character_budget": 65536,
+          "truncated": false,
+          "version": "wildfire-model-protocol-diagnostics-v1"
+        },
+        "seconds": 32.441,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 214,
+          "prompt_tokens": 7954,
+          "prompt_tokens_details": null,
+          "total_tokens": 8168
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 3,
+        "minute": 6,
+        "protocol_error": "missing_or_invalid_named_action",
+        "request": 6,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "response_diagnostics": {
+          "choice_count": 1,
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "message": {
+                "content": "\n\n<\uff5cDSML\uff5ctool_calls>\n<\uff5cDSML\uff5cinvoke name=\"check_action\">\n  <invoke name=\"authorize_dispatch\">\n    <requests>[]</requests>\n    <authorizations>[\"offer:request-1\", \"offer:request-2\", \"offer:request-3\"]</authorizations>\n    <readback_confirmations>[\"readback:offer:request-1:1\", \"readback:offer:request-2:1\", \"readback:offer:request-3:1\"]</readback_confirmations>\n  </invoke>\n</\uff5cDSML\uff5ctool_calls>",
+                "role": "assistant",
+                "tool_calls": []
+              },
+              "tool_call_count": 0,
+              "tool_calls_type": "list"
+            }
+          ],
+          "choices_type": "list",
+          "error_message": "Expected exactly one complete tool call",
+          "error_type": "ValueError",
+          "redacted": false,
+          "response_type": "dict",
+          "stage": "tool_call_envelope",
+          "text_character_budget": 65536,
+          "truncated": false,
+          "version": "wildfire-model-protocol-diagnostics-v1"
+        },
+        "seconds": 22.952,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 128,
+          "prompt_tokens": 8066,
+          "prompt_tokens_details": null,
+          "total_tokens": 8194
+        }
+      },
+      {
+        "contract_version": "wildfire-benchmark-model-tools-v1",
+        "decision": 4,
+        "minute": 8,
+        "protocol_error": "missing_or_invalid_named_action",
+        "request": 7,
+        "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "response_diagnostics": {
+          "choice_count": 1,
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "message": {
+                "content": "I need to authorize the pending dispatch offers. The offers are for request-1, request-2, and request-3, and readbacks are awaiting confirmation. Let me authorize these dispatches to send resources to the reported fire at claim-0.\n\n<\uff5cDSML\uff5cinvoke name=\"authorize_dispatch\">\n<\uff5cDSML\uff5cparameter name=\"authorizations\" string=\"false\">[\"offer:request-1\", \"offer:request-2\", \"offer:request-3\"]</\uff5cDSML\uff5cparameter>\n<\uff5cDSML\uff5cparameter name=\"readback_confirmations\" string=\"false\">[\"readback:offer:request-1:1\", \"readback:offer:request-2:1\", \"readback:offer:request-3:1\"]</\uff5cDSML\uff5cparameter>\n<\uff5cDSML\uff5cparameter name=\"explanation\" string=\"true\">Authorizing dispatch of all three requested resources to the reported fire at claim-0 and confirming the matching readbacks.</\uff5cDSML\uff5cparameter>\n</\uff5cDSML\uff5cinvoke>\n</\uff5cDSML\uff5ctool_calls>",
+                "role": "assistant",
+                "tool_calls": []
+              },
+              "tool_call_count": 0,
+              "tool_calls_type": "list"
+            }
+          ],
+          "choices_type": "list",
+          "error_message": "Expected exactly one complete tool call",
+          "error_type": "ValueError",
+          "redacted": false,
+          "response_type": "dict",
+          "stage": "tool_call_envelope",
+          "text_character_budget": 65536,
+          "truncated": false,
+          "version": "wildfire-model-protocol-diagnostics-v1"
+        },
+        "seconds": 29.219,
+        "served_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+        "tool_mode": "auto",
+        "usage": {
+          "completion_tokens": 204,
+          "prompt_tokens": 8066,
+          "prompt_tokens_details": null,
+          "total_tokens": 8270
+        }
+      }
+    ]
+  },
+  "source_sha256": {
+    "bench-dev-16f552e5e1561b06/model/requests.json": "161353ed6677504d676ad4aadc022c9cb110be9497c48297523984f447f84b58",
+    "bench-dev-71f777cb5ff8c9f2/model/requests.json": "70f56b87b38c497379f9cb2cc0e40443103ef404b3194b41a6548cdead9053fd",
+    "bench-dev-d9c78dfb35a04dff/model/requests.json": "59bc59b47b303af158755f31a3de5b89ea90076c4666dc6a4fdb9571a22dbe34",
+    "plan.json": "13435d0b18e6af4b6e78f67d84a9565340255d3c0606f84757cac9fafc9777f1",
+    "summary.json": "a60a502cb66782cf3fcbf4289950b91f7b1f2142edbe3dd87de90194663136a4"
+  },
+  "summary": {
+    "contract_version": "wildfire-benchmark-model-tools-v1",
+    "elapsed_seconds": 396.86,
+    "endpoint": "https://inference.cloudrift.ai/v1",
+    "episodes": [
+      {
+        "baselines": {
+          "dispatcher": {
+            "active_fire": false,
+            "active_fire_cells": 0,
+            "additional_burned_cells": 0,
+            "additional_burned_hectares": 0.0,
+            "boundary_censored": false,
+            "diagnostic_graded_score": 1.0,
+            "exposed_population": 0,
+            "graded_score": 1.0,
+            "initial_burned_hectares": 25.0,
+            "initially_burnable_unburned_cells": 1331,
+            "invalid_abandonment": false,
+            "outcome_version": "wildfire-benchmark-outcomes-v1",
+            "population": 350,
+            "protected_population_fraction": 1.0,
+            "ranking_key": [
+              1,
+              1.0,
+              0.0
+            ],
+            "safe_success": true,
+            "score_eligible": true,
+            "suitable_for_training": true,
+            "unburned_fraction": 1.0,
+            "unresolved_evacuations": 0
+          },
+          "passive": {
+            "active_fire": true,
+            "active_fire_cells": 4,
+            "additional_burned_cells": 3,
+            "additional_burned_hectares": 75.0,
+            "boundary_censored": false,
+            "diagnostic_graded_score": 0.542406353976602,
+            "exposed_population": 200,
+            "graded_score": 0.542406353976602,
+            "initial_burned_hectares": 25.0,
+            "initially_burnable_unburned_cells": 1331,
+            "invalid_abandonment": false,
+            "outcome_version": "wildfire-benchmark-outcomes-v1",
+            "population": 350,
+            "protected_population_fraction": 0.42857142857142855,
+            "ranking_key": [
+              0,
+              0.42857142857142855,
+              -75.0
+            ],
+            "safe_success": false,
+            "score_eligible": true,
+            "suitable_for_training": true,
+            "unburned_fraction": 0.9977460555972952,
+            "unresolved_evacuations": 0
+          }
+        },
+        "decisions": 3,
+        "family": "uncertain_smoke",
+        "invalid_actions": 3,
+        "minute": 6,
+        "outcomes": {
+          "active_fire": true,
+          "active_fire_cells": 1,
+          "additional_burned_cells": 0,
+          "additional_burned_hectares": 0.0,
+          "boundary_censored": false,
+          "diagnostic_graded_score": 1.0,
+          "exposed_population": 0,
+          "graded_score": 0.0,
+          "initial_burned_hectares": 25.0,
+          "initially_burnable_unburned_cells": 1331,
+          "invalid_abandonment": true,
+          "outcome_version": "wildfire-benchmark-outcomes-v1",
+          "population": 350,
+          "protected_population_fraction": 1.0,
+          "ranking_key": [
+            -1,
+            0.0,
+            0.0
+          ],
+          "safe_success": false,
+          "score_eligible": true,
+          "suitable_for_training": true,
+          "unburned_fraction": 1.0,
+          "unresolved_evacuations": 0
+        },
+        "protocol_errors": 3,
+        "scored": true,
+        "seed": 6900000,
+        "served_models": [
+          "deepseek-ai/DeepSeek-V4-Flash-0731"
+        ],
+        "status": "complete",
+        "task_id": "bench-dev-71f777cb5ff8c9f2",
+        "terminated": false,
+        "timeline": [
+          {
+            "action": {
+              "invalid_model_action": "missing_or_invalid_named_action"
+            },
+            "decision": 1,
+            "error": "Unknown ops action fields",
+            "invalid": true,
+            "minute": 2,
+            "tool": "invalid_model_action"
+          },
+          {
+            "action": {
+              "invalid_model_action": "missing_or_invalid_named_action"
+            },
+            "decision": 2,
+            "error": "Unknown ops action fields",
+            "invalid": true,
+            "minute": 4,
+            "tool": "invalid_model_action"
+          },
+          {
+            "action": {
+              "invalid_model_action": "missing_or_invalid_named_action"
+            },
+            "decision": 3,
+            "error": "Unknown ops action fields",
+            "invalid": true,
+            "minute": 6,
+            "tool": "invalid_model_action"
+          }
+        ],
+        "trajectory_sha256": "6fd981b93863265ed37e2ab330c47adfd9f2f4da10fc7b1da2b3ea396312ec06",
+        "truncated": true
+      },
+      {
+        "baselines": {
+          "dispatcher": {
+            "active_fire": false,
+            "active_fire_cells": 0,
+            "additional_burned_cells": 0,
+            "additional_burned_hectares": 0.0,
+            "boundary_censored": false,
+            "diagnostic_graded_score": 1.0,
+            "exposed_population": 0,
+            "graded_score": 1.0,
+            "initial_burned_hectares": 0.0,
+            "initially_burnable_unburned_cells": 1332,
+            "invalid_abandonment": false,
+            "outcome_version": "wildfire-benchmark-outcomes-v1",
+            "population": 350,
+            "protected_population_fraction": 1.0,
+            "ranking_key": [
+              1,
+              1.0,
+              0.0
+            ],
+            "safe_success": true,
+            "score_eligible": true,
+            "suitable_for_training": true,
+            "unburned_fraction": 1.0,
+            "unresolved_evacuations": 0
+          },
+          "passive": {
+            "active_fire": false,
+            "active_fire_cells": 0,
+            "additional_burned_cells": 0,
+            "additional_burned_hectares": 0.0,
+            "boundary_censored": false,
+            "diagnostic_graded_score": 1.0,
+            "exposed_population": 0,
+            "graded_score": 1.0,
+            "initial_burned_hectares": 0.0,
+            "initially_burnable_unburned_cells": 1332,
+            "invalid_abandonment": false,
+            "outcome_version": "wildfire-benchmark-outcomes-v1",
+            "population": 350,
+            "protected_population_fraction": 1.0,
+            "ranking_key": [
+              1,
+              1.0,
+              0.0
+            ],
+            "safe_success": true,
+            "score_eligible": true,
+            "suitable_for_training": true,
+            "unburned_fraction": 1.0,
+            "unresolved_evacuations": 0
+          }
+        },
+        "decisions": 6,
+        "family": "false_alarm",
+        "invalid_actions": 4,
+        "minute": 12,
+        "outcomes": {
+          "active_fire": false,
+          "active_fire_cells": 0,
+          "additional_burned_cells": 0,
+          "additional_burned_hectares": 0.0,
+          "boundary_censored": false,
+          "diagnostic_graded_score": 1.0,
+          "exposed_population": 0,
+          "graded_score": 0.0,
+          "initial_burned_hectares": 0.0,
+          "initially_burnable_unburned_cells": 1332,
+          "invalid_abandonment": true,
+          "outcome_version": "wildfire-benchmark-outcomes-v1",
+          "population": 350,
+          "protected_population_fraction": 1.0,
+          "ranking_key": [
+            -1,
+            0.0,
+            0.0
+          ],
+          "safe_success": false,
+          "score_eligible": true,
+          "suitable_for_training": true,
+          "unburned_fraction": 1.0,
+          "unresolved_evacuations": 0
+        },
+        "protocol_errors": 4,
+        "scored": true,
+        "seed": 6900001,
+        "served_models": [
+          "deepseek-ai/DeepSeek-V4-Flash-0731"
+        ],
+        "status": "complete",
+        "task_id": "bench-dev-16f552e5e1561b06",
+        "terminated": false,
+        "timeline": [
+          {
+            "action": {
+              "authorizations": [],
+              "clarifications": [],
+              "messages": [],
+              "protection_orders": [],
+              "readback_confirmations": [],
+              "readback_corrections": [],
+              "releases": [],
+              "requests": [],
+              "triage": []
+            },
+            "decision": 1,
+            "error": null,
+            "invalid": false,
+            "minute": 2,
+            "tool": "advance_time"
+          },
+          {
+            "action": {
+              "invalid_model_action": "missing_or_invalid_named_action"
+            },
+            "decision": 2,
+            "error": "Unknown ops action fields",
+            "invalid": true,
+            "minute": 4,
+            "tool": "invalid_model_action"
+          },
+          {
+            "action": {
+              "authorizations": [],
+              "clarifications": [],
+              "messages": [],
+              "protection_orders": [],
+              "readback_confirmations": [],
+              "readback_corrections": [],
+              "releases": [],
+              "requests": [
+                {
+                  "mission": "suppress",
+                  "resource_id": "engine-valverde",
+                  "sector_id": "report:claim-0"
+                },
+                {
+                  "mission": "recon",
+                  "resource_id": "crew-valverde",
+                  "sector_id": "report:claim-0"
+                }
+              ],
+              "triage": []
+            },
+            "decision": 3,
+            "error": null,
+            "invalid": false,
+            "minute": 6,
+            "tool": "request_resources"
+          },
+          {
+            "action": {
+              "invalid_model_action": "missing_or_invalid_named_action"
+            },
+            "decision": 4,
+            "error": "Unknown ops action fields",
+            "invalid": true,
+            "minute": 8,
+            "tool": "invalid_model_action"
+          },
+          {
+            "action": {
+              "invalid_model_action": "missing_or_invalid_named_action"
+            },
+            "decision": 5,
+            "error": "Unknown ops action fields",
+            "invalid": true,
+            "minute": 10,
+            "tool": "invalid_model_action"
+          },
+          {
+            "action": {
+              "invalid_model_action": "missing_or_invalid_named_action"
+            },
+            "decision": 6,
+            "error": "Unknown ops action fields",
+            "invalid": true,
+            "minute": 12,
+            "tool": "invalid_model_action"
+          }
+        ],
+        "trajectory_sha256": "de2b281eac62be31b9085afb9c1e9dab581a1e98afd1a444380f106b5ca02a14",
+        "truncated": true
+      },
+      {
+        "baselines": {
+          "dispatcher": {
+            "active_fire": false,
+            "active_fire_cells": 0,
+            "additional_burned_cells": 4,
+            "additional_burned_hectares": 100.0,
+            "boundary_censored": false,
+            "diagnostic_graded_score": 0.9993993993993995,
+            "exposed_population": 0,
+            "graded_score": 0.9993993993993995,
+            "initial_burned_hectares": 0.0,
+            "initially_burnable_unburned_cells": 1332,
+            "invalid_abandonment": false,
+            "outcome_version": "wildfire-benchmark-outcomes-v1",
+            "population": 350,
+            "protected_population_fraction": 1.0,
+            "ranking_key": [
+              1,
+              1.0,
+              -100.0
+            ],
+            "safe_success": true,
+            "score_eligible": true,
+            "suitable_for_training": true,
+            "unburned_fraction": 0.996996996996997,
+            "unresolved_evacuations": 0
+          },
+          "passive": {
+            "active_fire": true,
+            "active_fire_cells": 14,
+            "additional_burned_cells": 14,
+            "additional_burned_hectares": 350.0,
+            "boundary_censored": false,
+            "diagnostic_graded_score": 0.997897897897898,
+            "exposed_population": 0,
+            "graded_score": 0.997897897897898,
+            "initial_burned_hectares": 0.0,
+            "initially_burnable_unburned_cells": 1332,
+            "invalid_abandonment": false,
+            "outcome_version": "wildfire-benchmark-outcomes-v1",
+            "population": 350,
+            "protected_population_fraction": 1.0,
+            "ranking_key": [
+              1,
+              1.0,
+              -350.0
+            ],
+            "safe_success": true,
+            "score_eligible": true,
+            "suitable_for_training": true,
+            "unburned_fraction": 0.9894894894894894,
+            "unresolved_evacuations": 0
+          }
+        },
+        "decisions": 5,
+        "family": "overlapping_fires",
+        "invalid_actions": 3,
+        "minute": 10,
+        "outcomes": {
+          "active_fire": true,
+          "active_fire_cells": 2,
+          "additional_burned_cells": 2,
+          "additional_burned_hectares": 50.0,
+          "boundary_censored": false,
+          "diagnostic_graded_score": 0.9996996996996997,
+          "exposed_population": 0,
+          "graded_score": 0.0,
+          "initial_burned_hectares": 0.0,
+          "initially_burnable_unburned_cells": 1332,
+          "invalid_abandonment": true,
+          "outcome_version": "wildfire-benchmark-outcomes-v1",
+          "population": 350,
+          "protected_population_fraction": 1.0,
+          "ranking_key": [
+            -1,
+            0.0,
+            0.0
+          ],
+          "safe_success": false,
+          "score_eligible": true,
+          "suitable_for_training": true,
+          "unburned_fraction": 0.9984984984984985,
+          "unresolved_evacuations": 0
+        },
+        "protocol_errors": 3,
+        "scored": true,
+        "seed": 6900004,
+        "served_models": [
+          "deepseek-ai/DeepSeek-V4-Flash-0731"
+        ],
+        "status": "complete",
+        "task_id": "bench-dev-d9c78dfb35a04dff",
+        "terminated": false,
+        "timeline": [
+          {
+            "action": {
+              "authorizations": [],
+              "clarifications": [],
+              "messages": [],
+              "protection_orders": [],
+              "readback_confirmations": [],
+              "readback_corrections": [],
+              "releases": [],
+              "requests": [],
+              "triage": []
+            },
+            "decision": 1,
+            "error": null,
+            "invalid": false,
+            "minute": 2,
+            "tool": "submit_action"
+          },
+          {
+            "action": {
+              "authorizations": [],
+              "clarifications": [],
+              "messages": [],
+              "protection_orders": [],
+              "readback_confirmations": [],
+              "readback_corrections": [],
+              "releases": [],
+              "requests": [
+                {
+                  "mission": "suppress",
+                  "resource_id": "engine-valverde",
+                  "sector_id": "report:claim-0"
+                },
+                {
+                  "mission": "recon",
+                  "resource_id": "crew-valverde",
+                  "sector_id": "report:claim-0"
+                },
+                {
+                  "mission": "suppress",
+                  "resource_id": "engine-cabezudos",
+                  "sector_id": "report:claim-0"
+                }
+              ],
+              "triage": []
+            },
+            "decision": 2,
+            "error": null,
+            "invalid": false,
+            "minute": 4,
+            "tool": "request_resources"
+          },
+          {
+            "action": {
+              "invalid_model_action": "missing_or_invalid_named_action"
+            },
+            "decision": 3,
+            "error": "Unknown ops action fields",
+            "invalid": true,
+            "minute": 6,
+            "tool": "invalid_model_action"
+          },
+          {
+            "action": {
+              "invalid_model_action": "missing_or_invalid_named_action"
+            },
+            "decision": 4,
+            "error": "Unknown ops action fields",
+            "invalid": true,
+            "minute": 8,
+            "tool": "invalid_model_action"
+          },
+          {
+            "action": {
+              "invalid_model_action": "missing_or_invalid_named_action"
+            },
+            "decision": 5,
+            "error": "Unknown ops action fields",
+            "invalid": true,
+            "minute": 10,
+            "tool": "invalid_model_action"
+          }
+        ],
+        "trajectory_sha256": "e3042d04833d62f322c9e8c392c9ed45ff4795965f6f285bd42c764ca2d6d54e",
+        "truncated": true
+      }
+    ],
+    "experiment": {
+      "catalog_sha256": "2b83e5e2457a37cdf22cf75c2eb66d6c186585cf8889089219a992963e61cb05",
+      "communications_ablation": false,
+      "environment_implementation_sha256": "bf56a9a5e56e283e64e4a75db141bb824045dc7d24424a7395e93c5325ab4473",
+      "max_decisions": 60,
+      "policies": [
+        "passive",
+        "dispatcher"
+      ],
+      "policy_and_runner_sha256": {
+        "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/baselines.py": "aa95f49afb12f056823e48326d314cf384b356e9d7e227b6fdee55c75bb992d1",
+        "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/model.py": "b075fc7f81a85067f9d1f72fff8436136954f908dd8369beda18ad305c567d73",
+        "eval/run_benchmark.py": "f4d878cd09dc993d0a3ce88249d7efff71464605f27c932e1ee18c36ad1224ba"
+      },
+      "profile_sha256": "a8c7f55d59bf96919318d6747cc41cab47f8a5c2253f2ba120f5251b3431623a",
+      "split": "development",
+      "task_ids": [
+        "bench-dev-71f777cb5ff8c9f2",
+        "bench-dev-16f552e5e1561b06",
+        "bench-dev-d9c78dfb35a04dff"
+      ],
+      "ticks_per_action": 2,
+      "version": "wildfire-benchmark-experiment-v1"
+    },
+    "max_requests": 160,
+    "max_tokens": 2048,
+    "mode": "provider_trial",
+    "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "planned_families": [
+      "uncertain_smoke",
+      "false_alarm",
+      "overlapping_fires"
+    ],
+    "provider_budget": {
+      "calls": 16,
+      "completion_tokens": 2366,
+      "estimated_usd": 1.610742,
+      "estimated_usd_cap": 5.0,
+      "input_usd_per_token": "0.000014",
+      "interpretation": "Conservative API-advertised uncached token estimate, not a billing receipt; failed/unknown-usage calls retain their reserved estimate",
+      "output_usd_per_token": "0.000028",
+      "prompt_tokens": 110321,
+      "responses_with_usage": 16
+    },
+    "rank_eligible": false,
+    "requests": 16,
+    "sampling": {
+      "frequency_penalty": 0.0,
+      "n": 1,
+      "presence_penalty": 0.0,
+      "stream": false,
+      "temperature": 1.0,
+      "top_p": 1.0
+    },
+    "seconds_limit": 1800,
+    "source_revision": "a1f964bcaef7a1c7a9ec79445c8080ac549f54fc",
+    "source_sha256": {
+      "envs/wildfire_response/core/src/envs/wildfire_response/regional/director/diagnostics.py": "2ca18961afad9bc2cb0c3f20d9f6c2289cebae9571b143664b45a2575c81c6d1",
+      "envs/wildfire_response/core/src/envs/wildfire_response/regional/director/policy.py": "ada14c9a1e6f4ad6b3caa0dfcd56139cbc12041bd012d0dbe5f10dcfe453d335",
+      "envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/cloudrift.py": "40d8f7ef3727e329a01f92fb4aeeb7b7a8268c0b3f0c130251411e5c9f0484f3",
+      "envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/compact_model.py": "745ab2221d5598b5c85fbefb9f07d24c0356b6f92f00c76090616035747f447b",
+      "eval/run_benchmark_cloudrift.py": "ef51e6c0b0bb764b781cab1afc82f3e8717b8f427fd0453a97c1985517441c62",
+      "eval/run_ops_model.py": "3f63bb216ef49a2edcb950e85bffa17f1fecd63ee1d1589778bfed1795be420c"
+    },
+    "status": "complete",
+    "training_eligible": false,
+    "version": "wildfire-benchmark-cloudrift-evaluation-v1"
+  }
+}
