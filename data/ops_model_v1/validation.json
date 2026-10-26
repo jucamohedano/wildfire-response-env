@@ -1,0 +1,62 @@
+{
+  "version": "wildfire-ops-model-contract-validation-v1",
+  "date": "2026-10-26",
+  "contract_version": "wildfire-ops-model-tools-v1",
+  "implementation_revision": "6d07ffbf9390bf1951a4816c54c844070b7c0f59",
+  "capabilities": [
+    "Public-only current situation, readbacks, assessments, clarification requests and protection lifecycle",
+    "Resource request, readback correction/confirmation, authorization and release",
+    "Evidence-backed report triage and report-location clarification",
+    "Versioned shelter/evacuate/release orders with nullable crew and supersession IDs",
+    "Inform/status messaging, bounded checks and combined committed actions",
+    "80% safety-weight context; static public terrain at sectors and received weather context"
+  ],
+  "privacy": "Explicit nested whitelists; no hidden fire state, future reports, evaluator labels, credentials, source strategy, imagery pixels or private checkpoints. Model explanations are recorded but excluded from engine orders and rewards.",
+  "compatibility": {
+    "legacy_regional_contract": "Unchanged five-field schema and legacy request defaults",
+    "free_endpoint_fix": "Ops requests omit unadvertised parallel_tool_calls and do not disable mandatory provider reasoning. Local exactly-one-tool enforcement, token caps, zero-price routing and no automatic provider fallback remain.",
+    "training": "The GRPO training wrapper is still regional; no claim that it is migrated or that a model has been trained."
+  },
+  "offline_validation": [
+    {"stage": "Initial current/legacy/protection/terrain/stress regressions", "tests_passed": 58},
+    {"stage": "Routing compatibility and sanitized diagnostics", "tests_passed": 30},
+    {"stage": "Final current/legacy adapter regressions including provider-default reasoning", "tests_passed": 21}
+  ],
+  "planned_live_evaluation": {
+    "scope": "Four synthetic development fixtures on one Malaga source region, not held-out generalization or historical operations",
+    "cases": [
+      {"id": "topo-dev-001", "family": "false alarm"},
+      {"id": "topo-dev-000", "family": "urgent smoke report"},
+      {"id": "topo-dev-003", "family": "conflicting/delayed reports and multiple fires"},
+      {"id": "topo-dev-004", "family": "wind shift"}
+    ],
+    "request_budget_per_trial": 160,
+    "completion_token_cap": 2048,
+    "deadline_seconds": 1200,
+    "interval_seconds": 3.2,
+    "paid_or_automatic_fallback": false
+  },
+  "live_attempts": [
+    {"model": "thinkingmachines/inkling:free", "revision": "65701ea", "requests": 1, "http_status": 403, "decisions": 0, "scored": false, "artifact": ".runtime/ops-model-eval-20261026-inkling/summary.json"},
+    {"model": "nvidia/nemotron-3.5-super-vl:free", "role": "Separate eight-token connectivity diagnostic, not an evaluated episode", "requests": 1, "http_status": 502, "upstream_status": 500, "scored": false},
+    {"model": "liquid/lfm-2.5-2.6b:free", "revision": "65701ea", "requests": 1, "http_status": 404, "decisions": 0, "scored": false, "artifact": ".runtime/ops-model-eval-20261026-liquid/summary.json"},
+    {"model": "liquid/lfm-2.5-2.6b:free", "revision": "7008e80", "requests": 1, "http_status": 400, "reason": "Endpoint requires reasoning; disabling it was removed", "decisions": 0, "scored": false, "artifact": ".runtime/ops-model-eval-20261026-liquid-compatible/summary.json"},
+    {"model": "liquid/lfm-2.5-2.6b:free", "revision": "6d07ffb", "requests": 1, "http_status": 429, "reason": "Provider rate/capacity refusal; stopped immediately without retry", "decisions": 0, "scored": false, "artifact": ".runtime/ops-model-eval-20261026-liquid-reasoning/summary.json"}
+  ],
+  "outcome": {
+    "status": "stopped_on_provider_limit",
+    "completed_model_episodes": 0,
+    "model_score": null,
+    "note": "No inference decision was returned. These attempts cannot measure model policy quality or be scored as failures, demonstrations or preferences. Earlier failed configurations remain separately labelled. No further OpenRouter requests were made after the final429.",
+    "first_case_cpu_baselines": {"task_id": "topo-dev-001", "passive_score": 0.9333333333333333, "scripted_evacuation_score": 1.0, "not_model_results": true},
+    "cost": "Only verified zero-price routes were requested. No successful response returned usage/cost metadata, so a measured billed total is not asserted."
+  },
+  "cleanup": {
+    "project_evaluation_test_preview_processes_remaining": 0,
+    "preview_port8767_listening": false,
+    "browser_preview_closed": true,
+    "gpu_training_or_inference_started": false,
+    "unrelated_apps": "Chrome, VS Code, the desktop and unrelated sessions were deliberately left running"
+  },
+  "next_gate": "Obtain an available permitted free route and rerun only the same four development fixtures. No automatic retry, scheduled work, training or publication has been started."
+}
