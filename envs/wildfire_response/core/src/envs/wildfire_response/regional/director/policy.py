@@ -6,6 +6,7 @@ import time
 
 from ...director.policy import DEFAULT_MODEL, OpenRouterTransport
 from .contract import CONTRACT_VERSION, action_schema, parse_action, public_context
+from .diagnostics import failure_diagnostics
 
 INSTRUCTIONS = '''You are the director of a synthetic regional wildfire response, not a real dispatcher.
 Protect people and resolve the incident while limiting terrain damage, unnecessary
@@ -120,26 +121,32 @@ class RegionalDirectorPolicy:
                 raise
             finally:
                 record['seconds'] = round(time.monotonic()-started, 3)
+            validation_stage = 'completion_envelope'
             try:
                 record.update(served_model=response.get('model'), usage=response.get('usage', {}))
                 choice = response['choices'][0]
+                validation_stage = 'tool_call_envelope'
                 calls = choice['message']['tool_calls']
                 if choice.get('finish_reason') != 'tool_calls' or len(calls) != 1:
                     raise ValueError('Expected exactly one complete tool call')
                 call = calls[0]
+                validation_stage = 'tool_selection'
                 name = call['function']['name']
                 if name not in names or call.get('type') != 'function':
                     raise ValueError('Unknown or unavailable tool')
+                validation_stage = 'action_arguments'
                 action = self.parse_model_action(call['function']['arguments'])
                 record.update(tool=name, proposal=copy.deepcopy(action))
                 if name == 'submit_action':
                     self.history.append(copy.deepcopy(action))
                     return action
+                validation_stage = 'check_call_id'
                 identifier = call.get('id')
                 if not isinstance(identifier, str) or not identifier or len(identifier) > 200:
                     raise ValueError('Check tool needs a bounded call ID')
-            except (KeyError, IndexError, TypeError, ValueError, AttributeError, RecursionError):
+            except (KeyError, IndexError, TypeError, ValueError, AttributeError, RecursionError) as error:
                 record['protocol_error'] = 'missing_or_invalid_named_action'
+                record['response_diagnostics'] = failure_diagnostics(response, error, validation_stage, self.transport)
                 return {'invalid_model_action': record['protocol_error']}
             result = check_action(self.core_action(action))
             result = {key: copy.deepcopy(result[key]) for key in ('valid', 'error', 'remaining_checks', 'scope')}

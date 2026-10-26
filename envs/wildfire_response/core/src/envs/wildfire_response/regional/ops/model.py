@@ -133,49 +133,57 @@ def parse_action(arguments):
         result = {}
         for key, value in pairs:
             if key in result:
-                raise ValueError('Duplicate field')
+                raise ValueError(f'Duplicate JSON field: {key!r}')
             result[key] = value
         return result
     def reject(value):
         raise ValueError('Nonfinite value')
     action = json.loads(arguments, object_pairs_hook=unique, parse_constant=reject)
-    if not isinstance(action, dict) or set(action) != {*LIMITS, 'explanation'}:
-        raise ValueError('Supply the nine ops lists and explanation')
+    if not isinstance(action, dict):
+        raise ValueError('Action must be a JSON object')
+    expected = {*LIMITS, 'explanation'}
+    if set(action) != expected:
+        raise ValueError(f'Action fields: missing={sorted(expected - set(action))}; '
+                         f'unexpected={sorted(set(action) - expected)}')
     if not isinstance(action['explanation'], str) or len(action['explanation']) > 1000:
         raise ValueError('Invalid explanation')
     for field, limit in LIMITS.items():
         if not isinstance(action[field], list) or len(action[field]) > limit:
-            raise ValueError('Invalid action list')
-    def identifier(value):
+            raise ValueError(f'{field}: expected a list of at most {limit} items')
+    def identifier(value, path):
         if not isinstance(value, str) or not 1 <= len(value) <= 255:
-            raise ValueError('Invalid identifier')
+            raise ValueError(f'{path}: expected a string of 1–255 characters')
     for field in ('authorizations', 'releases', 'readback_confirmations', 'clarifications'):
-        for value in action[field]:
-            identifier(value)
+        for index, value in enumerate(action[field]):
+            identifier(value, f'{field}[{index}]')
     fields = dict(requests=('resource_id', 'sector_id', 'mission'),
         readback_corrections=('readback_id', 'resource_id', 'sector_id', 'mission'),
         messages=('recipient', 'purpose'), triage=('report_ids', 'assessment'),
         protection_orders=('recipient', 'action', 'channel', 'resource_id', 'supersedes'))
     for field, keys in fields.items():
-        for record in action[field]:
-            if not isinstance(record, dict) or set(record) != set(keys):
-                raise ValueError('Invalid structured order')
+        for index, record in enumerate(action[field]):
+            path = f'{field}[{index}]'
+            if not isinstance(record, dict):
+                raise ValueError(f'{path}: expected an object')
+            if set(record) != set(keys):
+                raise ValueError(f'{path}: missing={sorted(set(keys) - set(record))}; '
+                                 f'unexpected={sorted(set(record) - set(keys))}')
             for key, value in record.items():
                 if key == 'report_ids':
                     if not isinstance(value, list) or not 1 <= len(value) <= 20:
-                        raise ValueError('Invalid report list')
-                    for report in value:
-                        identifier(report)
+                        raise ValueError(f'{path}.report_ids: expected a list of 1–20 report IDs')
+                    for report_index, report in enumerate(value):
+                        identifier(report, f'{path}.report_ids[{report_index}]')
                 elif field == 'protection_orders' and key in ('resource_id', 'supersedes') and value is None:
                     continue
                 else:
-                    identifier(value)
+                    identifier(value, f'{path}.{key}')
             enums = dict(mission=('recon', 'suppress'), purpose=('status', 'inform'),
                 assessment=('fire_observed', 'no_fire_observed', 'defer'),
                 action=('shelter', 'evacuate', 'release'), channel=('broadcast', 'in_person'))
             for key, choices in enums.items():
                 if key in record and record[key] not in choices:
-                    raise ValueError('Invalid order value')
+                    raise ValueError(f'{path}.{key}: expected one of {choices}')
     return action
 
 

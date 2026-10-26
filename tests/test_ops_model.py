@@ -9,6 +9,7 @@ from envs.wildfire_response.regional.ops.model import LIMITS, ScriptedOpsTranspo
 from envs.wildfire_response.tests.test_prepared_development import create
 from eval.run_ops_model import BoundedTransport, read_key, run, restore_partial
 from envs.wildfire_response.director.policy import ProviderHTTPError
+from envs.wildfire_response.regional.director.diagnostics import TEXT_BUDGET
 
 
 def empty_action():
@@ -148,6 +149,99 @@ class OpsModelTests(unittest.TestCase):
         self.assertIn('invalid_model_action', action)
         _, _, _, _, info = self.env.step(action)
         self.assertIsNotNone(info['error'])
+
+    def test_rejected_arguments_and_field_specific_errors_are_retained(self):
+        malformed = empty_action()
+        del malformed['triage']
+        reply = response(malformed)
+        actor = OpsModelPolicy(transport=lambda payload: reply, interval=0)
+        actor(self.observation)
+        diagnostic = actor.records[0]['response_diagnostics']
+        self.assertEqual(diagnostic['stage'], 'action_arguments')
+        self.assertEqual(diagnostic['error_type'], 'ValueError')
+        self.assertIn("missing=['triage']", diagnostic['error_message'])
+        captured = diagnostic['choices'][0]
+        self.assertEqual(captured['finish_reason'], 'tool_calls')
+        self.assertEqual(captured['message']['tool_calls'][0]['function']['arguments'],
+                         reply['choices'][0]['message']['tool_calls'][0]['function']['arguments'])
+        self.assertFalse(diagnostic['redacted'])
+        self.assertFalse(diagnostic['truncated'])
+        malformed = empty_action()
+        malformed['triage'] = [{'report_ids': ['claim-0'], 'assessment': 'invented'}]
+        with self.assertRaisesRegex(ValueError, r'triage\[0\].assessment: expected one of'):
+            parse_action(json.dumps(malformed))
+
+    def test_diagnostics_distinguish_envelope_tool_json_and_check_id_failures(self):
+        invalid_json = response(empty_action())
+        invalid_json['choices'][0]['message']['tool_calls'][0]['function']['arguments'] = '{"requests":'
+        missing_id = response(empty_action(), 'check_action')
+        del missing_id['choices'][0]['message']['tool_calls'][0]['id']
+        incomplete = response(empty_action())
+        incomplete['choices'][0]['finish_reason'] = 'length'
+        for reply, stage, error_type in (
+            ({'choices': []}, 'completion_envelope', 'IndexError'),
+            ({'choices': [{'finish_reason': 'stop', 'message': {'content': 'I will send help.'}}]},
+             'tool_call_envelope', 'KeyError'),
+            (response(empty_action(), 'unknown'), 'tool_selection', 'ValueError'),
+            (invalid_json, 'action_arguments', 'JSONDecodeError'),
+            (missing_id, 'check_call_id', 'ValueError'),
+            (incomplete, 'tool_call_envelope', 'ValueError'),
+        ):
+            with self.subTest(stage=stage, error_type=error_type):
+                actor = OpsModelPolicy(transport=lambda payload: reply, interval=0)
+                action = actor(self.observation, check_action=self.env.check_orders)
+                self.assertIn('invalid_model_action', action)
+                diagnostic = actor.records[0]['response_diagnostics']
+                self.assertEqual(diagnostic['stage'], stage)
+                self.assertEqual(diagnostic['error_type'], error_type)
+                json.dumps(diagnostic, allow_nan=False)
+
+    def test_failure_diagnostics_redact_wrapped_transport_key_and_omit_reasoning(self):
+        class Transport:
+            _api_key = None
+
+            def __init__(self):
+                self._api_key = 'fake-private-transport-key'
+
+            def __call__(self, payload):
+                return dict(headers={'Authorization': self._api_key}, choices=[dict(
+                    finish_reason='stop', message=dict(
+                        content='Cannot comply: ' + self._api_key + ' rift_exampletemporarysecret123',
+                        reasoning='PRIVATE-REASONING-SENTINEL', reasoning_content='PRIVATE-REASONING-SENTINEL'))])
+        transport = Transport()
+        actor = OpsModelPolicy(transport=BoundedTransport(transport, interval=0), interval=0)
+        actor(self.observation)
+        saved = json.dumps(actor.records)
+        self.assertNotIn(transport._api_key, saved)
+        self.assertNotIn('rift_exampletemporarysecret123', saved)
+        self.assertNotIn('PRIVATE-REASONING-SENTINEL', saved)
+        self.assertNotIn('Authorization', saved)
+        self.assertTrue(actor.records[0]['response_diagnostics']['redacted'])
+
+    def test_oversized_response_excerpt_has_an_explicit_bound(self):
+        reply = response(empty_action())
+        arguments = 'x' * (TEXT_BUDGET * 2)
+        reply['choices'][0]['message']['tool_calls'][0]['function']['arguments'] = arguments
+        actor = OpsModelPolicy(transport=lambda payload: reply, interval=0)
+        actor(self.observation)
+        diagnostic = actor.records[0]['response_diagnostics']
+        self.assertTrue(diagnostic['truncated'])
+        self.assertIn('[TRUNCATED]', json.dumps(diagnostic))
+        self.assertLess(len(json.dumps(diagnostic)), TEXT_BUDGET + 2000)
+
+    def test_runner_persists_failure_diagnostics_without_adding_them_to_observations(self):
+        with tempfile.TemporaryDirectory() as directory:
+            def factory():
+                env = create()
+                original = env.reset
+                env.reset = lambda task_id: original(task_id.replace('topo-', 'prepared-'))
+                return env
+            run(Path(directory)/'trial', factory, lambda payload: response({}),
+                model='test:free', interval=0, max_requests=1)
+            case = Path(directory)/'trial'/'topo-dev-001'
+            records = json.loads((case/'requests.json').read_text())
+            self.assertIn('missing=', records[0]['response_diagnostics']['error_message'])
+            self.assertNotIn('response_diagnostics', (case/'partial-trajectory.json').read_text())
 
     def test_key_loader_reads_only_the_requested_assignment_without_shell_execution(self):
         with tempfile.TemporaryDirectory() as directory:

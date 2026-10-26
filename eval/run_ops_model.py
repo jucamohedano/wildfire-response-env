@@ -138,6 +138,7 @@ def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
     summary['source_revision'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
     source_files = ['eval/run_ops_model.py',
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/model.py',
+        'envs/wildfire_response/core/src/envs/wildfire_response/regional/director/diagnostics.py',
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/director/policy.py']
     summary['source_sha256'] = {name: hashlib.sha256((root/name).read_bytes()).hexdigest() for name in source_files}
     started = time.monotonic()

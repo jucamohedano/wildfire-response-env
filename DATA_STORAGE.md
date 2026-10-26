@@ -71,6 +71,22 @@ separately. See `data/topographic_stress_v1/provenance.json` for exact byte coun
 
 ## Persistence
 
+Model evaluation writes request records to each case's `requests.json`. Rejected
+tool responses now include `response_diagnostics`: the validation stage, exception
+type/message, finish reason, tool name, rejected arguments and ordinary response
+content when present. Missing/unexpected action fields and invalid nested values
+have field-specific errors. A malformed response still follows the existing
+invalid-action rules; diagnostics do not repair it or change the reward.
+
+Diagnostics use an allowlist that omits provider headers and reasoning fields.
+Known transport credentials and recognizable provider-key patterns are redacted.
+Captured text has a shared 65,536-character budget, with bounded nesting and
+collection sizes; `redacted` and `truncated` make changes explicit. The excerpts
+are debugging evidence, not byte-exact provider responses or training targets.
+They remain in ignored runtime logs and are not supplied to the policy. Transport
+failures without a response still record the exception type only. Earlier runs
+without these diagnostics cannot recover their discarded replies.
+
 Active development is on `codex/wildfire-ops-control-center` in the standalone
 environment repository. Changes are pushed there; raw data is not committed.
 Local ignored backups and Git bundles are preserved under
