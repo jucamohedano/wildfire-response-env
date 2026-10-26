@@ -48,6 +48,9 @@ class RegionalDirectorPolicy:
     def core_action(self, action):
         return action
 
+    def configure_request(self, payload):
+        return payload
+
     def __init__(self, model=DEFAULT_MODEL, max_calls=16, max_tokens=4096, transport=None,
                  allow_provider=False, interval=3.1, tool_mode='forced', decision_limit=60):
         if not isinstance(model, str) or not model.endswith(':free'):
@@ -100,6 +103,7 @@ class RegionalDirectorPolicy:
                 payload['tool_choice'] = 'required'
                 for tool in tools:
                     tool['function']['strict'] = True
+            payload = self.configure_request(payload)
             self.calls += 1
             started = self.last_call = time.monotonic()
             record = dict(request=self.calls, minute=context['minute'], decision=context['decision'],

@@ -223,6 +223,10 @@ class OpsModelPolicy(RegionalDirectorPolicy):
     build_action_schema = staticmethod(action_schema)
     parse_model_action = staticmethod(parse_action)
 
+    def configure_request(self, payload):
+        payload.pop('parallel_tool_calls', None)
+        return payload
+
     def core_action(self, action):
         return {key: copy.deepcopy(value) for key, value in action.items() if key != 'explanation'}
 

@@ -87,7 +87,11 @@ class OpsModelTests(unittest.TestCase):
         action['authorizations'] = [observation['offers'][0]['id']]
         action['readback_confirmations'] = [observation['readbacks'][0]['id']]
         replies = [response(action, 'check_action'), response(action)]
-        actor = OpsModelPolicy(transport=lambda payload: replies.pop(0), interval=0)
+        payloads = []
+        def transport(payload):
+            payloads.append(payload)
+            return replies.pop(0)
+        actor = OpsModelPolicy(transport=transport, interval=0)
         before = observation['minute']
         submitted = actor(observation, check_action=self.env.check_orders)
         self.assertNotIn('explanation', submitted)
@@ -97,6 +101,9 @@ class OpsModelTests(unittest.TestCase):
         self.assertIsNone(info['error'])
         self.assertEqual(observation['minute'], before+2)
         self.assertEqual(actor.records[-1]['contract_version'], CONTRACT_VERSION)
+        self.assertNotIn('parallel_tool_calls', payloads[0])
+        self.assertTrue(payloads[0]['provider']['require_parameters'])
+        self.assertFalse(payloads[0]['provider']['allow_fallbacks'])
 
     def test_mismatching_readback_is_corrected_before_confirmation_and_authorization(self):
         observation, *_ = self.env.request_resources([dict(resource_id=self.observation['resources'][0]['id'],

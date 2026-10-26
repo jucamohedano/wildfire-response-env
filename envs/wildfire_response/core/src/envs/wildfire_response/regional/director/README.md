@@ -57,6 +57,13 @@ Partial attempts are saved as unscored, never scored as failures or demonstratio
 The optional cleanup flag only stops a PID verified as this repository's local
 UI server. No inference server, GPU job or background worker is started.
 
+The current free-model request omits the optional `parallel_tool_calls` flag:
+the published free endpoints do not advertise it, so `require_parameters=True`
+can otherwise exclude them. The client still accepts exactly one complete named
+tool call and never executes parallel actions. The legacy regional payload is
+unchanged. Provider HTTP errors retain only a bounded, credential-redacted message
+for diagnosis, not raw bodies or account identifiers.
+
 The old GRPO recipe remains regional; this change fixes current-contract model
 evaluation, not the training algorithm or a trained-policy claim.
 

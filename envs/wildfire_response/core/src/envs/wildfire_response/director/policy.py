@@ -2,6 +2,7 @@
 import copy
 import json
 import os
+import re
 import time
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -48,8 +49,9 @@ in parallel where useful. Explain the evidence and uncertainty briefly, without 
 
 
 class ProviderHTTPError(RuntimeError):
-    def __init__(self, status_code):
+    def __init__(self, status_code, safe_message=None):
         self.status_code = status_code
+        self.safe_message = safe_message
         super().__init__(f'OpenRouter HTTP {status_code}; no retry or paid fallback attempted')
 
 
@@ -94,7 +96,15 @@ class OpenRouterTransport:
                 body = b''.join(chunks)
             return json.loads(body)
         except HTTPError as error:
-            raise ProviderHTTPError(error.code) from None
+            message = None
+            try:
+                value = json.loads(error.read(4096)).get('error', {}).get('message')
+                if isinstance(value, str):
+                    message = re.sub(r'sk-[A-Za-z0-9_-]+', '[REDACTED]', value.replace(self._api_key, '[REDACTED]'))
+                    message = ''.join(character for character in message if character.isprintable())[:512]
+            except (ValueError, TypeError, AttributeError, OSError):
+                pass
+            raise ProviderHTTPError(error.code, message) from None
         except (URLError, TimeoutError, OSError, ValueError):
             raise RuntimeError('OpenRouter transport failed; no retry or paid fallback attempted') from None
 

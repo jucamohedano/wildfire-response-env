@@ -179,6 +179,8 @@ def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
                     decisions=observation['decision'], scored=False)
                 if isinstance(error, ProviderHTTPError):
                     entry['http_status'] = error.status_code
+                    if error.safe_message:
+                        entry['provider_message'] = error.safe_message
                 summary['status'] = 'stopped'
                 summary['stop_reason'] = dict(error_type=type(error).__name__, http_status=getattr(error, 'status_code', None))
                 print(json.dumps(dict(event='stopping', **summary['stop_reason'])), flush=True)
