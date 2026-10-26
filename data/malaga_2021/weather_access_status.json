@@ -1,0 +1,124 @@
+{
+  "version": "malaga-weather-public-access-v1",
+  "checked_on": "2026-10-25",
+  "incident": "Sierra Bermeja, Malaga, September 2021",
+  "status": "no_usable_weather_data_acquired",
+  "weather_downloaded": false,
+  "weather_payload_bytes": 0,
+  "actor_input_eligible": false,
+  "historical_replay_ready": false,
+  "evidence_class": "retrospective_reanalysis_only",
+  "decision": "No suitable anonymous local subset was verified within the download and investigation limits. Preserve the existing weather no-data gate. Public global ERA5 objects exist; this is not a claim that every public alternative is inaccessible.",
+  "requested_subset": {
+    "inclusive_start_utc": "2021-09-08T00:00:00Z",
+    "inclusive_end_utc": "2021-09-15T23:00:00Z",
+    "hourly_samples_per_variable": 192,
+    "target_longitude_degrees_east": -5.2,
+    "target_latitude_degrees_north": 36.5,
+    "existing_prepared_area_north_west_south_east": [36.9, -5.5, 36.2, -4.8],
+    "variables": {
+      "10m_u_component_of_wind": "m s**-1",
+      "10m_v_component_of_wind": "m s**-1",
+      "2m_temperature": "K",
+      "2m_dewpoint_temperature": "K"
+    },
+    "download_limit_bytes_exclusive": 10000000,
+    "actual_weather_times": null,
+    "actual_weather_coordinates": null,
+    "publication_or_actor_receipt_times": null
+  },
+  "credential_context": {
+    "basis": "Parent process checked environment-variable and credential-file presence without reading credential values; this worker did not recheck them.",
+    "CDSAPI_KEY": "absent_as_reported",
+    "CDSAPI_URL": "absent_as_reported",
+    "AEMET_API_KEY": "absent_as_reported",
+    "cdsapirc": "absent_as_reported"
+  },
+  "access_routes": [
+    {
+      "route": "Copernicus CDS ERA5 and ERA5-Land subset retrieval",
+      "status": "authentication_and_terms_gate",
+      "catalogue": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=download",
+      "existing_request_catalogue": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land?tab=download",
+      "setup": "https://cds.climate.copernicus.eu/how-to-api",
+      "required_action": "An authorized user must establish CDS access, obtain a personal API token and manually review/accept applicable dataset terms. No account action, licence acceptance or request submission was performed."
+    },
+    {
+      "route": "ECMWF native ERA5 ARCO geo-chunked stores and CDS time-series subset service",
+      "status": "documented_CDS_token_gate",
+      "documentation": "https://confluence.ecmwf.int/pages/viewpage.action?pageId=704944501",
+      "catalogue": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=analysis_ready_data",
+      "timeseries": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels-timeseries?tab=download",
+      "surface_geo_store": "https://arco.datastores.ecmwf.int/cadl-arco-geo-002/arco/reanalysis_era5_single_levels/sfc/geoChunked.zarr",
+      "gate": "Official documentation specifies a CDS API key in the Authorization Bearer header. The time-series form also requires login and terms acceptance. No unauthenticated bypass or credential use attempted."
+    },
+    {
+      "route": "Google Research public ARCO ERA5",
+      "status": "anonymous_metadata_and_HEAD_verified_full_chunks_exceed_limit",
+      "provider_documentation": "https://github.com/google-research/arco-era5/blob/main/README.md",
+      "store": "https://storage.googleapis.com/gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3/",
+      "edition": "Google-repackaged ERA5 atmospheric reanalysis on a regular 0.25-degree grid; not ERA5-Land. Store name ends zarr-v3 but the inspected array encoding is Zarr format 2.",
+      "metadata_attributes": {
+        "valid_time_start": "1940-01-01",
+        "valid_time_stop": "2026-06-30",
+        "valid_time_stop_era5t": "2026-10-19",
+        "last_updated": "2026-10-25 05:15:22.333497+00:00"
+      },
+      "requested_period_edition": "2021 falls within the provider's stable ERA5 interval, not the ERA5T tail; fields were not downloaded or decoded.",
+      "array_dimensions": ["time", "latitude", "longitude"],
+      "chunks_per_variable": [1, 721, 1440],
+      "dtype": "<f4",
+      "compressor": "Blosc LZ4, shuffle=1",
+      "uncompressed_bytes_per_global_surface_chunk": 4152960,
+      "time_units_from_metadata": "hours since 1900-01-01 00:00:00",
+      "calendar_from_metadata": "proleptic_gregorian",
+      "latitude_units_from_metadata": "degrees_north",
+      "longitude_units_from_metadata": "degrees_east",
+      "boundary_object_HEAD_status": "Eight HTTP 200 responses for the four fields at candidate first/last indices derived from metadata origin; coordinate values not decoded.",
+      "first_candidate_hour_four_global_objects_bytes": 11345955,
+      "both_candidate_boundary_hours_eight_global_objects_bytes": 22709838,
+      "gate": "Even the first candidate hour's four compressed whole-grid objects exceed 10 MB. Ordinary Zarr point selection still reads whole spatial chunks. No block-level range decoder was verified within this investigation; no weather chunks downloaded."
+    },
+    {
+      "route": "ECMWF-linked Google WeatherBench 2 ERA5 mirrors",
+      "status": "officially_linked_public_alternative_inspected_not_a_verified_local_hourly_subset",
+      "official_link_provenance": "https://confluence.ecmwf.int/plugins/viewsource/viewpagesrc.action?pageId=400510594",
+      "provider_documentation": "https://weatherbench2.readthedocs.io/en/latest/data-guide.html",
+      "coarse_store": "https://storage.googleapis.com/weatherbench2/datasets/era5/1959-2023_01_10-6h-240x121_equiangular_with_poles_conservative.zarr/",
+      "edition": "ERA5 downloaded from CDS, conservatively regridded by the mirror provider; 1.5-degree spatial grid and six-hourly samples. Not ERA5-Land and not local station weather.",
+      "coarse_surface_dimensions": ["time", "longitude", "latitude"],
+      "coarse_surface_chunks": [8, 240, 121],
+      "time_units_from_metadata": "hours since 1959-01-01",
+      "calendar_from_metadata": "proleptic_gregorian",
+      "gate": "The documented 0.25-degree hourly mirror also uses global spatial chunks. The smaller 1.5-degree mirror would change temporal/spatial coverage: its regular grid has no centre inside the existing prepared local box. Nearest coarse-cell selection would expand spatial support. No coarse substitute, interpolation, completeness claim or licence acceptance was made; weather values and coordinate arrays remain unverified."
+    },
+    {
+      "route": "ECMWF real-time open-data archives",
+      "status": "not_a_verified_2021_source",
+      "documentation": "https://confluence.ecmwf.int/plugins/viewsource/viewpagesrc.action?pageId=400510594",
+      "gate": "The official alternatives page notes cloud-provider open-data history starting in January 2022. This does not establish availability for September 2021; no forecast dates or availability timestamps substituted."
+    }
+  ],
+  "saved_audit_artifacts": [
+    {
+      "path": ".runtime/malaga-weather-public/google-arco-era5.zmetadata.json",
+      "kind": "public_store_metadata_not_weather",
+      "bytes": 132785,
+      "sha256": "ef218cfa6925376b484268fd2997e2917c80b47ec5a4b43910deb1bf45ae78d0"
+    },
+    {
+      "path": ".runtime/malaga-weather-public/google-arco-era5-boundary-heads.json",
+      "kind": "locally_recorded_HTTP_HEAD_results_not_weather",
+      "bytes": 3388,
+      "sha256": "113fbdeb52ecaace4d3854f4f8dc0850677ac5103d3e6f20807c8f26c14dcdd0"
+    },
+    {
+      "path": ".runtime/malaga-weather-public/weatherbench2-era5-1p5deg.zmetadata.json",
+      "kind": "public_store_metadata_not_weather",
+      "bytes": 58083,
+      "sha256": "0edf7981e8d07885312c611e5f9d53f84545e2f586506c3e7fe31e64395ee67b"
+    }
+  ],
+  "retrospective_use_limits": "Reanalysis validity time is not publication time or actor receipt time. There is no acquired weather series, observation-derived local wind, humidity derivation or simulator bridge in this sidecar.",
+  "scope": "Created this status file and new audit files only under the allowed ignored raw directory. No existing files modified, dependencies installed, agents spawned, simulator changes, credentials read, terms accepted, paid queries, provisioning, training, inference, commits, pushes or posts."
+}

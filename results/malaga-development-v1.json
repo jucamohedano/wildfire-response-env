@@ -1,0 +1,262 @@
+{
+  "version": "wildfire-malaga-bridge-validation-v1",
+  "reviewed_on": "2026-10-25",
+  "mode": "explicit_synthetic_conditions",
+  "source_groups": 1,
+  "independent_held_out_incidents": 0,
+  "scope": "Runnable study-envelope initial-response exercises, not historical reconstruction or a calibrated training benchmark.",
+  "episode_pack_sha256": "5f55aa7a94fec024d4aa2b7f4e446829c936649c4b3930dea0beb6d15311c64d",
+  "source_bundle_sha256": "05fb6bce8b91a1c6e10d09328ae5548c9160e937053483873f6d7595748afe0f",
+  "tests": {
+    "root": 39,
+    "core": 262,
+    "core_skipped": 9,
+    "failures": 0
+  },
+  "external_installed_client": {
+    "verified": true,
+    "case": "malaga-dev-v1",
+    "reward": 1,
+    "minutes": 72
+  },
+  "frozen_engine_files_changed": false,
+  "legacy_trace_checks": {
+    "protect-dev-000-v0": {
+      "trace_sha256": "8e4d4d38623f8da4240604da148314f8beae41dcfe11abc6242395d1f3de7825",
+      "reward": 1
+    },
+    "protect-dev-002-v2": {
+      "trace_sha256": "2279d1acfbe92dc011b71b4d2fa30da0168a0ea7b157f51198e48a2476e42e69",
+      "reward": 0.75
+    }
+  },
+  "timing": {
+    "elapsed_wall_seconds": 7.03,
+    "peak_rss_kib": 34048,
+    "cpu_workers": 1,
+    "primary_rollouts": 18,
+    "all_primary_rollouts_replayed": true,
+    "network_time_included": false
+  },
+  "rollouts": {
+    "scope": "One source group, three synthetic-conditions development variants; not held-out or real-world validation",
+    "episode_pack_sha256": "5f55aa7a94fec024d4aa2b7f4e446829c936649c4b3930dea0beb6d15311c64d",
+    "episodes": 9,
+    "repeat_requested": true,
+    "all_verified": true,
+    "all_repeated_exactly": true,
+    "elapsed_seconds": 6.972,
+    "results": [
+      {
+        "case_id": "malaga-dev-v0",
+        "policy": "passive",
+        "reward": 0.5,
+        "objective_flags": {
+          "evidence_triage": false,
+          "population_safety": true,
+          "incident_resolved": false,
+          "communication_discipline": true
+        },
+        "invalid_actions": 0,
+        "terminated": false,
+        "truncated": true,
+        "minutes": 120,
+        "exposed_people": 0,
+        "public_trace_sha256": "3b5b54ba854d6f3cb009bf5b3490f5b5d8c4e7fbf2a4a15b104f1a5583a245e3",
+        "verified": true,
+        "repeated_exactly": true
+      },
+      {
+        "case_id": "malaga-dev-v0",
+        "policy": "evacuate",
+        "reward": 1,
+        "objective_flags": {
+          "evidence_triage": true,
+          "population_safety": true,
+          "incident_resolved": true,
+          "communication_discipline": true
+        },
+        "invalid_actions": 0,
+        "terminated": true,
+        "truncated": false,
+        "minutes": 58,
+        "exposed_people": 0,
+        "public_trace_sha256": "a1fd3d3293111ca18ff51d80125bfabd4b9f0b03fc36cfcda207309453f17b54",
+        "verified": true,
+        "repeated_exactly": true
+      },
+      {
+        "case_id": "malaga-dev-v0",
+        "policy": "shelter",
+        "reward": 1,
+        "objective_flags": {
+          "evidence_triage": true,
+          "population_safety": true,
+          "incident_resolved": true,
+          "communication_discipline": true
+        },
+        "invalid_actions": 0,
+        "terminated": true,
+        "truncated": false,
+        "minutes": 58,
+        "exposed_people": 0,
+        "public_trace_sha256": "0a6a8291de43043ad8108584a0684e7ca19dcb5c4e140dd29e1a98b734822be3",
+        "verified": true,
+        "repeated_exactly": true
+      },
+      {
+        "case_id": "malaga-dev-v1",
+        "policy": "passive",
+        "reward": 0.5,
+        "objective_flags": {
+          "evidence_triage": false,
+          "population_safety": true,
+          "incident_resolved": false,
+          "communication_discipline": true
+        },
+        "invalid_actions": 0,
+        "terminated": false,
+        "truncated": true,
+        "minutes": 120,
+        "exposed_people": 0,
+        "public_trace_sha256": "c230e6777c498f951f05738988a90519f7ced349d2757fe514a2ac2894fc248d",
+        "verified": true,
+        "repeated_exactly": true
+      },
+      {
+        "case_id": "malaga-dev-v1",
+        "policy": "evacuate",
+        "reward": 1,
+        "objective_flags": {
+          "evidence_triage": true,
+          "population_safety": true,
+          "incident_resolved": true,
+          "communication_discipline": true
+        },
+        "invalid_actions": 0,
+        "terminated": true,
+        "truncated": false,
+        "minutes": 72,
+        "exposed_people": 0,
+        "public_trace_sha256": "f384ab4935f1c0da6c55e2d460b56e07d41022992e134e8e3735a9ea07756861",
+        "verified": true,
+        "repeated_exactly": true
+      },
+      {
+        "case_id": "malaga-dev-v1",
+        "policy": "shelter",
+        "reward": 1,
+        "objective_flags": {
+          "evidence_triage": true,
+          "population_safety": true,
+          "incident_resolved": true,
+          "communication_discipline": true
+        },
+        "invalid_actions": 0,
+        "terminated": true,
+        "truncated": false,
+        "minutes": 72,
+        "exposed_people": 0,
+        "public_trace_sha256": "6a7f12b3e18dd04a6be0d9b309eef0e614d6ed797ef760c4d22ee80ad45a3166",
+        "verified": true,
+        "repeated_exactly": true
+      },
+      {
+        "case_id": "malaga-dev-v2",
+        "policy": "passive",
+        "reward": 0,
+        "objective_flags": {
+          "evidence_triage": false,
+          "population_safety": false,
+          "incident_resolved": false,
+          "communication_discipline": true
+        },
+        "invalid_actions": 0,
+        "terminated": false,
+        "truncated": true,
+        "minutes": 120,
+        "exposed_people": 200,
+        "public_trace_sha256": "4bbda706f8df46b3c225b7d973b2567d2c0669f6da5e19dfb440426efbd91819",
+        "verified": true,
+        "repeated_exactly": true
+      },
+      {
+        "case_id": "malaga-dev-v2",
+        "policy": "evacuate",
+        "reward": 1,
+        "objective_flags": {
+          "evidence_triage": true,
+          "population_safety": true,
+          "incident_resolved": true,
+          "communication_discipline": true
+        },
+        "invalid_actions": 0,
+        "terminated": true,
+        "truncated": false,
+        "minutes": 70,
+        "exposed_people": 0,
+        "public_trace_sha256": "3643c8223bbcd4a0b69e3049178a240bf07e4d7c9dd3b2bb76594b5a042f7c52",
+        "verified": true,
+        "repeated_exactly": true
+      },
+      {
+        "case_id": "malaga-dev-v2",
+        "policy": "shelter",
+        "reward": 1,
+        "objective_flags": {
+          "evidence_triage": true,
+          "population_safety": true,
+          "incident_resolved": true,
+          "communication_discipline": true
+        },
+        "invalid_actions": 0,
+        "terminated": true,
+        "truncated": false,
+        "minutes": 70,
+        "exposed_people": 0,
+        "public_trace_sha256": "941bdbbd05c1d581bda5e261260b0918319fef971a09e81dbce2afa234193d31",
+        "verified": true,
+        "repeated_exactly": true
+      }
+    ]
+  },
+  "hardware": {
+    "nvidia_smi_confirmed": {
+      "name": "NVIDIA GeForce RTX 3060 Laptop GPU",
+      "memory_mib": 6144,
+      "driver": "595.99.02"
+    },
+    "gpu_probe": {
+      "allocator_cap_bytes": 67108864,
+      "config": {
+        "device": 0,
+        "elements": 4096,
+        "repeats": 3,
+        "seed": 2026
+      },
+      "conservative_tensor_data_bound_bytes": 393216,
+      "cpu_reference_exact": null,
+      "cuda_version": null,
+      "gpu": null,
+      "memory_scope": "Tensor data bound and torch allocator cap; CUDA context/driver memory excluded",
+      "reason": "CUDA is unavailable to torch",
+      "repeatability_exact": null,
+      "result_sha256": null,
+      "scope": "Exact integer elementwise CUDA repeatability and independent Python CPU reference agreement for these seeded inputs only. No floating-point, cross-hardware, GPU RNG, or general determinism claim. Not GPU simulation acceleration or model quality; no model or training.",
+      "status": "unavailable",
+      "tensor_data_cap_bytes": 8388608,
+      "torch_version": "2.14.1+cpu",
+      "version": "local-gpu-determinism-v1"
+    },
+    "cuda_test_passed": false,
+    "torch_or_drivers_changed": false
+  },
+  "remaining": [
+    "Historical weather is not acquired; CDS access/terms still needed for the prepared small request.",
+    "Measured terrain/fuel/roads, exposure estimates and actual base readiness are not in the physical model.",
+    "Both active baselines score fully in these three variants; this is an interface smoke cohort, not sufficient RL difficulty or generalisation validation.",
+    "New OpenEnv/model-policy wiring and model training are not part of this increment.",
+    "No inference, model weights, live messaging, cloud compute or publication."
+  ],
+  "tracking_issue": "https://github.com/jucamohedano/wildfire-response-env/issues/5"
+}

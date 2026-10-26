@@ -1,0 +1,64 @@
+{
+  "version": "wildfire-malaga-preparation-result-v1",
+  "reviewed_on": "2026-10-25",
+  "incident": "Sierra Bermeja, Malaga, 2021-09-08",
+  "status": "Prepared evaluator-only bundle; weather and physical/availability metadata gates remain open.",
+  "source_payload_bytes": 66010275,
+  "egif_archive_bytes": 2142749,
+  "prepared": {
+    "products": 5,
+    "curated_claims": 18,
+    "municipalities": 7,
+    "files": 25,
+    "artifact_bytes": 23926475,
+    "content_sha256": "05fb6bce8b91a1c6e10d09328ae5548c9160e937053483873f6d7595748afe0f"
+  },
+  "reproducibility": {
+    "independent_isolated_rebuild_matches": true,
+    "preparation_elapsed_seconds": 1.942,
+    "wall_seconds": 1.98,
+    "peak_rss_kib": 161280,
+    "cpu_workers": 1,
+    "network_time_included": false,
+    "python": "3.12.9"
+  },
+  "geography": {
+    "checks": 10,
+    "vertices_checked": 14206,
+    "all_vertices_inside_terrain": true,
+    "pyproj_version": "3.8.0",
+    "source_crs": "OGC:CRS84",
+    "terrain_crs": "EPSG:25830",
+    "vertical_metadata_verified": false,
+    "survey_epoch_verified": false
+  },
+  "validation": {
+    "root_tests": 25,
+    "root_failures": 0,
+    "core_tests": 253,
+    "core_skips": 9,
+    "core_failures": 0
+  },
+  "source_years": {
+    "incident": 2021,
+    "population_reference": 2021,
+    "population_publication": "2021-12-23",
+    "technical_report_pdf_created": 2022,
+    "cems_reference_land_cover": 2018,
+    "osm_source_label": "2021-09-09",
+    "terrain_survey_epoch": null,
+    "acquisition": 2026
+  },
+  "actor_input_eligible": false,
+  "historical_replay_ready": false,
+  "simulator_or_reward_changed": false,
+  "weather_downloaded": false,
+  "private_storage": ".runtime/malaga-2021-v1/",
+  "tracking_issue": "https://github.com/jucamohedano/wildfire-response-env/issues/4",
+  "limitations": [
+    "Vertex coverage is not topology, road access, population exposure, fuel or fire-physics validation.",
+    "Local incident time is an explicit Europe/Madrid interpretation; web-delivery timezone and revision availability are unverified.",
+    "All historical claims and final outcomes remain evaluator-only; no actor receipt times or optimal-action labels were fabricated.",
+    "No training, inference, live messages, GPU or dataset publication."
+  ]
+}

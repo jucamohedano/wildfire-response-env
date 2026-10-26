@@ -1,0 +1,181 @@
+{
+  "actor_input_eligible": false,
+  "checked_on": "2026-10-25",
+  "checks": {
+    "complete_positive_runtime_domain": true,
+    "ellipsoidal_heights_used_as_terrain": false,
+    "monument_offset_applied": false,
+    "terrain_values_modified": false,
+    "unsupported_edge_fallback": false
+  },
+  "historical_replay_ready": false,
+  "implementation_files": [
+    {
+      "bytes": 10224,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "eval/validate_terrain_controls.py",
+      "sha256": "89861d3082b9079045d0b23dd2127f628724ed00ba81058a84f267205dac3fd3"
+    }
+  ],
+  "input_files": [
+    {
+      "bytes": 134899,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/terrain-control-evidence-v1/pnoa-products.html",
+      "sha256": "219ef7153c42be33a96c81ec4130476f03dbe94090dce5eb9dcedb0257ae8e3d",
+      "source_url": "https://pnoa.ign.es/web/portal/pnoa-lidar/productos-a-descarga"
+    },
+    {
+      "bytes": 5919,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/terrain-control-evidence-v1/roi.geojson",
+      "sha256": "f0673c77b10eeb4eccbea4c9e6ea5f620f3ecf3b5ccfd550b3411e4c8dbac22e",
+      "source_url": "https://api-features.ign.es/collections/red_roi/items?f=json&bbox=-5.28,36.42,-5.05,36.63&limit=100"
+    },
+    {
+      "bytes": 45694,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/terrain-control-evidence-v1/rednap.geojson",
+      "sha256": "1b1faa6a38b8c4d1d974bc2c1a7671d91f979d749f5f11f5cc8d85dc309d8387",
+      "source_url": "https://api-features.ign.es/collections/red_nap/items?f=json&bbox=-5.28,36.42,-5.05,36.63&limit=100"
+    },
+    {
+      "bytes": 1333715,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/terrain-control-evidence-v1/reales.pdf",
+      "sha256": "8fb67fbf21958422ebf97696ba33711634876c24d017253649846d4cdea9e7e7",
+      "source_url": "https://datos-geodesia.ign.es/Red_Geodesica/Hoja1071/107199.pdf"
+    },
+    {
+      "bytes": 715482,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/terrain-control-evidence-v1/ssk163.pdf",
+      "sha256": "3511fe06d26f8a5f0fc8af353e5f0dcb6b8d2909a419fa8ab739649e030a3d14",
+      "source_url": "https://datos-geodesia.ign.es/REDNAP/Lin10636/10636010.pdf"
+    },
+    {
+      "bytes": 1435,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/terrain-control-evidence-v1/reales-mdt05-5m.asc",
+      "sha256": "38658bd4f67c9e247f7f6c4957f3223e7a1e96a3e469aa28fea07fbf31e56056",
+      "source_url": "https://servicios.idee.es/wcs-inspire/mdt?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&COVERAGE=Elevacion25830_5&CRS=EPSG%3A25830&RESPONSE_CRS=EPSG%3A25830&BBOX=302150%2C4039910%2C302210%2C4039970&RESX=5&RESY=5&FORMAT=ArcGrid&INTERPOLATION=nearest+neighbor"
+    }
+  ],
+  "limitations": [
+    "Survey marks are not necessarily bare ground; no correction or accuracy threshold is inferred.",
+    "One in-domain ROI mark and one out-of-domain coastal REDNAP mark are spot checks, not domain-wide certification.",
+    "The 500m means are not compared with point heights; only source samples are compared.",
+    "Survey evidence is separate from encoding checks but independence from original production control is unverified.",
+    "Product-level orthometric documentation does not authenticate the exact WCS vertical realization, nil values or survey edition.",
+    "Complete positive support is an explicit analysis restriction, not a source NoData declaration or physical calibration."
+  ],
+  "points": [
+    {
+      "easting_northing": [
+        302179.731,
+        4039940.886
+      ],
+      "ellipsoidal_height_metres": 1497.812,
+      "exact_vertical_realization_verified": false,
+      "height_reference_point": "base_of_pillar",
+      "id": 107199,
+      "inside_active_domain": true,
+      "latitude": 36.484362155,
+      "longitude": -5.208312774,
+      "mark_to_bare_ground_offset_metres": null,
+      "name": "Reales",
+      "orthometric_height_metres": 1451.467,
+      "sampled25m_comparison": {
+        "accuracy_pass": null,
+        "center_easting_northing": [
+          302187.4999999999,
+          4039937.500000001
+        ],
+        "column": 227,
+        "height_metres": 1447.4610595703125,
+        "interpretation": "Diagnostic difference only: datum realization and mark-to-ground offset unverified",
+        "offset_from_mark_metres": 8.474807194917886,
+        "raster_minus_survey_mark_metres": -4.005940429687598,
+        "row": 602,
+        "sample_spacing_metres": [
+          25.0,
+          25.0
+        ]
+      },
+      "sampled5m_comparison": {
+        "accuracy_pass": null,
+        "center_easting_northing": [
+          302177.5,
+          4039942.5000000014
+        ],
+        "column": 5,
+        "height_metres": 1449.6650390625,
+        "interpretation": "Diagnostic difference only: datum realization and mark-to-ground offset unverified",
+        "offset_from_mark_metres": 2.7536079976697283,
+        "raster_minus_survey_mark_metres": -1.8019609375000982,
+        "row": 5,
+        "sample_spacing_metres": [
+          5.000000000021,
+          5.000000000021
+        ]
+      }
+    },
+    {
+      "easting_northing": [
+        314378.2577318115,
+        4036285.6312094275
+      ],
+      "ellipsoidal_height_metres": 57.70654,
+      "exact_vertical_realization_verified": false,
+      "height_reference_point": "pavement_levelling_nail",
+      "id": 10636010,
+      "inside_active_domain": false,
+      "latitude": 36.453872908,
+      "longitude": -5.071344278,
+      "mark_to_bare_ground_offset_metres": null,
+      "name": "SSK 163,1",
+      "orthometric_height_metres": 11.26147,
+      "sampled25m_comparison": {
+        "accuracy_pass": null,
+        "center_easting_northing": [
+          314387.4999999999,
+          4036287.500000001
+        ],
+        "column": 715,
+        "height_metres": 11.010000228881836,
+        "interpretation": "Diagnostic difference only: datum realization and mark-to-ground offset unverified",
+        "offset_from_mark_metres": 9.429310657387532,
+        "raster_minus_survey_mark_metres": -0.25146977111816327,
+        "row": 748,
+        "sample_spacing_metres": [
+          25.0,
+          25.0
+        ]
+      },
+      "sampled5m_comparison": null
+    }
+  ],
+  "role": "operator_evaluator_reference",
+  "runtime_domain": {
+    "bytes": 59047,
+    "integrity": "locally_hashed_not_source_authenticated",
+    "path": ".runtime/topographic-inputs-v1/inputs.json",
+    "sha256": "b4585046b95d9bccc1c7701a95d15b9ca59120cbbd49f5bf080f9e146ad0f355"
+  },
+  "runtime_payload_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+  "source_raster": {
+    "bytes": 5303587,
+    "integrity": "locally_hashed_not_source_authenticated",
+    "path": ".runtime/malaga-terrain-validation-v2/mdt05-sampled25m-halo.asc",
+    "sha256": "1b2e4f470bf456b0189cf22e60dddcf09af413617eb9b76f5a2c1650be70e917"
+  },
+  "status": "survey_diagnostics_completed_not_accuracy_certified",
+  "version": "wildfire-terrain-survey-diagnostics-v1",
+  "vertical_reference": {
+    "extract_specific_vertical_realization_verified": false,
+    "native_void_semantics_verified": false,
+    "product_height_type": "orthometric",
+    "product_statement_verified": true,
+    "survey_edition_of_extract_verified": false
+  }
+}

@@ -1,0 +1,237 @@
+{
+  "actor_direct_access": false,
+  "applied_to_current_runtime": true,
+  "communication": {
+    "base_request_delay_model_minutes": 1,
+    "evidence_class": "synthetic",
+    "in_person_service_model_minutes": 4,
+    "limitation": "Separate send, receipt, acknowledgement and effects; not observed historical delays",
+    "model_minutes_per_tick": 1,
+    "offer_ttl_model_minutes": 8,
+    "protection_ack_after_receipt_model_minutes": 1,
+    "protection_execution_after_receipt_model_minutes": 2,
+    "readback_correction_delay_model_minutes": 1
+  },
+  "episode_pack_sha256": "5f55aa7a94fec024d4aa2b7f4e446829c936649c4b3930dea0beb6d15311c64d",
+  "evidence_class": "synthetic",
+  "fire_and_suppression": {
+    "aircraft_grounding_relative_wind_index": 2.8,
+    "evidence_class": "synthetic",
+    "limitation": "Uncalibrated exercise effects, not physical prediction or aviation operating limits",
+    "spread_interval_multiplier": 12,
+    "suppression_probability": {
+      "aircraft": 0.85,
+      "crew": 0.5,
+      "engine": 0.8
+    }
+  },
+  "fuel": {
+    "evidence_class": "synthetic",
+    "initial_dimensionless_availability": 1.0,
+    "limitation": "Existing kernel has normalized fuel, not measured moisture; do not invent a percentage",
+    "physical_moisture_model_implemented": false,
+    "physical_moisture_percent": null
+  },
+  "generation": "Fixed versioned exercise rules and pinned seeds, not sampled or reconstructed historical records",
+  "historical_truth": false,
+  "population": {
+    "counts": {
+      "settlement-east": 150,
+      "settlement-west": 200
+    },
+    "evidence_class": "synthetic",
+    "limitation": "Not municipal residents present or measured compliance",
+    "movement_speed_cells_per_model_minute": 0.1
+  },
+  "readiness": {
+    "aircraft_operable_at_reset": false,
+    "evidence_class": "synthetic",
+    "limitation": "Legacy resource/base IDs are fictional compatibility handles, not historical Malaga readiness",
+    "units": [
+      {
+        "capacity_litres": 3500,
+        "due_at": null,
+        "home_base": "valverde",
+        "id": "engine-valverde",
+        "kind": "engine",
+        "mission": null,
+        "sector_id": null,
+        "state": "available",
+        "water_litres": 3500
+      },
+      {
+        "due_at": null,
+        "home_base": "valverde",
+        "id": "crew-valverde",
+        "kind": "crew",
+        "mission": null,
+        "people": 7,
+        "sector_id": null,
+        "state": "available",
+        "water_litres": 0
+      },
+      {
+        "capacity_litres": 3500,
+        "due_at": null,
+        "home_base": "cabezudos",
+        "id": "engine-cabezudos",
+        "kind": "engine",
+        "mission": null,
+        "sector_id": null,
+        "state": "available",
+        "water_litres": 3500
+      },
+      {
+        "due_at": null,
+        "home_base": "cabezudos",
+        "id": "crew-cabezudos",
+        "kind": "crew",
+        "mission": null,
+        "people": 7,
+        "sector_id": null,
+        "state": "available",
+        "water_litres": 0
+      },
+      {
+        "capacity_litres": 3100,
+        "due_at": null,
+        "home_base": "las-arenas",
+        "id": "aircraft-las-arenas",
+        "kind": "aircraft",
+        "mission": null,
+        "sector_id": null,
+        "state": "available",
+        "water_litres": 3100
+      }
+    ]
+  },
+  "role": "documentation_of_existing_exercise_initialization",
+  "sha256": "e46ab752ff31731b7ba294eff364cd3d16ff1d319b354e996c4c2ab8965a9350",
+  "source_code": [
+    {
+      "bytes": 6021,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "envs/wildfire_response/core/src/envs/wildfire_response/data/huelva_regional_v2.json",
+      "sha256": "db20dc7806eac7d5b0b07cffd06931c9d40120f0813bd8b6fb80ff1d13f6bcf0"
+    },
+    {
+      "bytes": 3581,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/malaga/pack.py",
+      "sha256": "1b675136765747df5f8a772eb868e8ce495fb62955183063c90fe35ba6b44bfc"
+    },
+    {
+      "bytes": 4194,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/malaga/tasks.py",
+      "sha256": "d63569dbd70deae69dade38d8ea85f22ab098091af1b13578f08b50473589640"
+    },
+    {
+      "bytes": 2568,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/protection/tasks.py",
+      "sha256": "ea8bd6fef37343a64e19a8798c26bbe8de11a5b5d89dc21236ddc33120f849dc"
+    },
+    {
+      "bytes": 10111,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/protection/protocol.py",
+      "sha256": "8d8472ef71cc4f0c2e213f2351a1bd55f5092ee6cb81010dce67ac2e698c672e"
+    },
+    {
+      "bytes": 2928,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "envs/wildfire_response/core/src/envs/wildfire_response/regional/fire.py",
+      "sha256": "3f03dc618bf46bf0d24289a29e201cc084a39a2ca760e983d41b3504a9093a8c"
+    }
+  ],
+  "transit": {
+    "base_component_model_minutes": 8,
+    "derivation": "Rounded-up half of historical detection-to-first-ground-arrival duration; an assumed decomposition, not road travel",
+    "evidence_class": "synthetic"
+  },
+  "variants": [
+    {
+      "case_id": "malaga-dev-v0",
+      "protection_configuration": {
+        "broadcast_delay_minutes": 2,
+        "broadcast_failures": 0,
+        "exposure_threshold": 120,
+        "first_broadcast_extra_delay_minutes": 0,
+        "open_dose_per_tick": 10,
+        "sheltered_dose_per_tick": 2,
+        "smoke_radius_cells": 2
+      },
+      "seed": 771000,
+      "transport_configuration": {
+        "fail_first_evacuation": false,
+        "message_extra_delay_minutes": 0,
+        "request_extra_delay_minutes": 0,
+        "resource_unavailable_until": {}
+      },
+      "wind_events": [],
+      "wind_relative_index": [
+        1,
+        0
+      ]
+    },
+    {
+      "case_id": "malaga-dev-v1",
+      "protection_configuration": {
+        "broadcast_delay_minutes": 2,
+        "broadcast_failures": 0,
+        "exposure_threshold": 120,
+        "first_broadcast_extra_delay_minutes": 6,
+        "open_dose_per_tick": 10,
+        "sheltered_dose_per_tick": 2,
+        "smoke_radius_cells": 2
+      },
+      "seed": 771000,
+      "transport_configuration": {
+        "fail_first_evacuation": false,
+        "message_extra_delay_minutes": 0,
+        "request_extra_delay_minutes": 0,
+        "resource_unavailable_until": {}
+      },
+      "wind_events": [
+        {
+          "kind": "wind",
+          "tick": 14,
+          "wind": [
+            -1,
+            1
+          ]
+        }
+      ],
+      "wind_relative_index": [
+        1,
+        0
+      ]
+    },
+    {
+      "case_id": "malaga-dev-v2",
+      "protection_configuration": {
+        "broadcast_delay_minutes": 2,
+        "broadcast_failures": 1,
+        "exposure_threshold": 120,
+        "first_broadcast_extra_delay_minutes": 0,
+        "open_dose_per_tick": 10,
+        "sheltered_dose_per_tick": 2,
+        "smoke_radius_cells": 2
+      },
+      "seed": 771000,
+      "transport_configuration": {
+        "fail_first_evacuation": false,
+        "message_extra_delay_minutes": 0,
+        "request_extra_delay_minutes": 0,
+        "resource_unavailable_until": {}
+      },
+      "wind_events": [],
+      "wind_relative_index": [
+        2.9,
+        0
+      ]
+    }
+  ],
+  "version": "wildfire-synthetic-runtime-reference-v1"
+}

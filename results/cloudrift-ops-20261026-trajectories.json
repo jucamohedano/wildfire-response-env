@@ -1,0 +1,4636 @@
+{
+  "version": "wildfire-ops-public-trace-excerpts-v1",
+  "model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+  "scope": "Curated public trace excerpts, not full replay files or expert demonstrations. Static terrain arrays, private evaluator artifacts and credentials are excluded. Brief logged explanations are not hidden reasoning traces. Malformed raw responses were not retained; their exact parser failure cannot be reconstructed.",
+  "cases": [
+    {
+      "task_id": "topo-dev-001",
+      "family": "false alarm",
+      "seed": 771101,
+      "score": 0,
+      "scored": true,
+      "status": "invalid_action_abandonment",
+      "decisions": 6,
+      "reward_version": "wildfire-protection-safety-gate-v2",
+      "contract_version": "wildfire-ops-model-tools-v1",
+      "initial_observation": {
+        "minute": 0,
+        "decision": 0,
+        "wind": [
+          1,
+          0
+        ],
+        "daylight": false,
+        "aircraft_operable": false,
+        "reports": [
+          {
+            "available_at": 0,
+            "channel": "synthetic_phone",
+            "id": "claim-0",
+            "location": [
+              14,
+              18
+            ],
+            "observed_at": 0,
+            "received_at": 0,
+            "source": "exercise-caller-0",
+            "source_role": "resident",
+            "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+          }
+        ],
+        "resources": [
+          {
+            "capacity_litres": 3500,
+            "due_at": null,
+            "home_base": "valverde",
+            "id": "engine-valverde",
+            "kind": "engine",
+            "mission": null,
+            "sector_id": null,
+            "state": "available",
+            "water_litres": 3500
+          },
+          {
+            "due_at": null,
+            "home_base": "valverde",
+            "id": "crew-valverde",
+            "kind": "crew",
+            "mission": null,
+            "people": 7,
+            "sector_id": null,
+            "state": "available",
+            "water_litres": 0
+          },
+          {
+            "capacity_litres": 3500,
+            "due_at": null,
+            "home_base": "cabezudos",
+            "id": "engine-cabezudos",
+            "kind": "engine",
+            "mission": null,
+            "sector_id": null,
+            "state": "available",
+            "water_litres": 3500
+          },
+          {
+            "due_at": null,
+            "home_base": "cabezudos",
+            "id": "crew-cabezudos",
+            "kind": "crew",
+            "mission": null,
+            "people": 7,
+            "sector_id": null,
+            "state": "available",
+            "water_litres": 0
+          },
+          {
+            "capacity_litres": 3100,
+            "due_at": null,
+            "home_base": "las-arenas",
+            "id": "aircraft-las-arenas",
+            "kind": "aircraft",
+            "mission": null,
+            "sector_id": null,
+            "state": "available",
+            "water_litres": 3100
+          }
+        ],
+        "districts": [
+          {
+            "basis": "synthetic",
+            "exposed": 0,
+            "home": [
+              14,
+              18
+            ],
+            "id": "settlement-west",
+            "name": "settlement-west",
+            "population": 200,
+            "position": [
+              14.0,
+              18.0
+            ],
+            "refuge": [
+              14,
+              22
+            ],
+            "shelter_active": false,
+            "smoke_dose_units": 0,
+            "smoke_observed_at": 0,
+            "smoke_present": false,
+            "status": "unwarned"
+          },
+          {
+            "basis": "synthetic",
+            "exposed": 0,
+            "home": [
+              25,
+              18
+            ],
+            "id": "settlement-east",
+            "name": "settlement-east",
+            "population": 150,
+            "position": [
+              25.0,
+              18.0
+            ],
+            "refuge": [
+              25,
+              22
+            ],
+            "shelter_active": false,
+            "smoke_dose_units": 0,
+            "smoke_observed_at": 0,
+            "smoke_present": false,
+            "status": "unwarned"
+          }
+        ],
+        "offers": [],
+        "readbacks": [],
+        "report_assessments": [],
+        "protection_orders": [],
+        "acknowledgements": [],
+        "sensor_memory": [
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-west",
+            "x": 14,
+            "y": 17
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-east",
+            "x": 25,
+            "y": 17
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-west",
+            "x": 13,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-west",
+            "x": 14,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-west",
+            "x": 15,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-east",
+            "x": 24,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-east",
+            "x": 25,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-east",
+            "x": 26,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-west",
+            "x": 14,
+            "y": 19
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-east",
+            "x": 25,
+            "y": 19
+          }
+        ]
+      },
+      "events": [
+        {
+          "request": 1,
+          "decision": 0,
+          "minute": 0,
+          "tool": "submit_action",
+          "seconds": 50.356,
+          "usage": {
+            "completion_tokens": 359,
+            "prompt_tokens": 5406,
+            "prompt_tokens_details": null,
+            "total_tokens": 5765
+          },
+          "proposal": {
+            "authorizations": [],
+            "clarifications": [],
+            "explanation": "A report has come in of smoke near coordinates [14,18], which is also the settlement-west location. The report needs verification. I'll dispatch an engine from valverde to recon the report:claim-0 area to verify the fire. Since settlement-west is at the same location, I'll also send the cabezudos engine to recon the settlement-west protect sector to confirm whether there's an active fire threat there. No protection order yet since the claim is unverified.",
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [
+              {
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west"
+              },
+              {
+                "mission": "recon",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0"
+              }
+            ],
+            "triage": []
+          },
+          "protocol_error": null,
+          "phase": "Initial attempt",
+          "sequence": 1,
+          "kind": "submit",
+          "action": {
+            "authorizations": [],
+            "clarifications": [],
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [
+              {
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west"
+              },
+              {
+                "mission": "recon",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0"
+              }
+            ],
+            "triage": []
+          },
+          "action_valid": true,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": false,
+          "observation_after": {
+            "minute": 2,
+            "decision": 1,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  14,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "reserved",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "reserved",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 2,
+                "smoke_present": false,
+                "status": "unwarned"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 2,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "status": "offered",
+                "target": [
+                  14,
+                  18
+                ]
+              },
+              {
+                "expires_at": 9,
+                "id": "offer:request-2",
+                "lead_time_minutes": 19,
+                "mission": "recon",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "status": "offered",
+                "target": [
+                  14,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "source": "valverde",
+                "status": "awaiting_confirmation",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR protect:settlement-west. MISSION RECON. CONFIRM OR CORRECT."
+              },
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-2:1",
+                "mission": "recon",
+                "offer_id": "offer:request-2",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "source": "cabezudos",
+                "status": "awaiting_confirmation",
+                "text": "READBACK. RESOURCE engine-cabezudos. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "cabezudos",
+                "request_id": "request-2",
+                "resource_id": "engine-cabezudos",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-2",
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "source": "cabezudos"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "request": 2,
+          "decision": 1,
+          "minute": 2,
+          "seconds": 8.712,
+          "usage": {
+            "completion_tokens": 28,
+            "prompt_tokens": 6367,
+            "prompt_tokens_details": null,
+            "total_tokens": 6395
+          },
+          "protocol_error": "missing_or_invalid_named_action",
+          "phase": "Initial attempt",
+          "sequence": 2,
+          "kind": "invalid",
+          "action": {
+            "_invalid_ops_action": true
+          },
+          "action_valid": false,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": false,
+          "observation_after": {
+            "minute": 4,
+            "decision": 2,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  14,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "reserved",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "reserved",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 4,
+                "smoke_present": false,
+                "status": "unwarned"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 4,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "status": "offered",
+                "target": [
+                  14,
+                  18
+                ]
+              },
+              {
+                "expires_at": 9,
+                "id": "offer:request-2",
+                "lead_time_minutes": 19,
+                "mission": "recon",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "status": "offered",
+                "target": [
+                  14,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "source": "valverde",
+                "status": "awaiting_confirmation",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR protect:settlement-west. MISSION RECON. CONFIRM OR CORRECT."
+              },
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-2:1",
+                "mission": "recon",
+                "offer_id": "offer:request-2",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "source": "cabezudos",
+                "status": "awaiting_confirmation",
+                "text": "READBACK. RESOURCE engine-cabezudos. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "cabezudos",
+                "request_id": "request-2",
+                "resource_id": "engine-cabezudos",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-2",
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "source": "cabezudos"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "request": 3,
+          "decision": 2,
+          "minute": 4,
+          "tool": "check_action",
+          "seconds": 41.416,
+          "usage": {
+            "completion_tokens": 301,
+            "prompt_tokens": 6370,
+            "prompt_tokens_details": null,
+            "total_tokens": 6671
+          },
+          "proposal": {
+            "authorizations": [
+              "offer:request-1",
+              "offer:request-2"
+            ],
+            "clarifications": [],
+            "explanation": "Authorize the two offered recon engines and confirm their readbacks match the offers. The claim-0 report is unverified - sensors show no fire at [14,18] yet. Defer triage until the recon engine arrives.",
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [
+              "readback:offer:request-1:1",
+              "readback:offer:request-2:1"
+            ],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [],
+            "triage": [
+              {
+                "assessment": "defer",
+                "report_ids": [
+                  "claim-0"
+                ]
+              }
+            ]
+          },
+          "protocol_error": null,
+          "action_check": {
+            "error": null,
+            "remaining_checks": 2,
+            "scope": "Current public action and readback contract only; no forecast",
+            "valid": true
+          },
+          "phase": "Initial attempt",
+          "sequence": 3,
+          "kind": "check"
+        },
+        {
+          "request": 4,
+          "decision": 2,
+          "minute": 4,
+          "tool": "submit_action",
+          "seconds": 54.446,
+          "usage": {
+            "completion_tokens": 433,
+            "prompt_tokens": 6716,
+            "prompt_tokens_details": null,
+            "total_tokens": 7149
+          },
+          "proposal": {
+            "authorizations": [
+              "offer:request-1",
+              "offer:request-2"
+            ],
+            "clarifications": [],
+            "explanation": "Both readbacks match their respective offers exactly (resource, sector, mission). Authorizing engine-valverde to protect:settlement-west and engine-cabezudos to report:claim-0 for recon. Deferring triage of claim-0 since the report is unverified and current sensors show no fire at [14,18]; recon will confirm.",
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [
+              "readback:offer:request-1:1",
+              "readback:offer:request-2:1"
+            ],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [],
+            "triage": [
+              {
+                "assessment": "defer",
+                "report_ids": [
+                  "claim-0"
+                ]
+              }
+            ]
+          },
+          "protocol_error": null,
+          "phase": "Initial attempt",
+          "sequence": 4,
+          "kind": "submit",
+          "action": {
+            "authorizations": [
+              "offer:request-1",
+              "offer:request-2"
+            ],
+            "clarifications": [],
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [
+              "readback:offer:request-1:1",
+              "readback:offer:request-2:1"
+            ],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [],
+            "triage": [
+              {
+                "assessment": "defer",
+                "report_ids": [
+                  "claim-0"
+                ]
+              }
+            ]
+          },
+          "action_valid": true,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": false,
+          "observation_after": {
+            "minute": 6,
+            "decision": 3,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  14,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": 8,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": "recon",
+                "sector_id": "protect:settlement-west",
+                "state": "mobilizing",
+                "target": [
+                  14,
+                  18
+                ],
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": 8,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": "recon",
+                "sector_id": "report:claim-0",
+                "state": "mobilizing",
+                "target": [
+                  14,
+                  18
+                ],
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 6,
+                "smoke_present": false,
+                "status": "unwarned"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 6,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "status": "committed",
+                "target": [
+                  14,
+                  18
+                ]
+              },
+              {
+                "expires_at": 9,
+                "id": "offer:request-2",
+                "lead_time_minutes": 19,
+                "mission": "recon",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "status": "committed",
+                "target": [
+                  14,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "source": "valverde",
+                "status": "confirmed",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR protect:settlement-west. MISSION RECON. CONFIRM OR CORRECT."
+              },
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-2:1",
+                "mission": "recon",
+                "offer_id": "offer:request-2",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "source": "cabezudos",
+                "status": "confirmed",
+                "text": "READBACK. RESOURCE engine-cabezudos. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [
+              {
+                "assessed_at": 4,
+                "assessment": "defer",
+                "duplicate_of": null,
+                "evidence_observed_at": 4,
+                "report_id": "claim-0"
+              }
+            ],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "cabezudos",
+                "request_id": "request-2",
+                "resource_id": "engine-cabezudos",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-2",
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "source": "cabezudos"
+              },
+              {
+                "kind": "allocation_authorized",
+                "minute": 4,
+                "offer_id": "offer:request-1",
+                "recipient": "valverde",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_authorized",
+                "minute": 4,
+                "offer_id": "offer:request-2",
+                "recipient": "cabezudos",
+                "resource_id": "engine-cabezudos",
+                "source": "ops"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "request": 5,
+          "decision": 3,
+          "minute": 6,
+          "seconds": 90.28,
+          "protocol_error": null,
+          "transport_error_type": "RuntimeError",
+          "phase": "Initial attempt",
+          "sequence": 5,
+          "kind": "timeout"
+        },
+        {
+          "request": 1,
+          "decision": 3,
+          "minute": 6,
+          "seconds": 25.929,
+          "usage": {
+            "completion_tokens": 186,
+            "prompt_tokens": 6453,
+            "prompt_tokens_details": null,
+            "total_tokens": 6639
+          },
+          "protocol_error": "missing_or_invalid_named_action",
+          "phase": "Continuation",
+          "sequence": 6,
+          "kind": "invalid",
+          "action": {
+            "_invalid_ops_action": true
+          },
+          "action_valid": false,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": false,
+          "observation_after": {
+            "minute": 8,
+            "decision": 4,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  14,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": 17,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": "recon",
+                "sector_id": "protect:settlement-west",
+                "state": "en_route",
+                "target": [
+                  14,
+                  18
+                ],
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": 23,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": "recon",
+                "sector_id": "report:claim-0",
+                "state": "en_route",
+                "target": [
+                  14,
+                  18
+                ],
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 8,
+                "smoke_present": false,
+                "status": "unwarned"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 8,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "status": "committed",
+                "target": [
+                  14,
+                  18
+                ]
+              },
+              {
+                "expires_at": 9,
+                "id": "offer:request-2",
+                "lead_time_minutes": 19,
+                "mission": "recon",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "status": "committed",
+                "target": [
+                  14,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "source": "valverde",
+                "status": "confirmed",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR protect:settlement-west. MISSION RECON. CONFIRM OR CORRECT."
+              },
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-2:1",
+                "mission": "recon",
+                "offer_id": "offer:request-2",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "source": "cabezudos",
+                "status": "confirmed",
+                "text": "READBACK. RESOURCE engine-cabezudos. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [
+              {
+                "assessed_at": 4,
+                "assessment": "defer",
+                "duplicate_of": null,
+                "evidence_observed_at": 4,
+                "report_id": "claim-0"
+              }
+            ],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "cabezudos",
+                "request_id": "request-2",
+                "resource_id": "engine-cabezudos",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-2",
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "source": "cabezudos"
+              },
+              {
+                "kind": "allocation_authorized",
+                "minute": 4,
+                "offer_id": "offer:request-1",
+                "recipient": "valverde",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_authorized",
+                "minute": 4,
+                "offer_id": "offer:request-2",
+                "recipient": "cabezudos",
+                "resource_id": "engine-cabezudos",
+                "source": "ops"
+              },
+              {
+                "kind": "resource_dispatched",
+                "minute": 8,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "resource_dispatched",
+                "minute": 8,
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "source": "cabezudos"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "request": 2,
+          "decision": 4,
+          "minute": 8,
+          "seconds": 28.71,
+          "usage": {
+            "completion_tokens": 198,
+            "prompt_tokens": 6521,
+            "prompt_tokens_details": null,
+            "total_tokens": 6719
+          },
+          "protocol_error": "missing_or_invalid_named_action",
+          "phase": "Continuation",
+          "sequence": 7,
+          "kind": "invalid",
+          "action": {
+            "_invalid_ops_action": true
+          },
+          "action_valid": false,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": false,
+          "observation_after": {
+            "minute": 10,
+            "decision": 5,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  14,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": 17,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": "recon",
+                "sector_id": "protect:settlement-west",
+                "state": "en_route",
+                "target": [
+                  14,
+                  18
+                ],
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": 23,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": "recon",
+                "sector_id": "report:claim-0",
+                "state": "en_route",
+                "target": [
+                  14,
+                  18
+                ],
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 10,
+                "smoke_present": false,
+                "status": "unwarned"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 10,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "status": "committed",
+                "target": [
+                  14,
+                  18
+                ]
+              },
+              {
+                "expires_at": 9,
+                "id": "offer:request-2",
+                "lead_time_minutes": 19,
+                "mission": "recon",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "status": "committed",
+                "target": [
+                  14,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "source": "valverde",
+                "status": "confirmed",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR protect:settlement-west. MISSION RECON. CONFIRM OR CORRECT."
+              },
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-2:1",
+                "mission": "recon",
+                "offer_id": "offer:request-2",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "source": "cabezudos",
+                "status": "confirmed",
+                "text": "READBACK. RESOURCE engine-cabezudos. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [
+              {
+                "assessed_at": 4,
+                "assessment": "defer",
+                "duplicate_of": null,
+                "evidence_observed_at": 4,
+                "report_id": "claim-0"
+              }
+            ],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "cabezudos",
+                "request_id": "request-2",
+                "resource_id": "engine-cabezudos",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-2",
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "source": "cabezudos"
+              },
+              {
+                "kind": "allocation_authorized",
+                "minute": 4,
+                "offer_id": "offer:request-1",
+                "recipient": "valverde",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_authorized",
+                "minute": 4,
+                "offer_id": "offer:request-2",
+                "recipient": "cabezudos",
+                "resource_id": "engine-cabezudos",
+                "source": "ops"
+              },
+              {
+                "kind": "resource_dispatched",
+                "minute": 8,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "resource_dispatched",
+                "minute": 8,
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "source": "cabezudos"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "request": 3,
+          "decision": 5,
+          "minute": 10,
+          "seconds": 65.653,
+          "usage": {
+            "completion_tokens": 497,
+            "prompt_tokens": 6521,
+            "prompt_tokens_details": null,
+            "total_tokens": 7018
+          },
+          "protocol_error": "missing_or_invalid_named_action",
+          "phase": "Continuation",
+          "sequence": 8,
+          "kind": "invalid",
+          "action": {
+            "_invalid_ops_action": true
+          },
+          "action_valid": false,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": true,
+          "observation_after": {
+            "minute": 12,
+            "decision": 6,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  14,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": 17,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": "recon",
+                "sector_id": "protect:settlement-west",
+                "state": "en_route",
+                "target": [
+                  14,
+                  18
+                ],
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": 23,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": "recon",
+                "sector_id": "report:claim-0",
+                "state": "en_route",
+                "target": [
+                  14,
+                  18
+                ],
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 12,
+                "smoke_present": false,
+                "status": "unwarned"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 12,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "status": "committed",
+                "target": [
+                  14,
+                  18
+                ]
+              },
+              {
+                "expires_at": 9,
+                "id": "offer:request-2",
+                "lead_time_minutes": 19,
+                "mission": "recon",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "status": "committed",
+                "target": [
+                  14,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "protect:settlement-west",
+                "source": "valverde",
+                "status": "confirmed",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR protect:settlement-west. MISSION RECON. CONFIRM OR CORRECT."
+              },
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-2:1",
+                "mission": "recon",
+                "offer_id": "offer:request-2",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "sector_id": "report:claim-0",
+                "source": "cabezudos",
+                "status": "confirmed",
+                "text": "READBACK. RESOURCE engine-cabezudos. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [
+              {
+                "assessed_at": 4,
+                "assessment": "defer",
+                "duplicate_of": null,
+                "evidence_observed_at": 4,
+                "report_id": "claim-0"
+              }
+            ],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "cabezudos",
+                "request_id": "request-2",
+                "resource_id": "engine-cabezudos",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-2",
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "source": "cabezudos"
+              },
+              {
+                "kind": "allocation_authorized",
+                "minute": 4,
+                "offer_id": "offer:request-1",
+                "recipient": "valverde",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_authorized",
+                "minute": 4,
+                "offer_id": "offer:request-2",
+                "recipient": "cabezudos",
+                "resource_id": "engine-cabezudos",
+                "source": "ops"
+              },
+              {
+                "kind": "resource_dispatched",
+                "minute": 8,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "resource_dispatched",
+                "minute": 8,
+                "recipient": "ops",
+                "resource_id": "engine-cabezudos",
+                "source": "cabezudos"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        }
+      ],
+      "sources": [
+        {
+          "path": ".runtime/cloudrift-ops-eval-20261026-resumed/topo-dev-001/trajectory.json",
+          "sha256": "a4d7cebf66493604be6e171dc1a7230c30c936c43a4669d24f07985acc4de9c4"
+        },
+        {
+          "path": ".runtime/cloudrift-ops-eval-20261026/topo-dev-001/partial-trajectory.json",
+          "sha256": "d47a3973eba2d52781a0580dd7593d718d9a3f956a01db709d0b30c74d8a3d62"
+        },
+        {
+          "path": ".runtime/cloudrift-ops-eval-20261026/topo-dev-001/requests.json",
+          "sha256": "c97c820061ab36e49e9cf3212ab6d9366d66ab4d5aff61ce243287a5e14f8166"
+        },
+        {
+          "path": ".runtime/cloudrift-ops-eval-20261026-resumed/topo-dev-001/requests.json",
+          "sha256": "6b4bf19415b082b0e3f5bdaf3f27cf9edf420754377a444ad0b1eadc1e9ffa1d"
+        }
+      ]
+    },
+    {
+      "task_id": "topo-dev-000",
+      "family": "urgent smoke report",
+      "seed": 771100,
+      "score": null,
+      "scored": false,
+      "status": "transport_timeout",
+      "decisions": 6,
+      "reward_version": "wildfire-protection-safety-gate-v2",
+      "contract_version": "wildfire-ops-model-tools-v1",
+      "initial_observation": {
+        "minute": 0,
+        "decision": 0,
+        "wind": [
+          1,
+          0
+        ],
+        "daylight": false,
+        "aircraft_operable": false,
+        "reports": [
+          {
+            "available_at": 0,
+            "channel": "synthetic_phone",
+            "id": "claim-0",
+            "location": [
+              12,
+              18
+            ],
+            "observed_at": 0,
+            "received_at": 0,
+            "source": "exercise-caller-0",
+            "source_role": "resident",
+            "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+          }
+        ],
+        "resources": [
+          {
+            "capacity_litres": 3500,
+            "due_at": null,
+            "home_base": "valverde",
+            "id": "engine-valverde",
+            "kind": "engine",
+            "mission": null,
+            "sector_id": null,
+            "state": "available",
+            "water_litres": 3500
+          },
+          {
+            "due_at": null,
+            "home_base": "valverde",
+            "id": "crew-valverde",
+            "kind": "crew",
+            "mission": null,
+            "people": 7,
+            "sector_id": null,
+            "state": "available",
+            "water_litres": 0
+          },
+          {
+            "capacity_litres": 3500,
+            "due_at": null,
+            "home_base": "cabezudos",
+            "id": "engine-cabezudos",
+            "kind": "engine",
+            "mission": null,
+            "sector_id": null,
+            "state": "available",
+            "water_litres": 3500
+          },
+          {
+            "due_at": null,
+            "home_base": "cabezudos",
+            "id": "crew-cabezudos",
+            "kind": "crew",
+            "mission": null,
+            "people": 7,
+            "sector_id": null,
+            "state": "available",
+            "water_litres": 0
+          },
+          {
+            "capacity_litres": 3100,
+            "due_at": null,
+            "home_base": "las-arenas",
+            "id": "aircraft-las-arenas",
+            "kind": "aircraft",
+            "mission": null,
+            "sector_id": null,
+            "state": "available",
+            "water_litres": 3100
+          }
+        ],
+        "districts": [
+          {
+            "basis": "synthetic",
+            "exposed": 0,
+            "home": [
+              14,
+              18
+            ],
+            "id": "settlement-west",
+            "name": "settlement-west",
+            "population": 200,
+            "position": [
+              14.0,
+              18.0
+            ],
+            "refuge": [
+              14,
+              22
+            ],
+            "shelter_active": false,
+            "smoke_dose_units": 0,
+            "smoke_observed_at": 0,
+            "smoke_present": true,
+            "status": "unwarned"
+          },
+          {
+            "basis": "synthetic",
+            "exposed": 0,
+            "home": [
+              25,
+              18
+            ],
+            "id": "settlement-east",
+            "name": "settlement-east",
+            "population": 150,
+            "position": [
+              25.0,
+              18.0
+            ],
+            "refuge": [
+              25,
+              22
+            ],
+            "shelter_active": false,
+            "smoke_dose_units": 0,
+            "smoke_observed_at": 0,
+            "smoke_present": false,
+            "status": "unwarned"
+          }
+        ],
+        "offers": [],
+        "readbacks": [],
+        "report_assessments": [],
+        "protection_orders": [],
+        "acknowledgements": [],
+        "sensor_memory": [
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-west",
+            "x": 14,
+            "y": 17
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-east",
+            "x": 25,
+            "y": 17
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-west",
+            "x": 13,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-west",
+            "x": 14,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-west",
+            "x": 15,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-east",
+            "x": 24,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-east",
+            "x": 25,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-east",
+            "x": 26,
+            "y": 18
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-west",
+            "x": 14,
+            "y": 19
+          },
+          {
+            "burning": false,
+            "observed_at": 0,
+            "source": "synthetic-lookout:settlement-east",
+            "x": 25,
+            "y": 19
+          }
+        ]
+      },
+      "events": [
+        {
+          "request": 1,
+          "decision": 0,
+          "minute": 0,
+          "tool": "submit_action",
+          "seconds": 43.635,
+          "usage": {
+            "completion_tokens": 326,
+            "prompt_tokens": 5407,
+            "prompt_tokens_details": null,
+            "total_tokens": 5733
+          },
+          "proposal": {
+            "authorizations": [],
+            "clarifications": [],
+            "explanation": "Dispatch engine-valverde to recon the reported smoke at claim-0 (cell 12,18). Settlement-west at [14,18] is within 2 cells of the report (radius 2), and smoke is present there. Triage the claim as deferred pending recon since we only have a phone report, no sensor confirmation. No protection orders issued yet while we gather reconnaissance.",
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [
+              {
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0"
+              }
+            ],
+            "triage": [
+              {
+                "assessment": "defer",
+                "report_ids": [
+                  "claim-0"
+                ]
+              }
+            ]
+          },
+          "protocol_error": null,
+          "phase": "Initial attempt",
+          "sequence": 1,
+          "kind": "submit",
+          "action": {
+            "authorizations": [],
+            "clarifications": [],
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [
+              {
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0"
+              }
+            ],
+            "triage": [
+              {
+                "assessment": "defer",
+                "report_ids": [
+                  "claim-0"
+                ]
+              }
+            ]
+          },
+          "action_valid": true,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": false,
+          "observation_after": {
+            "minute": 2,
+            "decision": 1,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  12,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "reserved",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 20,
+                "smoke_observed_at": 2,
+                "smoke_present": true,
+                "status": "unwarned"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 2,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "status": "offered",
+                "target": [
+                  12,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "source": "valverde",
+                "status": "awaiting_confirmation",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [
+              {
+                "assessed_at": 0,
+                "assessment": "defer",
+                "duplicate_of": null,
+                "evidence_observed_at": null,
+                "report_id": "claim-0"
+              }
+            ],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 2,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "request": 2,
+          "decision": 1,
+          "minute": 2,
+          "tool": "submit_action",
+          "seconds": 37.31,
+          "usage": {
+            "completion_tokens": 263,
+            "prompt_tokens": 5995,
+            "prompt_tokens_details": null,
+            "total_tokens": 6258
+          },
+          "proposal": {
+            "authorizations": [],
+            "clarifications": [],
+            "explanation": "Reviewing state. There's an outstanding offer:request-1 offering engine-valverde to recon report:claim-0. The readback from valverde matches the offer (engine-valverde, report:claim-0, recon). I need to confirm the readback and authorize the dispatch.",
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [],
+            "triage": []
+          },
+          "protocol_error": null,
+          "phase": "Initial attempt",
+          "sequence": 2,
+          "kind": "submit",
+          "action": {
+            "authorizations": [],
+            "clarifications": [],
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [],
+            "triage": []
+          },
+          "action_valid": true,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": false,
+          "observation_after": {
+            "minute": 4,
+            "decision": 2,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  12,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "reserved",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 40,
+                "smoke_observed_at": 4,
+                "smoke_present": true,
+                "status": "unwarned"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 4,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "status": "offered",
+                "target": [
+                  12,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "source": "valverde",
+                "status": "awaiting_confirmation",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [
+              {
+                "assessed_at": 0,
+                "assessment": "defer",
+                "duplicate_of": null,
+                "evidence_observed_at": null,
+                "report_id": "claim-0"
+              }
+            ],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 4,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "request": 3,
+          "decision": 2,
+          "minute": 4,
+          "seconds": 36.656,
+          "usage": {
+            "completion_tokens": 271,
+            "prompt_tokens": 6111,
+            "prompt_tokens_details": null,
+            "total_tokens": 6382
+          },
+          "protocol_error": "missing_or_invalid_named_action",
+          "phase": "Initial attempt",
+          "sequence": 3,
+          "kind": "invalid",
+          "action": {
+            "_invalid_ops_action": true
+          },
+          "action_valid": false,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": false,
+          "observation_after": {
+            "minute": 6,
+            "decision": 3,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  12,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "reserved",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 60,
+                "smoke_observed_at": 6,
+                "smoke_present": true,
+                "status": "unwarned"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 6,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "status": "offered",
+                "target": [
+                  12,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "source": "valverde",
+                "status": "awaiting_confirmation",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [
+              {
+                "assessed_at": 0,
+                "assessment": "defer",
+                "duplicate_of": null,
+                "evidence_observed_at": null,
+                "report_id": "claim-0"
+              }
+            ],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 6,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "request": 4,
+          "decision": 3,
+          "minute": 6,
+          "tool": "submit_action",
+          "seconds": 37.282,
+          "usage": {
+            "completion_tokens": 276,
+            "prompt_tokens": 6114,
+            "prompt_tokens_details": null,
+            "total_tokens": 6390
+          },
+          "proposal": {
+            "authorizations": [
+              "offer:request-1"
+            ],
+            "clarifications": [],
+            "explanation": "Confirm the readback for offer:request-1 which matches: resource engine-valverde, sector report:claim-0, mission recon. Authorize the dispatch so the engine can proceed to investigate the reported smoke at claim-0. Triage remains deferred pending on-scene recon.",
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [
+              "readback:offer:request-1:1"
+            ],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [],
+            "triage": []
+          },
+          "protocol_error": null,
+          "phase": "Initial attempt",
+          "sequence": 4,
+          "kind": "submit",
+          "action": {
+            "authorizations": [
+              "offer:request-1"
+            ],
+            "clarifications": [],
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [
+              "readback:offer:request-1:1"
+            ],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [],
+            "triage": []
+          },
+          "action_valid": true,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": false,
+          "observation_after": {
+            "minute": 8,
+            "decision": 4,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  12,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": 10,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": "recon",
+                "sector_id": "report:claim-0",
+                "state": "mobilizing",
+                "target": [
+                  12,
+                  18
+                ],
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 80,
+                "smoke_observed_at": 8,
+                "smoke_present": true,
+                "status": "unwarned"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 8,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "status": "committed",
+                "target": [
+                  12,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "source": "valverde",
+                "status": "confirmed",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [
+              {
+                "assessed_at": 0,
+                "assessment": "defer",
+                "duplicate_of": null,
+                "evidence_observed_at": null,
+                "report_id": "claim-0"
+              }
+            ],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "allocation_authorized",
+                "minute": 6,
+                "offer_id": "offer:request-1",
+                "recipient": "valverde",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 8,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "request": 5,
+          "decision": 4,
+          "minute": 8,
+          "seconds": 33.735,
+          "usage": {
+            "completion_tokens": 224,
+            "prompt_tokens": 6258,
+            "prompt_tokens_details": null,
+            "total_tokens": 6482
+          },
+          "protocol_error": "missing_or_invalid_named_action",
+          "phase": "Initial attempt",
+          "sequence": 5,
+          "kind": "invalid",
+          "action": {
+            "_invalid_ops_action": true
+          },
+          "action_valid": false,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": false,
+          "observation_after": {
+            "minute": 10,
+            "decision": 5,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  12,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": 19,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": "recon",
+                "sector_id": "report:claim-0",
+                "state": "en_route",
+                "target": [
+                  12,
+                  18
+                ],
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 100,
+                "smoke_observed_at": 10,
+                "smoke_present": true,
+                "status": "unwarned"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 10,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "status": "committed",
+                "target": [
+                  12,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "source": "valverde",
+                "status": "confirmed",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [
+              {
+                "assessed_at": 0,
+                "assessment": "defer",
+                "duplicate_of": null,
+                "evidence_observed_at": null,
+                "report_id": "claim-0"
+              }
+            ],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "allocation_authorized",
+                "minute": 6,
+                "offer_id": "offer:request-1",
+                "recipient": "valverde",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "resource_dispatched",
+                "minute": 10,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 10,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "request": 6,
+          "decision": 5,
+          "minute": 10,
+          "seconds": 22.027,
+          "usage": {
+            "completion_tokens": 148,
+            "prompt_tokens": 6293,
+            "prompt_tokens_details": null,
+            "total_tokens": 6441
+          },
+          "protocol_error": "missing_or_invalid_named_action",
+          "phase": "Initial attempt",
+          "sequence": 6,
+          "kind": "invalid",
+          "action": {
+            "_invalid_ops_action": true
+          },
+          "action_valid": false,
+          "objective_reward": 0.0,
+          "terminated": false,
+          "truncated": false,
+          "observation_after": {
+            "minute": 12,
+            "decision": 6,
+            "wind": [
+              1,
+              0
+            ],
+            "daylight": false,
+            "aircraft_operable": false,
+            "reports": [
+              {
+                "available_at": 0,
+                "channel": "synthetic_phone",
+                "id": "claim-0",
+                "location": [
+                  12,
+                  18
+                ],
+                "observed_at": 0,
+                "received_at": 0,
+                "source": "exercise-caller-0",
+                "source_role": "resident",
+                "text": "EXERCISE: A caller reports smoke near this location. Verify the claim."
+              }
+            ],
+            "resources": [
+              {
+                "capacity_litres": 3500,
+                "due_at": 19,
+                "home_base": "valverde",
+                "id": "engine-valverde",
+                "kind": "engine",
+                "mission": "recon",
+                "sector_id": "report:claim-0",
+                "state": "en_route",
+                "target": [
+                  12,
+                  18
+                ],
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "valverde",
+                "id": "crew-valverde",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3500,
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "engine-cabezudos",
+                "kind": "engine",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3500
+              },
+              {
+                "due_at": null,
+                "home_base": "cabezudos",
+                "id": "crew-cabezudos",
+                "kind": "crew",
+                "mission": null,
+                "people": 7,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 0
+              },
+              {
+                "capacity_litres": 3100,
+                "due_at": null,
+                "home_base": "las-arenas",
+                "id": "aircraft-las-arenas",
+                "kind": "aircraft",
+                "mission": null,
+                "sector_id": null,
+                "state": "available",
+                "water_litres": 3100
+              }
+            ],
+            "districts": [
+              {
+                "basis": "synthetic",
+                "exposed": 200,
+                "home": [
+                  14,
+                  18
+                ],
+                "id": "settlement-west",
+                "name": "settlement-west",
+                "population": 200,
+                "position": [
+                  14.0,
+                  18.0
+                ],
+                "refuge": [
+                  14,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 120,
+                "smoke_observed_at": 12,
+                "smoke_present": true,
+                "status": "exposed"
+              },
+              {
+                "basis": "synthetic",
+                "exposed": 0,
+                "home": [
+                  25,
+                  18
+                ],
+                "id": "settlement-east",
+                "name": "settlement-east",
+                "population": 150,
+                "position": [
+                  25.0,
+                  18.0
+                ],
+                "refuge": [
+                  25,
+                  22
+                ],
+                "shelter_active": false,
+                "smoke_dose_units": 0,
+                "smoke_observed_at": 12,
+                "smoke_present": false,
+                "status": "unwarned"
+              }
+            ],
+            "offers": [
+              {
+                "expires_at": 9,
+                "id": "offer:request-1",
+                "lead_time_minutes": 13,
+                "mission": "recon",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "status": "committed",
+                "target": [
+                  12,
+                  18
+                ]
+              }
+            ],
+            "readbacks": [
+              {
+                "attempt": 1,
+                "id": "readback:offer:request-1:1",
+                "mission": "recon",
+                "offer_id": "offer:request-1",
+                "received_at": 2,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "sector_id": "report:claim-0",
+                "source": "valverde",
+                "status": "confirmed",
+                "text": "READBACK. RESOURCE engine-valverde. SECTOR report:claim-0. MISSION RECON. CONFIRM OR CORRECT."
+              }
+            ],
+            "report_assessments": [
+              {
+                "assessed_at": 0,
+                "assessment": "defer",
+                "duplicate_of": null,
+                "evidence_observed_at": null,
+                "report_id": "claim-0"
+              }
+            ],
+            "protection_orders": [],
+            "acknowledgements": [
+              {
+                "kind": "aid_request_sent",
+                "minute": 0,
+                "recipient": "valverde",
+                "request_id": "request-1",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "allocation_offered",
+                "minute": 1,
+                "offer_id": "offer:request-1",
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              },
+              {
+                "kind": "allocation_authorized",
+                "minute": 6,
+                "offer_id": "offer:request-1",
+                "recipient": "valverde",
+                "resource_id": "engine-valverde",
+                "source": "ops"
+              },
+              {
+                "kind": "resource_dispatched",
+                "minute": 10,
+                "recipient": "ops",
+                "resource_id": "engine-valverde",
+                "source": "valverde"
+              }
+            ],
+            "sensor_memory": [
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 17
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 13,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 15,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 24,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 26,
+                "y": 18
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-west",
+                "x": 14,
+                "y": 19
+              },
+              {
+                "burning": false,
+                "observed_at": 12,
+                "source": "synthetic-lookout:settlement-east",
+                "x": 25,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "request": 7,
+          "decision": 6,
+          "minute": 12,
+          "tool": "check_action",
+          "seconds": 38.564,
+          "usage": {
+            "completion_tokens": 282,
+            "prompt_tokens": 6291,
+            "prompt_tokens_details": null,
+            "total_tokens": 6573
+          },
+          "proposal": {
+            "authorizations": [],
+            "clarifications": [],
+            "explanation": "Checking current state. Engine-valverde is en route to claim-0 (cell 12,18) for recon. Settlement-west has smoke present at 12, with sensor readings at 14,18 showing no fire at that cell but the district reports smoke. Let me assess the situation before taking further action.",
+            "messages": [],
+            "protection_orders": [],
+            "readback_confirmations": [],
+            "readback_corrections": [],
+            "releases": [],
+            "requests": [],
+            "triage": [
+              {
+                "assessment": "defer",
+                "report_ids": [
+                  "claim-0"
+                ]
+              }
+            ]
+          },
+          "protocol_error": null,
+          "action_check": {
+            "error": null,
+            "remaining_checks": 2,
+            "scope": "Current public action and readback contract only; no forecast",
+            "valid": true
+          },
+          "phase": "Initial attempt",
+          "sequence": 7,
+          "kind": "check"
+        },
+        {
+          "request": 8,
+          "decision": 6,
+          "minute": 12,
+          "seconds": 180.303,
+          "protocol_error": null,
+          "transport_error_type": "RuntimeError",
+          "phase": "Initial attempt",
+          "sequence": 8,
+          "kind": "timeout"
+        }
+      ],
+      "sources": [
+        {
+          "path": ".runtime/cloudrift-ops-eval-20261026-resumed/topo-dev-000/partial-trajectory.json",
+          "sha256": "5ffa59c2cf0b55fb4b9e9b3ee32527860a43a35bbee627c6343011126b89d774"
+        },
+        {
+          "path": ".runtime/cloudrift-ops-eval-20261026-resumed/topo-dev-000/requests.json",
+          "sha256": "6e3ed2858cbb98a7d7708b086111b3485d6c27c3db352a5b1637cb31d612a847"
+        }
+      ]
+    }
+  ]
+}

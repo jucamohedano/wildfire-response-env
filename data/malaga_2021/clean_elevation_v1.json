@@ -1,0 +1,201 @@
+{
+  "actor_input_eligible": false,
+  "attempts": [
+    {
+      "artifact": ".runtime/malaga-clean-elevation-v1/unsupported-geotiff-response.xml",
+      "route": "WCS1 genericGeoTIFF",
+      "status": "HTTP200_XML_exception_not_data"
+    },
+    {
+      "route": "WCS1 advertisedGEOTIFFINT16",
+      "status": "bounded_numeric_raster_acquired"
+    },
+    {
+      "route": "OGC_API_COG",
+      "status": "HTTP500_under_spatial_limit; no additional repeated requests"
+    },
+    {
+      "route": "CNIGnativefiles",
+      "status": "Metadataonly; UIcontainsreCAPTCHA; no bypass or licence acceptance performed"
+    }
+  ],
+  "checked_on": "2026-10-25",
+  "checks": {
+    "approved_physics_cells": 0,
+    "full_numeric_coverage": true,
+    "no_extreme_negative_values": true,
+    "previous_quarantined_source_replaced": false,
+    "source_files_unchanged": true,
+    "zero_values_preserved": true
+  },
+  "evidence": [
+    {
+      "finding": "Orthometric altitudes at service level; no exact unit/datum of this returned band.",
+      "locator": "SV_ServiceIdentification/abstract; operatesOn spaignMDT25",
+      "url": "https://www.idee.es/csw-inspire-idee/srv/api/records/spaignwcs_mdt/formatters/xml"
+    },
+    {
+      "finding": "First-coverage product. Vertical CRS omitted; metric vertical-resolution description does not establish this int16 output precision or repair the range UOM.",
+      "locator": "Spanish title/abstract; EX_VerticalExtent; Exactitud vertical/errorStatistic",
+      "url": "https://www.idee.es/csw-inspire-idee/srv/api/records/spaignMDT25/formatters/xml"
+    },
+    {
+      "finding": "Default unspecified UOM is W.m-2.Sr-1; suspected default configuration is an inference, not producer confirmation.",
+      "locator": "WCS2 band metadata defaults",
+      "url": "https://mapserver.org/ogc/wcs_server.html"
+    },
+    {
+      "finding": "First-coverage collection metadata accessible; boundedCOGrequests500failed. No API raster downloaded.",
+      "locator": "description and product links",
+      "url": "https://api-coverages.idee.es/collections/EL.ElevationGridCoverage_25830_25_PB?f=json"
+    },
+    {
+      "finding": "EPSG5782Alicante statement applies to second coverage, not adopted for this WCS output.",
+      "locator": "LI_Lineage/statement Datum vertical",
+      "url": "https://www.idee.es/csw-inspire-idee/srv/api/records/spaignMDT25-2/formatters/xml"
+    }
+  ],
+  "grid": {
+    "crs": "EPSG:25830",
+    "height": 41,
+    "resolution_metres": 500,
+    "transform": [
+      500,
+      0,
+      297000,
+      0,
+      -500,
+      4054500
+    ],
+    "width": 37
+  },
+  "historical_replay_ready": false,
+  "input_files": [
+    {
+      "bytes": 1343432,
+      "path": ".runtime/malaga-clean-elevation-v1/ign-mdt25-halo.tif",
+      "sha256": "3a41db0c46f8b3b03c9a2e3def3feee6b7994d4ba335d3670658803335493e73"
+    },
+    {
+      "bytes": 2540,
+      "path": ".runtime/malaga-clean-elevation-v1/coverage-v2.xml",
+      "sha256": "fadb886035d9438581bf0a1663b503f7b3394ea19e6e8e0d737504a94934b301"
+    },
+    {
+      "bytes": 35304,
+      "path": ".runtime/malaga-clean-elevation-metadata/wcs-service.xml",
+      "sha256": "3a031406ca46907ade8b2b7c343da232b3b75a6858f6c1157ecd88b2f9523a2d"
+    },
+    {
+      "bytes": 49404,
+      "path": ".runtime/malaga-clean-elevation-metadata/mdt25-first-coverage.xml",
+      "sha256": "4d68ecb771b85639cd44fdfae07c29fdf6586a0a952354f9e4055172e62ae42c"
+    },
+    {
+      "bytes": 10574,
+      "path": "eval/prepare_clean_malaga_terrain.py",
+      "sha256": "a1bba8130375d5bc4d62eaa5b8ba0402161be75a6a3eb2dee7094173ef4c5f90"
+    }
+  ],
+  "limitations": [
+    "Numeric screening is not independent terrain truth or producer QA certification.",
+    "Service-level orthometric evidence and product-level metric resolution do not repair missing band metadata.",
+    "Do not assign REDIAM2020-21 epoch or second-coverage EPSG5782 to this live WCS extract.",
+    "The OGC API identified a first-coverage collection but failed data requests; no OGC COG was acquired.",
+    "No terrain or slope values enter the existing prepared runtime or reward."
+  ],
+  "numeric_screen": {
+    "cells": 670800,
+    "nonfinite_values": 0,
+    "numeric_max": 1450,
+    "numeric_min": 0,
+    "scope": "Broad numeric screening only, not independent accuracy or NoData authentication",
+    "sentinel_values": 0,
+    "zero_policy": "Zero is retained, not inferred missing or replaced. This coastal subset can contain sea-level values.",
+    "zero_values": 17010
+  },
+  "output_files": [
+    {
+      "bytes": 6184,
+      "path": ".runtime/malaga-clean-elevation-prepared-v2/elevation_source_values_500m.tif",
+      "sha256": "ff074a8b5270317feb1e66cb3be180ef928c418c8ecce18b544b2629e2bb02d0"
+    },
+    {
+      "bytes": 1084,
+      "path": ".runtime/malaga-clean-elevation-prepared-v2/numeric_coverage_mask_500m.tif",
+      "sha256": "c7679b2086d5b0c764588c5d5d32abc028ea31ea64a98890a5d9ca847df2daa2"
+    },
+    {
+      "bytes": 1084,
+      "path": ".runtime/malaga-clean-elevation-prepared-v2/physics_approved_mask_500m.tif",
+      "sha256": "3b696ee8c55fc8db830f440cab485b59d28813593ab6e20c85d6d84f489d1114"
+    }
+  ],
+  "preparation": "GDAL average of the bounded returned numeric raster, no regional overviews, no gap filling; masks distinguish numeric coverage from physics approval.",
+  "remaining_gates": [
+    "Coverage-specific height scale/unit confirmation despite default-looking SWE radiance UOM.",
+    "Native NoData/void semantics and exact vertical datum are not supplied in returned GeoTIFF.",
+    "Exact local survey date and historical product availability are unverified.",
+    "Validate slope estimation and its synthetic fire/movement coupling in a separate version."
+  ],
+  "role": "evaluator_candidate",
+  "simulator_input_eligible": false,
+  "slope_enabled": false,
+  "source_acquisition": {
+    "bytes": 1343432,
+    "content_type": "image/tiff",
+    "path": ".runtime/malaga-clean-elevation-v1/ign-mdt25-halo.tif",
+    "sha256": "3a41db0c46f8b3b03c9a2e3def3feee6b7994d4ba335d3670658803335493e73",
+    "url": "https://servicios.idee.es/wcs-inspire/mdt?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&COVERAGE=Elevacion25830_25&CRS=EPSG%3A25830&RESPONSE_CRS=EPSG%3A25830&BBOX=296500%2C4033500%2C316000%2C4055000&RESX=25&RESY=25&FORMAT=GEOTIFFINT16&INTERPOLATION=nearest+neighbor"
+  },
+  "source_metadata": {
+    "bounds": [
+      296499.9999999999,
+      4033499.9999999986,
+      316000.0000000001,
+      4055000.0000000014
+    ],
+    "crs": "EPSG:25830",
+    "dtype": "int16",
+    "nodata": null,
+    "offsets": [
+      0.0
+    ],
+    "quantization": "Integer source output; do not borrow product 0.001 m accuracy/resolution claims",
+    "scales": [
+      1.0
+    ],
+    "shape": [
+      860,
+      780
+    ],
+    "transform": [
+      25.0000000000003,
+      0.0,
+      296499.9999999999,
+      0.0,
+      -25.000000000003254,
+      4055000.0000000014
+    ],
+    "units": [
+      null
+    ]
+  },
+  "source_url": "https://servicios.idee.es/wcs-inspire/mdt",
+  "status": "numeric_screen_passed_vertical_metadata_pending",
+  "validation": {
+    "independent_check": "Direct20x20 arithmetic means of raw25m returned cells match all500m candidates within0.0001 source unit; no physical unit asserted",
+    "independently_checked_common_grid_cells": 1517,
+    "new_unit_tests": 6,
+    "reproducible_rasters": 3
+  },
+  "version": "wildfire-clean-terrain-candidate-v1",
+  "vertical": {
+    "coverage_id": "Elevacion25830_25",
+    "interpretation": "Product/service describe orthometric terrain; the range UOM is inconsistent. No automatic metre relabelling.",
+    "reported_band_uom": "W.m-2.Sr-1",
+    "slope_enabled": false,
+    "vertical_datum_verified": false,
+    "vertical_units_verified": false
+  }
+}

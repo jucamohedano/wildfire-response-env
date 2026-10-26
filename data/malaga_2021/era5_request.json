@@ -1,0 +1,68 @@
+{
+  "version": "1.0",
+  "purpose": "Offline historical-weather download request sidecar for the parent Sierra Bermeja, Malaga, Spain, incident evidence bundle, 2021-09-08 through 2021-09-15. Intended for small CPU-only offline extraction and retrospective context; not training. Request preparation only; no acquisition or simulator integration performed.",
+  "actor_input_eligible": false,
+  "dataset": "reanalysis-era5-land",
+  "documentation": {
+    "catalogue": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land?tab=overview",
+    "download_form": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land?tab=download",
+    "cds_api_setup_and_manual_terms_acceptance": "https://cds.climate.copernicus.eu/how-to-api",
+    "current_official_request_example_and_variable_names": "https://confluence.ecmwf.int/spaces/CKB/pages/536218894/ERA5-Land+hourly+Analysis+Ready+Cloud+Optimised+ARCO+data+on+single+levels+from+1950+to+present+Product+User+Guide+PUG",
+    "era5_land_accumulations_and_validity_times": "https://confluence.ecmwf.int/spaces/CKB/pages/140385202/ERA5-Land+data+documentation",
+    "area_order_north_west_south_east": "https://ecmwf-projects.github.io/review-version-of-c3sTM/cds-tutorial.html",
+    "derived_relative_humidity": "https://confluence.ecmwf.int/spaces/CKB/pages/76414402/ERA5+data+documentation",
+    "verification": "Official ECMWF/Copernicus documentation checked for dataset identifier, five variable names, UTC hourly selection, area order, data_format=grib and download_format=unarchived. The current ARCO user guide includes a request example for the original reanalysis-era5-land dataset; its ARCO de-accumulated output semantics must not be substituted for this original dataset. No authenticated request or live retrieval validation performed."
+  },
+  "request": {
+    "variable": [
+      "10m_u_component_of_wind",
+      "10m_v_component_of_wind",
+      "2m_temperature",
+      "2m_dewpoint_temperature",
+      "total_precipitation"
+    ],
+    "year": ["2021"],
+    "month": ["09"],
+    "day": ["08", "09", "10", "11", "12", "13", "14", "15"],
+    "time": [
+      "00:00", "01:00", "02:00", "03:00", "04:00", "05:00",
+      "06:00", "07:00", "08:00", "09:00", "10:00", "11:00",
+      "12:00", "13:00", "14:00", "15:00", "16:00", "17:00",
+      "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"
+    ],
+    "area": [36.9, -5.5, 36.2, -4.8],
+    "data_format": "grib",
+    "download_format": "unarchived"
+  },
+  "access_requirements": {
+    "status": "prepared_only_not_submitted",
+    "api_endpoint": "https://cds.climate.copernicus.eu/api",
+    "account_and_personal_access_token_required_for_later_download": true,
+    "dataset_terms_require_user_action": true,
+    "dataset_terms_action": "The user must manually review and accept the dataset Terms of Use in the CDS download form before any later download. Acceptance has not been checked or performed; preparing this file does not accept terms.",
+    "credentials": "No credentials read, included, configured or used.",
+    "submission": "Any later authorized acquisition must pass dataset and request separately to the CDS client; the enclosing sidecar metadata is not part of the CDS request.",
+    "scope": "No paid services, download submission, external messages, training, Hugging Face, GPU or model work. Alignment, acquisition, tests and documentation remain with the parent task."
+  },
+  "limitations": {
+    "evidence_status": "Retrospective reanalysis, not available-at-event weather or a contemporaneous forecast. Validity times describe represented weather, not publication or operational availability. No availability timestamps are assigned; this sidecar is ineligible as actor input.",
+    "time": {
+      "request_timezone": "UTC",
+      "inclusive_start": "2021-09-08T00:00:00Z",
+      "inclusive_end": "2021-09-15T23:00:00Z",
+      "days": 8,
+      "hours_per_day": 24,
+      "expected_validity_times_per_variable": 192,
+      "local_timezone": "Europe/Madrid",
+      "local_offset_for_requested_dates": "UTC+02:00 (CEST)",
+      "local_window": "2021-09-08T02:00:00+02:00 through 2021-09-16T01:00:00+02:00; local incident times require explicit conversion to UTC."
+    },
+    "spatial": "Area order is north, west, south, east in degrees: [36.9, -5.5, 36.2, -4.8]. This conservative context box is not an incident perimeter. The 0.1-degree CDS grid cannot resolve fine terrain or local fire-site winds; ocean cells may be masked.",
+    "units": "Wind components are in m s-1, temperature and dewpoint in K, total precipitation in m of water equivalent. Decode delivered metadata before conversions.",
+    "humidity": "Relative humidity is derived from 2m temperature and dewpoint, not directly observed humidity. A later derivation must document its saturation-vapour-pressure formula and water/ice convention; RH = 100 * es(Td) / es(T).",
+    "gusts": "Hourly 10m u/v fields provide no minute gusts or sub-hourly extremes. Interpolation cannot reconstruct them.",
+    "precipitation": "Decode GRIB accumulation metadata before interpreting hourly rainfall. Original ERA5-Land precipitation accumulates from forecast initialization at 00 UTC; validity 00 UTC contains the previous day's 24-hour accumulation. Hourly amounts require differences within each forecast cycle, treating 01 UTC as its first hour. Do not sum raw cumulative fields or difference blindly across resets. The first requested 00 UTC cannot be de-accumulated without 2021-09-07 23 UTC; flag that boundary as unresolved. Full UTC-day totals through September 15 need September 16 00 UTC. Neither boundary sample is added to this eight-day request.",
+    "engine_wind": "No direct conversion from physical u/v components or wind speed to the engine relative wind index is defined. Any later mapping requires explicit calibration, direction conventions and validation by the parent task.",
+    "delivery": "Request syntax is documentation-verified only. Actual service acceptance, returned files, spatial coverage, completeness and accumulation decoding remain unverified until a separately authorized acquisition."
+  }
+}

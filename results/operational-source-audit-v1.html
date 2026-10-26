@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Wildfire operational data — source audit v1</title>
+  <style>
+    :root { color-scheme: light; font: 17px/1.6 system-ui,sans-serif; color: #152b2b; background: #eef2ed; }
+    body { max-width: 1080px; margin: auto; padding: 3rem 1.3rem; }
+    h1 { font-size: clamp(2rem,5vw,3.4rem); line-height: 1.12; max-width: 850px; }
+    h2 { line-height: 1.2; } a { color: #126158; } code { overflow-wrap: anywhere; }
+    .eyebrow { font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(270px,1fr)); gap: 1.1rem; }
+    article, section { background: #fff; padding: 1.5rem; margin: 1.2rem 0; border-radius: 12px; }
+    .grid article { margin: 0; border-top: 5px solid #267463; }
+    .metric { font-size: 2.4rem; font-weight: 750; margin: .2rem 0; }
+    .warning { border-left: 5px solid #af6723; background: #fff8e9; }
+    li { margin: .5rem 0; } .small { font-size: .9rem; color: #425b56; }
+    pre { background: #eef2ed; padding: 1rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">Wildfire Ops Control Center · 24 October 2026 · Audit v1</p>
+    <h1>Real records are useful.<br>They are not optimal-action labels.</h1>
+    <p>Actual EGIF and ICS-209-PLUS downloads inspected on CPU. No simulator,
+      reward, locked scenario, held-out split or policy baseline changed.</p>
+  </header>
+  <div class="grid">
+    <article><h2>Spain · geographic sample</h2><p class="metric">20 incidents</p>
+      <p>Almería 6 · Huelva 8 · Madrid 6. Year 2021, deterministic ID selection.</p>
+      <p>Detection and first ground arrival present in 20/20; first air arrival in 7/20.</p>
+      <p class="small">All are small fires: median forest area 0.2344 ha, maximum 2.52 ha.
+        This sample alone cannot calibrate large-fire coordination.</p></article>
+    <article><h2>Spain · large-fire stratum</h2><p class="metric">18 incidents</p>
+      <p>Every record over 500 forest hectares in this annual export. Not a national census.</p>
+      <p>Ground arrival present in 17/18; air arrival in 16/18;
+        coordination-aircraft arrival in 12/18.</p>
+      <p class="small">Median forest area 828.21 ha. Final area selects this evaluator
+        stratum; it must never appear in the initial actor observation.</p></article>
+    <article><h2>US · repeated situation reports</h2><p class="metric">213 reports</p>
+      <p>20 fires in 2020: five each in CA, CO, OR and WA. Extracted counts match
+        the source's per-incident summaries.</p>
+      <p>Area, personnel, aircraft and containment fields present throughout.</p>
+      <p class="small">Median calendar-day gap 1; range 0–15. This does not establish
+        minute-level reporting or message-delivery latency.</p></article>
+  </div>
+  <section class="warning"><h2>Missingness is part of the environment</h2>
+    <ul>
+      <li>Spanish geographic sample: nine records combine zero temperature/wind
+        with absent humidity. Flag for interpretation; do not assume calm weather.</li>
+      <li>US sample: <code>NUM_EVACUATED</code> missing in 64/213 reports;
+        <code>EVACUATION_IN_PROGRESS</code> missing throughout; timezone missing in eight.</li>
+      <li>Resource categories are not initial fleet availability. Missing aircraft
+        arrival is not proof that no aircraft participated.</li>
+      <li>Recorded times have no verified public release/receipt timestamps. Neither
+        dataset supplies caller transcripts, readbacks or optimal counterfactual actions.</li>
+    </ul>
+  </section>
+  <section><h2>Recommended scope</h2>
+    <p><strong>Keep Spain as the primary setting.</strong> Use EGIF to constrain
+      first-response milestones and resource categories. Use ICS-209 separately
+      to design repeated situation updates and uncertainty handling, not Spanish doctrine.</p>
+    <p>Next: decode category lists, check chronology and coordinate systems, then
+      create new development tasks for intake, arrival monitoring, escalation and
+      resource/protection coordination. Missing communications and effects remain
+      explicitly synthetic. Historical outcomes must not override changed agent actions.</p>
+    <p>The samples differ in size, reporting mechanism and jurisdiction. This is a
+      field audit, not evidence that one country's response or policy is superior.</p>
+  </section>
+  <section><h2>Compute and reproducibility</h2>
+    <p><strong>5.601 seconds · 22,940 KiB peak RSS · 150,602 selected bytes.</strong>
+      One CPU process; excludes network download time. ZIP inputs total about 50.9 MB.
+      The XML and CSV members are streamed, not fully extracted.</p>
+    <pre>python eval/audit_operational_data.py \
+  --ics-zip .runtime/operational-source-inputs/ics209plus-wildfire.zip \
+  --egif-zip .runtime/operational-source-inputs/egif-spain-2021.zip \
+  --output .runtime/operational-source-audit-new</pre>
+    <p>Exact source and selected-file hashes: <a href="../data/operational/source_audit_v1.json">evidence manifest</a>.
+      Reproduction and limitations: <a href="../data/operational/README.md">data card</a>.</p>
+  </section>
+  <footer class="small">
+    <p>Sources: <a href="https://www.miteco.gob.es/es/biodiversidad/temas/incendios-forestales/estadisticas-datos.html">MITECO EGIF</a> ·
+      <a href="https://research.fs.usda.gov/firelab/products/dataandtools/ics-209-plus">US Forest Service</a> ·
+      <a href="https://doi.org/10.6084/m9.figshare.19858927.v3">ICS-209-PLUS v3 (CC BY 4.0)</a>.</p>
+    <p>Raw EGIF redistribution rights unverified. Inputs and selected records stay
+      local and evaluator-only. This is not an operational safety validation.</p>
+  </footer>
+</body>
+</html>

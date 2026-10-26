@@ -1,0 +1,93 @@
+{
+  "version": "wildfire-operational-source-audit-v1",
+  "reviewed_on": "2026-10-24",
+  "actor_input_eligible": false,
+  "status": "development data audit; not historical action demonstrations or a training split",
+  "sampler": "eval/audit_operational_data.py",
+  "sampler_sha256": "4e62aff7f5d814c97e024630034fc59631c43fb117551738a0b0a86cd92af657",
+  "sources": {
+    "egif": {
+      "publisher": "MITECO / CCINIF",
+      "documentation": "https://www.miteco.gob.es/es/biodiversidad/temas/incendios-forestales/estadisticas-datos.html",
+      "search": "https://servicio.mapa.gob.es/incendios/Search/Publico",
+      "year": 2021,
+      "query_records": 8206,
+      "acquisition": "Normal public form and XML export, annual query AD=2021/AH=2021; select provinces locally, not from the initial unsuccessful geographic filter request.",
+      "export_chapters": "1|1|1|0|1|1|1|1|1|1|0|0|0|0|0|0|0",
+      "exclusions": ["cause", "narrative observations", "annexes", "forest-detail chapters"],
+      "archive_bytes": 2142749,
+      "archive_sha256": "316e34acf653079efd6ea895f0991681468af6c9bc84897030a9bbde220d60e0",
+      "reuse_license": null,
+      "redistribution": "Not cleared; raw archive and selected records remain local evaluator artifacts.",
+      "province_lookup_urls": [
+        "https://servicio.mapa.gob.es/incendios/ParteIncendioForestal/ProvinciasByCCAAIdPublico//4",
+        "https://servicio.mapa.gob.es/incendios/ParteIncendioForestal/ProvinciasByCCAAIdPublico//16"
+      ],
+      "verified_codes": {"community_andalucia": "4", "community_madrid": "16", "province_almeria": "4", "province_huelva": "21", "province_madrid": "28"}
+    },
+    "ics209": {
+      "publisher": "US Forest Service / linked ICS-209-PLUS research dataset",
+      "documentation": "https://research.fs.usda.gov/firelab/products/dataandtools/ics-209-plus",
+      "metadata": "https://api.figshare.com/v2/articles/19858927/versions/3",
+      "doi": "10.6084/m9.figshare.19858927.v3",
+      "download": "https://ndownloader.figshare.com/files/38766504",
+      "filename": "ics209plus-wildfire.zip",
+      "archive_bytes": 48717736,
+      "archive_md5_from_publisher": "564b028f2c724ab7855f95bbaca74683",
+      "archive_sha256": "a17c08ede2824e9002fcda112301793c9e59ce1f7ed7eb1e16a762be85ade30f",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "coverage": "1999-2020; selected sample uses 2020 wildfires only, excluding complex-type records"
+    }
+  },
+  "findings": {
+    "egif_geographic_sample": {
+      "incidents": 20,
+      "provinces": {"Almeria": 6, "Huelva": 8, "Madrid": 6},
+      "selection": "Lowest SHA256 incident-ID ranks per province; no success/outcome filtering",
+      "detection_time_present": 20,
+      "ground_arrival_time_present": 20,
+      "air_arrival_time_present": 7,
+      "temperature_and_wind_zero_with_missing_humidity": 9,
+      "forest_area_ha": {"min": 0.01, "median": 0.2344, "max": 2.52}
+    },
+    "egif_large_incidents": {
+      "incidents": 18,
+      "selection": "All exported records with final forest area strictly over 500 ha; not a national census",
+      "detection_time_present": 18,
+      "ground_arrival_time_present": 17,
+      "air_arrival_time_present": 16,
+      "coordination_aircraft_arrival_time_present": 12,
+      "weather_hour_present": 9,
+      "forest_area_ha": {"min": 501.96, "median": 828.21, "max": 21138.66}
+    },
+    "ics209_sample": {
+      "incidents": 20,
+      "states": {"CA": 5, "CO": 5, "OR": 5, "WA": 5},
+      "selection": "Lowest SHA256 incident-ID ranks per state; no success/outcome filtering",
+      "reports": 213,
+      "all_recorded_report_counts_match_incident_summary": true,
+      "area_personnel_aircraft_containment_present": 213,
+      "num_evacuated_missing": 64,
+      "evacuation_in_progress_missing": 213,
+      "timezone_missing": 8,
+      "calendar_gap_days": {"min": 0, "median": 1, "max": 15},
+      "max_reported_area_per_incident_acres": {"min": 0.1, "median": 652.5, "max": 223730.0}
+    },
+    "cpu": {"elapsed_seconds": 5.601, "peak_rss_kib": 22940, "selected_artifact_bytes": 150602}
+  },
+  "boundaries": [
+    "Presence is not correctness or operational completeness; the samples have different size/reporting selection mechanisms.",
+    "EGIF category/ownership codes remain undecoded and resource totals are not initial unit availability.",
+    "Source timezones and publication/receipt availability are unresolved; do not expose records as historically available observations.",
+    "Do not infer absence of aircraft or evacuation from missing fields, or fill unknown weather with zero.",
+    "Large-incident selection uses retrospective final area for evaluator stratification only, never initial actor context.",
+    "Neither source establishes minute-level conversations, a causal suppression model or optimal actions.",
+    "No simulator, reward, scenario lock, held-out split or policy baseline changed."
+  ],
+  "selected_artifacts_sha256": {
+    "egif_incidents.jsonl": "af1503838ce512c1a4b567f9e68cf723a1f3e4fb4e7bd99b8d5b28e5f632d2c0",
+    "egif_large_incidents.jsonl": "168b73a0dfc832a8c03485a01eb8daee5b25f3eaa1bc59ad6ced35fc13275513",
+    "ics_incidents.jsonl": "9155f82731ff2731a8f308567974fe85a1cf938fd1e412e8b890f6e3147d299c",
+    "ics_reports.jsonl": "163c7bdbf9f09b7e0be165e8dac777762e487b5fe657f7cb1dbe4ab4ce75b103"
+  }
+}

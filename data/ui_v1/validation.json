@@ -1,0 +1,181 @@
+{
+  "artifacts": [
+    {
+      "bytes": 944,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/ui-validation-v1/ui-python-tests-final.log",
+      "sha256": "86fa36a8090ff42e8303ede2c9899a24b89b35f0d4ca6fcca2cae964eb09d41b"
+    },
+    {
+      "bytes": 239,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/ui-validation-v1/ui-js-tests.log",
+      "sha256": "2f9b8900e64b456b110bebee0e1458bb983f5d6a052d5cda889fe1932f35e1d2"
+    },
+    {
+      "bytes": 773,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/ui-validation-v1/ui-build.log",
+      "sha256": "0dfbe1bf5a418d01ef088904b138defd436406a1409eaa0ea90ffd0bf8dba6c4"
+    },
+    {
+      "bytes": 2690,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/ui-validation-v1/core-tests.log",
+      "sha256": "fc436c4ef377e58851d27eed4689e5d05bacd060339cff43fcc6333ddfb98def"
+    },
+    {
+      "bytes": 3518,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/ui-validation-v1/root-tests-final.log",
+      "sha256": "07bf707651eee478dc3e3f758be5d2f45283ddb3983259e375f4b2d50b9bd51c"
+    },
+    {
+      "bytes": 140396,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/ui-validation-v1/ui-desktop.jpg",
+      "sha256": "7b2f3172d29abaf8fbee2921d6cd572129506c5e9bf59529b1c3d6f0f71b5a3f"
+    },
+    {
+      "bytes": 1189443,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/ui-validation-v1/verified-ui-export.json",
+      "sha256": "b4ae34463244144ae4b0ad55982dad0b2f4f6afc31eb48500ebae1fe0a084564"
+    },
+    {
+      "bytes": 371083,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/ui-validation-v1/verified-ui-export.json.gz",
+      "sha256": "307219cd53651c5f16ad7d22556db9c85d08f189d848fb1c040eeab013c34d5c"
+    },
+    {
+      "bytes": 763871,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/ui-validation-v1/terrain.png",
+      "sha256": "612cc71314a99aec373f9e018be6d0f3d44d02b11ce473caba77813660af2c5f"
+    },
+    {
+      "bytes": 263,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": ".runtime/ui-validation-v1/map.json",
+      "sha256": "5f434f016561f87ebb9b12d1765b528fe9e516c90194d3dff0ac61eb24bdea24"
+    }
+  ],
+  "browser_checks": [
+    "Narrow stacked layout and1280px desktop map/sidebar layout inspected; temporary viewport restored.",
+    "Official IGN labels loaded; local terrain remains independent of optional labels.",
+    "Manual allocation check did not advance time; commit generated a base offer/readback.",
+    "Matching readback confirmation/authorization and staged protection order exercised.",
+    "Protection sent4m, delivered6m, acknowledged7m, executed8m; population moved only after execution.",
+    "Past recorded frames disabled live actions; return-to-live preserved current state.",
+    "Malformed advanced draft showed a validation error without crashing or advancing time.",
+    "Scripted two-fire topo-dev-003 finished at52m/26decisions with all four objectives and verified score1.0.",
+    "Browser imported canonical gzip trace read-only, then returned to untouched topo-dev-000 at0m.",
+    "Final live preview was stepped to16m and paused with an on-scene engine."
+  ],
+  "implementation": [
+    {
+      "bytes": 18041,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "eval/ui_server.py",
+      "sha256": "49550cdb584438872667cb9afe0e60159e7d2a345715d618677085546ebadc95"
+    },
+    {
+      "bytes": 11635,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "eval/ui_terrain.py",
+      "sha256": "859a2bf2bb1bc30323c6f4fa3a0f3d7aff2535446efbd0b977c2b31ce5cbc32e"
+    },
+    {
+      "bytes": 60217,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "ui/package-lock.json",
+      "sha256": "25bbf050eda8a86efb46e218e0b56434a07e84dce5bf0c4a2c3de074bd0e1f42"
+    },
+    {
+      "bytes": 50,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "ui/requirements.txt",
+      "sha256": "f147483775553cb5e184616c29ca24ae9a68ba5e544c137e82ac4f43c48942a3"
+    },
+    {
+      "bytes": 26506,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "ui/src/App.tsx",
+      "sha256": "cbfd39c3ae32f16d312e3f50eef8f857d03b57dc1e09ea76673b26b17dbe288c"
+    },
+    {
+      "bytes": 10690,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "ui/src/MapView.tsx",
+      "sha256": "4ff63b0bb8ec70c3b2425dca499a995ab7c5366de58f858b99d7e97af29707f5"
+    },
+    {
+      "bytes": 695,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "ui/src/api.ts",
+      "sha256": "2ed0cbbbd04f995f0d72e972e6249f0c0ee90950ea159955d787e7bcad3691e8"
+    },
+    {
+      "bytes": 2267,
+      "integrity": "locally_hashed_not_source_authenticated",
+      "path": "ui/src/model.ts",
+      "sha256": "5ef0554e0d468dd6fa26ce23126659e5ef9ec81234be50f4025fa526d3f1453d"
+    }
+  ],
+  "json_numeric_fidelity": {
+    "issue": "JavaScript parse/stringify normalized14.0 to14, causing strict canonical replay rejection.",
+    "regressions": "Both UI transport and frontend tests cover number-token preservation and rejection of normalized old exports.",
+    "resolution": "Exports retain original response text; imports send original decoded JSON text to the Python parser. Core verification was not weakened."
+  },
+  "limitations": [
+    "Loopback-only single-session research UI, not authenticated multi-user hosting.",
+    "Only six development and twelve registered training-smoke tasks are exposed.",
+    "Complete public traces must match current pinned inputs/settings; manual/mixed-policy UI runs are not automatically training examples.",
+    "Current external map labels are display context; freeze or disable them for visual-policy experiments.",
+    "No operational safety, historical reconstruction, physical calibration, trained policy or public release is claimed."
+  ],
+  "physics_and_reward_implementation_sha256": "7015d81b99e89a26248b931943293c1c1a3618098284a24957ed7735e20ba88c",
+  "physics_or_reward_changed": false,
+  "role": "operator_evaluator_reference_not_actor_observation",
+  "source_revision": "efa5fb3",
+  "tests": {
+    "core_optional_skips": 9,
+    "core_tests": 282,
+    "isolated_ui_python_passed": true,
+    "isolated_ui_python_tests": 38,
+    "javascript_passed": true,
+    "javascript_tests": 7,
+    "notes": [
+      "The20 optional UI server tests are included in the239 root methods and were separately executed, not extra distinct tests.",
+      "Legacy optional OpenEnv coverage remains in earlier acceptance artifacts; the UI transport is not a new stress OpenEnv adapter.",
+      "Restricted sandbox stalled the async TestClient runtime; successful UI transport tests ran in the isolated environment with permitted async/local runtime."
+    ],
+    "root_optional_skips": 36,
+    "root_tests": 239
+  },
+  "ui": {
+    "cases": 18,
+    "default_evaluator_enabled": false,
+    "development_cases": 6,
+    "external_map_labels": "Optional current IGNBaseSimplificado TMS, not a routing or2021 reconstruction input",
+    "held_out_case_access": false,
+    "live_preview": "http://127.0.0.1:8767",
+    "map_geometry": "Flat north-up2D plane; no pitch/rotation/terrain mesh",
+    "paused_model_minute": 16,
+    "preview_evaluator_flag_enabled": true,
+    "stack": [
+      "React",
+      "TypeScript",
+      "Vite",
+      "OpenLayers Canvas2D",
+      "Proj4js"
+    ],
+    "terrain_pixels": [
+      740,
+      720
+    ],
+    "training_smoke_cases": 12
+  },
+  "version": "wildfire-local-ui-validation-v1"
+}

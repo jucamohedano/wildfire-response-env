@@ -1,0 +1,61 @@
+{
+  "version": "wildfire-cloudrift-ops-smoke-v1",
+  "date": "2026-10-26",
+  "provider": "cloudrift",
+  "endpoint": "https://inference.cloudrift.ai/v1",
+  "requested_model": "deepseek-ai/DeepSeek-V4-Flash-0731",
+  "stream": false,
+  "sampling": {"temperature": 1, "top_p": 1, "n": 1, "presence_penalty": 0, "frequency_penalty": 0},
+  "authorization": "User-provided temporary inference key, entered through hidden terminal input; no rental or CLI login change",
+  "contract_version": "wildfire-ops-model-tools-v1",
+  "reward_version": "wildfire-protection-safety-gate-v2",
+  "source_revisions": {"initial_transport": "decd259", "exact_continuation": "05fd67c"},
+  "scope": "Four planned synthetic development fixtures on one Malaga source region; not held-out policy selection, historical reconstruction, training or real-world safety validation",
+  "budgets": {
+    "user_approved_conservative_usd_cap": 5,
+    "initial_estimated_usd": 0.90496,
+    "continuation_cap_after_subtraction": 4.09504,
+    "continuation_estimated_usd": 1.464232,
+    "combined_conservative_estimate_usd": 2.369192,
+    "estimate_is_billing_receipt": false,
+    "catalog_url": "https://inference.cloudrift.ai/v1/models",
+    "input_price_interpreted_usd_per_token": "0.000014",
+    "output_price_interpreted_usd_per_token": "0.000028",
+    "pricing_warning": "API price fields appear100times the public webpage rates. The larger API-derived estimate was used without cache discounts. Failed/unknown-usage calls retained their full reservation.",
+    "request_limit_across_attempts": 160,
+    "actual_http_attempts": 16,
+    "responses_with_token_usage": 14,
+    "known_prompt_tokens": 86823,
+    "known_completion_tokens": 3792,
+    "unknown_usage_calls": 2,
+    "completion_cap_per_call": 4096,
+    "active_run_seconds_combined": 802.524
+  },
+  "outcomes": [
+    {
+      "task_id": "topo-dev-001", "family": "false alarm", "status": "invalid_action_abandonment",
+      "scored": true, "score": 0, "terminated": false, "truncated": true,
+      "model_minutes": 12, "decisions": 6, "invalid_actions": 4,
+      "interpretation": "Three consecutive tool-format violations triggered the existing abandonment rule. All goal flags are unearned; this is not proof that people were physically harmed.",
+      "baseline_passive": 0.9333333333333333, "baseline_scripted_evacuation": 1,
+      "verified_full_trace": ".runtime/cloudrift-ops-eval-20261026-resumed/topo-dev-001/trajectory.json"
+    },
+    {
+      "task_id": "topo-dev-000", "family": "urgent smoke report", "status": "transport_timeout",
+      "scored": false, "score": null, "model_minutes": 12, "decisions": 6, "invalid_actions": 3,
+      "interpretation": "The180second non-streaming deadline was exceeded; no terminal objective score was assigned.",
+      "baseline_passive": 0, "baseline_scripted_evacuation": 1,
+      "partial_trace": ".runtime/cloudrift-ops-eval-20261026-resumed/topo-dev-000/partial-trajectory.json"
+    },
+    {"task_id": "topo-dev-003", "family": "conflicting/delayed reports and multiple fires", "status": "not_started", "scored": false},
+    {"task_id": "topo-dev-004", "family": "wind shift", "status": "not_started", "scored": false}
+  ],
+  "observed_model_operations": {"resource_requests": 3, "readback_confirmations": 3, "resource_authorizations": 3, "triage_assessments": 2},
+  "protocol_failures": 7,
+  "timeout_seconds_observed": [90.28, 180.303],
+  "continuation": "The first three saved engine transitions were independently replayed and compared exactly before continuation. Only replay-verified public actions seeded short-term memory; the earlier timed-out call was never committed. All previously reserved spend was subtracted from the authorized cap.",
+  "validation": {"initial_offline_provider_and_legacy_tests_passed": 36, "resume_and_current_adapter_tests_passed": 28},
+  "artifacts": [".runtime/cloudrift-ops-eval-20261026/summary.json", ".runtime/cloudrift-ops-eval-20261026-resumed/summary.json"],
+  "cleanup": {"project_evaluation_processes_remaining": 0, "preview_listening": false, "local_gpu_workloads_started": false, "api_key_saved_to_repository_or_result_files": false},
+  "conclusion": "Hosted non-streaming tool execution works, including real simulated resource request-confirm-authorize and triage actions. Interface compliance and response latency prevented a clean full control-center evaluation. These outcomes do not establish general firefighting capability; partials are unscored and no trajectory is labelled an expert demonstration."
+}

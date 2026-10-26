@@ -1,0 +1,13 @@
+{
+  "base_pack_sha256": "db20dc7806eac7d5b0b07cffd06931c9d40120f0813bd8b6fb80ff1d13f6bcf0",
+  "cases": 360,
+  "cases_sha256": "449ca214c64a6f9497f57f4bf555fa2402e520930e1d65b29c6054cecf15f7ce",
+  "catalog_sha256": "a581fa67d63bce1149c7047d00a6f2a36141d148261dc56f4ae5b7b3ea0e9924",
+  "generator_sha256": "309743ffbf45548b65ef2720f81379c7b763e02fee371ecf32f4e8f49d0f672e",
+  "groups": 120,
+  "protocol": "Static validation covers all cases; test policy outcomes require explicit consumption",
+  "split_cases": {"test": 60, "train": 240, "validation": 60},
+  "split_groups": {"test": 20, "train": 80, "validation": 20},
+  "variants_per_group": 3,
+  "version": "wildfire-control-generator-v1"
+}

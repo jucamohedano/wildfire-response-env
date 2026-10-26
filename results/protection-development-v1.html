@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Protection and data-readiness increment</title>
+  <style>
+    :root { font: 17px/1.6 system-ui,sans-serif; color: #16352d; background: #edf3ed; }
+    body { max-width: 1050px; margin: auto; padding: 2.5rem 1.2rem; }
+    h1 { font-size: clamp(2rem,5vw,3.1rem); line-height: 1.14; }
+    h2 { line-height: 1.2; } a { color: #116652; }
+    section, article { padding: 1.4rem; background: #fff; border-radius: 10px; margin: 1rem 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 1rem; }
+    .grid article { margin: 0; border-top: 4px solid #397963; }
+    .number { font-size: 2.4rem; font-weight: 700; margin: .2rem 0; }
+    .warning { background: #fff7e8; border-left: 5px solid #a96723; }
+    .small { font-size: .9rem; color: #476055; }
+    li { margin: .45rem 0; } code { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <header><p class="small">Wildfire Ops Control Center · 25 October 2026 · Development validation</p>
+    <h1>A warning is not the same as protection.</h1>
+    <p>Versioned instructions, fallible shelter and resource-bound warning teams.
+      Spanish v1 and the existing benchmark remain separate and replayable.</p></header>
+  <section><h2>Implemented lifecycle</h2>
+    <p><strong>Issue → delivery → acknowledgement → attempted action → physical outcome.</strong></p>
+    <ul>
+      <li>Shelter, evacuate or release, with recipient sequence and an explicit replacement ID.</li>
+      <li>Old instructions remain in flight; central intent cannot instantly unsend them.
+        After a newer receipt, stale older instructions cannot execute.</li>
+      <li>Acknowledgement precedes execution. An unable population has an attempt time,
+        but no execution time. Moving groups cannot teleport home or stop through release.</li>
+      <li>In-person warning requires an actual on-scene crew, public clear-cell evidence
+        and four minutes of service, without simultaneous suppression/reassignment.</li>
+    </ul>
+  </section>
+  <section class="warning"><h2>Shelter is not immunity</h2>
+    <p>A synthetic nearby-fire smoke proxy accumulates at a lower rate while sheltering.
+      Direct fire still exposes people; prolonged proxy exposure can also exceed the threshold.</p>
+    <p>These units, rates, buildings, service areas and communication delays are exercise
+      assumptions—not medical, structural, route or operational safety predictions.</p>
+    <p><strong>Population-safety failure now yields zero scalar reward</strong>, even
+      when other component goals are complete. Component flags remain visible.</p>
+  </section>
+  <div class="grid">
+    <article><h2>Passive</h2><p class="number">0 / 12</p><p>All objectives met.</p>
+      <p class="small">Population safety 4/12 · fire resolution 0/12.</p></article>
+    <article><h2>Evacuation-first baseline</h2><p class="number">11 / 12</p><p>All objectives met.</p>
+      <p class="small">Population safety 12/12 · fire resolution 11/12.</p></article>
+    <article><h2>Shelter-first baseline</h2><p class="number">11 / 12</p><p>All objectives met.</p>
+      <p class="small">Population safety 11/12 · fire resolution 11/12.</p></article>
+  </div>
+  <section class="warning"><h2>The counterexample is retained</h2>
+    <p>In <code>protect-dev-002-v2</code>, shelter-first exposes 150 <strong>simulated</strong>
+      people and receives zero scalar reward despite completed triage/communication goals.
+      Evacuation-first keeps people unexposed here but leaves fire unresolved and scores 0.75.</p>
+    <p>This demonstrates the gate and fallible mechanics—not a claim that evacuation
+      is universally superior, either policy is optimal or the scenario is infeasible.</p>
+  </section>
+  <section><h2>Data gate: four anchors are still not ready for historical joins</h2>
+    <p>The new offline schema checks declared units, coordinates, aware observation/availability
+      times and source references. Future/outside-coverage rows are excluded. Missing input stays missing.</p>
+    <p><strong>No actual weather/terrain data were acquired or joined in this increment.</strong>
+      Metadata validation does not authenticate cached bytes, provenance, freshness or station matching.
+      Historical replay and actor eligibility remain false.</p>
+  </section>
+  <section><h2>Validation</h2>
+    <p>253 core tests run (9 skipped, zero failures) · 10 root tests pass · 36 baseline
+      episodes replayed · zero invalid baseline actions · original Spanish v1 replay passes.</p>
+    <p>A dedicated canonical episode tests in-person warning and replay; these cohort
+      baselines did not use in-person orders. Tests also cover late messages, failed broadcasts,
+      dose effects, atomic invalid actions, no teleportation and metadata privacy.</p>
+    <p>Observed local run: 17.327 seconds, 42,584 KiB peak RSS, one sequential CPU
+      rollout worker. No GPU, paid inference, live emergency message or model-training job.</p>
+    <p>Development fixtures only, no held-out generalisation. New physics/reward means
+      scores are not directly comparable with Spanish v1. Domain calibration is still required.</p>
+  </section>
+  <footer class="small"><p><a href="../envs/wildfire_response/core/src/envs/wildfire_response/regional/protection/README.md">API and reproduction</a> ·
+    <a href="../envs/wildfire_response/core/src/envs/wildfire_response/regional/protection/PLAN.md">Implementation plan</a> ·
+    <a href="protection-development-v1.json">Versioned results</a> ·
+    <a href="https://github.com/jucamohedano/wildfire-response-env/issues/3">Tracking issue</a>.</p>
+    <p>Resource codes, real data joins, richer safety models, domain review, held-out
+      tasks, training/server wiring and publication rights remain separate gates.</p></footer>
+</body>
+</html>

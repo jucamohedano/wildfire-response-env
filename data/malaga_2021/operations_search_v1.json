@@ -1,0 +1,1651 @@
+{
+  "version": "malaga-operations-search-v1",
+  "incident_id": "ES-MA-SIERRA-BERMEJA-2021",
+  "researched_on": "2026-10-25",
+  "incident_window_local": [
+    "2021-09-08",
+    "2021-09-15"
+  ],
+  "role": "retrospective_evaluator_evidence",
+  "actor_input_eligible": false,
+  "historical_replay_ready": false,
+  "scope": "Operational readiness, assignments, deployment milestones and communications; source metadata and concise nonpersonal facts only.",
+  "instructions_check": {
+    "workspace": "/tmp/wildfire-response-env-ops",
+    "AGENTS_found": [],
+    "checked": [
+      "/AGENTS.md",
+      "/tmp/AGENTS.md",
+      "/tmp/wildfire-response-env-ops/AGENTS.md",
+      "recursive workspace AGENTS.md search"
+    ],
+    "writes_allowed": [
+      "data/malaga_2021/operations_search_v1.json",
+      ".runtime/malaga-operations-search/"
+    ]
+  },
+  "clock_policy": {
+    "source_timezone_explicit": false,
+    "interpretation_timezone": "Europe/Madrid",
+    "interpreted_offset_for_incident": "+02:00",
+    "rule": "Local clocks are source strings; timezone interpretation is not source metadata. Date/relative-period records are not precise times. Publication dates, plan writing, requests, dispatch, arrival, availability and receipt must remain separate.",
+    "publication_time_rule": "No publication date is promoted to a precise availability or receipt time.",
+    "initial_external_baseline": {
+      "provenance": "User-provided existing EGIF match; not newly verified by this search",
+      "detection_local": "2021-09-08T21:35:00",
+      "first_ground_local": "2021-09-08T21:50:00",
+      "first_air_local": "2021-09-09T08:23:00",
+      "initial_available_units": null
+    }
+  },
+  "readiness_assessment": {
+    "initial_dispatchable_roster_found": false,
+    "partial_first_attack_assignment_found": true,
+    "earliest_explicit_plan_local": "2021-09-09T04:00:00",
+    "improvement": "Provides additional constraints for future modelling from a12-code first-attack assignment list, sector allocations, plan validity windows and later constraints. No simulator assumptions were replaced; these records cannot initialize dispatchable units at detection.",
+    "no_initial_availability_inference_from": [
+      "provincial staffing",
+      "daily participation totals",
+      "mission counts",
+      "assigned unit codes",
+      "reported deployments",
+      "first ground/air action timestamps"
+    ]
+  },
+  "sources": [
+    {
+      "id": "technical-report",
+      "publisher": "Junta de Andalucía, INFOCA",
+      "title": "Sierra Bermeja Fire Report (Málaga) 08/09/2021",
+      "url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "published_date": null,
+      "document_created_at": "2022-06-22T11:41:19+02:00",
+      "publication_note": "Creation metadata is not publication or operational dissemination time.",
+      "access": "existing_local_pdf_and_text; PDF pages19,21 visually checked",
+      "local_pdf": ".runtime/malaga-2021-discovery/technical_report.pdf",
+      "local_text": ".runtime/malaga-2021-discovery/technical_report.txt",
+      "pages": 49,
+      "sha256": "a001d108856e1637262b9ec16b860e88b5b1c2ba8101a28f293bc7a966c1b6a8",
+      "primary_source": true,
+      "retrieved_on": "2026-10-25",
+      "publication_utc": null
+    },
+    {
+      "id": "junta-112-sep13",
+      "publisher": "Junta de Andalucía, Emergencias112",
+      "title": "Casi mil efectivos y medio centenar de medios aéreos lucha contra el fuego hoy en Sierra Bermeja",
+      "url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/164183/casi/mil/efectivos/medio/centenar/medios/aereos/lucha/fuego/hoy/sierra/bermeja",
+      "published_date": "2021-09-13",
+      "access": "web_tool_full_article",
+      "sha256": null,
+      "primary_source": true,
+      "retrieved_on": "2026-10-25",
+      "publication_utc": null
+    },
+    {
+      "id": "miteco-sep12",
+      "publisher": "MITECO / La Moncloa",
+      "title": "Medios aéreos y terrestres del MITECO continúan colaborando en Sierra Bermeja",
+      "url": "https://www.lamoncloa.gob.es/serviciosdeprensa/notasprensa/transicion-ecologica/paginas/2021/120921incendio.aspx",
+      "published_date": "2021-09-12",
+      "access": "web_tool_full_article",
+      "sha256": null,
+      "primary_source": true,
+      "retrieved_on": "2026-10-25",
+      "publication_utc": null
+    },
+    {
+      "id": "ume-sep15",
+      "publisher": "Ministerio de Defensa, UME",
+      "title": "La UME colabora con INFOCA en la extinción del incendio forestal en Sierra Bermeja",
+      "url": "https://www.defensa.gob.es/ume/Noticias/2021/09/Noticias/if_jubrique.html",
+      "published_date": "2021-09-15",
+      "access": "web_tool_full_article",
+      "sha256": null,
+      "primary_source": true,
+      "retrieved_on": "2026-10-25",
+      "publication_utc": null
+    },
+    {
+      "id": "red-cross",
+      "publisher": "Cruz Roja Española",
+      "title": "Cronología del incendio de Sierra Bermeja",
+      "url": "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja",
+      "published_date": "2021-10-05",
+      "access": "web_tool_full_chronology; existing raw_HTTP403 respected, no bypass or new raw acquisition",
+      "sha256": null,
+      "primary_source": true,
+      "retrieved_on": "2026-10-25",
+      "publication_utc": null
+    },
+    {
+      "id": "dsn-sep09",
+      "publisher": "Departamento de Seguridad Nacional",
+      "title": "Institutional update indexed at 11:00 09/09/2021",
+      "url": "https://www.dsn.gob.es/es/node?page=946",
+      "published_date": "2021-09-09",
+      "published_clock_raw": "11:00",
+      "publication_timezone_explicit": false,
+      "access": "official_site_search_index_only; web open cache miss; ordinary HTTP connection failed",
+      "sha256": null,
+      "primary_source": true,
+      "retrieved_on": "2026-10-25",
+      "publication_utc": null
+    },
+    {
+      "id": "cenem-2021",
+      "publisher": "Dirección General de Protección Civil y Emergencias, CENEM",
+      "title": "Memoria Anual de Actividades CENEM2021",
+      "url": "https://espacios.proteccioncivil.es/documents/20121/0/Memoria%20anual%20CENEM%202021.pdf/315f4515-a848-0bc3-cc2b-52715df38bf1",
+      "published_date": null,
+      "document_month": "2022-02",
+      "access": "web_tool_pdf_text",
+      "pages": 38,
+      "sha256": null,
+      "primary_source": true,
+      "retrieved_on": "2026-10-25",
+      "publication_utc": null
+    },
+    {
+      "id": "facilities-2021-consultation",
+      "publisher": "Junta de Andalucía, Delegación Territorial de Málaga",
+      "title": "Consulta pública previa: nuevo CEDEFO en Istán y Marbella",
+      "url": "https://www.juntadeandalucia.es/sites/default/files/2021-07/ESP%209%20CONSULTAS%20PREVIAS%20PLAN%20ESPECIAL%20ISTAN%20MARBELLLA%20INFOCA%28F%29%20%281%29.pdf",
+      "published_date": null,
+      "access": "official_PDF_search_index_only; web open cache miss",
+      "date_note": "2021-07 is URL path context, not authenticated publication date.",
+      "sha256": null,
+      "primary_source": true,
+      "retrieved_on": "2026-10-25",
+      "publication_utc": null
+    },
+    {
+      "id": "junta-final",
+      "publisher": "Junta de Andalucía",
+      "title": "El Plan Infoca da por extinguido45 días después el incendio forestal de Sierra Bermeja",
+      "url": "https://www.juntadeandalucia.es/presidencia/portavoz/tierraymar/165737/fuego/Infoca/incendio/desarrollosostenible/medioambiente/SierraBermeja/Jubrique",
+      "published_date": "2021-10-24",
+      "access": "existing_local_HTML_and_web",
+      "sha256": "aff0f48ff406ee2967886f72f34a2f40338dd28c592f0b9b12a22b52be68384b",
+      "primary_source": true,
+      "retrieved_on": "2026-10-25",
+      "publication_utc": null
+    },
+    {
+      "id": "dsn-sep14",
+      "publisher": "Departamento de Seguridad Nacional",
+      "title": "MÁLAGA – INCENDIO FORESTAL",
+      "url": "https://www.dsn.gob.es/va/node/15849",
+      "published_date": "2021-09-14",
+      "published_clock_raw": "10:00",
+      "publication_timezone_explicit": false,
+      "access": "official_site_search_index",
+      "sha256": null,
+      "primary_source": true,
+      "retrieved_on": "2026-10-25",
+      "publication_utc": null
+    }
+  ],
+  "records": [
+    {
+      "id": "initial-attack-assignment",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p19, §3.2.2, first-attack resource list",
+      "evidence_kind": "assigned_first_attack",
+      "event_local": "2021-09-08/2021-09-09",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "First-attack assignments identify12 unit codes and2 TOP roles.",
+      "values": {
+        "ME": [
+          "ME-216",
+          "ME-213",
+          "ME-211",
+          "ME-111",
+          "ME-220",
+          "ME-205",
+          "ME-207",
+          "ME-204",
+          "ME-105"
+        ],
+        "MP": [
+          "MP-204",
+          "MP-203",
+          "MP-104"
+        ],
+        "ME_code_count": 9,
+        "MP_code_count": 3,
+        "TOP_role_count": 2,
+        "area": "Two outbreaks on Genalguacil road MA-8304"
+      },
+      "limitations": [
+        "Assignment is not dispatch, arrival, an on-duty roster, or proof of availability at21:35.",
+        "No code-to-capability/base/crew-size dictionary verified; ME and MP are retained as source codes.",
+        "No exact unit clocks or coordinates."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "op1-sector-assignment",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p21, DAY9_OP1, tactical planning",
+      "evidence_kind": "planned_sector_assignment",
+      "event_local": "2021-09-09T04:00:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "OP1 allocates named unit codes to two flanks through08:00.",
+      "values": {
+        "valid_until_local": "2021-09-09T08:00:00",
+        "right_flank": {
+          "ME": [
+            "ME-206",
+            "ME-105",
+            "ME-111"
+          ],
+          "MP": [
+            "MP-102",
+            "MP-203"
+          ],
+          "BRICA": [
+            "701"
+          ]
+        },
+        "left_flank": {
+          "ME": [
+            "ME-211",
+            "ME-210",
+            "ME-202",
+            "ME-213"
+          ],
+          "MP": [
+            "MP-204",
+            "MP-205"
+          ]
+        },
+        "derived_code_counts": {
+          "ME": 7,
+          "MP": 4,
+          "BRICA": 1
+        }
+      },
+      "limitations": [
+        "Synthesized plan, not complete original; no arrival or acknowledgement timestamps.",
+        "Some codes differ from first-attack list; do not interpolate unit movements."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "op2-priorities",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p22, DAY9_OP2, operational implications and tactical planning",
+      "evidence_kind": "planned_sector_assignment",
+      "event_local": "2021-09-09T08:00:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "OP2 adds a head sector; prioritizes exposed settlements and timely evacuation if threats consolidate.",
+      "values": {
+        "valid_until_local": "2021-09-09T14:00:00",
+        "head_sector_unit_codes": [
+          "B-402",
+          "B-702"
+        ],
+        "settlement_areas": [
+          "Monte Mayor",
+          "El Alcuzcuz (source spelling El Alcuczcuz)",
+          "La Zagaleta",
+          "El Madroñal"
+        ]
+      },
+      "limitations": [
+        "Planning recommendation is not an issued evacuation order or proof of receipt."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "op3-duplicate-codes",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p23, DAY9_OP3, tactical planning",
+      "evidence_kind": "assignment_ambiguity",
+      "event_local": "2021-09-09T14:00:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "OP3 repeats ME-211 and ME-202 across left and head sectors.",
+      "values": {
+        "valid_until_local": "2021-09-09T22:00:00",
+        "repeated_codes": [
+          "ME-211",
+          "ME-202"
+        ],
+        "access_route_as_written": "Jubrique, MA-8301"
+      },
+      "limitations": [
+        "Do not sum sector rows into unique available units.",
+        "Road access recommendation is not proof a road was open to public traffic."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "op4-pending-assignment",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p25, DAY10_OP4, tactical planning",
+      "evidence_kind": "planned_sector_assignment",
+      "event_local": "2021-09-09T21:00:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "OP4 leaves the left-flank resource allocation pending.",
+      "values": {
+        "valid_until_local": "2021-09-10T11:00:00",
+        "left_flank_assignment_status": "pending",
+        "right_flank_ME_codes": [
+          "ME-209",
+          "ME-112",
+          "ME-212",
+          "ME-214",
+          "ME-221",
+          "ME-105",
+          "ME-205",
+          "ME-103",
+          "ME-111",
+          "ME-220"
+        ]
+      },
+      "limitations": [
+        "Pending does not establish zero resources on scene."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "op6-ground-withdrawal",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p27, DAY10_OP6, operational implications and tactics",
+      "evidence_kind": "operational_restriction",
+      "event_local": "2021-09-10T17:00:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Pyrocumulus risk prompted preventive ground withdrawal; limited manual work continued in low ECO flank.",
+      "values": {
+        "valid_until_local": "2021-09-10T22:00:00",
+        "predicted_safe_return_window_local": [
+          "2021-09-10T19:00:00",
+          "2021-09-10T20:00:00"
+        ]
+      },
+      "limitations": [
+        "Forecast return window is not an actual resumption time.",
+        "Assigned ground resources were not necessarily deployable for direct attack."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "op8-brif-assignment",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p33, DAY11_OP8, tactical planning",
+      "evidence_kind": "planned_sector_assignment",
+      "event_local": "2021-09-11T08:00:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "OP8 assigns two BRIF brigades to ECO sector.",
+      "values": {
+        "valid_until_local": "2021-09-11T21:00:00",
+        "BRIF_count": 2,
+        "bases_as_written": [
+          "Iglesuela",
+          "Pinofranquedo"
+        ],
+        "sector": "ECO"
+      },
+      "limitations": [
+        "Source base spelling retained; arrival and release times absent."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "op12-external-assignments",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p43, DAY13_OP12, tactical planning",
+      "evidence_kind": "planned_sector_assignment",
+      "event_local": "2021-09-13T10:00:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "OP12 places external resources on SW,W,NW sectors.",
+      "values": {
+        "valid_until_local": "2021-09-13T21:00:00",
+        "SW": {
+          "area": "Casares to Finca El Duque",
+          "Marbella_FFV": 3,
+          "UME_platoons": 2
+        },
+        "W": {
+          "area": "Genalguacil to Finca El Duque",
+          "UME_platoons": 1
+        },
+        "NW": {
+          "area": "Jubrique to Torre El Jardón",
+          "Madrid_FFV": 2,
+          "Madrid_VN": 1,
+          "Madrid_firefighters": 19
+        },
+        "NE_E": {
+          "area": "Torre El Jardón to La Resinera",
+          "BRIF_base_labels": [
+            "PINO",
+            "IGLESUELA",
+            "PRADO"
+          ]
+        }
+      },
+      "limitations": [
+        "English translation labels UME as Municipal Emergency Unit; no new organization inferred.",
+        "25 Madrid personnel in112 update and19 in this sector plan have different scope; do not force equality."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "helicopter-incident",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p41, §3.4.3; p44, §3.4.4",
+      "evidence_kind": "asset_incident",
+      "event_local": "2021-09-13/2021-09-14",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Report describes an afternoon helicopter accident and subsequent overnight fire damage.",
+      "values": {
+        "asset_labels_as_written": [
+          "M-80",
+          "MA-80"
+        ],
+        "accident_date_local": "2021-09-13",
+        "fire_damage_date_local": "2021-09-14",
+        "injuries_reported": 0
+      },
+      "limitations": [
+        "Different identifiers may refer to the same asset; identity not reconciled.",
+        "Exact out-of-service time and coordinates absent."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "op14-aftermath",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p46, DAY14_OP14",
+      "evidence_kind": "planned_sector_assignment",
+      "event_local": "2021-09-14T08:00:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "OP14 continues perimeter surveillance and hot-spot suppression through22:00.",
+      "values": {
+        "valid_until_local": "2021-09-14T22:00:00",
+        "sectors": [
+          "NW",
+          "SW",
+          "NE",
+          "Spanish fir forest"
+        ]
+      },
+      "limitations": [
+        "Controlled does not mean extinguished or all resources released."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "daily-participation-table",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p13, Figure22, personnel and air assets from ignition to control",
+      "evidence_kind": "daily_aggregate",
+      "event_local": "2021-09-08/2021-09-14",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Daily intervention totals are retrospective aggregates; time-of-day and concurrency are unspecified.",
+      "values": {
+        "columns": [
+          "date",
+          "ground_INFOCA",
+          "ground_Malaga_firefighters",
+          "ground_MITECO",
+          "ground_UME",
+          "ground_CastillaLaMancha",
+          "ground_Murcia",
+          "ground_Madrid",
+          "ground_Catalonia",
+          "ground_total",
+          "air_INFOCA",
+          "air_MITECO",
+          "air_CastillaLaMancha",
+          "air_Murcia",
+          "air_Extremadura",
+          "air_total"
+        ],
+        "rows": [
+          [
+            "2021-09-08",
+            105,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            105,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "2021-09-09",
+            522,
+            20,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            542,
+            24,
+            8,
+            0,
+            0,
+            0,
+            32
+          ],
+          [
+            "2021-09-10",
+            557,
+            38,
+            42,
+            0,
+            0,
+            0,
+            0,
+            0,
+            637,
+            24,
+            16,
+            4,
+            0,
+            0,
+            44
+          ],
+          [
+            "2021-09-11",
+            892,
+            38,
+            42,
+            0,
+            0,
+            0,
+            0,
+            0,
+            972,
+            24,
+            16,
+            4,
+            0,
+            0,
+            44
+          ],
+          [
+            "2021-09-12",
+            1090,
+            85,
+            65,
+            120,
+            18,
+            4,
+            20,
+            2,
+            1404,
+            24,
+            20,
+            4,
+            0,
+            0,
+            48
+          ],
+          [
+            "2021-09-13",
+            1153,
+            97,
+            65,
+            120,
+            18,
+            4,
+            20,
+            2,
+            1479,
+            24,
+            20,
+            4,
+            1,
+            1,
+            51
+          ],
+          [
+            "2021-09-14",
+            442,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            442,
+            10,
+            0,
+            0,
+            0,
+            0,
+            10
+          ]
+        ],
+        "blank_cell_policy": "Blank partner cells encoded0 only within this table; day8 air cells remain null."
+      },
+      "limitations": [
+        "No day total is a simultaneous available-resource snapshot or count of unique individuals across days.",
+        "p13 prose starts BRIF on11Sept while table has MITECO ground42 on10Sept; category/date mismatch unresolved.",
+        "13September aircraft components sum50, while reported total is51; source arithmetic discrepancy preserved."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "dsn-sep9-night-and-air-plan",
+      "source_id": "dsn-sep09",
+      "source_url": "https://www.dsn.gob.es/es/node?page=946",
+      "source_locator": "Official index entry 11:00 09/09/2021",
+      "evidence_kind": "institutional_status_update",
+      "event_local": "2021-09-09",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Sept9 update reports roughly200 overnight ground personnel and8 aircraft expected during the morning.",
+      "values": {
+        "overnight_ground_personnel_approx": 200,
+        "morning_aircraft_expected": 8,
+        "evacuees_approx": 400,
+        "closed_road": "AP-7",
+        "closed_km_start": 157,
+        "closed_km_end": 174,
+        "closed_direction": "Cádiz"
+      },
+      "limitations": [
+        "Search-index evidence only; exact article link and full body not recovered.",
+        "11:00 is publication clock, not arrival time; timezone unstated.",
+        "Do not retroactively make8 aircraft available at detection."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "junta-sep13-shifts",
+      "source_id": "junta-112-sep13",
+      "source_url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/164183/casi/mil/efectivos/medio/centenar/medios/aereos/lucha/fuego/hoy/sierra/bermeja",
+      "source_locator": "Sections opening; Casi mil efectivos lucha contra el fuego",
+      "evidence_kind": "mixed_planned_and_reported_status",
+      "event_local": "2021-09-13",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "112 distinguishes450 overnight INFOCA personnel,260 UME across shifts, and41 aircraft flying versus51 planned over the day.",
+      "values": {
+        "all_services_day_total_planned": 996,
+        "INFOCA_night_personnel_reported": 450,
+        "UME_total_across_day_night_shifts": 260,
+        "aircraft_flying_early_morning_approx": 41,
+        "aircraft_day_total_planned": 51,
+        "firefighting_vehicles_reported": 20,
+        "bulldozers_reported": 3,
+        "UMMT": 1,
+        "UNASIF": 1
+      },
+      "limitations": [
+        "Snapshot clock unavailable; update uses relative overnight/morning language.",
+        "Different organizations and shifts overlap; no arithmetic construction of initial availability."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "junta-sep13-communications-support",
+      "source_id": "junta-112-sep13",
+      "source_url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/164183/casi/mil/efectivos/medio/centenar/medios/aereos/lucha/fuego/hoy/sierra/bermeja",
+      "source_locator": "Casi mil efectivos lucha contra el fuego, emergency specialists paragraph",
+      "evidence_kind": "communications_coordination_status",
+      "event_local": "2021-09-13",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "112 reports19 emergency specialists and an operational follow-up group covering communications, operations and data.",
+      "values": {
+        "emergency_specialists": 19,
+        "organizations": [
+          "112",
+          "GREA",
+          "Protección Civil"
+        ],
+        "support_functions": [
+          "communications",
+          "operations",
+          "data management",
+          "emergency technical advice"
+        ]
+      },
+      "limitations": [
+        "No radio-channel plan, message delivery/readback, outage duration or public warning reach."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "junta-sep13-road-closures",
+      "source_id": "junta-112-sep13",
+      "source_url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/164183/casi/mil/efectivos/medio/centenar/medios/aereos/lucha/fuego/hoy/sierra/bermeja",
+      "source_locator": "Ocho carreteras cortadas",
+      "evidence_kind": "reported_road_status",
+      "event_local": "2021-09-13",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Eight roads are reported closed; two closures were added that morning.",
+      "values": {
+        "road_count": 8,
+        "closures": [
+          {
+            "road": "MA-8302",
+            "km_points": [
+              15
+            ]
+          },
+          {
+            "road": "MA-8301",
+            "km_points": [
+              1,
+              25
+            ]
+          },
+          {
+            "road": "MA-8304",
+            "km_range": [
+              0,
+              5
+            ],
+            "place": "Genalguacil"
+          },
+          {
+            "road": "MA-8305",
+            "km_range": [
+              0,
+              12
+            ],
+            "from": "Algatocín",
+            "to": "Jubrique"
+          },
+          {
+            "road": "MA-7307",
+            "km_range": [
+              0,
+              8
+            ],
+            "place": "Alpandeire"
+          },
+          {
+            "road": "MA-7306",
+            "km_range": [
+              0,
+              5
+            ],
+            "from": "Parauta",
+            "to": "Cartajima"
+          },
+          {
+            "road": "MA-7300",
+            "km_from": 5,
+            "place": "Pujerra",
+            "new_that_morning": true
+          },
+          {
+            "road": "MA-527",
+            "from": "A-397 km25 junction",
+            "to": "Pujerra",
+            "new_that_morning": true,
+            "identifier_verbatim": true
+          }
+        ]
+      },
+      "limitations": [
+        "Exact closure/start/reopening clocks absent.",
+        "MA-527 is source identifier, not silently corrected to another road."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "junta-sep13-evacuations",
+      "source_id": "junta-112-sep13",
+      "source_url": "https://www.juntadeandalucia.es/presidencia/portavoz/emergencias112/164183/casi/mil/efectivos/medio/centenar/medios/aereos/lucha/fuego/hoy/sierra/bermeja",
+      "source_locator": "Ocho carreteras cortadas, return and remaining evacuees paragraphs",
+      "evidence_kind": "reported_evacuation_status",
+      "event_local": "2021-09-13",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Update reports1054 Estepona/Benahavís evacuees returned the previous day;1616 residents remained displaced elsewhere.",
+      "values": {
+        "returned_previous_day": 1054,
+        "remaining_by_location": {
+          "Charco Azul": 16,
+          "Monarda": 4,
+          "Jubrique main settlement": 300,
+          "Genalguacil": 250,
+          "Faraján": 261,
+          "Alpandeire": 263,
+          "Júzcar": 214,
+          "Pujerra (source spelling Pujarra)": 308
+        },
+        "remaining_sum_derived": 1616
+      },
+      "limitations": [
+        "Published status is not the issue/receipt time of each order or household compliance evidence."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "miteco-deployment",
+      "source_id": "miteco-sep12",
+      "source_url": "https://www.lamoncloa.gob.es/serviciosdeprensa/notasprensa/transicion-ecologica/paginas/2021/120921incendio.aspx",
+      "source_locator": "Opening CCINIF deployment paragraphs",
+      "evidence_kind": "sent_resources",
+      "event_local": "2021-09-12",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "MITECO reports resources sent and two BRIF transferred to Peñas Blancas; a third was still joining.",
+      "values": {
+        "headline_mixed_ground_air_assets": 21,
+        "sent": {
+          "large_amphibious_aircraft": 8,
+          "heavy_helicopters": 5,
+          "BRIF": 3,
+          "BRIF_transport_helicopters": 6,
+          "coordination_observation_aircraft": 1,
+          "ground_planning_units": 1
+        },
+        "BRIF_personnel_more_than": 50,
+        "BRIF_transferred_to_Penas_Blancas": 2,
+        "BRIF_joining_at_publication": 1,
+        "FAST_deployed": true
+      },
+      "limitations": [
+        "Headline21 mixes ground and aircraft; not21 available aircraft.",
+        "Publication time and individual dispatch/arrival clocks absent.",
+        "MITECO and Defence aircraft categories may overlap; do not add them."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "ume-departure",
+      "source_id": "ume-sep15",
+      "source_url": "https://www.defensa.gob.es/ume/Noticias/2021/09/Noticias/if_jubrique.html",
+      "source_locator": "Main text, activation and BIEMII departure paragraphs",
+      "evidence_kind": "activation_and_departure",
+      "event_local": "2021-09-12",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "UME activated on request and BIEMII departed Morón airbase on Sunday with260 personnel.",
+      "values": {
+        "origin": "Base Aérea de Morón de la Frontera, Sevilla",
+        "personnel": 260,
+        "fire_engines": 12,
+        "water_tenders": 2
+      },
+      "limitations": [
+        "Departure is not arrival; no precise time or all-at-once availability.",
+        "Air assets mentioned alongside ground vehicles not treated as organic UME fleet."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "ume-assignments-and-imagery",
+      "source_id": "ume-sep15",
+      "source_url": "https://www.defensa.gob.es/ume/Noticias/2021/09/Noticias/if_jubrique.html",
+      "source_locator": "Main text, initial protection and Monday Casares assignment",
+      "evidence_kind": "reported_assignment_and_sensor_support",
+      "event_local": "2021-09-12/2021-09-13",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "UME protected northern settlements, then defended Casares around Monte del Duque with drone imagery support.",
+      "values": {
+        "initial_settlements": [
+          "Jubrique",
+          "Faraján",
+          "Genalguacil",
+          "Pujerra"
+        ],
+        "monday_sector": "Monte del Duque, northeast of Casares",
+        "imagery_unit": "BTUME",
+        "command": "INFOCA Centro Operativo Regional"
+      },
+      "limitations": [
+        "No exact arrival coordinates, image timestamps, dissemination or receipt latency."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "ume-withdrawal",
+      "source_id": "ume-sep15",
+      "source_url": "https://www.defensa.gob.es/ume/Noticias/2021/09/Noticias/if_jubrique.html",
+      "source_locator": "Main text, withdrawal paragraph",
+      "evidence_kind": "reported_demobilization_status",
+      "event_local": "2021-09-15",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "UME reports withdrawal had begun.",
+      "values": {},
+      "limitations": [
+        "Publication date only; exact release times and residual capacity absent."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "redcross-alert",
+      "source_id": "red-cross",
+      "source_url": "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja",
+      "source_locator": "8September,21:38",
+      "evidence_kind": "responder_alert_received",
+      "event_local": "2021-09-08T21:38:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Cruz Roja records receiving an112 alert.",
+      "values": {
+        "sender": "112",
+        "recipient": "Cruz Roja"
+      },
+      "limitations": [
+        "Source's initial place descriptions are inconsistent; not used as coordinates.",
+        "Responder notification differs from detection21:35 and first ground action21:50."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "redcross-shelter-request",
+      "source_id": "red-cross",
+      "source_url": "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja",
+      "source_locator": "9September,04:57",
+      "evidence_kind": "support_requested",
+      "event_local": "2021-09-09T04:57:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Estepona Civil Protection requested shelter support.",
+      "values": {
+        "facility": "Pabellón de Deportes El Carmen",
+        "municipality": "Estepona"
+      },
+      "limitations": [
+        "Request is not opening or staffed readiness."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "redcross-material-request",
+      "source_id": "red-cross",
+      "source_url": "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja",
+      "source_locator": "9September,13:43",
+      "evidence_kind": "logistics_requested",
+      "event_local": "2021-09-09T13:43:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "112 requested shelter supplies.",
+      "values": {
+        "beds": 50,
+        "hygiene_kits": 100,
+        "anti_COVID_kits": 100,
+        "destination": "El Carmen, Estepona"
+      },
+      "limitations": [
+        "Requested quantity is not available inventory."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "redcross-truck-mobilized",
+      "source_id": "red-cross",
+      "source_url": "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja",
+      "source_locator": "9September,13:45",
+      "evidence_kind": "logistics_mobilized",
+      "event_local": "2021-09-09T13:45:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Four-person team activated and truck mobilized.",
+      "values": {
+        "personnel": 4,
+        "trucks": 1
+      },
+      "limitations": [
+        "Mobilization does not establish departure or arrival."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "redcross-delivery",
+      "source_id": "red-cross",
+      "source_url": "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja",
+      "source_locator": "9September,19:12",
+      "evidence_kind": "logistics_delivered_and_setup",
+      "event_local": "2021-09-09T19:12:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Supplies delivered; seven-person team setting up.",
+      "values": {
+        "setup_personnel": 7,
+        "facility": "El Carmen, Estepona"
+      },
+      "limitations": [
+        "Setup underway does not establish all beds operational."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "redcross-prealert-readiness",
+      "source_id": "red-cross",
+      "source_url": "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja",
+      "source_locator": "10September,18:25",
+      "evidence_kind": "qualitative_readiness_response",
+      "event_local": "2021-09-10T18:25:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Cruz Roja confirmed sufficient resources for a possible1000-person evacuation; prealert later cancelled.",
+      "values": {
+        "potential_evacuees_approx": 1000,
+        "settlements": [
+          "Genalguacil",
+          "Jubrique"
+        ]
+      },
+      "limitations": [
+        "Only qualitative responder readiness; no inventory or cancellation clock."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "redcross-sep12-request",
+      "source_id": "red-cross",
+      "source_url": "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja",
+      "source_locator": "12September,05:50",
+      "evidence_kind": "logistics_requested",
+      "event_local": "2021-09-12T05:50:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "112 requested additional logistics and adapted transport.",
+      "values": {
+        "beds": 400,
+        "hygiene_kits": 400,
+        "anti_COVID_kits": 400,
+        "adapted_vehicles": 3
+      },
+      "limitations": [
+        "Request only."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "redcross-sep12-dispatch",
+      "source_id": "red-cross",
+      "source_url": "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja",
+      "source_locator": "12September,08:27 and09:25",
+      "evidence_kind": "logistics_departed",
+      "event_local": "2021-09-12",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Adapted transport left Málaga08:27; supplies and six-person team left Córdoba09:25.",
+      "values": {
+        "transport_departed_local": "2021-09-12T08:27:00",
+        "logistics_departed_local": "2021-09-12T09:25:00",
+        "logistics_personnel": 6,
+        "estimated_journey_hours": [
+          4,
+          5
+        ]
+      },
+      "limitations": [
+        "Estimated journey is not observed arrival."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "redcross-ronda-setup",
+      "source_id": "red-cross",
+      "source_url": "https://www2.cruzroja.es/web/ahora/-/cronologia-incendio-de-sierra-bermeja",
+      "source_locator": "12September,20:21",
+      "evidence_kind": "shelter_setup_reported",
+      "event_local": "2021-09-12T20:21:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Ronda shelters had50 and20 beds set up, with120 in reserve.",
+      "values": {
+        "Polideportivo_San_Francisco_beds": 50,
+        "Centro_Civico_beds": 20,
+        "reserve_beds": 120,
+        "municipality": "Ronda"
+      },
+      "limitations": [
+        "Reserve beds not automatically installed capacity."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "cenem-mission-totals",
+      "source_id": "cenem-2021",
+      "source_url": "https://espacios.proteccioncivil.es/documents/20121/0/Memoria%20anual%20CENEM%202021.pdf/315f4515-a848-0bc3-cc2b-52715df38bf1",
+      "source_locator": "PDF p37 / printed p35, Annex1, Jubrique8September",
+      "evidence_kind": "retrospective_intervention_totals",
+      "event_local": "2021-09-08/2021-09-15",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "CENEM separates intervention days and mission counts.",
+      "values": {
+        "UME": {
+          "intervention_days": 3,
+          "personnel": 270,
+          "assets": 82
+        },
+        "MITECO": {
+          "intervention_days": 5,
+          "total_missions": 66,
+          "mission_categories_as_written": {
+            "AA": 31,
+            "ACT": 1,
+            "BRIF/A": 8,
+            "HK": 21,
+            "ACO": 3,
+            "UMAP": 2
+          }
+        },
+        "Guardia_Civil": {
+          "personnel": 320,
+          "ground_vehicles": 80,
+          "helicopters": 2,
+          "boats": 1
+        },
+        "Policia_Nacional": {
+          "personnel": 170
+        }
+      },
+      "limitations": [
+        "66 missions are not66 unique units or concurrent assets.",
+        "Aggregate270 UME differs from260 departure/shift total and120 daily table; scopes not reconciled."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "cenem-closures-and-evacuations",
+      "source_id": "cenem-2021",
+      "source_url": "https://espacios.proteccioncivil.es/documents/20121/0/Memoria%20anual%20CENEM%202021.pdf/315f4515-a848-0bc3-cc2b-52715df38bf1",
+      "source_locator": "PDF pp37–38 / printed pp35–36, Annex1, Jubrique",
+      "evidence_kind": "retrospective_consequences",
+      "event_local": "2021-09-08/2021-09-15",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "CENEM records2670 evacuations,1616 sheltered and10 road closures.",
+      "values": {
+        "evacuees": 2670,
+        "sheltered_reported": 1616,
+        "closed_roads": 10,
+        "AP7_included": true,
+        "power_cuts_reported": true
+      },
+      "limitations": [
+        "Whole-incident totals, not one timestamp; shelter definitions differ from Cruz Roja's own service counts."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "facilities-context",
+      "source_id": "facilities-2021-consultation",
+      "source_url": "https://www.juntadeandalucia.es/sites/default/files/2021-07/ESP%209%20CONSULTAS%20PREVIAS%20PLAN%20ESPECIAL%20ISTAN%20MARBELLLA%20INFOCA%28F%29%20%281%29.pdf",
+      "source_locator": "Antecedentes, opening paragraphs; indexed primary PDF excerpt",
+      "evidence_kind": "facility_roster_context",
+      "event_local": null,
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Consultation identifies existing CEDEFO facilities at Colmenar and Ronda.",
+      "values": {
+        "existing_CEDEFO_count": 2,
+        "municipalities": [
+          "Colmenar",
+          "Ronda"
+        ],
+        "proposed_new_CEDEFO_area": [
+          "Istán",
+          "Marbella"
+        ]
+      },
+      "limitations": [
+        "Indexed excerpt only; precise publication date not verified.",
+        "Proposed facility is not operational infrastructure; no staffing or unit availability supplied."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "dsn-demobilization-plan",
+      "source_id": "dsn-sep14",
+      "source_url": "https://www.dsn.gob.es/va/node/15849",
+      "source_locator": "10:00 14/09/2021 institutional update",
+      "evidence_kind": "reported_status_and_expected_demobilization",
+      "event_local": "2021-09-14",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "DSN reports269 UME personnel and82 assets; MITECO demobilization expected that morning.",
+      "values": {
+        "UME_personnel": 269,
+        "UME_assets": 82,
+        "MITECO_demobilization": "expected_morning"
+      },
+      "limitations": [
+        "Expected release is not observed release;269 differs from other source scopes.",
+        "Index-level verification only."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "control-vs-extinction",
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "source_locator": "PDF p3, §1 AIM; p44, §3.4.4",
+      "evidence_kind": "incident_control_milestone",
+      "event_local": "2021-09-14T06:45:00",
+      "event_timezone_explicit": false,
+      "location": null,
+      "coordinates": null,
+      "statement": "Fire declared controlled; final extinction occurred24October.",
+      "values": {
+        "final_extinction_local": "2021-10-24T19:00:00"
+      },
+      "limitations": [
+        "Red Cross14September wording says extinguished; do not use that as terminal truth.",
+        "October fact retained only to resolve September status semantics."
+      ],
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    }
+  ],
+  "operational_plan_index": [
+    {
+      "number": 1,
+      "pdf_page": 21,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-09T04:00:00",
+      "written_clock_raw": "4.00 a.m.",
+      "valid_until_local": "2021-09-09T08:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 2,
+      "pdf_page": 22,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-09T08:00:00",
+      "written_clock_raw": "8.00 a.m.",
+      "valid_until_local": "2021-09-09T14:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 3,
+      "pdf_page": 23,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-09T14:00:00",
+      "written_clock_raw": "2.00 p.m.",
+      "valid_until_local": "2021-09-09T22:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 4,
+      "pdf_page": 25,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-09T21:00:00",
+      "written_clock_raw": "9.00 p.m.",
+      "valid_until_local": "2021-09-10T11:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 5,
+      "pdf_page": 26,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-10T11:00:00",
+      "written_clock_raw": "11.00 a.m.",
+      "valid_until_local": "2021-09-10T22:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 6,
+      "pdf_page": 27,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-10T17:00:00",
+      "written_clock_raw": "5.00 p.m.",
+      "valid_until_local": "2021-09-10T22:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 7,
+      "pdf_page": 32,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-11T00:00:00",
+      "written_clock_raw": "12.00 a.m.",
+      "valid_until_local": "2021-09-11T08:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 8,
+      "pdf_page": 33,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-11T08:00:00",
+      "written_clock_raw": "08.00 a.m.",
+      "valid_until_local": "2021-09-11T21:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 9,
+      "pdf_page": 34,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-12T00:00:00",
+      "written_clock_raw": "12.00 a.m.",
+      "valid_until_local": "2021-09-12T08:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 10,
+      "pdf_page": 40,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-12T08:00:00",
+      "written_clock_raw": "08.00 a.m.",
+      "valid_until_local": "2021-09-12T21:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 11,
+      "pdf_page": 42,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-13T00:00:00",
+      "written_clock_raw": "12.00 a.m.",
+      "valid_until_local": "2021-09-13T10:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 12,
+      "pdf_page": 43,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-13T10:00:00",
+      "written_clock_raw": "10.00 a.m.",
+      "valid_until_local": "2021-09-13T21:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 13,
+      "pdf_page": 45,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-13T21:00:00",
+      "written_clock_raw": "9.00 p.m.",
+      "valid_until_local": "2021-09-14T08:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    },
+    {
+      "number": 14,
+      "pdf_page": 46,
+      "source_id": "technical-report",
+      "source_url": "https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/50446368/SierraBermeja_2021_FireReport_COR.pdf/d02c8d46-4006-d12d-ba0d-c6fae3a95afa?t=1657180348457",
+      "written_local": "2021-09-14T08:00:00",
+      "written_clock_raw": "8.00 a.m.",
+      "valid_until_local": "2021-09-14T22:00:00",
+      "clock_interpretation": "Source local clock interpreted;12.00a.m. interpreted as midnight from overnight validity.",
+      "evidence_kind": "synthesized_operational_plan",
+      "available_at_utc": null,
+      "actor_input_eligible": false
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "resource-count-scope",
+      "record_ids": [
+        "daily-participation-table",
+        "junta-sep13-shifts",
+        "ume-departure",
+        "cenem-mission-totals",
+        "dsn-demobilization-plan"
+      ],
+      "resolution": "Keep UME120 daily table,260 departure/two-shift update,269 DSN and270 CENEM as separate source claims; no averaging or substitute initial roster."
+    },
+    {
+      "id": "brif-start-date",
+      "record_ids": [
+        "daily-participation-table",
+        "op8-brif-assignment"
+      ],
+      "resolution": "Report prose starts BRIF on11September while MITECO ground category appears10September. Category identity or date cannot be assumed."
+    },
+    {
+      "id": "road-extents",
+      "record_ids": [
+        "dsn-sep9-night-and-air-plan",
+        "junta-sep13-road-closures",
+        "cenem-closures-and-evacuations"
+      ],
+      "resolution": "Sept9 AP7 km157–174 index status, Sept13 eight-road status and incident-total10 closures have distinct clocks/scopes."
+    },
+    {
+      "id": "red-cross-timing",
+      "source_ids": [
+        "red-cross"
+      ],
+      "resolution": "Red Cross reports level1 at03:37 on9September; other existing reports cite03:34. Primary activation order not recovered; do not silently choose or interpolate."
+    },
+    {
+      "id": "status-wording",
+      "record_ids": [
+        "control-vs-extinction"
+      ],
+      "source_ids": [
+        "red-cross",
+        "junta-final"
+      ],
+      "resolution": "Cruz Roja's14September extinguished wording conflicts with official control14September/final extinction24October; official distinctions retained."
+    },
+    {
+      "id": "daily-aircraft-arithmetic",
+      "record_ids": ["daily-participation-table"],
+      "resolution": "Figure22,13September lists24+20+4+1+1=50 aircraft but prints51 total. Preserve components and reported total separately; no missing aircraft invented."
+    }
+  ],
+  "real_gaps": [
+    {
+      "id": "initial-readiness",
+      "status": "not_found_in_reviewed_sources",
+      "needed": "Unit-by-unit on-duty roster at8September21:35, station/base, capability, crew strength, assignment to other incidents, maintenance and dispatchability."
+    },
+    {
+      "id": "unit-action-clocks",
+      "status": "not_found",
+      "needed": "Per-unit dispatch, en-route, arrival, task start/end, shift relief, rest and release clocks. Initial assignment list does not supply them."
+    },
+    {
+      "id": "unit-code-dictionary",
+      "status": "not_verified",
+      "needed": "2021 mapping of ME/MP/BRICA and other codes to unit type, base, staffed vehicle and crew size; duplicate assignments resolved against originals."
+    },
+    {
+      "id": "communications-delivery",
+      "status": "not_found",
+      "needed": "Nonpersonal timestamped message metadata, acknowledgement/readback, command-to-sector handoffs and warning receipt/coverage. No transcripts sought or retained."
+    },
+    {
+      "id": "communications-infrastructure",
+      "status": "not_found",
+      "needed": "Incident radio/channel/repeater plan, coverage/outage metadata and resource-specific telemetry distribution times. UMMT/UNASIF presence alone does not supply these."
+    },
+    {
+      "id": "provincial-2021-staffing",
+      "status": "primary_staffing_roster_not_retrieved",
+      "needed": "Authenticated2021 provincial staffing and facility allocation.2020/2022/current catalogues cannot validate2021 staffing; news reproductions excluded."
+    },
+    {
+      "id": "precise-locations",
+      "status": "not_found",
+      "needed": "Unit staging/arrival coordinates and exact operational sectors. Named roads/settlements are not geocoded; no station coordinates invented."
+    },
+    {
+      "id": "closure-order-chronology",
+      "status": "partial",
+      "needed": "Minute-level legal closure, emergency-access exceptions and reopening intervals, especially Sept8–9. Available dates and kilometer extents are status reports."
+    },
+    {
+      "id": "warning-and-evacuation-compliance",
+      "status": "partial",
+      "needed": "Order issue/receipt/implementation clocks by settlement, evacuation routes and people actually present. Aggregate totals are not compliance observations."
+    },
+    {
+      "id": "contemporaneous-source-access",
+      "status": "partial",
+      "needed": "Primary Sept8–9 INFOCA/112 bulletin originals and exact publication times; one Sept9 DSN index update found but full body unavailable."
+    },
+    {
+      "id": "full-operational-plans",
+      "status": "not_found",
+      "needed": "Report explicitly says plans are synthesized, not complete originals (PDFp14). Source publication2022 and later chronology cannot establish actor receipt in2021."
+    }
+  ],
+  "privacy_and_rights": {
+    "personal_names_retained": false,
+    "transcripts_retained": false,
+    "contact_details_or_credentials_retained": false,
+    "large_source_prose_retained": false,
+    "raw_web_pages_retained": false,
+    "publication_or_redistribution_cleared": false,
+    "temporary_PDF_renders_removed": true
+  },
+  "search_limitations": [
+    "Time-bounded primary-source search; not evidence that missing records do not exist.",
+    "Red Cross prior rawHTTP403 respected; web text only, no bypass.",
+    "No agency contact, information request, account/terms acceptance, paid service, agent delegation or simulator edit.",
+    "Only the permitted JSON and ignored runtime directory written."
+  ]
+}

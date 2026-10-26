@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "status": "acquired_verified",
+  "actor_input_eligible": false,
+  "historical_replay_ready": false,
+  "purpose": "Official 2021 registered municipal resident population for seven Sierra Bermeja incident municipalities; source sidecar for parent integration.",
+  "geography": {
+    "country": "ES",
+    "province": "Málaga",
+    "province_code": "29",
+    "level": "municipality",
+    "code_system": "INE five-digit municipality code: two-digit province plus three-digit municipality; leading zeros preserved as strings"
+  },
+  "measure": {
+    "name": "official_registered_municipal_population",
+    "definition": "Residents registered in the municipal Padrón, official annual revision; both sexes combined.",
+    "unit": "persons",
+    "source_unit_label": "Personas",
+    "sex": "Total",
+    "period": "2021",
+    "reference_date": "2021-01-01"
+  },
+  "dates": {
+    "reference_date": "2021-01-01",
+    "official_2021_release_date": "2021-12-23",
+    "official_2021_release_date_evidence": ["ine_2021_release_index", "boe_2021_declaration"],
+    "royal_decree_date": "2021-11-30",
+    "official_figures_effective_date": "2021-12-31",
+    "current_series_catalog_updated_at_utc": "2025-12-11T11:00:00Z",
+    "raw_http_last_modified_at_utc": "2025-12-11T10:00:09Z",
+    "acquisition_completed_at_utc": "2026-10-25T09:29:19.323160Z",
+    "metadata_checked_at_utc": "2026-10-25T09:30:00Z",
+    "publication_caveat": "The January 2021 reference date is not the publication date. These official figures were released after the September 2021 Sierra Bermeja incident. The downloaded file is a current historical series, not a preserved original 2021 release snapshot."
+  },
+  "sources": [
+    {
+      "source_id": "ine_malaga_table_2882",
+      "publisher": "Instituto Nacional de Estadística (INE)",
+      "title": "Málaga: Población por municipios y sexo.",
+      "operation": "Cifras oficiales de población de los municipios españoles: Revisión del Padrón Municipal",
+      "table_id": "2882",
+      "catalog_identifier": "urn:ine:es:TABLA:T3:29:2882",
+      "landing_page_url": "https://www.ine.es/jaxiT3/Tabla.htm?t=2882",
+      "download_url": "https://www.ine.es/jaxiT3/files/t/csv_bdsc/2882.csv",
+      "observed_download_url_evidence": {
+        "source_id": "official_distribution_catalog",
+        "observation": "Catalog semicolon-separated CSV distribution links directly to this exact INE URL; no download URL was constructed or guessed."
+      },
+      "status": "acquired_verified",
+      "raw_path": ".runtime/malaga-2021-population/ine-2882.csv",
+      "raw_absolute_path": "/tmp/wildfire-response-env-ops/.runtime/malaga-2021-population/ine-2882.csv",
+      "raw_size_bytes": 335371,
+      "raw_sha256": "77c670ebe8c1cc23cec1a1ba0e6439ff8bfaafaf725352ca27194f9404fd15f7",
+      "http_status": 200,
+      "effective_download_url": "https://www.ine.es/jaxiT3/files/t/csv_bdsc/2882.csv",
+      "http_response_date": "Sun, 25 Oct 2026 09:29:19 GMT",
+      "http_last_modified": "Thu, 11 Dec 2025 10:00:09 GMT",
+      "http_content_type": "text/plain;charset=ISO-8859-15",
+      "detected_encoding": "UTF-8 with BOM",
+      "encoding_note": "Payload decodes strictly as utf-8-sig despite the different HTTP charset label; accented municipal names are retained.",
+      "format": "CSV",
+      "delimiter": ";",
+      "columns": ["Municipios", "Sexo", "Periodo", "Total"],
+      "data_row_count": 9360,
+      "source_period_range": ["1996", "2025"],
+      "extracted_period_only": "2021",
+      "raw_vintage": "Current provincial historical series acquired in 2026; includes 2021 rows and later years. Later-year values were not substituted.",
+      "license_url": "https://www.ine.es/aviso_legal"
+    },
+    {
+      "source_id": "official_distribution_catalog",
+      "publisher": "datos.gob.es; dataset publisher INE",
+      "url": "https://datos.gob.es/es/catalogo/ea0042823-malaga-poblacion-por-municipios-y-sexo-anual-cifras-oficiales-de-poblacion-de-los-municipios-espanoles-revision-del-padron-municipal-identificador-api-2882",
+      "evidence": "Lists INE table 2882, the exact CSV distribution URL, Málaga geographic scope, annual frequency and current-series update date. Used for discovery and metadata, not municipal counts.",
+      "raw_saved": false
+    },
+    {
+      "source_id": "ine_2021_release_index",
+      "publisher": "Instituto Nacional de Estadística (INE)",
+      "url": "https://ine.es/dynt3/inebase/es/index.html?dh=1&padre=517",
+      "evidence": "2021 official Padrón results index lists last modification 23/12/2021 for population tables. INE publication catalog also assigns the 01/01/2021 edition to December 2021.",
+      "supporting_catalog_url": "https://www.ine.es/CDINEbase/consultar.do?id_oper=60",
+      "raw_saved": false
+    },
+    {
+      "source_id": "ine_measure_definition",
+      "publisher": "Instituto Nacional de Estadística (INE)",
+      "url": "https://www.ine.es/dyngs/INEbase/operacion.htm?c=Estadistica_C&cid=1254736177011&idp=1254734710990&menu=resultados",
+      "evidence": "INE defines the Padrón as the administrative register of municipal residents and the annual official municipal population by sex as referring to 1 January. Table 2882 explicitly labels units Personas.",
+      "raw_saved": false
+    },
+    {
+      "source_id": "boe_2021_declaration",
+      "publisher": "Boletín Oficial del Estado",
+      "document_id": "BOE-A-2021-21293",
+      "url": "https://www.boe.es/eli/es/rd/2021/11/30/1065",
+      "evidence": "Royal Decree 1065/2021 was published on 2021-12-23, declares the 2021-01-01 Padrón figures official with effects from 2021-12-31, and gives Málaga provincial total 1695651. Used for release timing and provincial cross-check, not municipal counts.",
+      "raw_saved": false
+    }
+  ],
+  "extraction": {
+    "source_id": "ine_malaga_table_2882",
+    "filters": {"Periodo": "2021", "Sexo": "Total"},
+    "municipality_codes": ["29051", "29041", "29064", "29057", "29065", "29052", "29023"],
+    "parsing": "Read unchanged raw CSV with Python csv.DictReader, delimiter semicolon, encoding utf-8-sig. Split Municipios at the first space; preserve the code as a string. Remove dot thousands separators from Total and parse an integer. Require one matching total per municipality.",
+    "source_line_number_convention": "One-based physical CSV line including the header; every data record occupies one line."
+  },
+  "municipalities": [
+    {"municipality_code": "29051", "name": "Estepona", "population_total": 71925, "unit": "persons", "reference_date": "2021-01-01", "source_id": "ine_malaga_table_2882", "source_label": "29051 Estepona", "source_total_text": "71.925", "source_line": 4326},
+    {"municipality_code": "29041", "name": "Casares", "population_total": 7342, "unit": "persons", "reference_date": "2021-01-01", "source_id": "ine_malaga_table_2882", "source_label": "29041 Casares", "source_total_text": "7.342", "source_line": 3246},
+    {"municipality_code": "29064", "name": "Jubrique", "population_total": 553, "unit": "persons", "reference_date": "2021-01-01", "source_id": "ine_malaga_table_2882", "source_label": "29064 Jubrique", "source_total_text": "553", "source_line": 5496},
+    {"municipality_code": "29057", "name": "Genalguacil", "population_total": 391, "unit": "persons", "reference_date": "2021-01-01", "source_id": "ine_malaga_table_2882", "source_label": "29057 Genalguacil", "source_total_text": "391", "source_line": 4866},
+    {"municipality_code": "29065", "name": "Júzcar", "population_total": 235, "unit": "persons", "reference_date": "2021-01-01", "source_id": "ine_malaga_table_2882", "source_label": "29065 Júzcar", "source_total_text": "235", "source_line": 5586},
+    {"municipality_code": "29052", "name": "Faraján", "population_total": 250, "unit": "persons", "reference_date": "2021-01-01", "source_id": "ine_malaga_table_2882", "source_label": "29052 Faraján", "source_total_text": "250", "source_line": 4416},
+    {"municipality_code": "29023", "name": "Benahavís", "population_total": 7829, "unit": "persons", "reference_date": "2021-01-01", "source_id": "ine_malaga_table_2882", "source_label": "29023 Benahavís", "source_total_text": "7.829", "source_line": 1806}
+  ],
+  "validation": {
+    "status": "passed",
+    "verified_municipality_count": 7,
+    "all_target_codes_in_province_29": true,
+    "unique_2021_total_row_per_target": true,
+    "each_target_male_plus_female_equals_total": true,
+    "selected_municipalities_resident_sum": 88525,
+    "selected_sum_is_incident_exposure_count": false,
+    "province_2021_municipality_count": 103,
+    "province_2021_sum_of_municipalities": 1695651,
+    "province_2021_source_total": 1695651,
+    "province_2021_boe_total": 1695651,
+    "province_totals_match": true,
+    "raw_sha256_and_size_verified": true,
+    "ignored_raw_directory_verified": true,
+    "blockers": []
+  },
+  "constraints": {
+    "counts_describe": "Whole-municipality registered residents only.",
+    "not_measures_of": ["at-risk population", "exposed population", "evacuated population", "people present during the incident"],
+    "settlement_allocation_performed": false,
+    "settlement_allocation_allowed": false,
+    "incident_time_availability_established": false,
+    "actor_input_ineligibility_reason": "Official publication followed the September 2021 incident, and municipal resident totals do not establish incident exposure or evacuation demand.",
+    "historical_replay_not_ready_reason": "Current historical series is not an as-of-incident snapshot; no incident-specific exposed population or settlement allocation has been established.",
+    "personal_or_contact_information_included": false,
+    "scope": "Only this JSON and the ignored raw acquisition directory were written. No simulator, agents, credentials, paid services, training, commits, pushes, posts or messages were used.",
+    "acquisition_notes": "Initial sandbox DNS lookup failed; the same observed public INE CSV URL downloaded successfully after approved network escalation. Raw HTTP headers were discarded to avoid retaining response cookies; only non-sensitive selected response metadata is recorded. No applicable AGENTS.md was found at /, /tmp, the sidecar repository root, or under data and .runtime."
+  }
+}

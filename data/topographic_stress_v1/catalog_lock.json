@@ -1,0 +1,19 @@
+{
+  "version": "wildfire-topographic-stress-catalog-v1",
+  "catalog_sha256": "a38970528b7119d598bee4a51038f01e9e4f6ec7948a8c7e55b3ec1bf2743444",
+  "prepared_inputs_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
+  "topographic_inputs_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+  "public_manifest_sha256": "8517863f1a85aafa6be0f0e6ac16b3ff865230e113613f09762f82f39a4280df",
+  "groups": 120,
+  "variants_per_group": 2,
+  "cases": 240,
+  "split_groups": {
+    "train": 80,
+    "validation": 20,
+    "test": 20
+  },
+  "source_groups": 1,
+  "split_basis": "Synthetic configuration groups on one landscape, not held-out real incidents or regions",
+  "conditions": "Source-clock initial night response; measured weather is context; all operational dynamics synthetic",
+  "physical_calibration_established": false
+}

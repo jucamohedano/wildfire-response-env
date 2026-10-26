@@ -1,0 +1,288 @@
+{
+  "version": "wildfire-external-context-source-catalog-v1",
+  "reviewed_on": "2026-10-25",
+  "actor_input_eligible": false,
+  "historical_replay_ready": false,
+  "status": "Source discovery and bounded geographic acquisition only; not simulator integration or historical reconstruction.",
+  "downloaded_pilot": {
+    "version": "wildfire-context-acquisition-pilot-v1",
+    "collected_at": "2026-10-25T08:05:10.210998+00:00",
+    "publisher": "Instituto de Estadística y Cartografía de Andalucía / DERA",
+    "collection_scope": "Current geographic pilot; not a 2021 reconstruction or complete provincial inventory",
+    "actor_input_eligible": false,
+    "records": [
+      {
+        "id": "fire_stations",
+        "url": "https://www.ideandalucia.es/services/DERA_g12_servicios/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=DERA_g12_servicios%3Ag12_29_ParqueBomberos&outputFormat=application%2Fjson&srsName=urn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&bbox=-7.6%2C36.6%2C-6.1%2C38.5%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&propertyName=id_dera%2Cnombre%2Cmunicipio%2Cprovincia%2Cgeom&count=500",
+        "requested_bbox_crs84": [
+          -7.6,
+          36.6,
+          -6.1,
+          38.5
+        ],
+        "requested_properties": [
+          "id_dera",
+          "nombre",
+          "municipio",
+          "provincia",
+          "geom"
+        ],
+        "request_feature_cap": 500,
+        "actor_input_eligible": false,
+        "joined_to_incidents": false,
+        "status": "downloaded",
+        "bytes": 5906,
+        "sha256": "17bbeb96595c24b71f48a16a5babb3710edb8310e1b334a4c686a634bc6a2b66",
+        "features": 20,
+        "number_matched": 20,
+        "number_returned": 20,
+        "response_crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "content_type": "application/json;charset=UTF-8",
+        "geometry_types": [
+          "MultiPoint"
+        ],
+        "provinces": [
+          "Cádiz",
+          "Huelva",
+          "Sevilla"
+        ],
+        "features_in_huelva_province": 11,
+        "coordinate_pairs_checked": 20,
+        "coordinate_bounds": [
+          -7.33929955,
+          36.61420837,
+          -6.05711089,
+          37.91397696
+        ],
+        "response_count_matches_total": true,
+        "coordinate_points_outside_requested_bbox": 2,
+        "spatial_selection": "Service-returned pilot selection, not an exact clipped footprint; two returned points lie outside the requested bbox. Verify and filter locally before geographic joins."
+      },
+      {
+        "id": "emergency_facilities",
+        "url": "https://www.ideandalucia.es/services/DERA_g12_servicios/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=DERA_g12_servicios%3Ag12_35_GestionEmergencias&outputFormat=application%2Fjson&srsName=urn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&bbox=-7.6%2C36.6%2C-6.1%2C38.5%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&propertyName=id_dera%2Cnombre%2Ctipo%2Cmunicipio%2Cprovincia%2Cgeom&count=500",
+        "requested_bbox_crs84": [
+          -7.6,
+          36.6,
+          -6.1,
+          38.5
+        ],
+        "requested_properties": [
+          "id_dera",
+          "nombre",
+          "tipo",
+          "municipio",
+          "provincia",
+          "geom"
+        ],
+        "request_feature_cap": 500,
+        "actor_input_eligible": false,
+        "joined_to_incidents": false,
+        "status": "downloaded",
+        "bytes": 884,
+        "sha256": "d00af4af6ab087facf00d1209b86c3e81b84dae840680b611cee2c333f154a18",
+        "features": 2,
+        "number_matched": 2,
+        "number_returned": 2,
+        "response_crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "content_type": "application/json;charset=UTF-8",
+        "geometry_types": [
+          "MultiPoint"
+        ],
+        "provinces": [
+          "Huelva"
+        ],
+        "features_in_huelva_province": 2,
+        "coordinate_pairs_checked": 2,
+        "coordinate_bounds": [
+          -6.95835626,
+          37.2537681,
+          -6.95744229,
+          37.25493394
+        ],
+        "response_count_matches_total": true,
+        "coordinate_points_outside_requested_bbox": 0
+      },
+      {
+        "id": "roads",
+        "url": "https://www.ideandalucia.es/services/DERA_g9_transport_com/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=DERA_g9_transport_com%3Ag09_14_RedCarreteras&outputFormat=application%2Fjson&srsName=urn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&bbox=-6.85%2C37.5%2C-6.55%2C37.75%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&propertyName=id_dera%2Cgeom&count=2000",
+        "requested_bbox_crs84": [
+          -6.85,
+          37.5,
+          -6.55,
+          37.75
+        ],
+        "requested_properties": [
+          "id_dera",
+          "geom"
+        ],
+        "request_feature_cap": 2000,
+        "actor_input_eligible": false,
+        "joined_to_incidents": false,
+        "status": "downloaded",
+        "bytes": 488484,
+        "sha256": "dae291d4ec3d8a38e75e127a4982bcf7ab909a1f8d5186b8f2ae33659ba22144",
+        "features": 1058,
+        "number_matched": 1058,
+        "number_returned": 1058,
+        "response_crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "content_type": "application/json;charset=UTF-8",
+        "geometry_types": [
+          "MultiLineString"
+        ],
+        "spatial_selection": "Features intersecting requested bbox; full geometries are not clipped",
+        "coordinate_pairs_checked": 11562,
+        "coordinate_bounds": [
+          -6.8613207,
+          37.49126379,
+          -6.53773905,
+          37.75873166
+        ],
+        "response_count_matches_total": true
+      }
+    ],
+    "limitations": [
+      "Current service snapshots; acquisition time is not feature observation or publication time.",
+      "Bboxes are pilot areas, not verified EGIF incident locations or a complete provincial inventory.",
+      "Emergency coordination facilities include maritime coordination and 112; not identified as CEDEFO or available fire crews.",
+      "Road geometries are not a validated routable graph and do not supply fire closures, speeds or travel time.",
+      "No terrain, weather, fuel, historical incident join or simulator input was added.",
+      "Source-level attribution and redistribution terms must be checked before publication."
+    ]
+  },
+  "sources": [
+    {
+      "id": "aemet",
+      "publisher": "AEMET",
+      "url": "https://opendata.aemet.es/dist/",
+      "access": "API key required; obtain via official portal.",
+      "purpose": "Station observations and historical climatology.",
+      "limits": [
+        "The documented historical climatology endpoint is daily, not minute-level wind or humidity.",
+        "Check historical hourly station coverage separately; recent observation endpoints are not an archive guarantee.",
+        "Retain station distance, elevation, units, timestamps, missingness and actual availability evidence."
+      ]
+    },
+    {
+      "id": "era5-land",
+      "publisher": "ECMWF / Copernicus Climate Change Service",
+      "url": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land?tab=overview",
+      "access": "CDS account, accepted dataset terms and configured access for API downloads.",
+      "purpose": "Hourly historical weather context; 0.1 degree grid, native resolution about 9 km.",
+      "limits": [
+        "Reanalysis estimates, not incident-scene measurements or historically available forecasts.",
+        "Derived humidity must be labelled derived and its inputs/formula retained.",
+        "Never assign availability_at equal to the historical weather valid time without evidence.",
+        "Interpolation cannot create observed minute-resolution gusts; engine wind-index conversion requires a separate validated adapter."
+      ]
+    },
+    {
+      "id": "ign-terrain",
+      "publisher": "IGN / CNIG",
+      "url": "https://pnoa.ign.es/pnoa-lidar/modelo-digital-del-terreno",
+      "access": "Official downloads and geographic coverage services; acquire one local tile/subset first.",
+      "purpose": "Elevation and slope from MDT products, initially MDT25.",
+      "limits": [
+        "Record acquisition/survey and product edition, CRS, horizontal/vertical units and nodata.",
+        "Modern elevation is context, not proof of historical road access or fire behavior."
+      ]
+    },
+    {
+      "id": "ign-reference",
+      "publisher": "IGN / CNIG",
+      "url": "https://www.ign.es/web/es/ign/portal/ide-area-nodo-ide-ign",
+      "access": "Official WFS services; national transport capabilities request timed out in this pilot.",
+      "purpose": "Transport, geographic names and administrative units.",
+      "limits": [
+        "Availability listed in documentation is not a successful download.",
+        "Road geometry does not establish speed, crew transit time, closures or a valid routing graph."
+      ]
+    },
+    {
+      "id": "dera",
+      "publisher": "Instituto de Estadística y Cartografía de Andalucía",
+      "url": "https://www.juntadeandalucia.es/institutodeestadisticaycartografia/dega/datos-espaciales-de-referencia-de-andalucia-dera",
+      "access": "Public WFS; three bounded GeoJSON extracts successfully acquired without credentials.",
+      "purpose": "Regional roads, public fire-station locations and emergency coordination facilities.",
+      "limits": [
+        "Current snapshots are not verified 2021 records.",
+        "Fire stations and coordination sites must not be relabelled CEDEFO or initial unit readiness.",
+        "The broad facility bbox includes neighboring provinces; 11 of 20 returned fire stations have Huelva province labels.",
+        "One road request returned a truncated 1001 of 1058 matches; the accepted request retrieved all 1058 and checked unique feature IDs.",
+        "Property selection requested only IDs, names, categories, municipality/province and geometry; no phone, email, postal address or contact URLs were retained."
+      ]
+    },
+    {
+      "id": "corine-2018",
+      "publisher": "Copernicus Land Monitoring Service",
+      "url": "https://land.copernicus.eu/en/products/corine-land-cover/clc2018",
+      "access": "Download by area / download API; authentication and exact selected distribution not yet tested.",
+      "purpose": "Historical land-cover classes; 100 m raster or vector, 2018 reference year.",
+      "limits": [
+        "44 land-cover classes and a 25 ha minimum mapping unit; not measured fuel moisture or a calibrated fuel model.",
+        "Pin the product edition as well as the reference year; later revisions may incorporate retrospective knowledge.",
+        "Land-cover-to-combustibility mapping remains an explicitly synthetic model assumption until validated."
+      ]
+    },
+    {
+      "id": "population",
+      "publisher": "INE / IGN",
+      "url": "https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736177010&idp=1254735572981",
+      "geographic_reference": "https://centrodedescargas.cnig.es/CentroDescargas/catalogo.do?Serie=NGMEN",
+      "access": "Annual INE downloads and geographic nomenclator; no population file downloaded in this pilot.",
+      "purpose": "Settlement names, codes, locations and resident counts.",
+      "limits": [
+        "Use a compatible reference year and join verified codes, not ambiguous names alone.",
+        "Registered population is not the number present during the incident, evacuation demand or compliance."
+      ]
+    },
+    {
+      "id": "cems",
+      "publisher": "Copernicus Emergency Management Service",
+      "url": "https://emergency.copernicus.eu/data/",
+      "example_activation": "https://mapping.emergency.copernicus.eu/activations/EMSR545/",
+      "access": "Public mapping products; vector download not tested in this pilot.",
+      "purpose": "Incident-specific fire extents, mapped affected areas and product delivery timestamps.",
+      "limits": [
+        "EMSR545 is a separate Malaga September 2021 incident, not a verified match to the existing four anchors.",
+        "Observation, production and delivery dates differ; final perimeters stay evaluator-only unless the simulated decision clock permits a genuinely received product.",
+        "Mapped perimeter is not ignition, continuous spread history, suppression attribution or evidence of optimal actions."
+      ]
+    },
+    {
+      "id": "infoca-capabilities",
+      "publisher": "Junta de Andalucía / INFOCA",
+      "url": "https://www.juntadeandalucia.es/organismos/sostenibilidadymedioambiente/servicios/actualidad/noticias/detalle/266014.html",
+      "access": "Public 2021 institutional description.",
+      "purpose": "Named Huelva CEDEFO sites and published provincial response capacities.",
+      "limits": [
+        "Province totals and facility names do not identify initial unit inventories, rosters, readiness or per-incident allocations.",
+        "No public minute-level dispatch, call transcripts, delivery/readback logs or population compliance records acquired."
+      ]
+    }
+  ],
+  "next_gates": [
+    "Verify an incident location, coordinate reference system, date/timezone and spatial uncertainty; do not use a province centroid as ignition.",
+    "Choose a single pilot incident with defensible geography and obtain same-area terrain, historical land cover and compatible settlement population.",
+    "Acquire a short hourly weather window, record observation versus reanalysis provenance and do not claim historical availability without evidence.",
+    "Verify exact-byte hashes, source licenses, CRS transformations, nodata, spatial bounds, temporal joins and source-to-derived lineage.",
+    "Build clipped offline context packs and versioned engine adapters separately; preserve frozen benchmarks and keep unverified data out of actor inputs.",
+    "Review routing, unit readiness, shelter, smoke, communication and suppression assumptions with domain evidence before expanding cases."
+  ],
+  "rights": "Raw extracts remain in ignored local evaluator storage. No dataset publication or redistribution clearance is claimed."
+}

@@ -1,0 +1,62 @@
+{
+  "version": "wildfire-protection-development-validation-v1",
+  "reviewed_on": "2026-10-25",
+  "issue": "https://github.com/jucamohedano/wildfire-response-env/issues/3",
+  "interface_version": "wildfire-protection-control-development-v1",
+  "task_version": "wildfire-protection-development-tasks-v1",
+  "scenario_version": "wildfire-protection-scenario-v1",
+  "reward_version": "wildfire-protection-safety-gate-v1",
+  "protocol_version": "wildfire-protection-instructions-v1",
+  "anchor_pack_sha256": "8af9ebdcd0d96c2ed6a270f29233a9bfbb994c3fa6da241cccb373a0c0181b88",
+  "task_manifest_sha256": "04952d95c2a0cfd781b39c8db1825c2a9d3574ed87a3c4281b9d7dafb9b4f48b",
+  "dataset_status": "12 synthetic development cases; four private EGIF anchors; no held-out split",
+  "validation": {
+    "root_tests_run": 10,
+    "core_tests_run": 253,
+    "core_tests_skipped": 9,
+    "failures": 0,
+    "new_protection_tests": 17,
+    "new_context_tests": 18,
+    "smoke_episodes": 18,
+    "full_episodes": 36,
+    "all_full_episodes_replayed": true,
+    "invalid_actions": 0,
+    "full_elapsed_seconds": 17.327,
+    "full_peak_rss_kib": 42584,
+    "installed_client": "passed",
+    "installed_protection_replay": "passed",
+    "prior_spanish_v1_replay": "passed",
+    "in_person_canonical_episode": "passed in dedicated integration test; not used by these baseline cohort rollouts",
+    "compute": "One sequential CPU rollout worker, no paid inference, GPU or live messages; local validation timing, not isolated throughput benchmarking"
+  },
+  "policies": {
+    "passive": {"cases": 12, "reward_total": 2.0, "all_objectives_met": 0,
+      "evidence_triage": 0, "population_safety": 4, "incident_resolved": 0, "communication_discipline": 12},
+    "evacuate": {"cases": 12, "reward_total": 11.75, "all_objectives_met": 11,
+      "evidence_triage": 12, "population_safety": 12, "incident_resolved": 11, "communication_discipline": 12},
+    "shelter": {"cases": 12, "reward_total": 11.0, "all_objectives_met": 11,
+      "evidence_triage": 12, "population_safety": 11, "incident_resolved": 11, "communication_discipline": 12}
+  },
+  "unsafe_counterexample": {
+    "case_id": "protect-dev-002-v2", "policy": "shelter", "simulated_people_exposed": 150,
+    "scalar_reward": 0.0, "evidence_triage": true, "communication_discipline": true,
+    "incident_resolved": false, "population_safety": false,
+    "comparison": "Evacuation-first has no exposed people and score 0.75 here, but still unresolved fire. Not a proof of optimality, infeasibility or real-world tactic superiority."
+  },
+  "data_readiness": {
+    "anchor_quality_reports": 4, "external_context_status": "not_provided",
+    "readiness_for_join": false, "historical_replay_ready": false,
+    "actor_input_eligible": false,
+    "note": "Gate validates declared metadata only. No real weather/terrain data acquired or joined in this increment."
+  },
+  "limits": [
+    "Shelter/exposure are an uncalibrated abstract nearby-fire smoke proxy, not medical, building or dispersion predictions.",
+    "A simulated acknowledgement is not proof of human comprehension or actual protection.",
+    "In-person warning service/range and broadcast faults are exercise assumptions; full crew/route/aviation safety is not modelled.",
+    "Unsafe outcomes receive zero scalar credit, but this gate is not a calibrated operational utility.",
+    "The physics/reward differ from Spanish v1; do not compare scalar scores across modes.",
+    "No trained model, held-out generalisation, expert demonstrations or optimal-action labels are claimed.",
+    "Actual source/row provenance, station matching/freshness, weather/geographic joins, resource-code interpretation and domain validation remain later gates.",
+    "Existing frozen benchmark hashes and prior Spanish v1 replay remain unchanged; publication rights remain unresolved."
+  ]
+}

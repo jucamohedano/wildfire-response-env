@@ -6,6 +6,7 @@ import time
 
 from ...director.policy import DEFAULT_MODEL, OpenRouterTransport
 from .contract import CONTRACT_VERSION, action_schema, parse_action, public_context
+from .diagnostics import failure_diagnostics
 
 INSTRUCTIONS = '''You are the director of a synthetic regional wildfire response, not a real dispatcher.
 Protect people and resolve the incident while limiting terrain damage, unnecessary
@@ -39,10 +40,25 @@ and unscored. No live calls, real messages or real emergency instructions are is
 
 
 class RegionalDirectorPolicy:
-    def __init__(self, model=DEFAULT_MODEL, max_calls=16, max_tokens=4096, transport=None,
-                 allow_provider=False, interval=3.1, tool_mode='forced', decision_limit=60):
+    contract_version = CONTRACT_VERSION
+    instructions = INSTRUCTIONS
+    project_context = staticmethod(public_context)
+    build_action_schema = staticmethod(action_schema)
+    parse_model_action = staticmethod(parse_action)
+
+    def core_action(self, action):
+        return action
+
+    def configure_request(self, payload):
+        return payload
+
+    def validate_model(self, model):
         if not isinstance(model, str) or not model.endswith(':free'):
             raise ValueError('Only explicit :free model IDs are permitted')
+
+    def __init__(self, model=DEFAULT_MODEL, max_calls=16, max_tokens=4096, transport=None,
+                 allow_provider=False, interval=3.1, tool_mode='forced', decision_limit=60):
+        self.validate_model(model)
         if (type(max_calls) is not int or not 1 <= max_calls <= 480
                 or type(max_tokens) is not int or not 256 <= max_tokens <= 8192
                 or isinstance(interval, bool) or not isinstance(interval, (int, float))
@@ -62,13 +78,13 @@ class RegionalDirectorPolicy:
         self.last_call = None
 
     def __call__(self, observation, feedback=None, check_action=None):
-        context = public_context(observation)
+        context = self.project_context(observation)
         context['prior_actions'] = copy.deepcopy(self.history[-3:])
         context['last_action_error'] = str(feedback['error'])[:200] if feedback and feedback.get('error') else None
         context['episode_budget'] = dict(decision_limit=self.decision_limit,
             decisions_remaining=max(0, self.decision_limit-context['decision']), ticks_per_action=2,
             requests_remaining_at_decision_start=self.max_calls-self.calls)
-        messages = [dict(role='system', content=INSTRUCTIONS),
+        messages = [dict(role='system', content=self.instructions),
                     dict(role='user', content=json.dumps(context, separators=(',', ':'), allow_nan=False))]
         checks = 0
         while True:
@@ -82,7 +98,7 @@ class RegionalDirectorPolicy:
             tools = [dict(type='function', function=dict(name=name,
                 description='Advance the simulation with this action' if name == 'submit_action' else
                             'Check this draft without advancing time or predicting outcomes',
-                parameters=action_schema(context))) for name in names]
+                parameters=self.build_action_schema(context))) for name in names]
             payload = dict(model=self.model, temperature=0, max_tokens=self.max_tokens,
                 reasoning=dict(enabled=False), parallel_tool_calls=False,
                 provider=dict(allow_fallbacks=False, require_parameters=True, max_price=dict(prompt=0, completion=0)),
@@ -91,10 +107,11 @@ class RegionalDirectorPolicy:
                 payload['tool_choice'] = 'required'
                 for tool in tools:
                     tool['function']['strict'] = True
+            payload = self.configure_request(payload)
             self.calls += 1
             started = self.last_call = time.monotonic()
             record = dict(request=self.calls, minute=context['minute'], decision=context['decision'],
-                          requested_model=self.model, contract_version=CONTRACT_VERSION,
+                          requested_model=self.model, contract_version=self.contract_version,
                           tool_mode=self.tool_mode, protocol_error=None)
             self.records.append(record)
             try:
@@ -104,28 +121,34 @@ class RegionalDirectorPolicy:
                 raise
             finally:
                 record['seconds'] = round(time.monotonic()-started, 3)
+            validation_stage = 'completion_envelope'
             try:
                 record.update(served_model=response.get('model'), usage=response.get('usage', {}))
                 choice = response['choices'][0]
+                validation_stage = 'tool_call_envelope'
                 calls = choice['message']['tool_calls']
                 if choice.get('finish_reason') != 'tool_calls' or len(calls) != 1:
                     raise ValueError('Expected exactly one complete tool call')
                 call = calls[0]
+                validation_stage = 'tool_selection'
                 name = call['function']['name']
                 if name not in names or call.get('type') != 'function':
                     raise ValueError('Unknown or unavailable tool')
-                action = parse_action(call['function']['arguments'])
+                validation_stage = 'action_arguments'
+                action = self.parse_model_action(call['function']['arguments'])
                 record.update(tool=name, proposal=copy.deepcopy(action))
                 if name == 'submit_action':
                     self.history.append(copy.deepcopy(action))
                     return action
+                validation_stage = 'check_call_id'
                 identifier = call.get('id')
                 if not isinstance(identifier, str) or not identifier or len(identifier) > 200:
                     raise ValueError('Check tool needs a bounded call ID')
-            except (KeyError, IndexError, TypeError, ValueError, AttributeError, RecursionError):
+            except (KeyError, IndexError, TypeError, ValueError, AttributeError, RecursionError) as error:
                 record['protocol_error'] = 'missing_or_invalid_named_action'
+                record['response_diagnostics'] = failure_diagnostics(response, error, validation_stage, self.transport)
                 return {'invalid_model_action': record['protocol_error']}
-            result = check_action(action)
+            result = check_action(self.core_action(action))
             result = {key: copy.deepcopy(result[key]) for key in ('valid', 'error', 'remaining_checks', 'scope')}
             record['action_check'] = result
             checks += 1

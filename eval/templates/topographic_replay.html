@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wildfire control room · Scenario replay</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#edf3ef;background:#101a18;font-size:14px}
+*{box-sizing:border-box}body{margin:0}button,select,input{font:inherit}button,select{color:inherit;background:#21342e;border:1px solid #40584e;border-radius:6px;padding:9px 12px;cursor:pointer}button:hover,select:hover{background:#30483f}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #a6d9c1;outline-offset:3px}a{color:#b8dbc7}header{max-width:1450px;margin:auto;padding:23px 28px 18px;display:flex;justify-content:space-between;gap:20px;align-items:center}.eyebrow{font-size:11px;letter-spacing:2px;color:#a7bcb1;text-transform:uppercase}h1{font-size:27px;font-weight:550;letter-spacing:-.7px;margin:7px 0}h2{font-size:14px;font-weight:600;margin:0 0 13px}.subtle{color:#a8bdb2;font-size:12px;line-height:1.5}.badge{display:inline-block;font-size:11px;padding:5px 9px;border:1px solid #4b6358;border-radius:20px;color:#c5d8cd;white-space:nowrap}.shell{max-width:1450px;padding:0 28px 22px;margin:auto}.brief{display:flex;justify-content:space-between;align-items:center;gap:18px;border-top:1px solid #2b4037;border-bottom:1px solid #2b4037;padding:13px 0 15px;margin-bottom:19px}.brief p{margin:4px 0;max-width:790px;line-height:1.5}.columns{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:22px}.map-panel{min-width:0;background:#15231e;border:1px solid #30483d;border-radius:9px;overflow:hidden}.map-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid #30483d}.map-title{font-weight:600}.map-toolbar select{font-size:12px;padding:7px}.map-wrap{position:relative}canvas{display:block;width:100%;height:clamp(380px,56vh,650px);touch-action:manipulation}.hover-info{height:25px;font-size:11px;color:#adbbb2;padding:0 18px}.legend{display:flex;flex-wrap:wrap;gap:13px;padding:7px 17px 15px;font-size:11px;color:#c2d1c8}.swatch{width:10px;height:10px;display:inline-block;margin-right:5px;vertical-align:middle;background:#ff9955}.blue{background:#91bce2}.mint{background:#a4ddbb}.claim{background:transparent;border:1px dashed #f3d596}.terrain{background:#64775a}.controls{display:flex;gap:10px;align-items:center;padding:12px 15px;border-top:1px solid #30483d}.controls button{padding:8px 12px}.controls input{flex:1;min-width:40px;accent-color:#a5d7b6}.controls select{padding:7px;font-size:12px}.time{font-variant-numeric:tabular-nums;font-size:12px;white-space:nowrap}.metrics{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #30483d}.metric{padding:13px 16px}.metric+.metric{border-left:1px solid #30483d}.metric .number{font-size:24px;font-variant-numeric:tabular-nums;margin:3px 0}.metric .label{font-size:10px;color:#a9bfb1;text-transform:uppercase;letter-spacing:1px}.inspector{display:flex;flex-direction:column;gap:20px;max-height:calc(56vh + 213px);overflow:auto;padding-right:6px}.item{padding:10px 0;border-bottom:1px solid #2a3e34}.item:first-child{padding-top:0}.item:last-child{border:0}.item-title{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:600;margin-bottom:5px}.state{color:#b5ddc6;font-weight:400;text-align:right}.state.danger{color:#ffb09d}.report{font-size:12px;line-height:1.5;color:#d3ded8}.timestamp{font-size:10px;letter-spacing:.3px;color:#8fa79a}.events{margin-top:20px;border-top:1px solid #30483d;padding-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:25px}.events .list{max-height:170px;overflow:auto}.event{padding:6px 0;font-size:12px;line-height:1.5;color:#c7d7cc}.minute{display:inline-block;min-width:40px;color:#91b8a0;font-variant-numeric:tabular-nums}footer{margin-top:20px;color:#8fa79a;font-size:11px;line-height:1.6}.finished{color:#b8e1c4}.note{max-width:680px}.north{font-size:11px;color:#b5c9ba}.policy-choice{display:flex;gap:8px;align-items:center;flex-shrink:0}.policy-choice label{font-size:11px;color:#abc1b2}.policy-choice select{font-size:12px}@media(max-width:950px){header,.shell{padding-left:17px;padding-right:17px}.columns{grid-template-columns:1fr}.inspector{display:grid;grid-template-columns:1fr 1fr;max-height:none;overflow:visible}.brief{align-items:flex-start;flex-direction:column}canvas{height:480px}.events{grid-template-columns:1fr}.metric{padding:12px}.map-toolbar{flex-wrap:wrap}}@media(max-width:530px){h1{font-size:23px}.inspector{grid-template-columns:1fr}canvas{height:390px}.badge{display:none}.controls{gap:7px;padding:10px 8px}.controls button{padding:7px}.controls select{max-width:57px}.time{font-size:10px}}
+canvas{width:100%;max-width:640px;height:auto;aspect-ratio:1;margin:auto}
+@media(max-width:530px){header{padding-top:16px;padding-bottom:12px}.columns{grid-template-columns:minmax(0,1fr)}.brief p{font-size:12px}.brief .subtle{font-size:11px}.metric .number{font-size:21px}.metric .subtle{font-size:10px}.hover-info{height:auto;min-height:25px}.controls{flex-wrap:wrap}.controls input{order:1;flex-basis:100%}.map-toolbar select{max-width:100%}.item-title{overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+<header><div><div class="eyebrow">Wildfire ops · private evaluator replay</div><h1>One smoke report. One response.</h1><div class="subtle">Sierra Bermeja study landscape · seeded synthetic scenario · 500 m grid</div></div><span class="badge" id="verification">Replay verified</span></header>
+<div class="shell">
+<section class="brief"><div><p>A caller reports smoke near the West population group. Watch dispatch, readback, resource arrival and the delivered evacuation order.</p><div class="subtle">Controller: deterministic template baseline, not a language model. Switch to “No action” to compare the same initial scenario.</div></div><div class="policy-choice"><label for="policy">Response</label><select id="policy"><option value="response">Dispatcher baseline</option><option value="passive">No action</option></select></div></section>
+<div class="columns">
+<main class="map-panel">
+<div class="map-toolbar"><div><span class="map-title">Scenario map</span><span class="subtle" id="map-description"></span></div><select id="perspective" aria-label="Map perspective"><option value="world">Simulator truth · evaluator only</option><option value="evidence">Control-centre evidence only</option></select></div>
+<div class="metrics"><div class="metric"><div class="label">Simulation time</div><div class="number" id="clock">00:00</div><div class="subtle" id="clock-note">Model minutes</div></div><div class="metric"><div class="label">People exposed</div><div class="number" id="exposed">0 / 350</div><div class="subtle">Abstract scenario outcome</div></div><div class="metric"><div class="label" id="fire-label">Burning cells</div><div class="number" id="fire-count">1</div><div class="subtle" id="episode-status">Initial smoke report</div></div></div>
+<div class="map-wrap"><canvas id="map" width="1050" height="1050" aria-label="Animated wildfire grid with source-derived elevation, fire cells, synthetic population groups and confirmed on-scene responders"></canvas></div>
+<div class="hover-info" id="hover">Point at a cell to inspect its height and current evidence.</div>
+<div class="legend"><span><i class="swatch terrain"></i>Height shading</span><span><i class="swatch"></i><span id="fire-legend">Fire</span></span><span><i class="swatch claim"></i>Unconfirmed report</span><span><i class="swatch blue"></i>Population / refuge</span><span><i class="swatch mint"></i>On-scene responders</span></div>
+<div class="controls"><button id="play" aria-label="Play replay">Play</button><button id="restart" aria-label="Restart replay">Reset</button><span class="time" id="elapsed">0 / 44 min</span><input id="scrubber" type="range" min="0" max="1" value="0" aria-label="Replay frame"><select id="speed" aria-label="Playback speed"><option value="1000">1×</option><option value="500" selected>2×</option><option value="200">5×</option></select></div>
+</main>
+<aside class="inspector">
+<section><h2>Received reports</h2><div id="reports"></div></section>
+<section><h2>Population</h2><div id="people"></div></section>
+<section><h2>Resources &amp; orders</h2><div id="resources"></div></section>
+<section><h2>Weather context</h2><div class="subtle" id="weather"></div></section>
+</aside></div>
+<section class="events"><div><h2>Latest committed action</h2><div class="list" id="actions"></div></div><div><h2>Delivered events &amp; acknowledgements</h2><div class="list" id="events"></div></div></section>
+<footer><strong>Recorded simulation, not a live forecast or historical incident reconstruction.</strong> Playback uses actual engine states at committed decisions; it does not interpolate fire or invent vehicle positions. Units appear on the map only when confirmed on scene. Other movements are abstract timed states. “Simulator truth” is evaluator-only and is never supplied to the model. Experimental slope affects fire probabilities; roads, fleet, reports, population, communications and response effects remain synthetic. Each seed/policy replay was verified against the simulator.</footer>
+</div>
+<script id="replay-data" type="application/json">__REPLAY_DATA__</script>
+<script>
+"use strict";
+const data=JSON.parse(document.getElementById("replay-data").textContent);
+const elements=Object.fromEntries(["map","policy","perspective","play","restart","scrubber","speed","clock","clock-note","elapsed","exposed","fire-count","fire-label","fire-legend","episode-status","reports","people","resources","actions","events","weather","hover","verification","map-description"].map(name=>[name,document.getElementById(name)]));
+const context=elements.map.getContext("2d");
+let frameIndex=0, timer=null, geometry=null;
+const width=data.grid.width, height=data.grid.height;
+const heights=data.heights.flat(), minimum=Math.min(...heights), maximum=Math.max(...heights);
+const currentRun=()=>data.runs.find(run=>run.policy===elements.policy.value);
+const currentFrame=()=>currentRun().frames[frameIndex];
+const pretty=value=>String(value??"").replaceAll("_"," ");
+const groupName=identifier=>identifier.endsWith("west")?"West group":"East group";
+function line(parent,text,className="subtle"){const item=document.createElement("div");item.className=className;item.textContent=text;parent.append(item);return item;}
+function item(parent,title,state,detail,danger=false){const section=document.createElement("div");section.className="item";const heading=document.createElement("div");heading.className="item-title";line(heading,title,"");line(heading,state,danger?"state danger":"state");section.append(heading);if(detail)line(section,detail);parent.append(section);return section;}
+function point(column,row){return [geometry.left+(column+.5)*geometry.cell,geometry.top+(row+.5)*geometry.cell];}
+function label(text,column,row,color,offset=0){const [east,north]=point(column,row);context.font="600 15px system-ui";context.lineWidth=4;context.strokeStyle="#12201b";context.strokeText(text,east+12,north-12+offset);context.fillStyle=color;context.fillText(text,east+12,north-12+offset);}
+function draw(){
+ const frame=currentFrame(), world=elements.perspective.value==="world";
+ const cell=Math.min((elements.map.width-120)/width,(elements.map.height-76)/height);
+ geometry={cell,left:(elements.map.width-width*cell)/2,top:28};
+ context.clearRect(0,0,elements.map.width,elements.map.height);
+ context.fillStyle="#15231e";context.fillRect(0,0,elements.map.width,elements.map.height);
+ for(let row=0;row<height;row++)for(let column=0;column<width;column++){
+  const fraction=(data.heights[row][column]-minimum)/Math.max(1,maximum-minimum);
+  const red=Math.round(28+106*fraction),green=Math.round(64+70*fraction),blue=Math.round(53+43*fraction);
+  context.fillStyle=`rgb(${red},${green},${blue})`;context.fillRect(geometry.left+column*cell,geometry.top+row*cell,cell+.3,cell+.3);
+ }
+ context.strokeStyle="rgba(225,240,225,.08)";context.lineWidth=.6;
+ for(let column=0;column<=width;column++){context.beginPath();context.moveTo(geometry.left+column*cell,geometry.top);context.lineTo(geometry.left+column*cell,geometry.top+height*cell);context.stroke();}
+ for(let row=0;row<=height;row++){context.beginPath();context.moveTo(geometry.left,geometry.top+row*cell);context.lineTo(geometry.left+width*cell,geometry.top+row*cell);context.stroke();}
+ context.strokeStyle="#93a883";context.setLineDash([4,5]);context.strokeRect(geometry.left+2*cell,geometry.top+2*cell,(width-4)*cell,(height-4)*cell);context.setLineDash([]);
+ const fires=world?frame.world_fire:frame.sensor_memory.map(sample=>({column:sample.x,row:sample.y,heat:sample.burning?1:0,burned:0,stale:frame.minute-sample.observed_at>4}));
+ for(const fire of fires){const east=geometry.left+fire.column*cell,north=geometry.top+fire.row*cell;if(fire.heat>0){context.fillStyle=fire.stale?"#967b5b":"#ff9955";context.fillRect(east+1,north+1,cell-2,cell-2);context.fillStyle=fire.stale?"#b5a088":"#ffe5a5";context.beginPath();context.arc(east+cell/2,north+cell/2,cell*.18,0,Math.PI*2);context.fill();}else if(fire.burned>0){context.fillStyle="#3b3430";context.fillRect(east+1,north+1,cell-2,cell-2);}}
+ for(const report of frame.reports){if(!report.location)continue;const observed=frame.sensor_memory.find(sample=>sample.x===report.location[0]&&sample.y===report.location[1]&&sample.observed_at>=report.observed_at&&frame.minute-sample.observed_at<=4);if(observed)continue;const [east,north]=point(...report.location);context.strokeStyle="#f3d596";context.lineWidth=2;context.setLineDash([4,4]);context.beginPath();context.arc(east,north,cell*.85,0,Math.PI*2);context.stroke();context.setLineDash([]);}
+ for(const group of frame.districts){
+  const [refugeEast,refugeNorth]=point(...group.refuge),[east,north]=point(...group.position),[homeEast,homeNorth]=point(...group.home);
+  context.strokeStyle="#91bce2";context.lineWidth=1;context.setLineDash([3,5]);context.beginPath();context.moveTo(homeEast,homeNorth);context.lineTo(refugeEast,refugeNorth);context.stroke();context.setLineDash([]);
+  context.strokeStyle="#91bce2";context.strokeRect(refugeEast-5,refugeNorth-5,10,10);label("Refuge",...group.refuge,"#a3c5df",20);
+  context.fillStyle=group.exposed?"#f28a7d":"#a6ccee";context.beginPath();context.arc(east,north,8,0,Math.PI*2);context.fill();context.strokeStyle="#12201b";context.lineWidth=2;context.stroke();label(`${groupName(group.id)} · ${group.population}`,...group.position,"#d9e7f2");
+ }
+ for(const unit of frame.resources){if(!["on_scene","warning_service"].includes(unit.state)||!unit.target)continue;const [east,north]=point(...unit.target);context.fillStyle="#b4edc6";context.strokeStyle="#173023";context.lineWidth=2;if(unit.kind==="engine"){context.fillRect(east-8,north-5,16,10);context.strokeRect(east-8,north-5,16,10);}else{context.beginPath();context.arc(east,north,5,0,Math.PI*2);context.fill();context.stroke();}label(unit.kind,...unit.target,"#cff6d8",-16);}
+ context.font="12px system-ui";context.fillStyle="#b5cbbd";context.fillText("N ↑",geometry.left-37,geometry.top+12);context.fillText(`500 m cells · ${width} × ${height}`,geometry.left,geometry.top+height*cell+25);context.fillText(`Mean height: ${Math.round(minimum)}–${Math.round(maximum)} m`,geometry.left,geometry.top+height*cell+43);
+ context.fillStyle="#d8e5d9";context.fillRect(geometry.left+width*cell-2*cell,geometry.top+height*cell+18,2*cell,2);context.fillText("1 km",geometry.left+width*cell-2*cell,geometry.top+height*cell+37);
+}
+function refresh(){
+ const run=currentRun(),frame=currentFrame(),world=elements.perspective.value==="world",last=run.frames.at(-1);
+ elements.scrubber.max=run.frames.length-1;elements.scrubber.value=frameIndex;
+ elements.clock.textContent=`${String(Math.floor(frame.minute/60)).padStart(2,"0")}:${String(frame.minute%60).padStart(2,"0")}`;
+ elements["clock-note"].textContent=`${frame.minute} model minutes · decision ${frame.decision}`;
+ elements.elapsed.textContent=`${frame.minute} / ${last.minute} min`;
+ const population=frame.districts.reduce((sum,group)=>sum+group.population,0),exposed=frame.districts.reduce((sum,group)=>sum+group.exposed,0);
+ elements.exposed.textContent=`${exposed} / ${population}`;
+ elements["fire-label"].textContent=world?"Burning cells":"Fresh observed fires";
+ elements["fire-legend"].textContent=world?"Fire":"Observed fire · muted when stale";
+ elements["fire-count"].textContent=world?frame.world_fire.filter(cell=>cell.heat>0).length:frame.sensor_memory.filter(cell=>cell.burning&&frame.minute-cell.observed_at<=4).length;
+ elements["episode-status"].textContent=frame.boundary_censored?"Boundary limit · censored":frame.terminated?"Episode complete":frame.truncated?"Decision horizon reached":"Response in progress";
+ elements["map-description"].textContent=world?" · private world state":" · reports and sensors only";
+ elements.verification.textContent=run.verified?"Replay verified · slope on":"Unverified recording";
+ for(const name of ["reports","people","resources","actions","events"])elements[name].replaceChildren();
+ for(const report of frame.reports){const section=item(elements.reports,`${report.channel.replace("synthetic_","")} · ${report.id}`,`received ${report.received_at}m`,null);line(section,report.text,"report");line(section,`Observed ${report.observed_at}m · ${report.location?"cell "+report.location.join(", "):"location unknown"}`,"timestamp");}
+ for(const group of frame.districts){const latest=frame.protection_orders.filter(order=>order.recipient===group.id).at(-1);item(elements.people,`${groupName(group.id)} · ${group.population}`,pretty(group.status),latest?`${pretty(latest.action)} · ${pretty(latest.status)}${latest.executed_at!==null?" · executed "+latest.executed_at+"m":""}`:"No population order delivered",group.exposed>0);}
+ for(const unit of frame.resources){const target=unit.target?`Target ${unit.target.join(", ")}`:"Off-map exercise base";const state=pretty(unit.state)+(unit.kind==="aircraft"&&!frame.aircraft_operable?" · grounded":"");item(elements.resources,unit.id,state,`${target}${unit.water_litres?" · "+unit.water_litres+" L":""}${unit.due_at!==null?" · due "+unit.due_at+"m":""}`);}
+ const latestWeather=frame.weather.records.at(-1);elements.weather.textContent=`Engine wind: [${frame.wind.join(", ")}] relative east/south vector. ${latestWeather?"Estepona station: "+latestWeather.wind_speed_m_s+" m/s; "+latestWeather.temperature_c+" °C. ":""}Station weather is context only, not front-weather physics.`;
+ const actionEntries=Object.entries(frame.action).filter(([key,value])=>Array.isArray(value)&&value.length);
+ if(!actionEntries.length)line(elements.actions,frame.minute===0?"Initial observation; no action committed yet.":"Wait / continue existing orders.","event");
+ for(const [name,values] of actionEntries)for(const value of values)line(elements.actions,`${pretty(name)}: ${typeof value==="string"?value:Object.entries(value).map(([key,item])=>pretty(key)+"="+(Array.isArray(item)?item.join(","):item??"none")).join(" · ")}`,"event");
+ for(const event of [...frame.acknowledgements].reverse().slice(0,8)){const row=document.createElement("div");row.className="event";line(row,`${event.minute}m`,"minute");const text=document.createElement("span");text.textContent=`${pretty(event.kind)} · ${event.resource_id??event.order_id??event.recipient??""}`;row.append(text);elements.events.append(row);}
+ if(!frame.acknowledgements.length)line(elements.events,"No acknowledgements received yet.","event");
+ draw();
+}
+function pause(){if(timer!==null)clearInterval(timer);timer=null;elements.play.textContent="Play";elements.play.setAttribute("aria-label","Play replay");}
+function play(){if(frameIndex>=currentRun().frames.length-1)frameIndex=0;pause();elements.play.textContent="Pause";elements.play.setAttribute("aria-label","Pause replay");timer=setInterval(()=>{frameIndex++;refresh();if(frameIndex>=currentRun().frames.length-1)pause();},Number(elements.speed.value));refresh();}
+elements.play.addEventListener("click",()=>timer===null?play():pause());
+elements.restart.addEventListener("click",()=>{pause();frameIndex=0;refresh();});
+elements.scrubber.addEventListener("input",()=>{pause();frameIndex=Number(elements.scrubber.value);refresh();});
+elements.policy.addEventListener("change",()=>{pause();frameIndex=0;refresh();});
+elements.perspective.addEventListener("change",refresh);
+elements.speed.addEventListener("change",()=>{if(timer!==null)play();});
+elements.map.addEventListener("mousemove",event=>{const bounds=elements.map.getBoundingClientRect(),east=(event.clientX-bounds.left)*elements.map.width/bounds.width,north=(event.clientY-bounds.top)*elements.map.height/bounds.height,column=Math.floor((east-geometry.left)/geometry.cell),row=Math.floor((north-geometry.top)/geometry.cell);if(column<0||column>=width||row<0||row>=height)return;elements.hover.textContent=`Cell ${column}, ${row} · mean height ${data.heights[row][column].toFixed(1)} m · fuel code ${data.fuel_classes[row][column]||"unknown (synthetic fallback)"}`;});
+refresh();
+</script>
+</body>
+</html>

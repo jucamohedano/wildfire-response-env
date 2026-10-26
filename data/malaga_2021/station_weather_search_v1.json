@@ -1,0 +1,496 @@
+{
+  "version": "malaga-station-weather-search-v1",
+  "subsequent_subdaily_acquisition": "halfhour_weather_v1.json records the parent's successful public SiAR subdaily query after this daily-only worker audit; daily findings remain independently applicable.",
+  "checked_on": "2026-10-25",
+  "incident": "Sierra Bermeja, Málaga, September 2021",
+  "status": "actual_official_station_daily_observations_acquired_as_labelled_fallback",
+  "weather_downloaded": true,
+  "weather_payload_bytes": 3587,
+  "actor_input_eligible": false,
+  "historical_replay_ready": false,
+  "simulator_input_eligible": false,
+  "benchmark_truth_eligible": false,
+  "requested_period": {
+    "inclusive_start_date": "2021-09-08",
+    "inclusive_end_date": "2021-09-15",
+    "preferred_resolution": "hourly_or_half_hourly",
+    "bbox_west_south_east_north": [
+      -5.26318,
+      36.43745,
+      -5.06507,
+      36.61233
+    ]
+  },
+  "decision": "Preserve the hourly fire-scene replay gate. An anonymous documented IFAPA RIA GET endpoint returned all eight requested daily observations for nearby Estepona. This is measured station weather, suitable for retrospective daily context only pending temporal and representativeness review; it is not reanalysis, an hourly series, or fire-front weather.",
+  "instruction_audit": {
+    "working_directory": "/tmp/wildfire-response-env-ops",
+    "agents_md_search": "Inspected /AGENTS.md, /tmp/AGENTS.md and /tmp/wildfire-response-env-ops/AGENTS.md if present; recursively searched the target worktree excluding .git. No AGENTS.md found.",
+    "writes_limited_to": [
+      "data/malaga_2021/station_weather_search_v1.json",
+      ".runtime/malaga-station-weather/"
+    ],
+    "runtime_ignored_by_git": true,
+    "agents_spawned": false,
+    "commits_pushes_posts": false,
+    "credentials_used_or_read": false,
+    "terms_accepted": false,
+    "paid_services_used": false,
+    "simulator_changed": false,
+    "other_parent_research_duplicated": false
+  },
+  "station": {
+    "provider": "Junta de Andalucía, IFAPA, Red de Información Agroclimática de Andalucía (RIA); station also listed by MAPA SiAR as MA04",
+    "province_code": 29,
+    "station_code": "4",
+    "siar_label": "MA04 - Estepona",
+    "name": "Estepona",
+    "official_metadata_url": "https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaws/estaciones/29/4",
+    "latitude_source": "362640000N",
+    "longitude_source": "051235000W",
+    "latitude_dms": "36°26′40″N",
+    "longitude_dms": "5°12′35″W",
+    "derived_latitude_degrees_north": 36.44444444444444,
+    "derived_longitude_degrees_east": -5.209722222222222,
+    "coordinate_conversion": "DMS to decimal degrees; no datum transformation. Source does not explicitly identify geographic datum, so EPSG is left unknown.",
+    "geographic_datum": null,
+    "altitude_m": 185,
+    "altitude_reference": "Provider station altitude; vertical datum not documented in API schema.",
+    "utm": {
+      "x_m": 301937,
+      "y_m": 4035540,
+      "zone": 30,
+      "datum": null
+    },
+    "under_plastic": false,
+    "current_metadata_active": true,
+    "inside_requested_bbox": true,
+    "approximate_distance_to_bbox_km": 0,
+    "bbox_centroid_lat_lon": [
+      36.52489,
+      -5.164125
+    ],
+    "approximate_distance_to_bbox_centroid_km": 9.830241395010919,
+    "distance_method": "Haversine sphere radius 6371.0088 km using provider geographic coordinates; bbox distance is zero because station is inside the bbox. This is not distance to a verified fire perimeter.",
+    "representativeness": "Low-elevation coastal/agricultural irrigation-network station near the southern bbox edge (about 0.78 km north of its south boundary). Bbox inclusion and proximity do not establish mountain fire-scene exposure or ridge wind. Sensor heights, local exposure, 2021 siting continuity and mountain elevation differences remain unverified.",
+    "station_selection": "Official Málaga RIA station inventory acquired; Estepona is the only station in that inventory inside this bbox. This is not an exhaustive inventory of all weather networks."
+  },
+  "weather_data": [
+    {
+      "path": ".runtime/malaga-station-weather/ria-29-4-daily-20210908-15.json",
+      "bytes": 3587,
+      "sha256": "4f309506f97c4d87910486212c147015d6ad3d64d920f067b519598710945817",
+      "url": "https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaws/datosdiarios/29/4/2021-09-08/2021-09-15/false",
+      "method": "GET",
+      "http_status": 200,
+      "content_type": "application/json;charset=UTF-8",
+      "acquired_on": "2026-10-25",
+      "retrieval_response_date_utc": "2026-10-25T10:53:37Z",
+      "role": "measured_official_station_daily_fallback",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false,
+      "endpoint_provenance": "Swagger HTML -> linked springfox.js -> swagger-resources -> published /v2/api-docs -> documented /datosdiarios/{codigoProvincia}/{codigoEstacion}/{fhInicio}/{fhFin}/{lgEt0}. false disables optional ET0 computation.",
+      "resolution": "daily",
+      "date_field": "fecha",
+      "first_date": "2021-09-08",
+      "last_date": "2021-09-15",
+      "expected_records": 8,
+      "actual_records": 8,
+      "missing_dates": [],
+      "duplicate_dates": [],
+      "dates_outside_requested_span": [],
+      "fields_with_no_missing_values": [
+        "fecha",
+        "dia",
+        "tempMedia",
+        "tempMax",
+        "tempMin",
+        "horMinTempMax",
+        "horMinTempMin",
+        "humedadMedia",
+        "humedadMax",
+        "humedadMin",
+        "horMinHumMax",
+        "horMinHumMin",
+        "velViento",
+        "dirViento",
+        "velVientoMax",
+        "horMinVelMax",
+        "dirVientoVelMax",
+        "radiacion",
+        "precipitacion",
+        "bateria",
+        "fechaUtlMod"
+      ],
+      "null_counts": {
+        "et0": 8
+      },
+      "missingness_limits": "All requested temperature, RH, wind and rain daily fields are numeric, finite and present for all eight dates; no negative sentinel values found. Underlying intraday observation counts, sensor outages and validation flags are not supplied, so complete daily rows do not certify complete subdaily sampling. et0 is null with lgEt0=false, and is not needed here.",
+      "units": {
+        "tempMedia": "°C, daily mean",
+        "tempMax": "°C, daily maximum",
+        "tempMin": "°C, daily minimum",
+        "humedadMedia": "%, daily mean relative humidity",
+        "humedadMax": "%, daily maximum relative humidity",
+        "humedadMin": "%, daily minimum relative humidity",
+        "velViento": "m/s, daily mean",
+        "velVientoMax": "m/s, daily maximum; gust/averaging duration unverified",
+        "dirViento": "degrees, daily mean direction; vector-averaging algorithm and from/to convention unverified",
+        "dirVientoVelMax": "degrees, direction at maximum speed; from/to convention unverified",
+        "precipitacion": "mm, daily precipitation",
+        "radiacion": "MJ/m² per day, daily radiation",
+        "horMin_fields": "HH:MM strings; measurement timezone not verified",
+        "dia": "day of year",
+        "bateria": "not used; API units not documented",
+        "et0": "not used; all null"
+      },
+      "units_evidence": "Official MAPA SiAR form labels temperature °C, humidity %, wind m/s, direction degrees, rain mm and radiation MJ/m². Official RIA station-page search result independently shows matching labels and station identifiers; the live RIA HTML redirects to maintenance. API schema provides field names and types but no units.",
+      "timezone": {
+        "fecha": "Provider calendar-date label with no offset or explicit aggregation-day boundary. Preserved unchanged; no UTC date-time assigned.",
+        "measurement_timezone": null,
+        "aggregation_day_start_utc": null,
+        "aggregation_day_end_utc": null,
+        "extrema_clock_timezone": null,
+        "fechaUtlMod": "Each row has a provider last-modification timestamp with explicit +0200 offset, ranging 2021-09-10 through 2021-09-17 at 07:45. This is administrative metadata and does not establish the observation-day timezone, first publication, or actor receipt.",
+        "siar_documentation": "MAPA SiAR user manual section 3.1.3, printed p21, specifies UTC for its hourly records from 2014-04-01 onward, solar time before. That rule is not assumed to establish IFAPA RIA daily aggregation boundaries or extrema clock semantics.",
+        "publication_time": null,
+        "first_available_time": null,
+        "actor_receipt_time": null
+      },
+      "validation": {
+        "official_provider": true,
+        "measurement_class": "automatic_station_daily_observations",
+        "per_record_quality_flags": null,
+        "independent_sensor_validation_performed": false,
+        "provider_validated_archive_status": "not explicitly exposed by downloaded API"
+      },
+      "observed_ranges": {
+        "daily_mean_temperature_C": [
+          22.02,
+          26.69
+        ],
+        "daily_maximum_temperature_C": [
+          27.59,
+          34.22
+        ],
+        "daily_mean_RH_percent": [
+          46.4,
+          77.2
+        ],
+        "daily_mean_wind_m_s": [
+          0.525,
+          2.325
+        ],
+        "daily_maximum_wind_m_s": [
+          3.244,
+          8.75
+        ],
+        "daily_rain_mm": [
+          0,
+          11.9
+        ],
+        "eight_day_rain_sum_mm": 18.3
+      },
+      "transformations": "None. Original response bytes retained. No interpolation, hourly disaggregation, wind-to-engine index, RH derivation or simulator bridge."
+    }
+  ],
+  "sources": [
+    {
+      "path": ".runtime/malaga-station-weather/ria-swagger.html",
+      "bytes": 3381,
+      "sha256": "7e93fc8d08d000ea9388f8983c4016611c66d4d3e08cc6b2b25643bc283555fa",
+      "url": "https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaws/swagger-ui.html",
+      "acquired_on": "2026-10-25",
+      "role": "api_documentation",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-springfox.js",
+      "bytes": 4034,
+      "sha256": "e6c9dca26f52631578bdeb7a00c8f9e5dd47adcf0ba015f1f55aa78464adbb52",
+      "url": "https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaws/webjars/springfox-swagger-ui/springfox.js?v=2.8.0-SNAPSHOT",
+      "acquired_on": "2026-10-25",
+      "role": "api_documentation_bootstrap",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-resources.json",
+      "bytes": 90,
+      "sha256": "5f430f4a7ce8615e8e403e494025028d8f3b2bbcfef93e2c1f1f89a8e24fe639",
+      "url": "https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaws/swagger-resources",
+      "acquired_on": "2026-10-25",
+      "role": "api_schema_index",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-api-docs.json",
+      "bytes": 12625,
+      "sha256": "0accada5b50bb1d55e59a497ff91eddf7048b378d396c88533ecc18dc79577d6",
+      "url": "https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaws/v2/api-docs",
+      "acquired_on": "2026-10-25",
+      "role": "official_api_schema",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-29-4-metadata.json",
+      "bytes": 237,
+      "sha256": "f38fc803670300846dded144ab6c0641b3943ade35c248ba0d87492dd9684ec2",
+      "url": "https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaws/estaciones/29/4",
+      "acquired_on": "2026-10-25",
+      "role": "station_metadata",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-malaga-stations.json",
+      "bytes": 2896,
+      "sha256": "8fe73414fb474427db3f617c4b865e25a1774bad917f27f9067c56fc6d3243ed",
+      "url": "https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaws/estaciones/29",
+      "acquired_on": "2026-10-25",
+      "role": "station_inventory_metadata",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-open-data.html",
+      "bytes": 411927,
+      "sha256": "14fe449fa00fe58c8ce154fe951a6043c768003029aae4d67182f5e58afa6203",
+      "url": "https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaweb/web/datosabiertos",
+      "acquired_on": "2026-10-25",
+      "role": "maintenance_page_not_catalogue_content",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-estepona.html",
+      "bytes": 411927,
+      "sha256": "14fe449fa00fe58c8ce154fe951a6043c768003029aae4d67182f5e58afa6203",
+      "url": "https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaweb/web/estacion/29/4",
+      "acquired_on": "2026-10-25",
+      "role": "maintenance_page_not_station_content",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-inicio.html",
+      "bytes": 424142,
+      "sha256": "a4016d560c63c8e8d4559b31595c890668892bffea14f0aac12c6ed83ec80853",
+      "url": "https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio",
+      "acquired_on": "2026-10-25",
+      "role": "query_form_and_units",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-query.js",
+      "bytes": 6603,
+      "sha256": "3fc68ed0a14d3a0cc01482594059d9f9c09df9de5c99567bb5430b84fee50b0d",
+      "url": "https://servicio.mapa.gob.es/siarweb/js/publico/consultaDatos/consultaDatos.js",
+      "acquired_on": "2026-10-25",
+      "role": "query_form_access_evidence",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-api-manual.pdf",
+      "bytes": 1468185,
+      "sha256": "601f39f21ec7c8617bdbe34e9e19775576faffac57eac2eeb28116c7c49422dd",
+      "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualTecnico_WEB_API_SIAR.pdf",
+      "acquired_on": "2026-10-25",
+      "role": "api_authentication_documentation",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-user-manual.pdf",
+      "bytes": 8076103,
+      "sha256": "3a55586b1e3ccde386a2f9f4875c9aa45e74241598a04b8ebfcfe974db738264",
+      "url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualUsoWebSiAR.pdf",
+      "acquired_on": "2026-10-25",
+      "role": "temporal_conventions_documentation",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    }
+  ],
+  "audit_files": [
+    {
+      "path": ".runtime/malaga-station-weather/ria-29-4-daily-20210908-15.headers",
+      "bytes": 130,
+      "sha256": "2d13e6cd0e9c336067c998ac26a68bb9f581b5dadb1ff9c9617c1571ff26cb27",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-29-4-metadata.headers",
+      "bytes": 123,
+      "sha256": "46ab4f29cf28269ed1c863e7236fc501e154819dc2be1e0151f6309c3381c631",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-api-docs.headers",
+      "bytes": 130,
+      "sha256": "bd524d4e2f16342466ddc98add9e649271c1af2645eb5151cfc8d55feb025c4a",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-estepona.headers",
+      "bytes": 367,
+      "sha256": "c064ab45c7711d72fda9e99e275f2f65269d061806394dd841e5c55bb66b8491",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-malaga-stations.headers",
+      "bytes": 130,
+      "sha256": "65ed99c961a548ca0603121422f6e572a615a4260a94a460e98dcb17500621b6",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-resources.headers",
+      "bytes": 122,
+      "sha256": "fe3844293cea65c2ce2f182aa451c9ea80a0ee27cf4200f803a02bf6756db088",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-springfox.headers",
+      "bytes": 184,
+      "sha256": "9132d6ad0bd59534fb50000a53450a9a1e996c1a41c539b504c66333a5a691f1",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/ria-swagger.headers",
+      "bytes": 171,
+      "sha256": "4278574d8822087952894a95c7217ab2c1d6a8e99a8911186a3c1da342567394",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-api-manual.headers",
+      "bytes": 1684,
+      "sha256": "75fd7c4b81e202387efd64587739bbb73944f9fcdfd3ca5866b278e4981c3852",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-api-manual.txt",
+      "bytes": 34491,
+      "sha256": "1fe3a96f612f89b30f641d85348e193712d0db0f70f0d6180af23172a5b7c369",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "local_pdf_text_extraction_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-inicio.headers",
+      "bytes": 1885,
+      "sha256": "075616725d2949f7fc61749450b3e24aced91af79b5962391c704318c7ba0019",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-query-js.headers",
+      "bytes": 1770,
+      "sha256": "7d3f89609aee5a0667a222e370b6e5a9fdd592871faaf11d019fa543b2ac2998",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-user-manual.headers",
+      "bytes": 1674,
+      "sha256": "ef6d53dc25f7ea5d3f0222ae00ec1d6b36778386db9ea170561a8acc46ebef0b",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "http_response_headers_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    },
+    {
+      "path": ".runtime/malaga-station-weather/siar-user-manual.txt",
+      "bytes": 105329,
+      "sha256": "d6f8011b205473955b6bc27de02c3cfbd26743553f0a5901f2f08c6f2177bd57",
+      "acquired_or_derived_on": "2026-10-25",
+      "role": "local_pdf_text_extraction_not_weather",
+      "actor_input_eligible": false,
+      "historical_replay_ready": false
+    }
+  ],
+  "access_findings": [
+    {
+      "route": "IFAPA RIA public REST API",
+      "status": "daily_download_success",
+      "authentication_required_for_used_endpoints": false,
+      "documented_resolution": "Downloaded schema exposes daily/monthly data and station/province metadata; no hourly or half-hourly data endpoint is listed.",
+      "live_portal_status": "RIA open-data and station HTML returned 302 to official maintenance page, then HTTP 200 maintenance content, not the requested catalogue/station page. The documented riaws API remained available."
+    },
+    {
+      "route": "MAPA SiAR public web query",
+      "url": "https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio",
+      "status": "public_form_verified_hourly_export_not_acquired",
+      "evidence": "Form lists MA04 - Estepona and Horario/Diario/Semanal/Mensual; official JS submits POST validation and POST results. No form submission made under the no-posts scope. Therefore no claim that historical hourly MA04 is available or unavailable.",
+      "gate": "A permitted public form query would still need to verify 2021 station hourly coverage, values, quality and export bytes. The existence of a Horario selector is not data availability evidence."
+    },
+    {
+      "route": "MAPA SiAR REST API",
+      "status": "documented_registered_user_and_token_gate",
+      "manual_url": "https://servicio.mapa.gob.es/siarweb/documentos/manuales/ManualTecnico_WEB_API_SIAR.pdf",
+      "manual_version": "2.2, May 2025",
+      "evidence": "Manual pp3-5 requires SiAR API access registration and a token; obtaining it uses REGEUS credentials. No registration, credential access, token request or protected API call attempted."
+    },
+    {
+      "route": "REDIAM / AEMET validated archives",
+      "status": "not_investigated_after_successful_official_daily_fallback",
+      "reason": "Bounded task prioritized requested nearby measured station download; no claims of absence or authentication requirements made for untested services."
+    }
+  ],
+  "hourly_replay_gate": {
+    "satisfied": false,
+    "missing": [
+      "Actual hourly or half-hourly station series for the requested 2021 dates",
+      "Confirmed daily/clock time conventions for the downloaded RIA series",
+      "Subdaily missingness and quality flags",
+      "Wind instrument height, exposure and averaging/max semantics",
+      "Assessment of low-elevation station representativeness for mountain fire weather",
+      "Independent historical availability/actor receipt evidence if used causally"
+    ]
+  },
+  "budget": {
+    "max_bytes_per_file_exclusive": 25000000,
+    "max_total_download_bytes": 100000000,
+    "downloaded_body_bytes": 10825737,
+    "runtime_artifact_bytes_before_sidecar": 10973927,
+    "largest_download_body_bytes": 8076103,
+    "weather_bytes": 3587,
+    "global_data_downloaded": false,
+    "note": "No arbitrary 10 MB aggregate cap applied. Source manuals and access evidence are separate from the 3587-byte weather payload."
+  },
+  "retrospective_use_limits": "Observation validity dates and last-modification metadata are not publication or decision-maker receipt times. All role eligibility flags stay false. Existing weather_access_status.json and all simulator/source-lock files are untouched."
+}

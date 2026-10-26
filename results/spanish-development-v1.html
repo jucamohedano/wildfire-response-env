@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Spanish development bridge — validation v1</title>
+  <style>
+    :root { font: 17px/1.6 system-ui,sans-serif; color: #17312d; background: #f0f3ed; }
+    body { max-width: 1040px; margin: auto; padding: 2.5rem 1.2rem; }
+    h1 { font-size: clamp(2rem,5vw,3.3rem); line-height: 1.15; }
+    h2 { line-height: 1.2; } a { color: #176858; }
+    section, article { padding: 1.5rem; background: #fff; border-radius: 10px; margin: 1rem 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 1rem; }
+    .grid article { margin: 0; border-top: 4px solid #327663; }
+    .number { font-size: 2.5rem; font-weight: 700; margin: .25rem 0; }
+    .warning { background: #fff8e9; border-left: 5px solid #ad712c; }
+    .small { font-size: .9rem; color: #425e55; }
+    li { margin: .45rem 0; } code { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <header><p class="small">Wildfire Ops Control Center · 24 October 2026 · Development validation</p>
+    <h1>The Spanish data now reaches a working environment.</h1>
+    <p>Four private EGIF anchors → twelve synthetic exercises → controller actions →
+      simulated consequences → independent replay. Not a historical reconstruction.</p></header>
+  <section><h2>What is grounded, and what is assumed?</h2>
+    <ul>
+      <li><strong>Source facts:</strong> detection clock, consistent first-ground-arrival
+        interval and evaluator-only incident-size stratum.</li>
+      <li><strong>Explicit assumptions:</strong> half the response interval becomes a bounded
+        ground-transit component; a simple daylight clock and three wind profiles frame the exercise.</li>
+      <li><strong>Still synthetic:</strong> common grid, five-unit fleet, population,
+        phone/chat scripts, communication delays, fire spread and suppression effects.</li>
+      <li><strong>Never forced:</strong> historical containment, extinction or burned area.
+        Delaying dispatch changes actual simulated arrival.</li>
+    </ul>
+  </section>
+  <section><h2>The new behaviour: clarify an unlocated report</h2>
+    <p>Request a location → wait for a simulated reply → receive an approximate claim →
+      investigate with a resource → verify with sensor evidence. A reply is not a truth label.</p>
+    <p>Large exercises include a separate assumed front described initially only by an
+      unlocated report. The baseline that asks for clarification can investigate that front.</p>
+  </section>
+  <div class="grid">
+    <article><h2>Passive</h2><p class="number">0 / 12</p><p>All four objectives met.</p>
+      <p class="small">Population safety 9/12 · fire resolution 0/12.</p></article>
+    <article><h2>Existing control baseline</h2><p class="number">6 / 12</p><p>All four objectives met.</p>
+      <p class="small">Population safety 11/12 · fire resolution 6/12.</p></article>
+    <article><h2>Control + clarification</h2><p class="number">11 / 12</p><p>All four objectives met.</p>
+      <p class="small">Population safety 12/12 · fire resolution 11/12.</p></article>
+  </div>
+  <section class="warning"><h2>What these numbers do not establish</h2>
+    <p>These are deterministic baselines on twelve development exercises, not model-training
+      results, held-out generalisation, validated response doctrine or real-world safety.</p>
+    <p><code>es-dev-002-v2</code> retains unresolved fire with the clarifying baseline.
+      The failure is preserved, not called an optimal outcome or proof that the case is unsolvable.</p>
+    <p>The equal-quarter objective rubric is unchanged. Report its component flags;
+      a partial scalar score can still include a failed safety objective.</p>
+  </section>
+  <section><h2>Validation and compute</h2>
+    <p>36 baseline episodes replayed · zero invalid actions · 218 core tests run
+      (9 skipped, no failures) · 10 root tests pass · separately installed client and replay pass.</p>
+    <p>Observed full validation: 14.431 seconds, 39,796 KiB peak RSS, one sequential
+      CPU rollout worker. No GPU, provider inference or live messages. Not an isolated throughput benchmark.</p>
+    <p>Existing benchmark scenarios/rewards remain separate and regression-tested.</p>
+  </section>
+  <section><h2>Remaining components</h2>
+    <p>Resource/incidence code interpretation; validated weather and road/geographic joins;
+      location-specific shelter and warning-team fallback; safety/physics calibration with
+      domain input; new OpenEnv/model-server wiring and incident-grouped held-out tasks.</p>
+    <p>Unsupported capabilities are exposed explicitly. Shelter orders are rejected rather
+      than silently converted into evacuation.</p>
+  </section>
+  <footer class="small"><p><a href="../envs/wildfire_response/core/src/envs/wildfire_response/regional/grounded/README.md">API and reproduction</a> ·
+    <a href="spanish-development-v1.json">Versioned results and hashes</a> ·
+    <a href="operational-source-audit-v1.html">Prior source audit</a>.</p>
+    <p>Original EGIF records and anchors stay local/evaluator-only. Rights and publication
+      clearance remain unresolved; no real-data pack or model has been published.</p></footer>
+</body>
+</html>

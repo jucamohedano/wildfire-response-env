@@ -1,0 +1,291 @@
+{
+  "version": "wildfire-malaga-evidence-v1",
+  "role": "retrospective_evaluator_evidence",
+  "actor_input_eligible": false,
+  "curation": "Manually paraphrased structured claims from cited institutional and responder sources. Not action demonstrations, call transcripts, optimal-policy labels or receipt-time observations. Direct raw Red Cross acquisition returned403; its public text was read through web research and is marked uncached.",
+  "records": [
+    {
+      "id": "technical-detection",
+      "source_id": "technical-report",
+      "source_locator": "PDF page 3, section 1 AIM",
+      "event_local": "2021-09-08T21:35:00",
+      "evidence_kind": "retrospective_incident_milestone",
+      "statement": "Technical report gives this detection time; detection is not necessarily ignition.",
+      "values": {},
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "technical-control",
+      "source_id": "technical-report",
+      "source_locator": "PDF page 3, section 1 AIM",
+      "event_local": "2021-09-14T06:45:00",
+      "evidence_kind": "retrospective_incident_milestone",
+      "statement": "Technical report distinguishes control from final extinction.",
+      "values": {},
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "technical-extinction",
+      "source_id": "technical-report",
+      "source_locator": "PDF page 3, section 1 AIM",
+      "event_local": "2021-10-24T19:00:00",
+      "evidence_kind": "retrospective_incident_milestone",
+      "statement": "Technical report gives final extinction on 24 October.",
+      "values": {},
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "technical-area",
+      "source_id": "technical-report",
+      "source_locator": "PDF page 3, section 1 AIM",
+      "event_local": null,
+      "evidence_kind": "retrospective_area_estimate",
+      "statement": "Technical report reports this affected area; preserve its definition and revision separately from EGIF.",
+      "values": {
+        "reported_area_ha": 8401.02
+      },
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "official-extinction",
+      "source_id": "official-extinction",
+      "source_locator": "Article dated 24/10/2021, first paragraph",
+      "event_local": "2021-10-24T19:00:00",
+      "evidence_kind": "official_retrospective_summary",
+      "statement": "Institutional update confirms final extinction on 24 October.",
+      "values": {},
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "map-event-clock",
+      "source_id": "cems-map-monit02",
+      "source_locator": "Map panel Relevant date records (UTC)",
+      "event_local": null,
+      "evidence_kind": "cartographic_event_time_claim",
+      "statement": "Map event field states a different clock from the EGIF detection interpretation; do not overwrite detection or infer ignition.",
+      "values": {
+        "reported_event_utc": "2021-09-08T22:30:00Z"
+      },
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "report-first-daily-area",
+      "source_id": "technical-report",
+      "source_locator": "PDF page 10, Table 1",
+      "event_local": null,
+      "evidence_kind": "retrospective_table_label",
+      "statement": "First table row labels 1693.3 ha as 08/09/2021 despite the stated late-evening detection and central-hour convention. Date semantics require review.",
+      "values": {
+        "source_date_label": "08/09/2021",
+        "reported_area_ha": 1693.3
+      },
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "rc-first-alert",
+      "source_id": "red-cross",
+      "source_locator": "Chronology, 8 September 21:38",
+      "event_local": "2021-09-08T21:38:00",
+      "evidence_kind": "responder_retrospective_chronology",
+      "statement": "Responder account describes an alert through 112 with changing initial location claims, not a transcript or confirmed ignition location.",
+      "values": {},
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "rc-logistics-request",
+      "source_id": "red-cross",
+      "source_locator": "Chronology, 9 September 13:43",
+      "event_local": "2021-09-09T13:43:00",
+      "evidence_kind": "responder_retrospective_chronology",
+      "statement": "112 requested shelter supplies for the El Carmen accommodation site.",
+      "values": {
+        "beds_requested": 50,
+        "hygiene_kits_requested": 100,
+        "covid_kits_requested": 100
+      },
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "rc-logistics-dispatch",
+      "source_id": "red-cross",
+      "source_locator": "Chronology, 9 September 13:45",
+      "event_local": "2021-09-09T13:45:00",
+      "evidence_kind": "responder_retrospective_chronology",
+      "statement": "A four-person team and a truck were mobilized for the supplies.",
+      "values": {
+        "team_members": 4,
+        "trucks": 1
+      },
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "rc-logistics-delivery",
+      "source_id": "red-cross",
+      "source_locator": "Chronology, 9 September 19:12",
+      "event_local": "2021-09-09T19:12:00",
+      "evidence_kind": "responder_retrospective_chronology",
+      "statement": "The account reports material delivered and a team assembling accommodation. This is a retrospective delivery claim, not an individual message acknowledgement.",
+      "values": {
+        "team_members": 7
+      },
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "rc-cancelled-prealert",
+      "source_id": "red-cross",
+      "source_locator": "Chronology, 10 September 18:25",
+      "event_local": "2021-09-10T18:25:00",
+      "evidence_kind": "responder_retrospective_chronology",
+      "statement": "Possible evacuation pre-alert for Genalguacil and Jubrique was later cancelled; do not label all these people evacuated.",
+      "values": {
+        "potential_people": 1000,
+        "later_cancelled": true,
+        "cancellation_time_known": false
+      },
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "rc-expanded-request",
+      "source_id": "red-cross",
+      "source_locator": "Chronology, 12 September 05:50",
+      "event_local": "2021-09-12T05:50:00",
+      "evidence_kind": "responder_retrospective_chronology",
+      "statement": "112 requested larger accommodation supplies and adapted transport.",
+      "values": {
+        "beds_requested": 400,
+        "hygiene_kits_requested": 400,
+        "covid_kits_requested": 400,
+        "adapted_vehicles_requested": 3
+      },
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "rc-transport-departure",
+      "source_id": "red-cross",
+      "source_locator": "Chronology, 12 September 08:27",
+      "event_local": "2021-09-12T08:27:00",
+      "evidence_kind": "responder_retrospective_chronology",
+      "statement": "Adapted transport vehicles departed from Malaga; departure is not arrival.",
+      "values": {},
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "rc-reinforcement-departure",
+      "source_id": "red-cross",
+      "source_locator": "Chronology, 12 September 09:25",
+      "event_local": "2021-09-12T09:25:00",
+      "evidence_kind": "responder_retrospective_chronology",
+      "statement": "Logistics material and personnel departed from Cordoba, with an estimated four-to-five-hour journey. Estimated travel is not measured arrival.",
+      "values": {
+        "team_members": 6,
+        "estimated_travel_hours": [
+          4,
+          5
+        ]
+      },
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "rc-mobility-assistance",
+      "source_id": "red-cross",
+      "source_locator": "Chronology, 12 September 10:35",
+      "event_local": "2021-09-12T10:35:00",
+      "evidence_kind": "responder_retrospective_chronology",
+      "statement": "Guardia Civil requested adapted transport for four people; the account reports a vehicle reached the location in approximately 25 minutes.",
+      "values": {
+        "people": 4,
+        "reported_approximate_response_minutes": 25
+      },
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "rc-shelters-close",
+      "source_id": "red-cross",
+      "source_locator": "Chronology, 12 September 22.36",
+      "event_local": "2021-09-12T22:36:00",
+      "evidence_kind": "responder_retrospective_chronology",
+      "statement": "The account says shelters closed as people returned home; shelter closure does not establish fire extinction.",
+      "values": {},
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    },
+    {
+      "id": "rc-status-conflict",
+      "source_id": "red-cross",
+      "source_locator": "Chronology, 14 September 20:10",
+      "event_local": "2021-09-14T20:10:00",
+      "evidence_kind": "responder_retrospective_chronology",
+      "statement": "Chronology describes the fire as extinguished, conflicting with official final extinction on 24 October. Retain as a source claim, not terminal ground truth.",
+      "values": {},
+      "actor_input_eligible": false,
+      "available_at_utc": null
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "area-definition",
+      "status": "unresolved",
+      "sources": [
+        "egif",
+        "technical-report"
+      ],
+      "values": {
+        "egif_final_forest_area_ha": 8651.26,
+        "technical_report_affected_area_ha": 8401.02
+      },
+      "resolution": "Preserve both measurement definitions/versions; no averaging or forced simulator terminal area."
+    },
+    {
+      "id": "extinction-status",
+      "status": "authority_preference_explicit_not_text_erasure",
+      "sources": [
+        "red-cross",
+        "technical-report",
+        "official-extinction",
+        "egif"
+      ],
+      "resolution": "Use the institutional/EGIF final-extinction milestone 24 October only as an offline reference. Preserve the responder14September wording as a conflicting retrospective claim; never schedule simulated extinction from either."
+    },
+    {
+      "id": "event-clock",
+      "status": "unresolved",
+      "sources": [
+        "cems-map-monit02",
+        "egif"
+      ],
+      "resolution": "Map panel says08September22:30UTC; EGIF detection interpreted as Europe/Madrid gives19:35UTC. Event-label semantics and clock differences are not repaired or relabelled ignition."
+    },
+    {
+      "id": "daily-area-date",
+      "status": "unresolved",
+      "sources": [
+        "technical-report"
+      ],
+      "resolution": "First daily-area row says08September1693.3ha although detection is21:35 and the table mentions central hours. Exclude this point from time-series fitting until checked."
+    },
+    {
+      "id": "delivery-revision-clock",
+      "status": "unresolved",
+      "sources": [
+        "cems-activation"
+      ],
+      "resolution": "Page delivery times lack an explicit zone; gradingv3 revision availability is not authenticated. Exact actor receipt is unknown."
+    }
+  ]
+}

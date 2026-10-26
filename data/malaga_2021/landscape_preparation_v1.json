@@ -1,0 +1,309 @@
+{
+  "actor_input_eligible": false,
+  "checks": {
+    "fuel_codes_preserved": true,
+    "fuel_unknown_matches_mask": true,
+    "fuel_valid_samples_have_source_coverage": true,
+    "measured_repairs_generated": false,
+    "outputs_reopened_on_common_grid": true,
+    "physics_ready_elevation_emitted": false,
+    "source_files_unchanged": true,
+    "source_hashes_match": true,
+    "terrain_valid_mask_all_zero": true
+  },
+  "fuel": {
+    "actor_input_eligible": false,
+    "cell_values_and_counts": {
+      "0": 163,
+      "10": 174,
+      "2": 317,
+      "4": 693,
+      "5": 44,
+      "7": 45,
+      "8": 76,
+      "9": 5
+    },
+    "citation_year": 2017,
+    "destination_nodata": 0,
+    "generated_class_values": false,
+    "measured_local_2021_fuel": false,
+    "nodata_policy": "Source zero and masked/unrecognized classes remain unknown; never substitute measured fuel",
+    "physics_input_eligible": false,
+    "resampling": "GDAL NEAREST independently on classes, source validity and footprint; no categorical smoothing",
+    "source": {
+      "band_tags": {},
+      "bounds": [
+        2950250.000000002,
+        1619000.0000000019,
+        2971000.000000002,
+        1641500.0000000019
+      ],
+      "cell_values_and_counts": {
+        "0": 850,
+        "10": 743,
+        "2": 1768,
+        "4": 3398,
+        "5": 172,
+        "7": 175,
+        "8": 303,
+        "9": 61
+      },
+      "crs": "EPSG:3035",
+      "dtype": "uint8",
+      "nodata": 0.0,
+      "offsets": [
+        0.0
+      ],
+      "resolution": [
+        250.0,
+        250.0
+      ],
+      "scales": [
+        1.0
+      ],
+      "shape": [
+        90,
+        83
+      ],
+      "source_mask_invalid_cells": 850,
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "transform": [
+        250.0,
+        0.0,
+        2950250.000000002,
+        0.0,
+        -250.0,
+        1641500.0000000019
+      ],
+      "units": [
+        null
+      ],
+      "unrecognized_unmasked_cells": 0
+    },
+    "source_member": "FuelMap2000_NFFL_LAEA.tif",
+    "source_sha256": "4cc9b17c7f738af14d1f12302b4e8c9f958608023c600d8668864954d95cd308",
+    "status": "categorical_candidate_prepared",
+    "supported_codes": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "uncovered_cells": 7,
+    "unknown_cells": 163,
+    "valid_cells": 1354,
+    "values_derived_from_observed_source": true,
+    "vegetation_observation_epoch_verified": false
+  },
+  "generated_assumptions": [
+    "500 m metric grid with outward alignment from retained bbox; no exact episode-polygon clipping",
+    "Study envelope mask uses cell centres; aligned padding is retained in raster outputs",
+    "Below -1000 is a diagnostic triage threshold, not authenticated nodata or an elevation repair",
+    "All terrain cells remain ineligible, including cells without diagnostic flags"
+  ],
+  "grid": {
+    "alignment": "Outward rounding to EPSG:25830 coordinate multiples of 500 m",
+    "bounds": [
+      297000,
+      4034000,
+      315500,
+      4054500
+    ],
+    "crs": "EPSG:25830",
+    "envelope_mask_rule": "Cell centre inside retained study bbox; padding remains explicit",
+    "envelope_origin": "Retained terrain acquisition bbox, not an exact episode AOI polygon",
+    "height": 41,
+    "resolution_metres": 500,
+    "study_bbox": [
+      297125,
+      4034450,
+      315325,
+      4054275
+    ],
+    "transform": [
+      500,
+      0,
+      297000,
+      0,
+      -500,
+      4054500
+    ],
+    "width": 37
+  },
+  "historical_replay_ready": false,
+  "input_files": [
+    {
+      "bytes": 6927,
+      "path": "data/malaga_2021/terrain_fuel_search_v1.json",
+      "sha256": "bcc0a7f5e18280b17afaf66a27baf171e61985b8ac30f2223c96b4a6fa049759"
+    },
+    {
+      "bytes": 2063043,
+      "path": ".runtime/malaga-terrain-fuel-search/pnoa2020-21-dtm-aoi25m.tif",
+      "sha256": "1632268aa51a18884b05a8984e64e86b2c1df528b376315781cdbc06f82ad675"
+    },
+    {
+      "bytes": 1686,
+      "path": ".runtime/malaga-terrain-fuel-search/effis-fuel-aoi-native.tif",
+      "sha256": "4cc9b17c7f738af14d1f12302b4e8c9f958608023c600d8668864954d95cd308"
+    },
+    {
+      "bytes": 19578,
+      "path": "eval/prepare_malaga_landscape.py",
+      "sha256": "c0289070c4f414e6d4c80f2dcb51070a563cb9ced5e65f63e2537f46980696b8"
+    }
+  ],
+  "limitations": [
+    "No terrain elevation, slope or aspect is emitted. Earlier 25 m averaging may have spread unknown sentinels.",
+    "Zero terrain suspect flags do not establish valid heights; MAX considers overlapping source pixels only.",
+    "Pre-fire collection claim is retained from cached metadata; authentic nodata, units and datum remain unresolved.",
+    "Later terrain publication does not establish information available to actors during the incident.",
+    "EFFIS citation 2017 and source filename FuelMap2000 do not verify vegetation observation epoch.",
+    "Nearest sampling at 500 m is not area-majority fuel or subcell composition; unsampled source gaps may be missed.",
+    "Fuel classes are not measured loads, moisture, treatments or validated engine parameters.",
+    "All actor, simulator, physics and historical replay usage remains false; no runtime integration occurs."
+  ],
+  "output_files": [
+    {
+      "bytes": 1586,
+      "path": ".runtime/malaga-landscape-prepared-v1/fuel_classes.tif",
+      "sha256": "035f7a3ac07db866dc34b4c55778891055d4b03a790268dda77362c1e1ed400c"
+    },
+    {
+      "bytes": 1275,
+      "path": ".runtime/malaga-landscape-prepared-v1/fuel_valid_mask.tif",
+      "sha256": "44368e111a336e03211f754774fcb1b65396803aab0d85f772da7a8a7a8fef77"
+    },
+    {
+      "bytes": 1166,
+      "path": ".runtime/malaga-landscape-prepared-v1/fuel_source_coverage_mask.tif",
+      "sha256": "ff67e5d38a9f3765fd1fa1b77e82a1b27d8fda11da308ecb7ec3d62d5e903dd9"
+    },
+    {
+      "bytes": 1158,
+      "path": ".runtime/malaga-landscape-prepared-v1/study_envelope_mask.tif",
+      "sha256": "03cf3adebacc680fcd72bd7ded0b1c7fb7bd1df8d0e88cfcfb24f1f3310ac8b2"
+    },
+    {
+      "bytes": 1159,
+      "path": ".runtime/malaga-landscape-prepared-v1/terrain_valid_mask.tif",
+      "sha256": "b27fe887f32e708d89a48ff87f78c6c4cc026443c52ccc85251bda6902e11627"
+    },
+    {
+      "bytes": 1202,
+      "path": ".runtime/malaga-landscape-prepared-v1/terrain_suspect_mask.tif",
+      "sha256": "86213ae8b511f422d5693a022c82f9d4d33fd0d554c9b0a2ee3cd51b35e69f06"
+    }
+  ],
+  "output_inventory_scope": "Six raster artifacts; audit.json excludes its own recursive hash",
+  "physics_input_eligible": false,
+  "remaining_gates": {
+    "event_time_actor_availability": "Establish information availability at event time and authorize actor inputs.",
+    "fuel_historical_state": "Verify vegetation observation epoch and applicability to September 2021 local fuel state.",
+    "fuel_physics_parameters": "Validate fuel model mapping, loads and live/dead moisture; class codes alone do not supply these.",
+    "runtime_and_replay_validation": "Explicitly integrate and validate simulator inputs and historical replay in separate work.",
+    "terrain_nodata_and_overview_semantics": "Authenticate producer nodata and overview/averaging semantics; plausibility masks cannot release quarantine.",
+    "terrain_uncontaminated_elevation": "Reacquire and validate uncontaminated terrain before supplying any physics-ready elevation.",
+    "terrain_vertical_reference": "Verify vertical units and datum from authoritative metadata."
+  },
+  "role": "retrospective_evaluator_candidate_preparation",
+  "runtime_usage": {
+    "actor": false,
+    "historical_replay": false,
+    "physics": false,
+    "simulator": false
+  },
+  "simulator_input_eligible": false,
+  "software": {
+    "gdal": "3.10.3",
+    "numpy": "2.5.4",
+    "proj": "9.7.1",
+    "rasterio": "1.4.4"
+  },
+  "status": "fuel_prepared_terrain_quarantined",
+  "terrain": {
+    "actor_input_eligible": false,
+    "approved_elevation_cells": 0,
+    "collection_epoch_claim": "REDIAM May2023 bulletin states collection captured July2020-May2021",
+    "diagnostic_grid_flagged_cells": 7,
+    "diagnostic_grid_uncovered_cells": 0,
+    "diagnostics": {
+      "below_minus1000": 354,
+      "cells": 577304,
+      "diagnostically_flagged": 354,
+      "equal_declared_nodata": 0,
+      "equal_minus32767": 284,
+      "finite_numeric_range": [
+        -32767.0,
+        1446.66455078125
+      ],
+      "flag_rule": "Source-invalid, nonfinite, declared nodata or below -1000; generated triage only",
+      "nonfinite": 0,
+      "quarantine_released": false,
+      "source_mask_invalid": 0,
+      "unflagged_is_verified_elevation": false
+    },
+    "generated_diagnostic_masks": true,
+    "generated_elevation": false,
+    "mask_policy": "terrain_valid_mask is zero everywhere regardless of plausibility or source mask",
+    "nodata_semantics_verified": false,
+    "physics_input_eligible": false,
+    "publication_is_pre_incident": false,
+    "quarantine_released": false,
+    "resampling": "GDAL MAX on generated binary diagnostic flags only; no elevation resampling or interpolation",
+    "source": {
+      "band_tags": {},
+      "bounds": [
+        297125.0,
+        4034450.0,
+        315325.0,
+        4054275.0
+      ],
+      "crs": "EPSG:25830",
+      "dtype": "float32",
+      "nodata": 255.0,
+      "offsets": [
+        0.0
+      ],
+      "resolution": [
+        25.00000000000001,
+        25.000000000000174
+      ],
+      "scales": [
+        1.0
+      ],
+      "shape": [
+        793,
+        728
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "transform": [
+        25.00000000000001,
+        0.0,
+        297125.0,
+        0.0,
+        -25.000000000000174,
+        4054275.0
+      ],
+      "units": [
+        null
+      ]
+    },
+    "source_sha256": "1632268aa51a18884b05a8984e64e86b2c1df528b376315781cdbc06f82ad675",
+    "status": "quarantined_pending_authentic_nodata_vertical_reference_and_resampling_review",
+    "values_derived_from_observed_source": true,
+    "vertical_datum_verified": false,
+    "vertical_units_verified": false
+  },
+  "version": "wildfire-malaga-landscape-preparation-v1"
+}

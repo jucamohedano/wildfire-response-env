@@ -35,7 +35,17 @@ tests/                          standalone extraction checks
 No PortSim source, Barcelona records or assets were copied. We do not inherit its
 CP-SAT optimality guarantee or claim a trained wildfire director. Our grader checks
 outcome accounting/lifecycle invariants and replay, not physical realism or an
-optimal policy. A public Space, AgentEnv/Harbor adapter and viewer are not claimed.
+optimal policy. A public Space or AgentEnv/Harbor adapter is not claimed. The
+optional local operator UI below is not publicly deployed.
+
+## Local 2D control-centre UI
+
+The optional [UI](ui/README.md) adds a flat source-derived terrain map, optional
+IGN aerial imagery/OpenStreetMap context, report/triage and clarification controls, base offers/readbacks and
+resource authorization, population protection, scripted playback and verified
+read-only trace replay. It uses the existing Python API; it does not duplicate
+the simulator or change physics/rewards. Its dependencies remain isolated from
+the core and training packages. Run it locally; no public deployment is implied.
 
 ## CPU quickstart
 
@@ -70,6 +80,72 @@ historical paths so frozen scenario hashes, rewards, tests and old trajectories
 remain compatible. Those are internal compatibility modules, not another checkout
 or a second simulator implementation. Legacy v1 fixtures remain for regression.
 
+## Wildfire Ops Control Center
+
+The intended learned role is the **ops desk/controller**: it reviews incoming
+information, coordinates resources, communicates with bases and population groups,
+and monitors reported execution. It does not act as the incident commander. Bases
+and field units are deterministic simulated counterparts in the initial design.
+The current v0.2 implementation and APIs retain the historical `director` naming
+for compatibility; see the [ops interface notes](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/README.md).
+
+The ops facade uses `wildfire-ops-objective-fraction-v3`. Control tasks score
+evidence-backed triage, population safety, incident resolution, and communication
+discipline at episode end, with a separate pass/fail result for each. Full credit
+requires all four, including no unresolved fire. See the [objective definitions](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/OBJECTIVES.md)
+for the formula, evidence rules and calibration limits. The original regional
+v0.2 environment retains its separately weighted `regional-outcome-cost-v2` score.
+
+```python
+from wildfire_core import OpsControlCenterEnv
+from wildfire_core.ops import ControlBaseline
+
+env = OpsControlCenterEnv()
+observation, info = env.reset("control-000")
+policy = ControlBaseline()
+while True:
+    observation, reward, terminated, truncated, info = env.submit_action(policy(observation))
+    if terminated or truncated:
+        break
+print(env.verify_episode()["objective_result"])
+```
+
+The new facade exposes `get_situation`, `get_reports`, `check_orders`,
+`request_resources`, `authorize_resources`, `release_resources`,
+`confirm_readbacks`, `correct_readbacks`, `triage_reports`, `send_messages` and
+`advance`. Each committed tool call advances one configured
+simulator decision; reads and checks do not. See the [ops interface notes](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/README.md)
+and [contract](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/CONTRACT.md).
+Use `env.trajectory()` to export the public trace and `env.verify_episode()` after
+episode end to reproduce the objective fraction and replay the simulator.
+The checked-in `wildfire-ops-task-pack-v0.4.0` contains six broader control tasks
+and six arrival-only dispatch exercises, all development-only. The control cases
+reuse existing regional training configurations; they are not new held-out data.
+The new [locked generator](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/DATASET.md)
+adds 120 configuration groups with three variants each, split 80/20/20 by group.
+It supports delayed reports/requests, initial resource commitments, message
+failures and acknowledged retries. Test policy outcomes are left unconsumed.
+The [recorded CPU run](envs/wildfire_response/core/src/envs/wildfire_response/regional/ops/DATASET_RESULTS.md)
+verifies 600 train/validation policy episodes and preserves their public trajectories.
+
+Ops interface v4 requires a matching base readback before authorization. Two
+fixtures in each task set include a synthetic mission readback error. The controller corrects it,
+waits for the corrected readback, then confirms and authorizes. The dispatch
+baseline uses only public observations and performs this sequence automatically.
+Run the control CPU smoke suite and replay an exported episode with:
+
+```sh
+PYTHONPATH=envs/wildfire_response/core/src python -m envs.wildfire_response.regional.ops.run \
+  --output .runtime/ops-development-smoke
+PYTHONPATH=envs/wildfire_response/core/src python -m envs.wildfire_response.regional.ops.run \
+  --replay .runtime/ops-development-smoke/control-001/control/trajectory.json.gz
+```
+
+The AirOpsEnv article describes related but distinct task versions: v1 models one
+ops desk at one hub; v2 adds ops and crew desks; v3 builds on v2 with passenger
+modeling and a customer desk. These versions are useful structural references, but
+this project does not claim equivalence to AirOpsEnv.
+
 ## Tasks and evaluation
 
 The frozen regional pack has 36 synthetic configurations: 24 train, six validation
@@ -86,6 +162,42 @@ Task metadata exports are public; full configurations/checkpoints remain evaluat
 Use fresh output directories. Every baseline rollout is independently verified and
 exactly replayed. The existing held-out baseline outcomes have already been seen;
 they are not a fresh secret model-selection set. See [results](results/README.md).
+
+## Communication evidence
+
+The new opt-in [protection mode](envs/wildfire_response/core/src/envs/wildfire_response/regional/protection/README.md)
+adds fallible synthetic shelter, sequenced/corrected instructions, separate
+delivery/readback/execution, resource-bound in-person warnings and safety-gated
+reward. Its offline context gate validates declared metadata without pretending
+that real weather/geographic joins are complete. Spanish v1 remains replayable.
+Protection/prepared/topographic/stress episodes now use reward
+`wildfire-protection-safety-gate-v2`: population safety carries80%, and triage,
+incident resolution and communication discipline share the remaining20% equally.
+Safety failure or topographic boundary censoring still yields zero; all four
+goals are needed for1.0. Old equal-quarter protection results retain their v1
+labels and require their pinned engine revision for replay. The legacy regional
+cost and generic ops fraction contracts remain unchanged.
+See the [protection validation report](results/protection-development-v1.html),
+including the retained unsafe-shelter counterexample and remaining data gates.
+
+The opt-in [Spanish development bridge](envs/wildfire_response/core/src/envs/wildfire_response/regional/grounded/README.md)
+now builds four private EGIF anchors into 12 synthetic development cases and
+connects them to `SpanishDevelopmentEnv`. It adds delayed report-location
+clarification, source-informed timing assumptions, seeded episode replay and a
+CPU baseline runner. Real weather, geography and shelter mechanics are not implied.
+The [development validation report](results/spanish-development-v1.html) records
+the 36 replayed baseline episodes and the limitations of these exercises.
+
+The [operational-source audit](data/operational/README.md) now inspects actual EGIF
+2021 records and ICS-209-PLUS report sequences. See the [HTML findings](results/operational-source-audit-v1.html)
+for field coverage, missingness, CPU measurements and the recommended next scope.
+These evaluator-only samples are not enabled as training tasks.
+
+The [communication evidence pack](envs/wildfire_response/core/src/envs/wildfire_response/data/COMMUNICATIONS.md)
+adds four official sources and eight attributed summaries from three incidents,
+with explicit missing-data and simulator-capability gates. It includes no authentic
+call transcripts. Source-inspired exercises keep evaluator provenance separate;
+the locked scenarios and benchmark results are unchanged.
 
 ## Optional OpenEnv and GPU training
 

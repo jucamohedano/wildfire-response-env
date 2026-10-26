@@ -1,0 +1,41 @@
+{
+  "version": "wildfire-ui-legend-imagery-v3",
+  "validated_on": "2026-10-26",
+  "scope": "Display-only legend and imagery changes; no simulator, sensor, reward or agent-action changes",
+  "sources": [
+    {
+      "provider": "IGN / PNOA / Sentinel-2",
+      "documentation": "https://pnoa.ign.es/web/portal/pnoa-imagen/visualizadores-y-servicios-web",
+      "product_metadata": "https://pnoa.ign.es/pnoa-imagen/estado-del-proyecto",
+      "tile_url": "https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg",
+      "max_tile_zoom": 19,
+      "type": "Current cartographic background: Sentinel-2 at small scales and PNOA aerial orthophotos at larger scales",
+      "retrieval": "Browser viewport tiles only, with visible provider attribution; not bulk archived or a new prepared input bundle",
+      "local_data_check": "Existing named PNOA TIFF found on disk is a DTM; other checked TIFFs are elevation, fuel, slope and masks. No verified local incident-aligned high-resolution RGB mosaic was identified.",
+      "limitations": "Source acquisition dates and ground sampling vary by location. This update does not pin a Malaga imagery date/resolution, reconstruct2021 imagery, provide live sensing, infer thermal conditions, or refine the500m simulation grid. Higher visual zoom cannot create finer simulation evidence."
+    }
+  ],
+  "display": {
+    "default_basemap": "aerial",
+    "alternative": "OpenStreetMap street style; existing usage-policy constraints remain",
+    "terrain_overlay": "Off by default; optional12% over imagery,38% over streets; opaque local terrain when remote basemaps are disabled",
+    "boundary_contrast": "Light casing behind native domain and inner buffer lines",
+    "legend": "Larger SVG symbols, matching shared map colours, separate labels for people, evacuation destinations, exposed people and responders; plain-language fire-age and boundary explanations",
+    "observation_privacy": "Public counts use received sensor records only. Empty records are explicitly not proof of no fire. Evaluator-only heat/burned-ground explanations stay gated by the existing world overlay.",
+    "technical_readout": "Cell coordinates/elevation/fuel and source details moved under a collapsed disclosure"
+  },
+  "validation": {
+    "frontend_tests_passed": 24,
+    "frontend_command": "cd ui && npm test && npm run build",
+    "typescript_and_production_build": "passed; existing bundle-size advisory remains",
+    "browser_checks": [
+      "Aerial backdrop loaded successfully over the existing completed topo-dev-003 episode",
+      "Legend labels, larger matched symbols and no-fire-evidence caveat readable at the tested desktop viewport",
+      "Technical details collapsed by default",
+      "Street style selectable; remote-basemap disable exposes local pinned terrain",
+      "No reset, commit, inference, training or live dispatch was performed for these visual checks"
+    ],
+    "screenshot": ".runtime/ui-map-refinement/map-key-v3.jpg",
+    "limits": "Interactive visual smoke plus frontend tests; not a new simulation calibration or policy evaluation"
+  }
+}
