@@ -89,7 +89,8 @@ class RegionalDirectorPolicy:
         self.calls, self.records, self.history = 0, [], []
         self.last_call = None
 
-    def __call__(self, observation, feedback=None, check_action=None):
+    def __call__(self, observation, feedback=None, check_action=None, read_tools=None):
+        read_tools = {} if read_tools is None else read_tools
         context = self.project_context(observation)
         context['prior_actions'] = copy.deepcopy(self.history[-3:])
         context['last_action_error'] = str(feedback['error'])[:200] if feedback and feedback.get('error') else None
@@ -98,17 +99,20 @@ class RegionalDirectorPolicy:
             requests_remaining_at_decision_start=self.max_calls-self.calls)
         messages = [dict(role='system', content=self.instructions),
                     dict(role='user', content=json.dumps(context, separators=(',', ':'), allow_nan=False))]
-        checks = 0
+        checks, reads = 0, 0
         while True:
             if self.calls >= self.max_calls:
                 raise RuntimeError('Regional director request budget exhausted; episode is incomplete')
             if self.last_call is not None:
                 time.sleep(max(0, self.interval-(time.monotonic()-self.last_call)))
             names = self.available_tool_names(check_action is not None and checks < 3)
+            if reads < 3:
+                names.extend(read_tools)
             tools = [dict(type='function', function=dict(name=name,
-                description='Advance the simulation with this action' if self.is_committing_tool(name) else
+                description='Read delivered evidence without advancing time' if name in read_tools else
+                            'Advance the simulation with this action' if self.is_committing_tool(name) else
                             'Check this draft without advancing time or predicting outcomes',
-                parameters=self.build_tool_schema(name, context))) for name in names]
+                parameters=read_tools[name][0] if name in read_tools else self.build_tool_schema(name, context))) for name in names]
             payload = dict(model=self.model, temperature=0, max_tokens=self.max_tokens,
                 reasoning=dict(enabled=False), parallel_tool_calls=False,
                 provider=dict(allow_fallbacks=False, require_parameters=True, max_price=dict(prompt=0, completion=0)),
@@ -145,7 +149,10 @@ class RegionalDirectorPolicy:
                 if name not in names or call.get('type') != 'function':
                     raise ValueError('Unknown or unavailable tool')
                 validation_stage = 'action_arguments'
-                action = self.parse_tool_action(name, call['function']['arguments'])
+                if name in read_tools:
+                    action, query_result = read_tools[name][1](call['function']['arguments'])
+                else:
+                    action = self.parse_tool_action(name, call['function']['arguments'])
                 record.update(tool=name, proposal=copy.deepcopy(action))
                 if self.is_committing_tool(name):
                     self.history.append(copy.deepcopy(action))
@@ -158,10 +165,15 @@ class RegionalDirectorPolicy:
                 record['protocol_error'] = 'missing_or_invalid_named_action'
                 record['response_diagnostics'] = failure_diagnostics(response, error, validation_stage, self.transport)
                 return {'invalid_model_action': record['protocol_error']}
-            result = check_action(self.core_action(action))
-            result = {key: copy.deepcopy(result[key]) for key in ('valid', 'error', 'remaining_checks', 'scope')}
-            record['action_check'] = result
-            checks += 1
+            if name in read_tools:
+                result = query_result
+                record['query_result'] = copy.deepcopy(result)
+                reads += 1
+            else:
+                result = check_action(self.core_action(action))
+                result = {key: copy.deepcopy(result[key]) for key in ('valid', 'error', 'remaining_checks', 'scope')}
+                record['action_check'] = result
+                checks += 1
             messages.append(dict(role='assistant', content=None, tool_calls=[dict(
                 id=identifier, type='function', function=dict(name=name, arguments=json.dumps(action)))]))
             messages.append(dict(role='tool', tool_call_id=identifier, content=json.dumps(result)))

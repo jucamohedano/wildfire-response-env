@@ -1,0 +1,14 @@
+{
+  "catalog_sha256": "2b83e5e2457a37cdf22cf75c2eb66d6c186585cf8889089219a992963e61cb05",
+  "prepared_inputs_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
+  "release_state": "candidate; requires acceptance evaluation",
+  "source_groups": 1,
+  "split_groups": {
+    "test": 20,
+    "train": 80,
+    "validation": 20
+  },
+  "topographic_inputs_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+  "variants_per_group": 2,
+  "version": "wildfire-benchmark-catalog-v1"
+}

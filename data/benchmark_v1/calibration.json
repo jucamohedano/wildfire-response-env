@@ -1,0 +1,50 @@
+{
+  "calibrated": false,
+  "profiles": {
+    "central": {
+      "suppression_multiplier": 1.0,
+      "travel_multiplier": 1.0
+    },
+    "faster_stronger": {
+      "suppression_multiplier": 1.5,
+      "travel_multiplier": 0.75
+    },
+    "slower_weaker": {
+      "suppression_multiplier": 0.5,
+      "travel_multiplier": 1.5
+    }
+  },
+  "registry": {
+    "communication": {
+      "evidence": "synthetic",
+      "limitation": "Template timing is not historical call-center evidence",
+      "source": "regional/incident/events.py",
+      "unit": "simulation_minutes"
+    },
+    "footprint": {
+      "evidence": "grid_derived",
+      "limitation": "Whole grid-cell union, not a surveyed fire perimeter",
+      "source": "pinned prepared grid",
+      "unit": "hectares"
+    },
+    "population_exposure": {
+      "evidence": "synthetic",
+      "limitation": "Abstract dose/direct-fire exposure, not mortality",
+      "source": "regional/protection/world.py",
+      "unit": "persons"
+    },
+    "suppression": {
+      "evidence": "synthetic",
+      "limitation": "No empirical firefighter productivity calibration",
+      "source": "regional/pack assumptions",
+      "unit": "probability_per_attempt"
+    },
+    "travel": {
+      "evidence": "assumed_decomposition",
+      "limitation": "Aggregate response time does not separately identify mobilization and road transit",
+      "source": "data/malaga_2021/synthetic_runtime_inputs_v1.json#transit",
+      "unit": "simulation_minutes"
+    }
+  },
+  "version": "wildfire-benchmark-calibration-v1"
+}
