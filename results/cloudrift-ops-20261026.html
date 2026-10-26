@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wildfire ops · CloudRift smoke evaluation</title>
+<style>
+body{font:16px/1.6 system-ui,sans-serif;background:#f3f5f0;color:#23382c;margin:0;padding:32px}main{max-width:1080px;margin:auto}h1{line-height:1.2}h2{font-size:21px;margin-top:30px}.tag{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#52654e}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}.card,.notice{background:white;border:1px solid #ccd6c5;border-radius:8px;padding:18px}.card strong{display:block;font-size:28px}.notice{border-left:5px solid #b16b29}.muted{color:#52644f;font-size:14px}table{width:100%;border-collapse:collapse;background:white}th,td{text-align:left;padding:13px;border-bottom:1px solid #d6dfcf;vertical-align:top}th{background:#e6ecdf}.scroll{overflow:auto}code{overflow-wrap:anywhere}a{color:#296247}li{margin:7px 0}
+</style>
+<main>
+<p class="tag">26 October 2026 · bounded development smoke</p>
+<h1>Wildfire operations: CloudRift evaluation</h1>
+<p><code>deepseek-ai/DeepSeek-V4-Flash-0731</code> · non-streaming responses · safety-gated reward v2.</p>
+<div class="notice"><strong>Execution worked; controller quality is not established.</strong> The model issued valid simulated resource requests, readback confirmations, authorizations and triage assessments. Repeated tool-format failures and two response timeouts prevented a clean evaluation. This is not a held-out benchmark or real-world safety validation.</div>
+<h2>What ran</h2>
+<div class="cards">
+<div class="card"><strong>4 planned</strong>2 attempted; 2 never started</div>
+<div class="card"><strong>0 natural finishes</strong>1 scored abandonment; 1 unscored partial</div>
+<div class="card"><strong>16 requests</strong>14 responses with token usage</div>
+<div class="card"><strong>$2.37 estimated</strong>Below the approved $5 conservative cap; not a billing receipt</div>
+</div>
+<h2>Outcomes</h2>
+<div class="scroll"><table>
+<thead><tr><th>Development case</th><th>Model result</th><th>Passive baseline</th><th>Scripted baseline</th></tr></thead>
+<tbody>
+<tr><td>False alarm<br><code>topo-dev-001</code></td><td><strong>0.00 · truncated</strong><br>Three consecutive tool-format violations triggered abandonment at 12 model minutes. Four invalid actions in six decisions overall.</td><td>0.9333</td><td>1.0000</td></tr>
+<tr><td>Urgent smoke report<br><code>topo-dev-000</code></td><td><strong>Not scored</strong><br>Interrupted at 12 model minutes by a 180-second non-streaming response timeout. Six decisions were recorded.</td><td>0.0000</td><td>1.0000</td></tr>
+<tr><td>Conflicting reports / multiple fires<br><code>topo-dev-003</code></td><td>Not started</td><td>Not run</td><td>Not run</td></tr>
+<tr><td>Wind shift<br><code>topo-dev-004</code></td><td>Not started</td><td>Not run</td><td>Not run</td></tr>
+</tbody></table></div>
+<p class="muted">Baseline numbers are deterministic simulator-policy results, not model scores. The zero from abandonment does not prove anyone was physically harmed: early abandonment earns no terminal objective credit. The unfinished case is not assigned a zero.</p>
+<h2>Audit and budget</h2>
+<ul>
+<li>Observed valid model operations: 3 resource requests, 3 readback confirmations, 3 authorizations and 2 triage assessments.</li>
+<li>Seven protocol-invalid responses were penalized, not repaired into legal waiting actions.</li>
+<li>The first request timeout was 90 seconds. A manual continuation used 180 seconds and exactly replayed the saved three-decision prefix before resuming. That continuation also timed out.</li>
+<li>The prior $0.90496 conservative reservation was subtracted first; the continuation cap was $4.09504. Combined conservative estimate: $2.369192, including full reservations for both missing-usage calls.</li>
+<li>Known usage: 86,823 prompt tokens and 3,792 completion tokens. Actual provider billing is not confirmed.</li>
+<li>The <a href="https://inference.cloudrift.ai/v1/models">API catalog</a> price fields appeared 100× higher than the <a href="https://www.cloudrift.ai/inference">public webpage</a>. The larger API-derived rates governed the conservative guard; no cache discounts were assumed.</li>
+<li>No GPU rental, local model process, training run or automatic provider fallback was started. Evaluation workers and preview are stopped. The temporary key was not stored in repository or result files.</li>
+</ul>
+<h2>Reproducibility and limits</h2>
+<p>Provider transport revision: <code>decd259</code>. Exact continuation revision: <code>05fd67c</code>. Offline checks: 36 provider/current/legacy tests, then 28 resume/current-adapter tests. Public canonical trajectories and separate evaluator artifacts are retained in the local runtime archive.</p>
+<p>One source-grounded Málaga landscape with synthetic operational dynamics. No all-task sweep, held-out model selection, expert labels or claims of calibrated firefighting effectiveness. Fixing tool compliance and latency is a prerequisite to interpreting the model's operational decisions or starting RL.</p>
+<p><a href="../data/ops_model_v1/cloudrift_validation.json">Machine-readable validation record</a></p>
+</main>
+</html>

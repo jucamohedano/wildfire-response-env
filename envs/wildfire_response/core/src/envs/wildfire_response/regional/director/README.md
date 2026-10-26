@@ -70,9 +70,7 @@ bounds its output; private reasoning text is not retained as a training label.
 The old GRPO recipe remains regional; this change fixes current-contract model
 evaluation, not the training algorithm or a trained-policy claim.
 
-## Legacy regional adapter
-
-### Explicit CloudRift continuation
+## CloudRift continuation
 
 `eval/run_cloudrift_ops.py` uses the same four-case runner with an explicitly
 authorized `CloudRiftOpsPolicy` and the exact model
@@ -120,7 +118,7 @@ partial run. Always subtract all earlier conservative usage/reservations from
 the original authorized spending cap and reduce the remaining request/time caps
 before a manual continuation; the new run does not silently reset that allowance.
 
-### Original regional interface
+## Legacy regional adapter
 
 `RegionalDirectorPolicy` replaces neither the simulator nor the director's choices.
 It projects public observations into a model context and accepts two named tools:
