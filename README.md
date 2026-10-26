@@ -133,6 +133,31 @@ uncached rates. The report includes exact captured tool diagnostics; it does not
 establish firefighting-policy competence. Follow-up integration work is tracked
 in [issue25](https://github.com/jucamohedano/wildfire-response-env/issues/25).
 
+### Codex subagent evaluation
+
+`eval.run_benchmark_subagent` runs the same three development probes through a
+loopback-only public-request bridge. The evaluated GPT-6 Luna actor receives no
+parent conversation, previous results, scenario families or private audit state.
+Use `eval/subagent_client.py` to retrieve instructions/schemas and submit one
+named action per request. Request IDs reject duplicate/stale submissions; the
+unchanged model parser and simulator validator still validate the action.
+
+This is a distinct agent setup, not a controlled model-only comparison with
+CloudRift: the Codex actor retains conversation memory, submits shell JSON rather
+than native provider tool-call envelopes, and has a240-request ceiling over30
+minutes. It is instructed not to inspect source files or automate policy choices;
+this is **instruction isolation, not an OS security sandbox**. No external
+inference API is called and no USD cost is inferred for Codex usage. Private
+episode artifacts and independent replay grading use the same retention layout.
+
+The [Luna subagent trial](results/luna-subagent-benchmark-20261026.html) completed
+all three120-minute episodes: scores1.0,1.0 and0.998348, with zero population
+exposure, zero protocol failures and one corrected invalid triage action across
+180commits. The multiple-fire case still had active fire and275additional burned
+hectares, versus100for the scripted dispatcher. Its high scalar score must not
+be read as effective containment. All model traces replayed exactly; this small
+development sample is neither a held-out leaderboard nor a training dataset.
+
 ## Local 2D control-centre UI
 
 The optional [UI](ui/README.md) adds a flat source-derived terrain map, optional

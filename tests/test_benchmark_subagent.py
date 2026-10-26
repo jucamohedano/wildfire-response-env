@@ -1,5 +1,7 @@
 import json
 import threading
+from pathlib import Path
+import tempfile
 import unittest
 
 from eval.run_benchmark_subagent import Bridge, SubagentPolicy, MODEL
@@ -51,6 +53,23 @@ class SubagentBridgeTests(unittest.TestCase):
             BenchmarkModelPolicy(model=MODEL, transport=lambda value: {})
         self.assertEqual(SubagentPolicy(model=MODEL, transport=lambda value: {}).contract_version,
                          'wildfire-benchmark-model-tools-v1')
+
+    def test_subagent_runner_retains_unscored_partial_and_harness_metadata(self):
+        from eval.run_benchmark_cloudrift import run
+        from test_benchmark_core import create
+        def fake(payload):
+            return dict(model='fake-not-luna', choices=[dict(finish_reason='tool_calls', message=dict(
+                tool_calls=[dict(type='function', function=dict(name='advance_time', arguments='{}'))]))])
+        with tempfile.TemporaryDirectory() as temporary:
+            result = run(Path(temporary)/'run', create, fake, families=('false_alarm',), max_requests=1,
+                model=MODEL, policy_type=SubagentPolicy, policy_options={},
+                agent_metadata=dict(test_only=True, isolation='test fixture'))
+            self.assertEqual(result['model'], MODEL)
+            self.assertEqual(result['mode'], 'subagent_trial')
+            self.assertIsNone(result['sampling'])
+            self.assertEqual(result['status'], 'stopped')
+            self.assertFalse(result['episodes'][0]['scored'])
+            self.assertEqual(result['episodes'][0]['served_models'], ['fake-not-luna'])
 
 
 if __name__ == '__main__':
