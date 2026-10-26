@@ -7,7 +7,7 @@ and 20 test groups: **1,280 / 320 / 320 tasks** overall. Two wording/seed varian
 per group are repetitions, not independent historical incidents.
 
 The sampler independently draws ignition offsets/times, five wind vectors,
-report delays, duplicate bursts, resource holds, second-base availability,
+report delays, duplicate bursts, resource holds, second-base engine holds,
 request delays, readback mismatch, broadcast delay/failure and wind-shift timing.
 Family-specific constraints retain meaningful unavailable-resource,
 reinforcement-delay and failed-protection challenges. Wind-shift timing only
@@ -58,6 +58,14 @@ per family with passive and dispatcher policies (16 episodes). It retains failur
 and censoring, records time/RSS, replays each completed episode and independently
 recomputes reward. A budget stop is incomplete, never a passing leaderboard.
 Verified validity is not an expert demonstration label.
+
+The first run completed 16/16 episodes with exact replay and reward verification
+in 94.24 seconds, peaking at 84.58 MiB RSS. The dispatcher kept all eight cases
+safe; passive waiting kept seven safe. Both used zero invalid actions and no
+episode was boundary-censored. These are small training-only mechanics checks,
+not proof that the entire catalog is difficult or a policy is operationally safe.
+See `results/dataset-expansion-smoke-20261026.json`; full trajectories and audits
+remain in the local run directory, separate from the metadata committed here.
 
 Python agents use `wildfire_core.expansion.ExpandedEnv`, with the same constructor,
 reset/step, observation and action contract as `BenchmarkEnv`. Each expanded

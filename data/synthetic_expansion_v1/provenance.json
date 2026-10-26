@@ -1,0 +1,29 @@
+{
+  "catalog_sha256": "80fef6516618f77e669aad4e2bc7f754002aac59181e6f0d6e7bfce222118de4",
+  "compiler_files_sha256": {
+    "envs/wildfire_response/core/src/envs/wildfire_response/regional/expansion/__init__.py": "1ad60eb0b5158587a9ce812472050bc6b7cc7e198a82207608d63166e8625101",
+    "envs/wildfire_response/core/src/envs/wildfire_response/regional/expansion/catalog.py": "fbbdc21140dd0a5dd27c308768e3992d92fa255329de9d52f73366fd1700aee7",
+    "envs/wildfire_response/core/src/envs/wildfire_response/regional/expansion/environment.py": "8c57b67d3ff538ecff15c712463da14dae4d29373bc6cbb11af00794b2c08efc",
+    "eval/build_expansion.py": "a26cb9e94fa05a5b421f2c26cdd3abe39f987809d3bb42cb8eaa4a4fbddfbaf5"
+  },
+  "distribution": "Local private candidate; no source-rights expansion or automatic Hub upload",
+  "engine_and_expansion_sha256": "9266459219998e104e76053cb4f6dc82fd106f45f746ed4ba2f56f59c6b3f0cf",
+  "generation": "Seeded synthetic configurations and calls, not historical trajectories",
+  "limitations": [
+    "Previous v1 outcomes informed environment development; not blind to prior research",
+    "No new geography, daylight, aircraft, population roster or longer horizons",
+    "Marginal sampling, not exhaustive Cartesian or pairwise coverage",
+    "No held-out outcome evaluation, policy learning or operational calibration"
+  ],
+  "new_real_incidents": 0,
+  "parent_catalog_sha256": "2b83e5e2457a37cdf22cf75c2eb66d6c186585cf8889089219a992963e61cb05",
+  "prepared_inputs_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
+  "reward": "Unchanged benchmark v1: 80% population protection / 20% unburned fraction",
+  "source_landscapes": 1,
+  "source_registry": "data/malaga_2021/provenance.json",
+  "source_revision": "8fcbb40ef96c94283f37642d57c6d8c03c668434",
+  "split_policy": "Matching ignition/claimed-location layouts stay together; exact frozen v1 configurations excluded",
+  "topographic_inputs_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+  "version": "wildfire-synthetic-expansion-provenance-v1",
+  "workers": 1
+}
