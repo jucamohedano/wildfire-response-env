@@ -20,5 +20,7 @@ describe('incident updates and arrival timing',()=>{
     expect(renderToStaticMarkup(<ResourceTiming resource={{...resource,arrival_at:null,state:'refilling'}}/>)).toContain('Next phase at 6m');
     expect(renderToStaticMarkup(<ResourceTiming resource={{...resource,state:'on_scene'}}/>)).toContain('On scene');
     expect(renderToStaticMarkup(<ResourceTiming resource={{...resource,state:null}}/>)).toContain('Awaiting base status');
+    expect(renderToStaticMarkup(<ResourceTiming resource={resource} minute={8}/>)).toContain('10 min remaining');
+    expect(renderToStaticMarkup(<ResourceTiming resource={resource} minute={20}/>)).toContain('awaiting status');
   });
 });

@@ -1,0 +1,594 @@
+{
+  "censored_episodes": 0,
+  "checks": {
+    "test_benchmark_baselines.py": 4,
+    "test_benchmark_catalog.py": 3,
+    "test_benchmark_core.py": 22,
+    "test_benchmark_model.py": 3,
+    "test_benchmark_openenv.py": 8,
+    "test_benchmark_runner.py": 3,
+    "test_benchmark_training.py": 33
+  },
+  "elapsed_seconds": 2555.112,
+  "gpu_training_run": false,
+  "invalid_reference_actions": 0,
+  "learning_preparation": {
+    "frozen_training_cases": 180,
+    "model_loaded": false,
+    "provider_calls": 0,
+    "readiness": false,
+    "verified_training_trajectories": 3
+  },
+  "limitations": [
+    "One source landscape and night-response configurations",
+    "Synthetic exposure is not mortality",
+    "Source-derived context does not calibrate suppression, travel or medical effects",
+    "No trained model has been evaluated; GPU stages remain untested",
+    "Root code license and asset redistribution review remain open"
+  ],
+  "model_inference_run": false,
+  "peak_rss_mib": 80.09,
+  "published": false,
+  "runs": {
+    "development-central": {
+      "board": [
+        {
+          "additional_burned_hectares": 45.833333333333336,
+          "assigned": 12,
+          "attempted": 12,
+          "graded_score": 0.9997247247247247,
+          "invalid_actions": 0,
+          "policy": "dispatcher",
+          "protected_fraction": 1.0,
+          "rank_eligible": true,
+          "safe_episode_rate": 1.0,
+          "score_interval": [
+            0.9994494494494495,
+            0.9999124124124125
+          ],
+          "scored": 12
+        },
+        {
+          "additional_burned_hectares": 43.75,
+          "assigned": 12,
+          "attempted": 12,
+          "graded_score": 0.9616419991419992,
+          "invalid_actions": 0,
+          "policy": "cooperative",
+          "protected_fraction": 0.9523809523809523,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.9166666666666666,
+          "score_interval": [
+            0.885451522951523,
+            0.9998498498498499
+          ],
+          "scored": 12
+        },
+        {
+          "additional_burned_hectares": 127.08333333333333,
+          "assigned": 12,
+          "attempted": 12,
+          "graded_score": 0.9611414328356478,
+          "invalid_actions": 0,
+          "policy": "indiscriminate",
+          "protected_fraction": 0.9523809523809523,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.9166666666666666,
+          "score_interval": [
+            0.8848758533675889,
+            0.9994869117803002
+          ],
+          "scored": 12
+        },
+        {
+          "additional_burned_hectares": 120.83333333333333,
+          "assigned": 12,
+          "attempted": 12,
+          "graded_score": 0.9326075700042643,
+          "invalid_actions": 0,
+          "policy": "dispatcher_without_incoming_communications",
+          "protected_fraction": 0.9166666666666666,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.8333333333333334,
+          "score_interval": [
+            0.8374194778120398,
+            0.9993368368368368
+          ],
+          "scored": 12
+        },
+        {
+          "additional_burned_hectares": 127.08333333333333,
+          "assigned": 12,
+          "attempted": 12,
+          "graded_score": 0.8944747661689811,
+          "invalid_actions": 0,
+          "policy": "passive",
+          "protected_fraction": 0.8690476190476191,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.75,
+          "score_interval": [
+            0.7805768551636321,
+            0.9989364364364365
+          ],
+          "scored": 12
+        }
+      ],
+      "elapsed_seconds": 340.308,
+      "experiment": {
+        "catalog_sha256": "2b83e5e2457a37cdf22cf75c2eb66d6c186585cf8889089219a992963e61cb05",
+        "communications_ablation": true,
+        "environment_implementation_sha256": "bf56a9a5e56e283e64e4a75db141bb824045dc7d24424a7395e93c5325ab4473",
+        "policies": [
+          "passive",
+          "indiscriminate",
+          "cooperative",
+          "dispatcher"
+        ],
+        "policy_and_runner_sha256": {
+          "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/baselines.py": "aa95f49afb12f056823e48326d314cf384b356e9d7e227b6fdee55c75bb992d1",
+          "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/model.py": "e1ee94ce8774cd7706063e71cfec18e0d1a4fcfc3e806760262fca46214eb9b1",
+          "eval/run_benchmark.py": "bfffe02cead12642ba9f20184d81cc9ed34ee9cbe29895f57db82515e852c255"
+        },
+        "profile_sha256": "a8c7f55d59bf96919318d6747cc41cab47f8a5c2253f2ba120f5251b3431623a",
+        "split": "development",
+        "task_ids": [
+          "bench-dev-71f777cb5ff8c9f2",
+          "bench-dev-16f552e5e1561b06",
+          "bench-dev-5bc374bd2c35710a",
+          "bench-dev-59aab0624bad5f60",
+          "bench-dev-d9c78dfb35a04dff",
+          "bench-dev-d4c39d6fd7284f8e",
+          "bench-dev-511404700315690f",
+          "bench-dev-c5d26379c043cfe3",
+          "bench-dev-e22c6ecbba5686fc",
+          "bench-dev-911e0eead535421c",
+          "bench-dev-11d1f529b76cd1c9",
+          "bench-dev-b91a67b78aa69de5"
+        ],
+        "version": "wildfire-benchmark-experiment-v1"
+      },
+      "full_split": true,
+      "peak_rss_mib": 79.7,
+      "profile": "central",
+      "source_revision": "8180f86ab928da4e17214ed20681465b023cc4af",
+      "split": "development",
+      "status": "complete"
+    },
+    "development-faster_stronger": {
+      "board": [
+        {
+          "additional_burned_hectares": 47.916666666666664,
+          "assigned": 12,
+          "attempted": 12,
+          "graded_score": 0.9997122122122123,
+          "invalid_actions": 0,
+          "policy": "dispatcher",
+          "protected_fraction": 1.0,
+          "rank_eligible": true,
+          "safe_episode_rate": 1.0,
+          "score_interval": [
+            0.9994119119119119,
+            0.9999124124124125
+          ],
+          "scored": 12
+        },
+        {
+          "additional_burned_hectares": 35.416666666666664,
+          "assigned": 12,
+          "attempted": 12,
+          "graded_score": 0.9616920491920492,
+          "invalid_actions": 0,
+          "policy": "cooperative",
+          "protected_fraction": 0.9523809523809523,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.9166666666666666,
+          "score_interval": [
+            0.8855015730015731,
+            0.9998748748748749
+          ],
+          "scored": 12
+        }
+      ],
+      "elapsed_seconds": 155.931,
+      "experiment": {
+        "catalog_sha256": "2b83e5e2457a37cdf22cf75c2eb66d6c186585cf8889089219a992963e61cb05",
+        "communications_ablation": false,
+        "environment_implementation_sha256": "bf56a9a5e56e283e64e4a75db141bb824045dc7d24424a7395e93c5325ab4473",
+        "policies": [
+          "cooperative",
+          "dispatcher"
+        ],
+        "policy_and_runner_sha256": {
+          "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/baselines.py": "aa95f49afb12f056823e48326d314cf384b356e9d7e227b6fdee55c75bb992d1",
+          "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/model.py": "e1ee94ce8774cd7706063e71cfec18e0d1a4fcfc3e806760262fca46214eb9b1",
+          "eval/run_benchmark.py": "bfffe02cead12642ba9f20184d81cc9ed34ee9cbe29895f57db82515e852c255"
+        },
+        "profile_sha256": "088b75b36c7c2cc69204d36147fbbac4378ce70da68d682c2bc366a7c72e6111",
+        "split": "development",
+        "task_ids": [
+          "bench-dev-71f777cb5ff8c9f2",
+          "bench-dev-16f552e5e1561b06",
+          "bench-dev-5bc374bd2c35710a",
+          "bench-dev-59aab0624bad5f60",
+          "bench-dev-d9c78dfb35a04dff",
+          "bench-dev-d4c39d6fd7284f8e",
+          "bench-dev-511404700315690f",
+          "bench-dev-c5d26379c043cfe3",
+          "bench-dev-e22c6ecbba5686fc",
+          "bench-dev-911e0eead535421c",
+          "bench-dev-11d1f529b76cd1c9",
+          "bench-dev-b91a67b78aa69de5"
+        ],
+        "version": "wildfire-benchmark-experiment-v1"
+      },
+      "full_split": true,
+      "peak_rss_mib": 79.79,
+      "profile": "faster_stronger",
+      "source_revision": "8180f86ab928da4e17214ed20681465b023cc4af",
+      "split": "development",
+      "status": "complete"
+    },
+    "development-slower_weaker": {
+      "board": [
+        {
+          "additional_burned_hectares": 89.58333333333333,
+          "assigned": 12,
+          "attempted": 12,
+          "graded_score": 0.9994619337594545,
+          "invalid_actions": 0,
+          "policy": "dispatcher",
+          "protected_fraction": 1.0,
+          "rank_eligible": true,
+          "safe_episode_rate": 1.0,
+          "score_interval": [
+            0.9990615427598899,
+            0.9997747371714314
+          ],
+          "scored": 12
+        },
+        {
+          "additional_burned_hectares": 81.25,
+          "assigned": 12,
+          "attempted": 12,
+          "graded_score": 0.9614167645159382,
+          "invalid_actions": 0,
+          "policy": "cooperative",
+          "protected_fraction": 0.9523809523809523,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.9166666666666666,
+          "score_interval": [
+            0.8851887319862527,
+            0.9997372372372373
+          ],
+          "scored": 12
+        }
+      ],
+      "elapsed_seconds": 149.95,
+      "experiment": {
+        "catalog_sha256": "2b83e5e2457a37cdf22cf75c2eb66d6c186585cf8889089219a992963e61cb05",
+        "communications_ablation": false,
+        "environment_implementation_sha256": "bf56a9a5e56e283e64e4a75db141bb824045dc7d24424a7395e93c5325ab4473",
+        "policies": [
+          "cooperative",
+          "dispatcher"
+        ],
+        "policy_and_runner_sha256": {
+          "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/baselines.py": "aa95f49afb12f056823e48326d314cf384b356e9d7e227b6fdee55c75bb992d1",
+          "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/model.py": "e1ee94ce8774cd7706063e71cfec18e0d1a4fcfc3e806760262fca46214eb9b1",
+          "eval/run_benchmark.py": "bfffe02cead12642ba9f20184d81cc9ed34ee9cbe29895f57db82515e852c255"
+        },
+        "profile_sha256": "ea00daef7a6b445c1d1592394f95ca7ae0fab94fe62b76e0c2d711aa8ec73987",
+        "split": "development",
+        "task_ids": [
+          "bench-dev-71f777cb5ff8c9f2",
+          "bench-dev-16f552e5e1561b06",
+          "bench-dev-5bc374bd2c35710a",
+          "bench-dev-59aab0624bad5f60",
+          "bench-dev-d9c78dfb35a04dff",
+          "bench-dev-d4c39d6fd7284f8e",
+          "bench-dev-511404700315690f",
+          "bench-dev-c5d26379c043cfe3",
+          "bench-dev-e22c6ecbba5686fc",
+          "bench-dev-911e0eead535421c",
+          "bench-dev-11d1f529b76cd1c9",
+          "bench-dev-b91a67b78aa69de5"
+        ],
+        "version": "wildfire-benchmark-experiment-v1"
+      },
+      "full_split": true,
+      "peak_rss_mib": 79.79,
+      "profile": "slower_weaker",
+      "source_revision": "8180f86ab928da4e17214ed20681465b023cc4af",
+      "split": "development",
+      "status": "complete"
+    },
+    "test-central": {
+      "board": [
+        {
+          "additional_burned_hectares": 98.125,
+          "assigned": 40,
+          "attempted": 40,
+          "graded_score": 0.8508391841449693,
+          "invalid_actions": 0,
+          "policy": "cooperative",
+          "protected_fraction": 0.8142857142857143,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.725,
+          "score_interval": [
+            0.7477681224478745,
+            0.9366848456001349
+          ],
+          "scored": 40
+        },
+        {
+          "additional_burned_hectares": 100.0,
+          "assigned": 40,
+          "attempted": 40,
+          "graded_score": 0.850827922883708,
+          "invalid_actions": 0,
+          "policy": "dispatcher",
+          "protected_fraction": 0.8142857142857143,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.7,
+          "score_interval": [
+            0.7591365971531261,
+            0.9338878022865627
+          ],
+          "scored": 40
+        },
+        {
+          "additional_burned_hectares": 186.875,
+          "assigned": 40,
+          "attempted": 40,
+          "graded_score": 0.8274489010852648,
+          "invalid_actions": 0,
+          "policy": "passive",
+          "protected_fraction": 0.7857142857142857,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.625,
+          "score_interval": [
+            0.7246444235907046,
+            0.9188625533873468
+          ],
+          "scored": 40
+        },
+        {
+          "additional_burned_hectares": 186.875,
+          "assigned": 40,
+          "attempted": 40,
+          "graded_score": 0.7360203296566933,
+          "invalid_actions": 0,
+          "policy": "indiscriminate",
+          "protected_fraction": 0.6714285714285714,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.475,
+          "score_interval": [
+            0.6303399320754693,
+            0.8391777305103751
+          ],
+          "scored": 40
+        }
+      ],
+      "elapsed_seconds": 984.92,
+      "experiment": {
+        "catalog_sha256": "2b83e5e2457a37cdf22cf75c2eb66d6c186585cf8889089219a992963e61cb05",
+        "communications_ablation": false,
+        "environment_implementation_sha256": "bf56a9a5e56e283e64e4a75db141bb824045dc7d24424a7395e93c5325ab4473",
+        "policies": [
+          "passive",
+          "indiscriminate",
+          "cooperative",
+          "dispatcher"
+        ],
+        "policy_and_runner_sha256": {
+          "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/baselines.py": "aa95f49afb12f056823e48326d314cf384b356e9d7e227b6fdee55c75bb992d1",
+          "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/model.py": "e1ee94ce8774cd7706063e71cfec18e0d1a4fcfc3e806760262fca46214eb9b1",
+          "eval/run_benchmark.py": "bfffe02cead12642ba9f20184d81cc9ed34ee9cbe29895f57db82515e852c255"
+        },
+        "profile_sha256": "a8c7f55d59bf96919318d6747cc41cab47f8a5c2253f2ba120f5251b3431623a",
+        "split": "test",
+        "task_ids": [
+          "bench-test-5d163046d0081b06-v0",
+          "bench-test-5d163046d0081b06-v1",
+          "bench-test-e1158c12398ca117-v0",
+          "bench-test-e1158c12398ca117-v1",
+          "bench-test-b6d0f1e88a56da11-v0",
+          "bench-test-b6d0f1e88a56da11-v1",
+          "bench-test-b2a316c5a36078ef-v0",
+          "bench-test-b2a316c5a36078ef-v1",
+          "bench-test-437987815f18d405-v0",
+          "bench-test-437987815f18d405-v1",
+          "bench-test-50a27aae9e3d9dd3-v0",
+          "bench-test-50a27aae9e3d9dd3-v1",
+          "bench-test-66017b1e3da09512-v0",
+          "bench-test-66017b1e3da09512-v1",
+          "bench-test-168295c787645625-v0",
+          "bench-test-168295c787645625-v1",
+          "bench-test-5a3b8bfbbbbde8c3-v0",
+          "bench-test-5a3b8bfbbbbde8c3-v1",
+          "bench-test-6c3d0c9acb8f6383-v0",
+          "bench-test-6c3d0c9acb8f6383-v1",
+          "bench-test-6dc59d2db6d56960-v0",
+          "bench-test-6dc59d2db6d56960-v1",
+          "bench-test-9b0f65c8155dbc82-v0",
+          "bench-test-9b0f65c8155dbc82-v1",
+          "bench-test-1ca0a35e2a950871-v0",
+          "bench-test-1ca0a35e2a950871-v1",
+          "bench-test-6ee1d0562566bf60-v0",
+          "bench-test-6ee1d0562566bf60-v1",
+          "bench-test-9c606833b837a601-v0",
+          "bench-test-9c606833b837a601-v1",
+          "bench-test-694dbcf0aa8d8049-v0",
+          "bench-test-694dbcf0aa8d8049-v1",
+          "bench-test-185c6c122be553dd-v0",
+          "bench-test-185c6c122be553dd-v1",
+          "bench-test-1a38ce160eebe559-v0",
+          "bench-test-1a38ce160eebe559-v1",
+          "bench-test-c05367aa90e32aa3-v0",
+          "bench-test-c05367aa90e32aa3-v1",
+          "bench-test-8f1ad720534b5a91-v0",
+          "bench-test-8f1ad720534b5a91-v1"
+        ],
+        "version": "wildfire-benchmark-experiment-v1"
+      },
+      "full_split": true,
+      "peak_rss_mib": 80.09,
+      "profile": "central",
+      "source_revision": "929a3b66f04e1a14070cb92698d6cfb0c0bded4a",
+      "split": "test",
+      "status": "complete"
+    },
+    "validation-central": {
+      "board": [
+        {
+          "additional_burned_hectares": 103.125,
+          "assigned": 40,
+          "attempted": 40,
+          "graded_score": 0.9879520563818085,
+          "invalid_actions": 0,
+          "policy": "dispatcher",
+          "protected_fraction": 0.9857142857142858,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.975,
+          "score_interval": [
+            0.9649597783895305,
+            0.9996020964616006
+          ],
+          "scored": 40
+        },
+        {
+          "additional_burned_hectares": 96.875,
+          "assigned": 40,
+          "attempted": 40,
+          "graded_score": 0.9765610224907746,
+          "invalid_actions": 0,
+          "policy": "cooperative",
+          "protected_fraction": 0.9714285714285714,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.95,
+          "score_interval": [
+            0.9308129501724544,
+            0.9995683126778169
+          ],
+          "scored": 40
+        },
+        {
+          "additional_burned_hectares": 191.25,
+          "assigned": 40,
+          "attempted": 40,
+          "graded_score": 0.9531369782092923,
+          "invalid_actions": 0,
+          "policy": "indiscriminate",
+          "protected_fraction": 0.9428571428571428,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.9,
+          "score_interval": [
+            0.8960802938282277,
+            0.9988250581535706
+          ],
+          "scored": 40
+        },
+        {
+          "additional_burned_hectares": 191.25,
+          "assigned": 40,
+          "attempted": 40,
+          "graded_score": 0.9074226924950066,
+          "invalid_actions": 0,
+          "policy": "passive",
+          "protected_fraction": 0.8857142857142857,
+          "rank_eligible": true,
+          "safe_episode_rate": 0.8,
+          "score_interval": [
+            0.8384796169196996,
+            0.9762117908398901
+          ],
+          "scored": 40
+        }
+      ],
+      "elapsed_seconds": 924.003,
+      "experiment": {
+        "catalog_sha256": "2b83e5e2457a37cdf22cf75c2eb66d6c186585cf8889089219a992963e61cb05",
+        "communications_ablation": false,
+        "environment_implementation_sha256": "bf56a9a5e56e283e64e4a75db141bb824045dc7d24424a7395e93c5325ab4473",
+        "policies": [
+          "passive",
+          "indiscriminate",
+          "cooperative",
+          "dispatcher"
+        ],
+        "policy_and_runner_sha256": {
+          "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/baselines.py": "aa95f49afb12f056823e48326d314cf384b356e9d7e227b6fdee55c75bb992d1",
+          "envs/wildfire_response/core/src/envs/wildfire_response/regional/benchmark_v1/model.py": "e1ee94ce8774cd7706063e71cfec18e0d1a4fcfc3e806760262fca46214eb9b1",
+          "eval/run_benchmark.py": "bfffe02cead12642ba9f20184d81cc9ed34ee9cbe29895f57db82515e852c255"
+        },
+        "profile_sha256": "a8c7f55d59bf96919318d6747cc41cab47f8a5c2253f2ba120f5251b3431623a",
+        "split": "validation",
+        "task_ids": [
+          "bench-validation-c3f88601e99c8d27-v0",
+          "bench-validation-c3f88601e99c8d27-v1",
+          "bench-validation-4a6a6df96d1ec7ea-v0",
+          "bench-validation-4a6a6df96d1ec7ea-v1",
+          "bench-validation-dab907894fa51555-v0",
+          "bench-validation-dab907894fa51555-v1",
+          "bench-validation-c3040192f863e95f-v0",
+          "bench-validation-c3040192f863e95f-v1",
+          "bench-validation-ce729a72824625c2-v0",
+          "bench-validation-ce729a72824625c2-v1",
+          "bench-validation-398168f078b2274d-v0",
+          "bench-validation-398168f078b2274d-v1",
+          "bench-validation-7adaa39df5a5e53c-v0",
+          "bench-validation-7adaa39df5a5e53c-v1",
+          "bench-validation-56eca9105726c8f0-v0",
+          "bench-validation-56eca9105726c8f0-v1",
+          "bench-validation-3fcfa0a383341905-v0",
+          "bench-validation-3fcfa0a383341905-v1",
+          "bench-validation-df8db2189b1e0e21-v0",
+          "bench-validation-df8db2189b1e0e21-v1",
+          "bench-validation-101dbde38e76b0b6-v0",
+          "bench-validation-101dbde38e76b0b6-v1",
+          "bench-validation-4baab0da313220c4-v0",
+          "bench-validation-4baab0da313220c4-v1",
+          "bench-validation-ce7e91fbfda1fcba-v0",
+          "bench-validation-ce7e91fbfda1fcba-v1",
+          "bench-validation-54a242f63bc90e4f-v0",
+          "bench-validation-54a242f63bc90e4f-v1",
+          "bench-validation-482efda0a9335b80-v0",
+          "bench-validation-482efda0a9335b80-v1",
+          "bench-validation-39379ac0b73f4564-v0",
+          "bench-validation-39379ac0b73f4564-v1",
+          "bench-validation-1bc70b9503a7985c-v0",
+          "bench-validation-1bc70b9503a7985c-v1",
+          "bench-validation-66eb1e29b08fa5e6-v0",
+          "bench-validation-66eb1e29b08fa5e6-v1",
+          "bench-validation-5cff06a00f85f0d3-v0",
+          "bench-validation-5cff06a00f85f0d3-v1",
+          "bench-validation-7e55906c82d6a2a0-v0",
+          "bench-validation-7e55906c82d6a2a0-v1"
+        ],
+        "version": "wildfire-benchmark-experiment-v1"
+      },
+      "full_split": true,
+      "peak_rss_mib": 80.09,
+      "profile": "central",
+      "source_revision": "8180f86ab928da4e17214ed20681465b023cc4af",
+      "split": "validation",
+      "status": "complete"
+    }
+  },
+  "static_checks": {
+    "ignitions_checked": 282,
+    "nonburnable_ignition_cases": 0
+  },
+  "status": "cpu_verified_training_gated",
+  "total_decisions": 25680,
+  "total_episodes": 428,
+  "version": "wildfire-benchmark-release-validation-v1",
+  "wheel_client": {
+    "installed_module": "/tmp/wildfire-response-env-ops/.runtime/benchmark-wheel-client/lib/python3.12/site-packages/wildfire_core/__init__.py",
+    "isolated_wheel": true,
+    "minute": 120,
+    "reward": 1.0,
+    "seconds": 5.649,
+    "verified": true
+  }
+}

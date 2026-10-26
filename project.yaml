@@ -1,28 +1,34 @@
 name: wildfire-response
 title: "Wildfire Response Environment"
-tagline: "Programmatic regional wildfire coordination, outcome evaluation and bounded RL experiments."
-status: wip
+tagline: "Delivered-evidence wildfire coordination with safety-first evaluation and a gated RL recipe."
+status: private-candidate
 authors:
   - {github: jucamohedano}
 source:
   repository: jucamohedano/wildfire-response-env
   extracted_from: jucamohedano/Los_Panaderos
-  revision: ba9cf90a4f4834d76e30a3e97f87d420e4cabdee
+  extracted_revision: ba9cf90a4f4834d76e30a3e97f87d420e4cabdee
+  implementation_branch: codex/benchmark-release-validation
 hub:
   spaces: []
   datasets: []
   models: []
 envs:
-  - name: wildfire_response
-    summary: "Synthetic Huelva coordination: 24 train, 6 validation and 6 test configurations."
+  - name: wildfire_benchmark_v1
+    summary: "Source-grounded synthetic Málaga coordination: 80 train, 20 validation and 20 test configuration groups, two variants each."
     backend: python-offline
-    tools: 2
+    tools: 13
+    observation: wildfire-benchmark-delivered-evidence-v1
+    reward: wildfire-benchmark-outcomes-v1
+    model_contract: wildfire-benchmark-model-tools-v1
     frameworks:
       openenv:
         transport: websocket
         space: null
-        verified: false
-    benchmark: regional-benchmark-v0.2.0
+        verified: true
+        verification_scope: "Local adapter and persistent WebSocket parity; not a public hosted deployment"
+    benchmark: wildfire-benchmark-catalog-v1
+    learned_policy_verified: false
 publication:
   visibility: private
   license_review_required: true

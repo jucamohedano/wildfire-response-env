@@ -1,5 +1,10 @@
 # Training recipes
 
+For the current benchmark use [BENCHMARK.md](BENCHMARK.md) and `benchmark.py`.
+It separates CPU demonstration/retrieval preparation from explicitly authorized
+SFT, actual adapter validation and GRPO. The legacy recipe below does not operate
+the new delivered-evidence population/area benchmark and is retained for history.
+
 The canonical recipe is packaged once in
 [`core/.../regional/training`](../envs/wildfire_response/core/src/envs/wildfire_response/regional/training/README.md).
 `grpo.py` is the project-level entrypoint, analogous to the separate evaluation
