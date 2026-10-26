@@ -9,6 +9,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from ...director.policy import ProviderHTTPError
 from .model import OpsModelPolicy
+from .compact_model import CompactOpsModelPolicy
 
 
 MODEL = 'deepseek-ai/DeepSeek-V4-Flash-0731'
@@ -128,3 +129,7 @@ class CloudRiftOpsPolicy(OpsModelPolicy):
     def validate_model(self, model):
         if model != MODEL:
             raise ValueError('Use only the explicitly authorized DeepSeek CloudRift model')
+
+
+class CompactCloudRiftOpsPolicy(CompactOpsModelPolicy, CloudRiftOpsPolicy):
+    pass

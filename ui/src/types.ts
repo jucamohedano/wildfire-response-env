@@ -1,9 +1,10 @@
 export type Action = Record<string, unknown>;
 export type Position = [number, number];
 export interface Report {id:string; observed_at:number; received_at:number; location:Position|null; text:string; source:string; channel:string; source_role:string}
-export interface Resource {id:string; kind:string; home_base:string; state:string; water_litres:number; capacity_litres?:number; sector_id:string|null; mission:string|null; due_at:number|null; target?:Position}
+export interface Resource {id:string; kind:string; home_base:string; state:string; water_litres:number; capacity_litres?:number; sector_id:string|null; mission:string|null; due_at:number|null; target?:Position;arrival_at?:number|null;arrival_in_minutes?:number|null;travel_time_basis?:string}
 export interface Allocation {resource_id:string; sector_id:string; mission:string}
-export interface Offer extends Allocation {id:string; status:string; expires_at:number}
+export interface Offer extends Allocation {id:string; status:string; expires_at:number;lead_time_minutes?:number}
+export interface IncidentEvent {id:string;incident_id:string;kind:string;source:string;source_role:string;channel:string;location:Position;observed_at:number;received_at:number;text:string;status:'open'|'resolved';priority:'normal'|'urgent';related_event_id:string|null}
 export interface Readback extends Allocation {id:string; offer_id:string; status:string; received_at:number; text:string}
 export interface District {id:string; population:number; position:Position; home:Position; refuge:Position; status:string; exposed:number; smoke_present:boolean; smoke_dose_units:number; shelter_active:boolean}
 export interface ProtectionOrder {id:string; recipient:string; action:string; channel:string; status:string; sequence:number; issued_at:number; due_at:number; delivered_at:number|null; acknowledged_at:number|null; executed_at:number|null; effect:string|null}
@@ -22,10 +23,12 @@ export interface Observation {
   weather_context:{records:{observed_at_utc:string;received_at_utc:string;temperature_c:number|null;wind_speed_m_s:number|null;relative_humidity_percent:number|null}[];now_utc:string};
   wind:Position;daylight:boolean;aircraft_operable:boolean;
   topographic_status:{boundary_censored:boolean;slope_enabled:boolean};
+  incident_events?:IncidentEvent[];active_incidents?:IncidentEvent[];
+  clock?:{minute:number;horizon_minutes:number;decision_minutes:number;unit:string;basis:string};
 }
 export interface Frame {observation:Observation;action:Action|null;reward:number;total_reward:number;terminated:boolean;truncated:boolean}
 export interface Envelope extends Omit<Frame,'action'> {episode_id:string;last_action?:Action|null;info:{error?:string|null;[key:string]:unknown}}
-export interface Config {cases:{id:string;mode:'development'|'stress'}[];ticks_per_action:number;max_decisions:number;evaluation_available:boolean}
+export interface Config {cases:{id:string;mode:'development'|'stress'|'reactive'}[];ticks_per_action:number;max_decisions:number;evaluation_available:boolean}
 export interface MapMetadata {extent:[number,number,number,number];crs:string;image_url:string;source_label:string}
 export interface World {episode_id:string;decision:number;world_fire:{column:number;row:number;heat:number;burned:number}[]}
 export interface History {episode_id:string;frames:Frame[];live_decision:number}

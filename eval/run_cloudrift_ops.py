@@ -7,11 +7,12 @@ import os
 import signal
 from urllib.request import urlopen
 
-from eval.run_ops_model import run, stop_preview
+from eval.run_ops_model import CASES, run, stop_preview
 from envs.wildfire_response.regional.ops.cloudrift import (
-    BASE_URL, MODEL, CloudRiftOpsPolicy, CloudRiftTransport,
+    BASE_URL, MODEL, CloudRiftOpsPolicy, CloudRiftTransport, CompactCloudRiftOpsPolicy,
 )
 from wildfire_core.topographic import TopographicEnv
+from wildfire_core.incident import ReactiveOpsEnv
 
 
 def main():
@@ -29,6 +30,7 @@ def main():
     parser.add_argument('--seconds', type=int, default=1200)
     parser.add_argument('--request-timeout', type=int, default=180)
     parser.add_argument('--resume-from')
+    parser.add_argument('--reactive', action='store_true', help='Use reactive incident tasks and compact v2 tools')
     parser.add_argument('--stop-preview-pid-file')
     args = parser.parse_args()
     atexit.register(stop_preview, args.stop_preview_pid_file)
@@ -46,15 +48,17 @@ def main():
     transport = CloudRiftTransport(api_key=key, model_metadata=metadata, usd_cap=args.usd_cap,
                                    timeout=args.request_timeout)
     del key
+    environment_type = ReactiveOpsEnv if args.reactive else TopographicEnv
     def factory():
-        return TopographicEnv(args.prepared_inputs, args.topographic_inputs,
+        return environment_type(args.prepared_inputs, args.topographic_inputs,
             expected_prepared_sha256=args.prepared_sha256, expected_topographic_sha256=args.topographic_sha256,
             slope_enabled=True, allow_synthetic_conditions=True)
     result = run(args.output, factory, transport, model=MODEL,
-        policy_type=CloudRiftOpsPolicy, policy_options=dict(allow_cloudrift=True),
+        policy_type=CompactCloudRiftOpsPolicy if args.reactive else CloudRiftOpsPolicy, policy_options=dict(allow_cloudrift=True),
         provider='cloudrift', allow_nonzero_cost=True, provider_trial=True,
         max_requests=args.max_requests, max_tokens=args.max_tokens, seconds=args.seconds,
-        preview_pid=args.stop_preview_pid_file, resume_from=args.resume_from)
+        preview_pid=args.stop_preview_pid_file, resume_from=args.resume_from,
+        case_ids=tuple(identifier.replace('topo-', 'incident-') for identifier in CASES) if args.reactive else CASES)
     print(json.dumps(result), flush=True)
 
 

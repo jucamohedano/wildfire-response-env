@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 
 from wildfire_core.prepared import load_inputs
+from wildfire_core.incident import CASE_IDS as INCIDENT_CASE_IDS, ReactiveOpsEnv, verify_reactive_trajectory
 from wildfire_core.stress import StressEnv, build_catalog, verify_stress_trajectory
 from wildfire_core.topographic import (CASE_IDS, ProtectionBaseline, TopographicEnv,
                                        load_domain, verify_topographic_trajectory)
@@ -169,6 +170,7 @@ class Episode:
         self.prepared, self.domain, self.catalog = prepared, domain, catalog
         self.lock = RLock()
         self.cases = {identifier: 'development' for identifier in CASE_IDS}
+        self.cases.update({identifier: 'reactive' for identifier in INCIDENT_CASE_IDS})
         for index in SMOKE_GROUP_INDICES:
             group = catalog['groups'][index]
             case = group['cases'][0]
@@ -186,6 +188,8 @@ class Episode:
         if self.cases[task_id] == 'stress':
             environment = StressEnv(self.prepared, self.domain, self.catalog,
                 expected_catalog_sha256=self.catalog['sha256'], **options)
+        elif self.cases[task_id] == 'reactive':
+            environment = ReactiveOpsEnv(self.prepared, self.domain, **options)
         else:
             environment = TopographicEnv(self.prepared, self.domain, **options)
         observation, _ = environment.reset(task_id)
@@ -228,6 +232,8 @@ class Episode:
         try:
             if self.cases[task_id] == 'development':
                 result = verify_topographic_trajectory(trajectory, self.prepared, self.domain)
+            elif self.cases[task_id] == 'reactive':
+                result = verify_reactive_trajectory(trajectory, self.prepared, self.domain)
             else:
                 result = verify_stress_trajectory(trajectory, self.prepared, self.domain, self.catalog)
             frames = trace_frames(trajectory)

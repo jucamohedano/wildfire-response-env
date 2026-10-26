@@ -1,0 +1,24 @@
+import type {IncidentEvent,Resource} from './types';
+import {pretty} from './model';
+
+export function ResourceTiming({resource}:{resource:Resource}){
+  if(resource.state==='on_scene')return <small className="arrival-time">On scene</small>;
+  if(resource.arrival_at!==undefined&&resource.arrival_at!==null)return <small className="arrival-time" title={resource.travel_time_basis}>Estimated arrival {resource.arrival_at}m · {resource.arrival_in_minutes} min remaining</small>;
+  return <small className="arrival-time">{resource.due_at===null?'No arrival scheduled':`Next phase at ${resource.due_at}m`}</small>;
+}
+
+export default function IncidentInbox({events,minute}:{events:IncidentEvent[];minute:number}){
+  const delivered=events.filter(event=>event.observed_at<=event.received_at&&event.received_at<=minute);
+  const latest=new Map(delivered.map(event=>[event.incident_id,event]));
+  const active=[...latest.values()].filter(event=>event.status==='open');
+  const card=(event:IncidentEvent)=><article key={event.id} className={`incident-card ${event.priority==='urgent'&&event.status==='open'?'urgent':''}`}>
+    <div><strong>{pretty(event.kind)}</strong><span>{event.status==='open'?'Open request':'Update / resolved'}</span></div>
+    <p>{event.text}</p><small>{event.source} · {pretty(event.channel.replace('synthetic_',''))} · cell {event.location.join(', ')}<br/>Observed {event.observed_at}m → received {event.received_at}m{event.received_at>minute-2?' · New':''}</small>
+  </article>;
+  return <section className="incident-inbox" aria-label="Incoming incident updates">
+    <div className="section-heading"><h2>Calls & crew updates</h2><span>{active.length} open</span></div>
+    <p className="hint">Requests stay here until a resolution arrives. Updates describe local conditions; a resolved request does not mean the fire is out.</p>
+    {active.length?active.map(card):<p className="muted">No outstanding requests received.</p>}
+    <details><summary>Received update history · {delivered.length}</summary>{[...delivered].reverse().map(card)}</details>
+  </section>;
+}
