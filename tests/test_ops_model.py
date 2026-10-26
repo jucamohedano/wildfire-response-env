@@ -102,6 +102,7 @@ class OpsModelTests(unittest.TestCase):
         self.assertEqual(observation['minute'], before+2)
         self.assertEqual(actor.records[-1]['contract_version'], CONTRACT_VERSION)
         self.assertNotIn('parallel_tool_calls', payloads[0])
+        self.assertNotIn('reasoning', payloads[0])
         self.assertTrue(payloads[0]['provider']['require_parameters'])
         self.assertFalse(payloads[0]['provider']['allow_fallbacks'])
 

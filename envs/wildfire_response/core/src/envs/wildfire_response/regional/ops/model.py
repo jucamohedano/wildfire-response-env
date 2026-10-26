@@ -225,6 +225,7 @@ class OpsModelPolicy(RegionalDirectorPolicy):
 
     def configure_request(self, payload):
         payload.pop('parallel_tool_calls', None)
+        payload.pop('reasoning', None)
         return payload
 
     def core_action(self, action):

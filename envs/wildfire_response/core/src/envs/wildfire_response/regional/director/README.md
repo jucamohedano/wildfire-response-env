@@ -63,6 +63,9 @@ can otherwise exclude them. The client still accepts exactly one complete named
 tool call and never executes parallel actions. The legacy regional payload is
 unchanged. Provider HTTP errors retain only a bounded, credential-redacted message
 for diagnosis, not raw bodies or account identifiers.
+The ops request also leaves reasoning at the provider default rather than forcing
+it off: some free endpoints require reasoning. The completion token cap still
+bounds its output; private reasoning text is not retained as a training label.
 
 The old GRPO recipe remains regional; this change fixes current-contract model
 evaluation, not the training algorithm or a trained-policy claim.
