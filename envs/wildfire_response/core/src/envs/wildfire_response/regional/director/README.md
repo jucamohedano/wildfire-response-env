@@ -114,8 +114,8 @@ Slow non-streaming responses may use `--request-timeout 180` (maximum180seconds)
 An interrupted current-contract episode can be continued with
 `--resume-from <previous-output>/<task-id>` in a fresh output directory. The
 runner replays and compares every saved canonical transition before calling the
-model, rejects changed or finished traces, and restores only prior submitted
-public proposals as short-term memory. No scored outcome is fabricated from a
+model, rejects changed or finished traces, and reconstructs short-term memory
+only from replay-verified public actions, not an untrusted request log. No scored outcome is fabricated from a
 partial run. Always subtract all earlier conservative usage/reservations from
 the original authorized spending cap and reduce the remaining request/time caps
 before a manual continuation; the new run does not silently reset that allowance.

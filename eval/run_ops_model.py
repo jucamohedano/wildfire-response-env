@@ -141,11 +141,10 @@ def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
         'envs/wildfire_response/core/src/envs/wildfire_response/regional/director/policy.py']
     summary['source_sha256'] = {name: hashlib.sha256((root/name).read_bytes()).hexdigest() for name in source_files}
     started = time.monotonic()
-    resumed_trace = resumed_requests = None
+    resumed_trace = None
     if resume_from is not None:
         resume_root = Path(resume_from)
         resumed_trace = json.loads((resume_root/'partial-trajectory.json').read_text())
-        resumed_requests = json.loads((resume_root/'requests.json').read_text())
         if resumed_trace['task_id'] not in CASES:
             raise ValueError('Resume only one of the four development cases')
         summary['resume_from'] = str(resume_root)
@@ -180,8 +179,8 @@ def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
             actor = policy_type(model=model, transport=bounded, interval=0, tool_mode='auto',
                 max_calls=max_requests, max_tokens=max_tokens, decision_limit=60, **(policy_options or {}))
             if resumed_decisions:
-                actor.history = [record['proposal'] for record in resumed_requests
-                                 if record.get('tool') == 'submit_action' and record.get('proposal')][-3:]
+                actor.history = [record['action'] for record in resumed_trace['transitions']
+                                 if record['action_valid']][-3:]
             entry = dict(task_id=task_id, status='running', scored=False, baselines=baseline_results,
                 reward_version=env.trajectory()['reward_version'], reward_weights=observation['reward_weights'],
                 resumed_decisions=resumed_decisions)
