@@ -1,5 +1,67 @@
 # Regional director model adapter
 
+## Current terrain/protection environment
+
+The current adapter is `wildfire_core.ops_model.OpsModelPolicy`, contract
+`wildfire-ops-model-tools-v1`. The regional adapter documented below stays available
+unchanged for legacy episodes; its five-field contract is not sufficient for the
+new protection protocol. The shared bounded policy loop now provides explicit
+contract hooks, rather than duplicating provider/budget/error handling.
+
+The new model still receives two tools, `check_action` and `submit_action`.
+Situation and received report data are already included in each observation.
+Both tools accept all nine core action lists: `requests`, `authorizations`,
+`releases`, `messages`, `readback_confirmations`, `readback_corrections`, `triage`,
+`clarifications`, and `protection_orders`. A short model-only `explanation` is
+recorded but stripped before checks/commits. Empty lists express waiting; malformed
+outputs remain invalid actions, not a tactical fallback. Checks do not advance
+time; a submitted combined action advances two model minutes.
+
+Public context now includes readbacks/corrections, report assessments, follow-up
+requests, order sequences and delivery/acknowledgement/execution, smoke telemetry,
+the80% safety reward weights, current wind and received station context. Static
+fuel/height samples are supplied at public sectors rather than sending full raster
+arrays on every provider request. There are no private labels/checkpoints, future
+reports, evaluator endpoints, credentials, satellite pixels or recommended plans.
+Known IDs are generated from that public context; the engine remains the authority
+for current semantic validity and safety checks.
+
+`eval/run_ops_model.py` runs exactly four development fixtures: false alarm,
+urgent report, conflicting/delayed reports with multiple fires, and wind shift.
+It runs paired passive/scripted-evacuation baselines on those same cases, records
+canonical trajectories and model requests, separately stores private verification,
+and exact-replays completed episodes. This is a small smoke evaluation on one
+source region, not held-out generalization evidence or model training.
+
+```sh
+PYTHONPATH=envs/wildfire_response/core/src .runtime/ui-venv/bin/python eval/run_ops_model.py \
+  --allow-provider --model thinkingmachines/inkling:free \
+  --key-file ~/.config/claude-code/.env --output .runtime/ops-model-trial \
+  --prepared-inputs .runtime/malaga-prepared-inputs-v1/inputs.json \
+  --prepared-sha256 ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108 \
+  --topographic-inputs .runtime/topographic-inputs-v1/inputs.json \
+  --topographic-sha256 e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd \
+  --max-requests 160 --max-tokens 2048 --seconds 1200 \
+  --stop-preview-pid-file .runtime/ui-map-refinement/server.pid
+```
+
+The optional key file is parsed only for
+one literal `OR_API_KEY` assignment, without shell execution, and never copied
+to outputs. By default the key comes from the process environment. A live trial
+requires explicit provider authorization and a currently listed zero-price,
+tool-capable `:free` model. Routing requests zero-price prompt/completion and no
+provider fallback. The global cap is160 attempts and20minutes, with90second request
+deadlines and at least3.2seconds between calls. Any provider error, limit or local
+budget stops the suite without retries, other-model fallback or paid routing.
+Partial attempts are saved as unscored, never scored as failures or demonstrations.
+The optional cleanup flag only stops a PID verified as this repository's local
+UI server. No inference server, GPU job or background worker is started.
+
+The old GRPO recipe remains regional; this change fixes current-contract model
+evaluation, not the training algorithm or a trained-policy claim.
+
+## Legacy regional adapter
+
 `RegionalDirectorPolicy` replaces neither the simulator nor the director's choices.
 It projects public observations into a model context and accepts two named tools:
 

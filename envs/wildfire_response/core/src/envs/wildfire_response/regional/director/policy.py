@@ -39,6 +39,15 @@ and unscored. No live calls, real messages or real emergency instructions are is
 
 
 class RegionalDirectorPolicy:
+    contract_version = CONTRACT_VERSION
+    instructions = INSTRUCTIONS
+    project_context = staticmethod(public_context)
+    build_action_schema = staticmethod(action_schema)
+    parse_model_action = staticmethod(parse_action)
+
+    def core_action(self, action):
+        return action
+
     def __init__(self, model=DEFAULT_MODEL, max_calls=16, max_tokens=4096, transport=None,
                  allow_provider=False, interval=3.1, tool_mode='forced', decision_limit=60):
         if not isinstance(model, str) or not model.endswith(':free'):
@@ -62,13 +71,13 @@ class RegionalDirectorPolicy:
         self.last_call = None
 
     def __call__(self, observation, feedback=None, check_action=None):
-        context = public_context(observation)
+        context = self.project_context(observation)
         context['prior_actions'] = copy.deepcopy(self.history[-3:])
         context['last_action_error'] = str(feedback['error'])[:200] if feedback and feedback.get('error') else None
         context['episode_budget'] = dict(decision_limit=self.decision_limit,
             decisions_remaining=max(0, self.decision_limit-context['decision']), ticks_per_action=2,
             requests_remaining_at_decision_start=self.max_calls-self.calls)
-        messages = [dict(role='system', content=INSTRUCTIONS),
+        messages = [dict(role='system', content=self.instructions),
                     dict(role='user', content=json.dumps(context, separators=(',', ':'), allow_nan=False))]
         checks = 0
         while True:
@@ -82,7 +91,7 @@ class RegionalDirectorPolicy:
             tools = [dict(type='function', function=dict(name=name,
                 description='Advance the simulation with this action' if name == 'submit_action' else
                             'Check this draft without advancing time or predicting outcomes',
-                parameters=action_schema(context))) for name in names]
+                parameters=self.build_action_schema(context))) for name in names]
             payload = dict(model=self.model, temperature=0, max_tokens=self.max_tokens,
                 reasoning=dict(enabled=False), parallel_tool_calls=False,
                 provider=dict(allow_fallbacks=False, require_parameters=True, max_price=dict(prompt=0, completion=0)),
@@ -94,7 +103,7 @@ class RegionalDirectorPolicy:
             self.calls += 1
             started = self.last_call = time.monotonic()
             record = dict(request=self.calls, minute=context['minute'], decision=context['decision'],
-                          requested_model=self.model, contract_version=CONTRACT_VERSION,
+                          requested_model=self.model, contract_version=self.contract_version,
                           tool_mode=self.tool_mode, protocol_error=None)
             self.records.append(record)
             try:
@@ -114,7 +123,7 @@ class RegionalDirectorPolicy:
                 name = call['function']['name']
                 if name not in names or call.get('type') != 'function':
                     raise ValueError('Unknown or unavailable tool')
-                action = parse_action(call['function']['arguments'])
+                action = self.parse_model_action(call['function']['arguments'])
                 record.update(tool=name, proposal=copy.deepcopy(action))
                 if name == 'submit_action':
                     self.history.append(copy.deepcopy(action))
@@ -125,7 +134,7 @@ class RegionalDirectorPolicy:
             except (KeyError, IndexError, TypeError, ValueError, AttributeError, RecursionError):
                 record['protocol_error'] = 'missing_or_invalid_named_action'
                 return {'invalid_model_action': record['protocol_error']}
-            result = check_action(action)
+            result = check_action(self.core_action(action))
             result = {key: copy.deepcopy(result[key]) for key in ('valid', 'error', 'remaining_checks', 'scope')}
             record['action_check'] = result
             checks += 1
