@@ -142,3 +142,15 @@ recovery, and private directories are not an encryption guarantee. Checkpoints,
 large datasets and source assets need an explicit retention/rights decision before
 any remote upload. No model weights, training jobs or paid services are needed
 for this CPU batch.
+
+### AgentEnv and Hugging Face
+
+The optional AgentEnv exporter writes four split-specific runnable bundles plus
+the `agentenv-hf` task/episode Parquet schemas. Native AgentEnv episode rows stay
+empty until AgentEnv itself records runs. Existing simulator traces are a
+separate transition dataset: only exact-replayed development traces are imported,
+and they are marked `training_eligible=false`. Public tasks contain registered
+IDs, not generator factors or future events. Private verification and provider
+request records are excluded. See the AgentEnv adapter README for the export
+command and schemas. Output is local only; unresolved license and input-asset
+rights still prohibit publication.

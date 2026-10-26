@@ -60,7 +60,8 @@ PYTHONPATH=envs/wildfire_response/core/src .runtime/core-venv/bin/python -m eval
 For a direct Python API example, a scenario inventory, UI, OpenEnv client/server,
 and training recipe, see [benchmark commands](data/benchmark_v1/README.md),
 [UI guide](ui/README.md), [OpenEnv adapter](envs/wildfire_response/openenv/README.md)
-and [training recipe](train/BENCHMARK.md).
+and [training recipe](train/BENCHMARK.md). The optional [AgentEnv/HF adapter](envs/wildfire_response/core/src/envs/wildfire_response/agentenv/README.md)
+exports split-specific bundles and Parquet; it does not upload them.
 
 ## Data and limits
 

@@ -11,6 +11,13 @@ dependencies = []
 
 [project.optional-dependencies]
 dataset = ["pyarrow>=18,<27"]
+agentenv = ["agentenv-framework-protocol[agent]==0.1.373"]
+agentenv-hf = [
+    "agentenv-framework==0.9.1358",
+    "agentenv-hf @ git+https://github.com/earakely-scale/agentenv-hf-plugin@v0.3.0",
+    "datasets>=5.1,<6",
+    "pyarrow==26.0.0",
+]
 dev = []
 
 [tool.setuptools]
@@ -23,4 +30,4 @@ exclude = ["envs.wildfire_response.tests*"]
 
 [tool.setuptools.package-data]
 simulator = ["static/maps/brunete-illustrated.json"]
-"envs.wildfire_response" = ["data/*.json", "data/*.md", "tasks/*.md", "regional/*.md", "regional/*.json", "regional/director/*.md", "regional/ops/*.md", "regional/ops/*.json", "regional/incident/*.md", "regional/grounded/*.md", "regional/protection/*.md", "regional/training/*.md", "regional/training/*.json", "regional/training/*.txt", "openenv/*.yaml", "regional/openenv/*.yaml"]
+"envs.wildfire_response" = ["data/*.json", "data/*.md", "tasks/*.md", "regional/*.md", "regional/*.json", "regional/director/*.md", "regional/ops/*.md", "regional/ops/*.json", "regional/incident/*.md", "regional/grounded/*.md", "regional/protection/*.md", "regional/training/*.md", "regional/training/*.json", "regional/training/*.txt", "openenv/*.yaml", "regional/openenv/*.yaml", "agentenv/*.md", "agentenv/*.txt"]
