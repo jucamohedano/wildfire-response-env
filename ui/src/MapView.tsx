@@ -127,8 +127,8 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
       if(grouped.has(key)||fresh)continue;grouped.add(key);
       marker('claim',report.location,report.id===selectedReport?'Selected report':'?',{type:'report',id:report.id});
     }
-    for(const district of observation.districts){marker('refuge',district.refuge,'Refuge');marker(district.exposed?'exposed':'population',district.position,`${groupName(district.id).replace(' group','')} · ${district.population}`,{type:'district',id:district.id});}
-    for(const unit of observation.resources)if(['on_scene','warning_service'].includes(unit.state)&&unit.target)marker('unit',unit.target,`${unit.kind} · ${unit.home_base}`,{type:'resource',id:unit.id});
+    for(const district of observation.districts){marker('refuge',district.refuge,'Refuge');marker(district.exposed?'exposed':'population',district.position??district.home,`${groupName(district.id).replace(' group','')} · ${district.population}${district.position===null?' · home; position unknown':''}`,{type:'district',id:district.id});}
+    for(const unit of observation.resources)if(unit.state!==null&&['on_scene','warning_service'].includes(unit.state)&&unit.target)marker('unit',unit.target,`${unit.kind} · ${unit.home_base}`,{type:'resource',id:unit.id});
   },[observation,world,grid,selectedReport]);
   useEffect(()=>{const report=observation.reports.find(report=>report.id===selectedReport);if(report?.location){cancelIntro.current();map.current?.getView().setCenter(project(cellCenter(observation.geography,...report.location)));}},[selectedReport]);
   return <section className="map-panel" aria-label="2D terrain map">

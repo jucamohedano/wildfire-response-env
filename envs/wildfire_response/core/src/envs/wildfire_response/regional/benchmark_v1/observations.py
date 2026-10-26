@@ -97,7 +97,8 @@ class DeliveredEvidence:
                             self.commands[key][identifier] = stamped(without_due(record), observed, received)
 
     def present(self, observation):
-        public = copy.deepcopy(observation)
+        public = copy.deepcopy({key: value for key, value in observation.items() if key != 'landscape'})
+        public['landscape'] = observation['landscape']
         public['districts'] = copy.deepcopy(self.population)
         public['resources'] = copy.deepcopy(self.resources)
         for key in ('sensor_memory', 'wind', 'daylight', 'aircraft_operable'):

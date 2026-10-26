@@ -16,6 +16,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from wildfire_core.prepared import load_inputs
 from wildfire_core.incident import CASE_IDS as INCIDENT_CASE_IDS, ReactiveOpsEnv, verify_reactive_trajectory
+from wildfire_core.benchmark_v1 import BenchmarkEnv, verify_benchmark_trajectory
+from envs.wildfire_response.regional.benchmark_v1.catalog import build_catalog as build_benchmark_catalog, task_ids
+from envs.wildfire_response.regional.benchmark_v1.baselines import PublicDispatcher
 from wildfire_core.stress import StressEnv, build_catalog, verify_stress_trajectory
 from wildfire_core.topographic import (CASE_IDS, ProtectionBaseline, TopographicEnv,
                                        load_domain, verify_topographic_trajectory)
@@ -171,6 +174,8 @@ class Episode:
         self.lock = RLock()
         self.cases = {identifier: 'development' for identifier in CASE_IDS}
         self.cases.update({identifier: 'reactive' for identifier in INCIDENT_CASE_IDS})
+        self.benchmark_catalog = build_benchmark_catalog(prepared, domain)
+        self.cases.update({identifier: 'benchmark' for identifier in task_ids(self.benchmark_catalog, 'development')})
         for index in SMOKE_GROUP_INDICES:
             group = catalog['groups'][index]
             case = group['cases'][0]
@@ -190,12 +195,17 @@ class Episode:
                 expected_catalog_sha256=self.catalog['sha256'], **options)
         elif self.cases[task_id] == 'reactive':
             environment = ReactiveOpsEnv(self.prepared, self.domain, **options)
+        elif self.cases[task_id] == 'benchmark':
+            environment = BenchmarkEnv(self.prepared, self.domain, catalog=self.benchmark_catalog,
+                                       expected_catalog_sha256=self.benchmark_catalog['sha256'], **options)
         else:
             environment = TopographicEnv(self.prepared, self.domain, **options)
         observation, _ = environment.reset(task_id)
         self.environment = environment
         self.policies = {name: ProtectionBaseline(prefer_shelter=name == 'shelter')
                          for name in ('evacuate', 'shelter')}
+        if self.cases[task_id] == 'benchmark':
+            self.policies = dict(evacuate=PublicDispatcher('cooperative'), shelter=PublicDispatcher('dispatcher'))
         self.envelope = dict(episode_id=uuid4().hex, observation=observation, reward=0,
             total_reward=0, terminated=False, truncated=False, info={}, last_action=None)
         self.frames = [dict(observation=copy.deepcopy(observation), action=None, reward=0,
@@ -234,6 +244,8 @@ class Episode:
                 result = verify_topographic_trajectory(trajectory, self.prepared, self.domain)
             elif self.cases[task_id] == 'reactive':
                 result = verify_reactive_trajectory(trajectory, self.prepared, self.domain)
+            elif self.cases[task_id] == 'benchmark':
+                result = verify_benchmark_trajectory(trajectory, self.prepared, self.domain, catalog=self.benchmark_catalog)
             else:
                 result = verify_stress_trajectory(trajectory, self.prepared, self.domain, self.catalog)
             frames = trace_frames(trajectory)
