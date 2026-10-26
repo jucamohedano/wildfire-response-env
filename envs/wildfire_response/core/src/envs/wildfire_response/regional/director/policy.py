@@ -51,10 +51,13 @@ class RegionalDirectorPolicy:
     def configure_request(self, payload):
         return payload
 
-    def __init__(self, model=DEFAULT_MODEL, max_calls=16, max_tokens=4096, transport=None,
-                 allow_provider=False, interval=3.1, tool_mode='forced', decision_limit=60):
+    def validate_model(self, model):
         if not isinstance(model, str) or not model.endswith(':free'):
             raise ValueError('Only explicit :free model IDs are permitted')
+
+    def __init__(self, model=DEFAULT_MODEL, max_calls=16, max_tokens=4096, transport=None,
+                 allow_provider=False, interval=3.1, tool_mode='forced', decision_limit=60):
+        self.validate_model(model)
         if (type(max_calls) is not int or not 1 <= max_calls <= 480
                 or type(max_tokens) is not int or not 256 <= max_tokens <= 8192
                 or isinstance(interval, bool) or not isinstance(interval, (int, float))

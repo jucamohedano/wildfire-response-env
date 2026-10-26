@@ -48,7 +48,8 @@ def read_key(path=None):
 
 
 class BoundedTransport:
-    def __init__(self, transport, *, max_requests=160, seconds=1200, interval=3.2):
+    def __init__(self, transport, *, max_requests=160, seconds=1200, interval=3.2,
+                 allow_nonzero_cost=False):
         self.transport = transport
         self.max_requests = max_requests
         self.deadline = time.monotonic()+seconds
@@ -56,6 +57,7 @@ class BoundedTransport:
         self.calls = 0
         self.last_call = None
         self.costs = []
+        self.allow_nonzero_cost = allow_nonzero_cost
 
     def __call__(self, payload):
         if self.calls >= self.max_requests or time.monotonic() >= self.deadline:
@@ -75,7 +77,7 @@ class BoundedTransport:
         usage = response.get('usage', {})
         if usage.get('cost') is not None:
             cost = float(usage['cost'])
-            if not math.isfinite(cost) or cost != 0:
+            if not math.isfinite(cost) or cost < 0 or (cost != 0 and not self.allow_nonzero_cost):
                 raise RuntimeError('Unexpected nonzero/invalid provider cost; stopping')
             self.costs.append(cost)
         return response
@@ -103,16 +105,18 @@ def stop_preview(pid_file):
 
 
 def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
-        seconds=1200, interval=3.2, preview_pid=None, provider_trial=False):
+        seconds=1200, interval=3.2, preview_pid=None, provider_trial=False,
+        policy_type=OpsModelPolicy, policy_options=None, provider='openrouter', allow_nonzero_cost=False):
     output = Path(output)
     if output.exists():
         raise ValueError('Choose a fresh output directory')
     output.mkdir(parents=True)
-    bounded = BoundedTransport(transport, max_requests=max_requests, seconds=seconds, interval=interval)
+    bounded = BoundedTransport(transport, max_requests=max_requests, seconds=seconds, interval=interval,
+                               allow_nonzero_cost=allow_nonzero_cost)
     summary = dict(mode='provider_trial' if provider_trial else 'injected_transport_test',
         status='running', model=model, contract_version=CONTRACT_VERSION, cases_planned=list(CASES),
         scope='Four development fixtures on one source region; not held-out evaluation or training',
-        max_provider_requests=max_requests, max_tokens=max_tokens, episodes=[])
+        max_provider_requests=max_requests, max_tokens=max_tokens, provider=provider, episodes=[])
     root = Path(__file__).resolve().parents[1]
     summary['source_revision'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
     source_files = ['eval/run_ops_model.py',
@@ -142,8 +146,8 @@ def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
                 dump(case/name/'trajectory.json', env.trajectory())
             env = factory()
             observation, info = env.reset(task_id)
-            actor = OpsModelPolicy(model=model, transport=bounded, interval=0, tool_mode='auto',
-                max_calls=max_requests, max_tokens=max_tokens, decision_limit=60)
+            actor = policy_type(model=model, transport=bounded, interval=0, tool_mode='auto',
+                max_calls=max_requests, max_tokens=max_tokens, decision_limit=60, **(policy_options or {}))
             entry = dict(task_id=task_id, status='running', scored=False, baselines=baseline_results,
                 reward_version=env.trajectory()['reward_version'], reward_weights=observation['reward_weights'])
             summary['episodes'].append(entry)
@@ -198,6 +202,8 @@ def run(output, factory, transport, *, model, max_requests=160, max_tokens=2048,
         summary.update(requests=bounded.calls, reported_cost=sum(bounded.costs) if bounded.costs else None,
             cost_reported_responses=len(bounded.costs), seconds=round(time.monotonic()-started, 3),
             preview_cleanup=stop_preview(preview_pid))
+        if hasattr(transport, 'budget_status'):
+            summary['provider_budget'] = transport.budget_status()
         dump(output/'summary.json', summary)
     return summary
 

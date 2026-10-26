@@ -72,6 +72,46 @@ evaluation, not the training algorithm or a trained-policy claim.
 
 ## Legacy regional adapter
 
+### Explicit CloudRift continuation
+
+`eval/run_cloudrift_ops.py` uses the same four-case runner with an explicitly
+authorized `CloudRiftOpsPolicy` and the exact model
+`deepseek-ai/DeepSeek-V4-Flash-0731`. The ordinary regional/ops model policies
+still reject non-`:free` models; a separate `--allow-cloudrift` opt-in is required.
+No VM, rental, GPU process, provider substitution or SDK retry is started.
+
+```sh
+PYTHONPATH=envs/wildfire_response/core/src .runtime/ui-venv/bin/python -m eval.run_cloudrift_ops \
+  --allow-cloudrift --key-stdin --usd-cap 5 --output .runtime/cloudrift-ops-trial \
+  --prepared-inputs .runtime/malaga-prepared-inputs-v1/inputs.json \
+  --prepared-sha256 ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108 \
+  --topographic-inputs .runtime/topographic-inputs-v1/inputs.json \
+  --topographic-sha256 e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd \
+  --max-requests 160 --max-tokens 4096 --seconds 1200 \
+  --stop-preview-pid-file .runtime/ui-map-refinement/server.pid
+```
+
+The hidden terminal prompt keeps the temporary inference key out of command-line
+arguments, files and request/result logs. Alternatively set the dedicated
+`CLOUDRIFT_INFERENCE_KEY` in the process environment. The inference key is not a
+`rift` CLI compute-login token, and the command does not change cached CLI login.
+The REST client sends `stream=false`, `n=1`, temperature/top-p1 and zero
+presence/frequency penalties to `https://inference.cloudrift.ai/v1`, with the
+current named tools. No OpenRouter routing fields are forwarded, redirects are
+rejected, and errors redact the key before retaining a bounded message.
+
+The requested5USD cap is conservative **estimated** spend, not an account-side
+billing cap. Public webpage prices and the API catalog disagreed by a factor100
+when this path was added. The guard uses the larger raw API-advertised per-token
+prices without assuming cache discounts. Before each call it reserves serialized
+request bytes plus4096overhead units and the full completion-token allowance;
+successful usage replaces that reservation with reported prompt/completion token
+counts. Failed or missing-usage calls retain their reservation. This deliberately
+may stop early. Report the price source, token counts and estimate separately from
+actual provider billing. Request/token/time caps remain independent safeguards.
+
+### Original regional interface
+
 `RegionalDirectorPolicy` replaces neither the simulator nor the director's choices.
 It projects public observations into a model context and accepts two named tools:
 
