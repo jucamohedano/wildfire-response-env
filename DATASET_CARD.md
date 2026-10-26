@@ -1,5 +1,10 @@
 # Wildfire benchmark v1 catalog — private candidate
 
+An opt-in [synthetic coverage expansion](data/synthetic_expansion_v1/README.md)
+adds 960 configuration groups / 1,920 tasks. It does not replace this frozen v1
+catalog or add historical incidents. Its validation/test outcomes are not used
+by the initial CPU smoke run.
+
 The compiler defines120configuration groups, not120historical wildfires. Eight
 families combine source-grounded geography with synthetic incident mechanics.
 There are80training,20validation and20test groups, with two seed/wording variants
