@@ -37,6 +37,8 @@ the aircraft staging reference near Málaga.
 
 Source hashes, acquisition attempts, filtering, coverage and ODbL attribution:
 [`data/coastal_mobility_v1/`](data/coastal_mobility_v1/README.md).
+Only offline preparation needs the optional `geodata` extra (`pyproj==3.8.0`);
+running the pinned graph and movement engine needs no geospatial dependency.
 Runtime parameter provenance, including the aircraft ARP and synthetic values:
 [`simulation_assumptions.json`](data/coastal_mobility_v1/simulation_assumptions.json).
 

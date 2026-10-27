@@ -4,6 +4,7 @@ from collections import defaultdict
 from contextlib import redirect_stdout
 import gzip
 import io
+import importlib.util
 import json
 import math
 from pathlib import Path
@@ -26,6 +27,7 @@ def fixture(nodes, ways):
          for way_id, node_ids, tags in ways])
 
 
+@unittest.skipUnless(importlib.util.find_spec('pyproj'), 'Install the optional geodata extra to test road preparation')
 class CoastalPreparationTests(unittest.TestCase):
     def test_grade_separated_geometric_crossing_is_not_connected(self):
         snapshot = fixture([
@@ -223,6 +225,7 @@ class PinnedCoastalFixtureTests(unittest.TestCase):
         self.assertGreater(second['access_from_staging'][0]['off_network_distance_m'], 1500)
         self.assertGreater(interior['access_from_staging'][0]['off_network_distance_m'], 150)
 
+    @unittest.skipUnless(importlib.util.find_spec('pyproj'), 'Install the optional geodata extra for regeneration')
     def test_exact_offline_regeneration(self):
         runtime = DATA / '.runtime'
         runtime.mkdir(exist_ok=True)

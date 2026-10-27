@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = []
 
 [project.optional-dependencies]
+geodata = ["pyproj==3.8.0"]
 dataset = ["pyarrow>=18,<27"]
 agentenv = ["agentenv-framework-protocol[agent]==0.1.373"]
 agentenv-hf = [
