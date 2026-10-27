@@ -35,6 +35,11 @@ six-hour pilot, followed conditionally by a twelve-hour night-to-day test, is
 proposed in the [long-session strategy](docs/long-sessions.html); it is not enabled
 by this documentation update.
 
+Versioned [scenario-quality rules](data/scenario_quality_v1/README.md) now audit
+every concrete case in the expansion, benchmark and topographic-stress catalogs.
+Hard contradictions block new expansion exports; plausibility warnings require
+review. Static consistency and exact replay do not certify real-world realism.
+
 The compiler defines120configuration groups, not120historical wildfires. Eight
 families combine source-grounded geography with synthetic incident mechanics.
 There are80training,20validation and20test groups, with two seed/wording variants
