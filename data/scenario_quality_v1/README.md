@@ -86,6 +86,25 @@ input/catalog/rule hashes and measurements. `private/<catalog>/findings.json`
 contains per-case evaluator findings and must not enter prompts or retrieval
 banks. Only serve the public directory, never the whole audit root.
 
+## First source-grounded audit, 27 October 2026
+
+All 2,412 registered cases passed the hard checks. **32 variants / 16
+configuration groups need intent review:** 28 wind-shift variants change wind at
+or before ignition (26 at, 2 before), and four variants ignite a refuge at time
+zero. A threatened refuge can be an intentional challenge; it is not automatically
+an impossible or incorrect scenario.
+
+The same landscape also has **80 cells using assumed fuel fallback**. That shared
+warning appears once per catalog, so the report totals 35 warning instances—not
+35 distinct bad scenarios. Night-grounded aircraft are informational, not errors.
+The CPU-only audit took 12.732 seconds and peaked at 35.22 MiB RSS. No scenario,
+seed, split, reward or existing replay identity was changed.
+
+See the [HTML report](../../results/scenario-quality-20261027.html) and
+[machine-readable audit](../../results/scenario-quality-20261027.json). All
+plausibility warnings remain unresolved until explicitly reviewed or addressed
+in a new dataset version; static acceptance is not a realistic-release approval.
+
 ## Acting on findings
 
 Review against the declared objective first. A refuge threatened at incident
