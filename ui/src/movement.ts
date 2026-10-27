@@ -2,7 +2,7 @@ import type {Movement,Observation,Position,Resource} from './types';
 import townLabels from '../../data/coastal_mobility_v1/town_labels.json';
 
 export const coastalExtent:[number,number,number,number]=[-5.43,36.34,-4.80,36.69];
-export const coastalPlaces:{name:string;lonLat:Position}[]=townLabels.towns.map(town=>({name:town.name,lonLat:[town.lonlat[0],town.lonlat[1]]}));
+export const coastalPlaces:{name:string;lonLat:Position;position:Position}[]=townLabels.towns.map(town=>({name:town.name,lonLat:[town.lonlat[0],town.lonlat[1]],position:[town.position[0],town.position[1]]}));
 
 export function reportedPosition(unit:Resource,minute:number):Position|null{
   if(!unit.map_position||unit.observed_at===null||unit.observed_at===undefined||unit.received_at===null||unit.received_at===undefined||unit.observed_at>unit.received_at||unit.received_at>minute||!unit.map_position.every(Number.isFinite))return null;

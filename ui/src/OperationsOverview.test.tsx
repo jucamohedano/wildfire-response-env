@@ -36,4 +36,14 @@ describe('control-center overview',()=>{
     expect(html).toContain('200 at refuge');expect(html).toContain('20 reported exposed');
     expect(html).not.toContain('reported safe');
   });
+  it('shows resource and population cards directly and flags a mismatched delivered readback',()=>{
+    const value={...observation,resources:[{id:'crew',kind:'crew',home_base:'cabezudos',state:'reserved',due_at:null} as Resource],
+      offers:[{id:'offer-1',resource_id:'crew',sector_id:'sector-1',mission:'recon',status:'offered',expires_at:20}],
+      readbacks:[{id:'readback-1',offer_id:'offer-1',resource_id:'crew',sector_id:'sector-1',mission:'suppress',status:'awaiting_confirmation',received_at:9,text:'Suppress'}]};
+    const html=render(value);
+    expect(html).toContain('<h2>Resources</h2>');expect(html).toContain('<h2>Population</h2>');
+    expect(html).toContain('Readback mismatch · correction needed');expect(html).not.toContain('snapshot-details');
+    const correcting=render({...value,readbacks:[{...value.readbacks[0],status:'correction_pending'}]});
+    expect(correcting).toContain('Correction sent · awaiting readback');expect(correcting).not.toContain('correction needed');
+  });
 });

@@ -281,6 +281,7 @@ def create_app(prepared_inputs, topographic_inputs, *, expected_prepared_sha256,
     episode = Episode(prepared, domain, catalog, mobility_network=roads)
     terrain_cache = copy.deepcopy(terrain)
     relief_cache = None
+    mesh_cache = None
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(LocalRequests)
 
@@ -322,6 +323,18 @@ def create_app(prepared_inputs, topographic_inputs, *, expected_prepared_sha256,
                 except (ValueError, OSError) as error:
                     raise HTTPException(503, 'Relief display failed source validation') from error
             return Response(relief_cache['png'], media_type='image/png')
+
+    @app.get('/api/map-mesh')
+    def map_mesh():
+        nonlocal mesh_cache
+        with episode.lock:
+            if mesh_cache is None:
+                from eval.ui_terrain import terrain_mesh
+                try:
+                    mesh_cache = terrain_mesh(prepared, domain)
+                except (ValueError, OSError) as error:
+                    raise HTTPException(503, 'Terrain mesh unavailable; the pinned 25 m source is required and must pass validation') from error
+            return JSONResponse(mesh_cache)
 
     @app.get('/api/state')
     def state():

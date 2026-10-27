@@ -32,9 +32,9 @@ Torch, rasterio, a JavaScript CDN, or a hosted mapping SDK. For frontend iterati
 run `npm run dev` in `ui/`; Vite proxies `/api` to the local Python server.
 
 The tested JavaScript dependency tree and direct Python dependencies are pinned
-in `package-lock.json` and the UI requirements files respectively. The map uses
-OpenLayers Canvas2D and Proj4 transforms, with
-no globe, camera pitch, rotation, 3D terrain mesh or extrusions.
+in `package-lock.json` and the UI requirements files respectively. The default
+map uses OpenLayers Canvas2D and Proj4 transforms. An optional, source-grounded
+Three.js close-up adds measured relief without a globe or extruded domain walls.
 
 ## Controls
 
@@ -94,8 +94,9 @@ no globe, camera pitch, rotation, 3D terrain mesh or extrusions.
   time. Public observations have no heat or burned-fraction measurements, so the
   UI does not invent them. Only the explicitly enabled live evaluator overlay
   colours actual simulator heat red-to-yellow and shows burned inactive cells.
-  Observation markers are not a measured continuous fire perimeter. There is no cosmetic
-  spread interpolation, flickering flame or continuous animation/render loop.
+  Observation markers are not a measured continuous fire perimeter. Optional
+  decorative effects do not interpolate fire spread or refine the evidence;
+  their bounded animation follows playback only.
 - **Export/open:** export a complete public canonical JSON trace, or import a
   completed `.json`/`.json.gz` trace. Imports are bounded, independently replayed
   against current caller-pinned inputs/settings, and read-only. In-progress exports
@@ -126,7 +127,10 @@ together in one operations panel, without Reports/Resources/Orders/History tabs.
 It includes acknowledgements and causally available wind/sensor snapshots; orders
 sent are distinct from confirmed delivery/execution. Repeated waits and unchanged
 sensor footprints are summarized, not discarded from the underlying trajectory.
-Resource/population summaries and inline sections retain every existing control.
+The overview shows the latest updates and decisions, priority incident requests,
+resource cards and population status without switching tabs. Older activity and
+all resources remain accessible; resource cards surface pending readbacks and
+overdue ETAs without implying dispatch or arrival. Inline sections retain every existing control.
 Shortcuts only open the existing detailed sections;
 allocation, readback, protection, advanced JSON and check/apply controls remain
 available. Arrival stages use delivered resource status, never a guessed GPS
@@ -166,9 +170,84 @@ distances or physics. Flat ground is transparent; no tinted domain rectangle is
 added. A missing/invalid source follows the existing coarse-fallback/fail-closed
 rules, independently of the imagery. Disable shading for an exact basemap comparison.
 
+**3D world v2 (pending review; uncommitted)** is the main map. The map-switching
+dropdown and 2D views are hidden; the Three.js/WebGL2 scene loads automatically.
+**Fit activity** and **Wider area** frame the incident or the expanded landscape.
+The 32 × 32 km display extent covers 3.08 times the original 18.5 × 18 km area,
+with 50 m vertices sampled from a new pinned 25 m IGN MDT05 WCS request in
+EPSG:25830 and 1× vertical scale. It is display-only: the original simulation
+grid, terrain inputs, fire spread, weather, routing and rewards do not change.
+Nonpositive source samples are not assumed to be water or measured elevations:
+unsupported vertices are masked, with flat aerial imagery shown as context only.
+The larger WCS request differs from the original source over their overlap; see
+`../data/ui_v2/expanded_terrain_provenance.json` for pins and limitations.
+Roads and population positions are never artistically moved.
+ArcGrid corner metadata describes cell edges, not sample centres. Each display
+vertex uses the four surrounding source cell-centre heights. This avoids a
+12.5 metre registration shift; no missing height is filled or extrapolated.
+The oblique and top-down presets share that same source surface. Screen-sized,
+decluttered labels improve readability without relocating units or settlements.
+PNOA imagery is photographic context; no individual trees, buildings, fire
+intensity, smoke altitude or historical acquisition date is inferred from it.
+The smoke column and flame shapes are bounded, seeded illustrations of received
+fire sightings, not a physical plume model or fine-resolution fire reconstruction.
+
+Fire and illustrative smoke columns use only fresh delivered sightings; missing or
+calm wind produces no smoke. Symbols are enlarged, and aircraft display altitude
+is illustrative, not a flight model. Replay/pause controls remain below the view.
+Rendering is bounded, pauses when hidden/offscreen and honors reduced motion.
+Unavailable source heights, imagery, WebGL or a renderer download show a 3D
+error with retry; context recovery redraws paused views. No simulation or reward changes.
+V1 is frozen as a recoverable local working-tree archive with SHA-256 checks:
+see `../data/ui_v2/freeze_v1.json`. No release tag or commit was created. The
+design brief and comparison distinguish matched presentation from missing wider
+terrain coverage and future real-settlement data. The first v2 design pass does
+not silently relocate the benchmark's synthetic population groups.
+
+**Temporary response base** means a simulated responder assembly/departure
+point, not a verified fire station, operations camp or incident command post.
+
+**Reference colors and road emphasis** are appearance-only. The 3D toolbar
+switches between an illustrated relief, the pine/olive/sand palette and original image colors;
+**Roads** independently toggles real OSM linework. The palette changes pixels,
+not vegetation evidence, fuel classes, heights, coordinates or simulation state.
+Illustrated relief brightens the source imagery without adding a green tint and
+uses decorative sunlight and neutral shadow derived from the gradients of the
+validated elevation mesh; it does not add trees, buildings, roads, new elevation
+samples or new geographic features.
+The reference palette gently darkens higher terrain using a continuous gradient
+derived from the validated height mesh; the original-color option bypasses it.
+The gradient is a visual treatment, not a new measurement or fire model.
+Road widths are exaggerated cartographic emphasis, not measurements. Major and
+local roads use a bright surface and dark outline for readability against the
+terrain. Tracks and footpaths are weaker/dashed context, never a promise that
+vehicles can use them.
+
+The source texture is a registered four-panel mosaic: four bounded 1536-pixel
+IGN viewport captures are cropped by their EPSG:25830 extents and stitched into
+one 3072-pixel texture. At most two panels load concurrently. Missing panels
+cancel the mosaic and fall back to the previous single-viewport capture; source
+maps are not AI-redrawn or shifted to imitate the generated reference. Normal
+browser tile caching is used; no captured imagery is exported as training data.
+Large black or dark-purple IGN image gaps over unsupported elevation are filled
+from color-balanced coarser IGN imagery, or OpenStreetMap cartography if that is unavailable.
+This does not infer sea, repair source elevations or move map features.
+
+`eval/prepare_expanded_display_roads.py` builds `/assets/map-roads-expanded-v2.json`
+offline from the 21 already-pinned raw OSM replies. It includes 17,120 cartographic
+line parts and 121,689 vertices across the expanded view; the cached OSM extracts
+do not cover the full northern edge. Roads remain display-only and are not a
+complete or verified vehicle-routing network. The older road asset includes eastern areas
+outside the smaller v1 routing fixture. This display asset is **not routing**:
+it does not change vehicle access, road closures, actions, travel times or agent
+route options. OSM attribution and ODbL notices remain attached; see
+`../data/ui_v2/expanded_roads_provenance.json` for source hashes and limitations.
+
 **Fire effects** add deterministic decorative flames and wind-directed smoke
-behind operational markers. They use only delivered burning observations no
-older than four simulation minutes, never future or evaluator-only fire state.
+behind operational markers. In the normal view they use only delivered burning
+observations no older than four simulation minutes, never future or evaluator-only
+fire state. The explicitly enabled evaluator-truth view shows its own labeled
+simulated heat and burned cells instead.
 Smoke needs known nonzero public wind; it is illustrative, not a dispersion
 forecast. Cells retain their 500 metre resolution; no fine perimeter, measured
 intensity, sub-cell fire spread or vehicle GPS route is invented. Effects stop
@@ -178,7 +257,8 @@ Rendering is capped at 30 requests/second, 40 visible cells and six particles
 per cell, with device pixel ratio capped at 1.5. Scrubbing rebuilds effects from
 the selected frame. Both toggles are display-only; reward and actions are unchanged.
 
-Prototype validation (2026-10-27): 49 frontend and 43 Python UI/terrain tests
+Earlier 2D prototype validation (2026-10-27; not validation of the expanded 3D
+view): 49 frontend and 43 Python UI/terrain tests
 passed, as did the production build. CPU-only `topo-dev-000` shelter and
 `bench-dev-d9c78dfb35a04dff` cooperative-reference episodes produced 18 and 61
 replay frames. Browser checks covered layer toggles, scrubbing, pause, the
@@ -204,8 +284,9 @@ authorization, replay, quick-action navigation and a 390 px mobile layout.
 
 The terrain overlay is an offline display-only PNG rendered from the exact
 pinned IGN MDT05 ASC sampled at25m, cropped with complete stencil support to the
-same EPSG:25830 domain. Elevation appears only as colour and hillshade on a flat
-plane. When that optional raw ASC is absent, an explicitly labelled coarse500m
+same EPSG:25830 domain. In 2D, elevation appears as colour and hillshade on a flat
+plane; the optional 3D mesh uses the same pinned height source. When that optional
+raw ASC is absent, an explicitly labelled coarse500m
 domain-height image is used. Present corrupt/changed raw data fails closed; no
 unknown elevations are filled. Neither image modifies physics or the input bundle.
 

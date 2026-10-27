@@ -1,6 +1,7 @@
 import {baseName,groupName,pretty,resourceKindName} from './model';
 import {ResourceTiming} from './IncidentInbox';
 import ActivityFeed from './ActivityFeed';
+import MapGlyph from './MapGlyph';
 import type {District,Frame,Observation} from './types';
 
 export function populationSummary(groups:District[]){
@@ -28,18 +29,32 @@ export default function OperationsOverview({observation,frames=[],onDecision=()=
   }).slice(0,2);
   const population=populationSummary(observation.districts);
   const baseLabels=new Map(observation.bases.map(base=>[base.id,base.name]));
+  const latestEvents=new Map((observation.incident_events??[]).filter(event=>event.observed_at<=event.received_at&&event.received_at<=observation.minute)
+    .slice().sort((first,second)=>first.received_at-second.received_at).map(event=>[event.incident_id,event]));
+  const openEvents=[...latestEvents.values()].filter(event=>event.status==='open');
+  const urgentEvents=openEvents.filter(event=>event.priority==='urgent');
   const counts=[['sheltering',population.sheltering],['moving / blocked',population.moving],['at refuge',population.safe],['status unknown',population.unknown],['not reported protected',population.awaiting]] as const;
   return <section className="operations-overview" aria-label="Operations overview">
+    {openEvents.length>0&&<button className={`open-incident-summary${urgentEvents.length?' urgent':''}`} onClick={()=>onReport('')}>
+      {openEvents.length} open {openEvents.length===1?'request':'requests'}{urgentEvents.length?` · ${urgentEvents.length} urgent`:''}<span>Review updates ›</span>
+    </button>}
     <ActivityFeed observation={observation} frames={frames} onReport={onReport} onDecision={onDecision}/>
-    <div className="live-summary"><button onClick={()=>onPanel('Resources')}><strong>{observation.resources.length} resources</strong><span>{observation.resources.filter(unit=>priorities.includes(unit.state??'')).length} assigned · {observation.resources.filter(unit=>unit.state===null).length} status unknown</span></button><button onClick={()=>onPanel('Orders')}><strong>{population.total} people</strong><span className={population.exposed?'danger':''}>{population.exposed?`${population.exposed} reported exposed`:population.exposureUnknown?`Exposure unknown for ${population.exposureUnknown}`:'No exposure reported'}</span></button></div>
-    <details className="snapshot-details"><summary>Resource and population details</summary>
-    <div className="section-heading overview-heading"><h2>Resources</h2><button className="text-button" onClick={()=>onPanel('Resources')}>View all ({observation.resources.length})</button></div>
-    {resources.map(unit=><article className="unit-card" key={unit.id}><button className="unit-card-heading" onClick={()=>onResource(unit.id)}><span className={`unit-symbol ${unit.state==='on_scene'?'on-scene':''}`} aria-hidden="true">{unit.kind==='crew'?'△':'◉'}</span><span><strong>{resourceKindName(unit.kind)}</strong><small>{baseLabels.get(unit.home_base)??baseName(unit.home_base)} · {pretty(unit.state??'status unknown')}</small></span><span aria-hidden="true">›</span></button><ResourceTiming resource={unit} minute={observation.minute}/></article>)}
-    <div className="section-heading overview-heading"><h2>Population</h2><button className="text-button" onClick={()=>onPanel('Orders')}>Protect</button></div>
+    <div className="section-heading overview-heading"><h2>Resources</h2><button className="text-button" onClick={()=>onPanel('Resources')}>View all ({observation.resources.length}) ›</button></div>
+    {resources.map(unit=>{
+      const offer=[...(observation.offers??[])].reverse().find(item=>item.resource_id===unit.id&&item.status==='offered'&&item.expires_at>observation.minute);
+      const readback=offer?[...(observation.readbacks??[])].reverse().find(item=>item.offer_id===offer.id&&item.received_at<=observation.minute):undefined;
+      const mismatch=!!offer&&!!readback&&readback.status==='awaiting_confirmation'&&['resource_id','sector_id','mission'].some(field=>readback[field as keyof typeof readback]!==offer[field as keyof typeof offer]);
+      const pending=offer?(mismatch?'Readback mismatch · correction needed':!readback?'Offer received · awaiting readback':readback.status==='correction_pending'?'Correction sent · awaiting readback':readback.status==='awaiting_confirmation'?'Readback awaiting confirmation':readback.status==='confirmed'?'Readback confirmed · awaiting authorization':`Readback ${pretty(readback.status)}`):'';
+      return <article className="unit-card overview-unit" key={unit.id}><button className="unit-card-heading" onClick={()=>onResource(unit.id)}>
+        <MapGlyph kind={unit.kind==='crew'?'unit':unit.kind==='aircraft'?'plane':'truck'}/><span><strong>{resourceKindName(unit.kind)}</strong><small>{baseLabels.get(unit.home_base)??baseName(unit.home_base)}</small></span>
+        <span className={`resource-status ${unit.state==='on_scene'?'on-scene':''}`}>{pretty(unit.state??'status unknown')}</span><span aria-hidden="true">›</span></button>
+        {pending&&<p className={`readback-notice${mismatch?' warning':''}`}>{pending}</p>}<ResourceTiming resource={unit} minute={observation.minute} compact/></article>;
+    })}
+    {!resources.length&&<p className="muted">No resources reported.</p>}
+    <div className="section-heading overview-heading"><h2>Population</h2><button className="text-button" onClick={()=>onPanel('Orders')}>Protect ›</button></div>
     <div className="population-card"><strong>{population.total.toLocaleString()} people</strong><p>{counts.filter(([,count])=>count>0).map(([label,count])=>`${count} ${label}`).join(' · ')||'No population groups'}</p>{population.exposed>0&&<p className="danger">{population.exposed} reported exposed · shelter/refuge does not erase earlier exposure</p>}{population.exposureUnknown>0&&<p className="hint">Exposure unknown for {population.exposureUnknown} people</p>}<small>{observation.districts.map(group=>groupName(group.id)).join(' · ')} · synthetic placements</small></div>
-    </details>
     <h2 className="overview-heading">Actions</h2>
     <div className="quick-actions"><button onClick={()=>onReport(reports[0]?.id??'')}><span aria-hidden="true">⌕</span> Investigate report <span aria-hidden="true">›</span></button><button onClick={()=>onPanel('Resources')}><span aria-hidden="true">△</span> Request support <span aria-hidden="true">›</span></button><button onClick={()=>onPanel('Orders')}><span aria-hidden="true">◇</span> Protect population <span aria-hidden="true">›</span></button></div>
-    <p className="hint">Shortcuts open existing controls. No order is sent until you check and apply the draft.</p>
+    <p className="hint">Shortcuts open existing controls. No order is sent until you apply the draft; checking is optional.</p>
   </section>;
 }

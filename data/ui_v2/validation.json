@@ -1,0 +1,41 @@
+{
+  "version": "wildfire-tactical-v2-visual-validation",
+  "date": "2026-10-27",
+  "scope": "V2 visual prototype and frozen-v1 preservation; not a new RL benchmark result or physical validation",
+  "frontend": {
+    "tests_passed": 99,
+    "test_files": 18,
+    "production_build": "passed",
+    "advisory": "Existing large-bundle warning remains"
+  },
+  "backend": {
+    "ui_and_terrain_tests_passed": 54,
+    "elapsed_seconds": 44.798,
+    "optional_dependency_warning": "Existing Starlette httpx deprecation warning"
+  },
+  "freeze": {
+    "protected_core_and_data_files_checked": 265,
+    "changed": 0,
+    "archive_sha256_verified": true,
+    "durable_copy_outside_tmp_verified": true,
+    "git_revision": "55183a6ebe14dc9fbebb9156fa3d1d95d859db44",
+    "committed": false,
+    "pushed": false
+  },
+  "browser": {
+    "case": "coastal-dev-000",
+    "recorded_frames": 61,
+    "comparison_minute": 26,
+    "default_camera": "Orthographic, north up, 60 degrees above horizontal",
+    "official_imagery_capture_pixels": 2048,
+    "terrain_triangles_approx": 266400,
+    "fresh_fire_cells": 1,
+    "play_pause_scrub": "passed; recorded frames only",
+    "replay_footer_gap_pixels": 0,
+    "north_indicator": "Grid north, camera-aware rotation; not true north",
+    "scale": "500 metres at comparison framing; computed from orthographic horizontal projected metres",
+    "console_errors_observed": 0,
+    "performance_limit": "First GPU draw took seconds to warm up; no broad GPU/frame-rate or40-cell stress claim. Test uses a single development replay, not a held-out benchmark."
+  },
+  "review": "Two delegated design workers; parent integration/browser assessment and independent code/visual feedback. Remaining mismatches are recorded in design_assessment.json."
+}

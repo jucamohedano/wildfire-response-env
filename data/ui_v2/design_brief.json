@@ -1,0 +1,48 @@
+{
+  "version": "wildfire-tactical-world-design-v2",
+  "date": "2026-10-27",
+  "scope": "Visual implementation and reference comparison first; not a new geography-backed training dataset",
+  "reference": {
+    "name": "Wildfire Ops generated concept, supplied by user",
+    "role": "Visual composition reference only; not cartography, operational evidence or a texture layer",
+    "targets": [
+      "High overhead north-up 3D relief with no horizon or sky",
+      "Map-filling source imagery with readable terrain contrast",
+      "Blue settlement beacons, green refuge and responder symbols, thin leader lines",
+      "Orange fire illustrations and a visible downwind smoke column",
+      "Dark compact labels without overlap",
+      "Single operations panel and thin replay controls below the map"
+    ]
+  },
+  "preserved": [
+    "Engine/reward logic, task configurations and trajectory schemas",
+    "True metre coordinates and 1x terrain heights",
+    "Existing synthetic population positions and counts, clearly labelled as synthetic",
+    "Delivered-only observations and uncertain claims",
+    "No fabricated fire perimeter, temperatures, burned scar or GPS fixes"
+  ],
+  "terminology": {
+    "view_selector": ["Aerial imagery", "Street map", "3D world"],
+    "remove_control": "Coast",
+    "staging_label": "Temporary response base",
+    "staging_meaning": "Simulated responder assembly/departure point, not a verified fire station, incident command post or operations camp"
+  },
+  "deferred_geography": {
+    "reason": "Match the design before replacing benchmark geography",
+    "required": [
+      "Additional validated heights for the full Sierra Bermeja/coastal outskirts, with explicit land/water/NoData handling",
+      "Official settlement footprints, exact label coordinates and dated population inputs",
+      "Verified facility access coordinates, separately from assumed staff readiness and live positions",
+      "Versioned scenarios and new baselines after relocating populations or response origins"
+    ],
+    "no_silent_v1_replacement": true
+  },
+  "acceptance": [
+    "Source terrain and simulation inputs still match the frozen v1 manifest",
+    "Default 3D framing remains north-up and high overhead at desktop and narrow aspect ratios",
+    "Settlement symbols match reference style but are not moved to imitate fictional locations",
+    "Controls, replay, uncertainty and source attributions remain readable",
+    "Actual browser screenshots compared with reference; mismatches reported explicitly",
+    "No commit, push or public publication before user visual approval"
+  ]
+}
