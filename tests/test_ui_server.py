@@ -213,6 +213,21 @@ class UIServerTests(unittest.TestCase):
                 self.assertEqual(client.get('/api/map.png').content, PNG)
                 self.assertEqual(client.get('/api/map').json()['extent'], TERRAIN['extent'])
 
+    def test_relief_is_separately_validated_cached_and_does_not_advance_the_episode(self):
+        before = self.client.get('/api/state').json()
+        with patch('eval.ui_terrain.render_terrain', return_value=TERRAIN) as renderer:
+            for unused in range(2):
+                response = self.client.get('/api/map-relief.png')
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.headers['content-type'], 'image/png')
+                self.assertEqual(response.content, PNG)
+            self.assertEqual(renderer.call_count, 1)
+            self.assertEqual(renderer.call_args.kwargs, {'relief': True})
+        self.assertEqual(self.client.get('/api/state').json(), before)
+        with TestClient(self.make_app(), base_url='http://127.0.0.1:8767') as client:
+            with patch('eval.ui_terrain.render_terrain', side_effect=ValueError('bad heights')):
+                self.assertEqual(client.get('/api/map-relief.png').status_code, 503)
+
     def test_full_raw_combined_action_matches_core_and_history(self):
         environment = self.core()
         action = {field: [] for field in ACTION_FIELDS}

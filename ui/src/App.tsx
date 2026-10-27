@@ -124,7 +124,7 @@ export default function App(){
     {!readOnly&&scenario!==live?.observation.task_id&&<div className="banner">Selected scenario is not loaded yet. Press Load selected; current controls still operate on {live?.observation.task_id}.</div>}
     <div className="workspace">
       <div className="map-workspace">
-      <MapView metadata={metadata} observation={observation} world={visibleWorld} selectedReport={selectedReport} replay={
+      <MapView metadata={metadata} observation={observation} world={visibleWorld} selectedReport={selectedReport} animating={playing||replaying} replay={
       <ReplayControls minute={observation.minute} recordedMinutes={lastRecorded?.observation.minute??0} frameCount={displayedFrames.length} frameIndex={viewMode==='live'?displayedFrames.length-1:frameIndex} busy={busy} replaying={replaying} onPlay={replay} onPause={()=>setReplaying(false)} onReset={()=>selectFrame(0)} onSeek={selectFrame}/>
       } focusKey={viewMode==='imported'?`imported:${imported?.task_id}`:live?.episode_id??''} onSelect={selection=>{if(selection.type==='report'){setSelectedReport(selection.id);setReportDetails(true);setTab('Reports');}else if(selection.type==='resource'){setSelectedResource(selection.id);setTab('Resources');}else{setSelectedDistrict(selection.id);setTab('Orders');}}}/>
       </div>

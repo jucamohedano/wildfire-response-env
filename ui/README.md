@@ -159,6 +159,34 @@ extent, roads, cell centers, group/refuge coordinates and source-height samples
 are unchanged. An extent/CRS mismatch withholds the overlay rather than stretching
 it onto the wrong landscape. Label offsets/decluttering do not relocate markers.
 
+**Terrain shading** adds a transparent, edge-feathered hillshade from the same
+validated elevation samples (`/api/map-relief.png`, separately cached). A 2.5×
+lighting exaggeration emphasizes ridges without changing heights, coordinates,
+distances or physics. Flat ground is transparent; no tinted domain rectangle is
+added. A missing/invalid source follows the existing coarse-fallback/fail-closed
+rules, independently of the imagery. Disable shading for an exact basemap comparison.
+
+**Fire effects** add deterministic decorative flames and wind-directed smoke
+behind operational markers. They use only delivered burning observations no
+older than four simulation minutes, never future or evaluator-only fire state.
+Smoke needs known nonzero public wind; it is illustrative, not a dispersion
+forecast. Cells retain their 500 metre resolution; no fine perimeter, measured
+intensity, sub-cell fire spread or vehicle GPS route is invented. Effects stop
+when playback pauses, the page/map is hidden, or reduced motion is requested.
+National views and views without visible fresh sightings do not animate.
+Rendering is capped at 30 requests/second, 40 visible cells and six particles
+per cell, with device pixel ratio capped at 1.5. Scrubbing rebuilds effects from
+the selected frame. Both toggles are display-only; reward and actions are unchanged.
+
+Prototype validation (2026-10-27): 49 frontend and 43 Python UI/terrain tests
+passed, as did the production build. CPU-only `topo-dev-000` shelter and
+`bench-dev-d9c78dfb35a04dff` cooperative-reference episodes produced 18 and 61
+replay frames. Browser checks covered layer toggles, scrubbing, pause, the
+below-map replay footer and a narrow viewport. A 65-draw sample (zero to four
+visible cells) averaged 0.31 ms in the effects drawing callback, maximum 1.70 ms;
+this excludes overall frame/GPU cost and is not a 40-cell stress benchmark.
+The existing large-bundle build warning remains. No paid model inference ran.
+
 The generated design image is not used as a map or image layer. Real roads and
 place names come from the source basemap. **Exercise settlement** markers retain
 the synthetic scenario's original population positions: they do not identify
@@ -197,7 +225,8 @@ are English; place names retain the provider's local names. **Basemap** toggles
 remote layers; disabling it shows local terrain. The cropped local elevation PNG
 is never blended over imagery or streets: that made the study area appear as a
 tinted rectangular patch around the settlements. It is shown only as a standalone
-local elevation view when the basemap is off. No source elevations are changed.
+local elevation view when the basemap is off. The optional transparent hillshade
+is a separate neutral shadow/highlight layer, not this colored crop. No source elevations are changed.
 The map view uses native
 EPSG:25830, with rotation disabled, so domain/fire/grid edges meet at90degrees;
 the basemap is reprojected to the terrain, not the reverse. Grid north is not
@@ -240,7 +269,7 @@ Roads and the simulation edge remain context only.
 
 ## Privacy and local scope
 
-The server serves only the built UI, one terrain image and allowlisted API routes;
+The server serves only the built UI, terrain/transparent-relief images and allowlisted API routes;
 it does not expose repository files, `.runtime`, scenario factors, contacts or
 private scoring checkpoints. Public observations/exports remain separate from
 evaluator-only fire truth. To enable the optional operator debug overlay, restart

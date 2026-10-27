@@ -8,3 +8,5 @@
 .replay-controls input{flex:1;width:100%;min-width:45px;margin:0 3px;height:17px}
 .replay-position{white-space:nowrap;font-size:10px;color:#d7e7cf;font-variant-numeric:tabular-nums}
 @media(max-width:600px){.replay-controls{gap:4px;padding:4px 6px}.replay-controls .replay-icon{width:25px;height:25px;flex-basis:25px}.replay-position{font-size:9px}.replay-controls input{min-width:30px;margin:0}}
+.effects-caption{position:absolute;bottom:25px;left:9px;pointer-events:none;font-size:10px;background:rgba(9,29,24,.86);color:#d2dfd5;padding:3px 6px;border-radius:3px;z-index:3}
+.map-wind{position:absolute;top:72px;right:10px;display:flex;align-items:center;gap:10px;padding:3px 9px;background:rgba(9,29,24,.86);border:1px solid #4c6953;border-radius:4px;font-size:10px;pointer-events:none}.map-wind b{display:inline-block;font-size:24px;color:#b9d9e5}

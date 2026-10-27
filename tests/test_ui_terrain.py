@@ -68,6 +68,41 @@ def decode_png(data):
 
 
 class ShadingTests(unittest.TestCase):
+    def test_relief_is_transparent_on_flat_ground_and_feathered_without_height_changes(self):
+        samples = plane(height=22, width=22, column_rise=-25, row_rise=-12, offset=3000)
+        before = copy.deepcopy(samples)
+        width, height, pixels = terrain.terrain_relief(samples, cell_size_metres=25)
+        self.assertEqual((width, height), (20, 20))
+        self.assertEqual(samples, before)
+        alpha = list(pixels[3::4])
+        self.assertGreater(alpha[10 * width + 10], 0)
+        self.assertLessEqual(max(alpha), 105)
+        self.assertTrue(all(alpha[column] == alpha[(height - 1) * width + column] == 0
+                            for column in range(width)))
+        self.assertTrue(all(alpha[row * width] == alpha[row * width + width - 1] == 0
+                            for row in range(height)))
+        flat = terrain.terrain_relief(plane(), cell_size_metres=25)[2]
+        self.assertEqual(set(flat[3::4]), {0})
+
+    def test_relief_png_is_rgba_and_retains_validated_grid_and_missing_data_rules(self):
+        prepared, domain = documents(width=5, height=5)
+        result = terrain.render_terrain(prepared, domain, source_reader=lambda: None,
+                                        relief=True)
+        header = struct.unpack_from('>IIBBBBB', result['png'], 16)
+        self.assertEqual(header, (5, 5, 8, 6, 0, 0, 0))
+        self.assertEqual(result['extent'], [297000, 4052000, 299500, 4054500])
+        self.assertEqual(result['crs'], terrain.CRS)
+        self.assertIn('500 m', result['source_label'])
+        domain['elevations_metres'][1][1] = -9999
+        with self.assertRaises(ValueError):
+            terrain.render_terrain(prepared, domain, source_reader=lambda: None,
+                                   relief=True)
+        with self.assertRaises(ValueError):
+            terrain.terrain_relief([[100, float('nan')], [100, 100]],
+                                   cell_size_metres=25, halo=0)
+        with self.assertRaises(ValueError):
+            terrain.encode_png(1, 1, b'1234', channels=2)
+
     def expected_pixel(self, height, column_gradient=0, row_gradient=0):
         light = max(0, (0.5 * column_gradient + 0.5 * row_gradient + math.sqrt(0.5))
                     / math.sqrt(1 + column_gradient ** 2 + row_gradient ** 2))

@@ -264,6 +264,7 @@ def create_app(prepared_inputs, topographic_inputs, *, expected_prepared_sha256,
         raise ValueError('Catalog differs from the caller-pinned digest')
     episode = Episode(prepared, domain, catalog)
     terrain_cache = copy.deepcopy(terrain)
+    relief_cache = None
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(LocalRequests)
 
@@ -293,6 +294,18 @@ def create_app(prepared_inputs, topographic_inputs, *, expected_prepared_sha256,
     def map_png():
         with episode.lock:
             return Response(map_data()['png'], media_type='image/png')
+
+    @app.get('/api/map-relief.png')
+    def map_relief():
+        nonlocal relief_cache
+        with episode.lock:
+            if relief_cache is None:
+                from eval.ui_terrain import render_terrain
+                try:
+                    relief_cache = render_terrain(prepared, domain, relief=True)
+                except (ValueError, OSError) as error:
+                    raise HTTPException(503, 'Relief display failed source validation') from error
+            return Response(relief_cache['png'], media_type='image/png')
 
     @app.get('/api/state')
     def state():
