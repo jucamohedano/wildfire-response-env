@@ -25,12 +25,14 @@ import MapLegend from './MapLegend';
 import {featureStyle} from './mapStyle';
 import useMapEffects from './useMapEffects';
 import {smokeDirection} from './visualEffects';
+import {coastalExtent,coastalPlaces,deliveredRoutes,reportedPosition,routeDisplayLines} from './movement';
+import useVehicleMovement from './useVehicleMovement';
 import type {MapMetadata,Observation,Position,World} from './types';
 
 const project=(point:Position)=>transform(point,'EPSG:25830',mapProjection);
 type Selection={type:'report'|'district'|'resource';id:string};
 
-export default function MapView({metadata,observation,world,selectedReport,onSelect,focusKey,replay,animating=false}:{metadata:MapMetadata;observation:Observation;world:World|null;selectedReport:string;onSelect:(selection:Selection)=>void;focusKey:string;replay?:ReactNode;animating?:boolean}) {
+export default function MapView({metadata,observation,world,selectedReport,onSelect,focusKey,replay,animating=false,animationDuration=700}:{metadata:MapMetadata;observation:Observation;world:World|null;selectedReport:string;onSelect:(selection:Selection)=>void;focusKey:string;replay?:ReactNode;animating?:boolean;animationDuration?:number}) {
   const container=useRef<HTMLDivElement>(null),map=useRef<OLMap|null>(null),overlay=useRef<VectorSource<Feature<Geometry>>|null>(null),context=useRef<TileLayer<OSM>|null>(null),terrain=useRef<ImageLayer<ImageStatic>|null>(null);
   const cancelIntro=useRef(()=>{});
   const aerial=useRef<TileLayer<XYZ>|null>(null);
@@ -49,6 +51,14 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
   const [baseStyle,setBaseStyle]=useState<'street'|'aerial'>('aerial'),[aerialStatus,setAerialStatus]=useState('loading');
   const activityPadding=()=>[55,35,50,Math.min(190,(map.current?.getSize()?.[0]??800)*.3)];
   const fitActivity=()=>map.current?.getView().fit(publicActivityExtent(current.current),{padding:activityPadding(),maxZoom:16});
+  const fitCoast=()=>map.current?.getView().fit(transformExtent(coastalExtent,'EPSG:4326',mapProjection,16),{padding:[30,30,30,30]});
+  const fitRoutes=()=>{
+    const points=deliveredRoutes(current.current).flatMap(unit=>unit.movement!.legs.flatMap(leg=>leg.coordinates));
+    if(!points.length){fitCoast();return;}
+    const bounds=[Infinity,Infinity,-Infinity,-Infinity];
+    for(const point of points){bounds[0]=Math.min(bounds[0],point[0]);bounds[1]=Math.min(bounds[1],point[1]);bounds[2]=Math.max(bounds[2],point[0]);bounds[3]=Math.max(bounds[3],point[1]);}
+    map.current?.getView().fit(bounds,{padding:activityPadding(),maxZoom:15});
+  };
   useEffect(()=>{
     if(!container.current||!aligned)return;
     const source=new VectorSource<Feature<Geometry>>();overlay.current=source;
@@ -70,7 +80,7 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
     view.fit(transformExtent(spainExtent,'EPSG:4326',mapProjection,16),{padding:[25,25,25,25]});
     limitCountryZoom(view,instance.getSize()??[800,600]);
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const introTimer=window.setTimeout(()=>view.fit(publicActivityExtent(current.current),{padding:activityPadding(),duration:reducedMotion?0:900,maxZoom:16}),1800);
+    const introTimer=window.setTimeout(()=>current.current.mobility?fitCoast():view.fit(publicActivityExtent(current.current),{padding:activityPadding(),duration:reducedMotion?0:900,maxZoom:16}),1800);
     const cancel=()=>{window.clearTimeout(introTimer);view.cancelAnimations();};cancelIntro.current=cancel;
     const element=container.current;
     element.addEventListener('pointerdown',cancel,{passive:true});element.addEventListener('wheel',cancel,{passive:true});
@@ -108,6 +118,18 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
     const rectangle=(column:number,row:number,width=1,height=1)=>new Polygon([[nativeCorner(column,row),nativeCorner(column+width,row),nativeCorner(column+width,row+height),nativeCorner(column,row+height),nativeCorner(column,row)].map(project)]);
     function marker(kind:string,position:Position,label:string,selection?:Selection,labelOffset?:number){const feature=new Feature({geometry:new Point(project(cellCenter(geography,...position))),kind,label,selection,labelOffset});source!.addFeature(feature);}
     source.addFeature(new Feature({geometry:new Point(project([(metadata.extent[0]+metadata.extent[2])/2,(metadata.extent[1]+metadata.extent[3])/2])),kind:'locator'}));
+    for(const place of coastalPlaces)source.addFeature(new Feature({geometry:new Point(transform(place.lonLat,'EPSG:4326',mapProjection)),kind:'town',label:place.name}));
+    if(observation.mobility){
+      for(const base of observation.bases)if(base.position)source.addFeature(new Feature({geometry:new Point(base.position),kind:'base',label:base.name}));
+      for(const unit of deliveredRoutes(observation))for(const line of routeDisplayLines(unit.movement!))source.addFeature(new Feature({geometry:new LineString(line.coordinates),kind:'route',mode:line.mode}));
+      for(const unit of observation.resources){
+        const position=reportedPosition(unit,observation.minute);if(!position)continue;
+        const destination=unit.movement?.destination;
+        const heading=destination?Math.atan2(-(destination[1]-position[1]),destination[0]-position[0])+Math.PI/2:0;
+        source.addFeature(new Feature({geometry:new Point(position),kind:'vehicle',resourceKind:unit.kind,vehicleId:unit.id,heading,
+          label:['available','refilling'].includes(unit.state??'')?'':`${resourceKindName(unit.kind)} · ${unit.state?.replaceAll('_',' ')}`,selection:{type:'resource',id:unit.id}}));
+      }
+    }
     if(grid){
       for(let column=0;column<=geography.width;column++)source.addFeature(new Feature({geometry:new LineString([project(nativeCorner(column,0)),project(nativeCorner(column,geography.height))]),kind:'grid'}));
       for(let row=0;row<=geography.height;row++)source.addFeature(new Feature({geometry:new LineString([project(nativeCorner(0,row)),project(nativeCorner(geography.width,row))]),kind:'grid'}));
@@ -128,6 +150,7 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
     const arrivals=new Map<string,typeof observation.resources>();
     const responders=new Map<string,typeof observation.resources>();
     for(const unit of observation.resources){
+      if(observation.mobility)continue;
       if(unit.state==='on_scene'&&unit.target){
         const key=unit.target.join(',');responders.set(key,[...(responders.get(key)??[]),unit]);
       }
@@ -147,9 +170,10 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
       source.addFeature(new Feature({geometry:new Point(project(cellCenter(geography,...units[0].target!))),kind:'arrival-target',label,selection:{type:'resource',id:units[0].id}}));
     }
   },[observation,world,grid,selectedReport,aligned]);
+  useVehicleMovement(overlay.current,observation,animating,animationDuration,instance?.getTargetElement()??null);
   useEffect(()=>{const report=observation.reports.find(report=>report.id===selectedReport);if(report?.location){cancelIntro.current();map.current?.getView().setCenter(project(cellCenter(observation.geography,...report.location)));}},[selectedReport]);
   return <section className="map-panel" aria-label="2D terrain map">
-    <div className="map-options"><strong>Incident map <span className="tag">2D · grid north up</span></strong><div><label><input type="checkbox" checked={grid} onChange={event=>setGrid(event.target.checked)}/> Grid</label><label><input type="checkbox" checked={showMap} onChange={event=>setShowMap(event.target.checked)}/> Basemap</label><select aria-label="Map style" value={baseStyle} disabled={!showMap} onChange={event=>setBaseStyle(event.target.value as 'street'|'aerial')}><option value="aerial">Aerial imagery</option><option value="street">Street map</option></select><button onClick={()=>{cancelIntro.current();fitActivity();}}>Fit activity</button><button title="Mainland Spain and Balearic Islands" onClick={()=>{cancelIntro.current();map.current?.getView().fit(transformExtent(spainExtent,'EPSG:4326',mapProjection,16),{padding:[25,25,25,25]});}}>Spain</button><button onClick={()=>{cancelIntro.current();map.current?.getView().fit(transformExtent(metadata.extent,metadata.crs,mapProjection),{padding:[35,30,35,30]});}}>Fit domain</button></div></div>
+    <div className="map-options"><strong>Incident map <span className="tag">2D · grid north up</span></strong><div><label><input type="checkbox" checked={grid} onChange={event=>setGrid(event.target.checked)}/> Grid</label><label><input type="checkbox" checked={showMap} onChange={event=>setShowMap(event.target.checked)}/> Basemap</label><select aria-label="Map style" value={baseStyle} disabled={!showMap} onChange={event=>setBaseStyle(event.target.value as 'street'|'aerial')}><option value="aerial">Aerial imagery</option><option value="street">Street map</option></select><button onClick={()=>{cancelIntro.current();fitActivity();}}>Fit activity</button><button onClick={()=>{cancelIntro.current();fitCoast();}}>Coast</button>{observation.mobility&&<button onClick={()=>{cancelIntro.current();fitRoutes();}}>Routes</button>}<button title="Mainland Spain and Balearic Islands" onClick={()=>{cancelIntro.current();map.current?.getView().fit(transformExtent(spainExtent,'EPSG:4326',mapProjection,16),{padding:[25,25,25,25]});}}>Spain</button><button onClick={()=>{cancelIntro.current();map.current?.getView().fit(transformExtent(metadata.extent,metadata.crs,mapProjection),{padding:[35,30,35,30]});}}>Fit domain</button></div></div>
     {!aligned&&<p className="map-key-warning" role="alert">Map extent or projection does not match this episode. Geographic overlays are withheld rather than placed on the wrong map.</p>}
     <div className="map-surface">
       <div ref={container} className={`map ${tactical?'tactical-map':''} ${contrast?'enhanced-terrain':''}`} role="region" aria-label="Flat grid-aligned wildfire map" tabIndex={0}/>
@@ -168,6 +192,6 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
     {showMap&&baseStyle==='aerial'&&aerialStatus==='unavailable'&&<p className="imagery-note" role="status">Aerial imagery unavailable; showing the street-map fallback. Toggle Basemap to retry.</p>}
     {showMap&&contextStatus==='unavailable'&&(baseStyle==='street'||aerialStatus==='unavailable')&&<p className="map-key-warning" role="status">Street map unavailable. Toggle Basemap to retry; turn it off for the local terrain view.</p>}
     <MapLegend observation={observation} world={world}/>
-    <details className="map-data-details"><summary>Map data and technical details</summary><p>{hover}</p><p>{metadata.source_label}</p><p>Original georeferenced IGN imagery and OSM streets; contrast changes colors, never roads, coordinates or terrain heights. Exercise population groups retain the scenario positions, not verified historical town locations. Source dates vary; imagery is not a reconstructed 2021 map.</p><p>500 m simulation cells. Only the zoomed study area is simulated; imagery beyond it is context. Displayed roads do not determine simulated travel. Labels may be hidden to avoid overlap; map symbols stay at their original coordinates. Decorative fire effects are enlarged in screen pixels, like the symbols; they do not show the fire extent.</p></details>
+    <details className="map-data-details"><summary>Map data and technical details</summary><p>{hover}</p><p>{metadata.source_label}</p><p>Original georeferenced IGN imagery and OSM streets; contrast changes colors, never roads, coordinates or terrain heights. Exercise population groups retain the scenario positions, not verified historical town locations. Source dates vary; imagery is not a reconstructed 2021 map.</p><p>500 m simulation cells. Only the validated study area supports fire physics; the coastline is cartographic and transport context, not an expanded fire domain. {observation.mobility?'Dashed lines are declared road, walking or illustrative flight journeys. Icons show delayed reported positions; playback interpolates between already delivered fixes, never into an unseen future. Staging allocations and speeds are exercise assumptions.':'Displayed roads do not determine simulated travel.'} Labels may be hidden to avoid overlap; map symbols stay at their original coordinates. Decorative fire effects are enlarged in screen pixels, like the symbols; they do not show the fire extent.</p></details>
   </section>;
 }

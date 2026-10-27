@@ -21,6 +21,10 @@ communication and evidence-history queries.
 Unknown or not-yet-delivered information stays unknown. The grader independently
 replays trajectories and recomputes outcomes.
 
+An opt-in [coastal mobility development mode](MOBILITY.md) adds real road geometry,
+reported truck/crew movement and illustrative aircraft sorties. It has separate
+task IDs and replay pins; it does not replace or rescore benchmark v1.
+
 The catalog contains **120 configuration groups** on one Málaga study area:
 80 train, 20 validation and 20 test groups, with two variants each, plus 12
 development probes. Families include uncertain smoke, conflicting reports,

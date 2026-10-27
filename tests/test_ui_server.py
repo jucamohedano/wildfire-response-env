@@ -118,6 +118,25 @@ class UIServerTests(unittest.TestCase):
                 self.assertIn('failed validation', response.json()['detail'])
             self.assertEqual(client.get('/api/state').json()['observation']['minute'], 0)
 
+    def test_opt_in_mobility_cases_use_new_contract_without_replacing_legacy_cases(self):
+        from tests.test_mobility import network_fixture
+        network = network_fixture()
+        app = self.make_app(mobility_network=network, expected_mobility_sha256=network['sha256'])
+        with TestClient(app, base_url='http://127.0.0.1:8767') as client:
+            state = client.get('/api/state').json()
+            self.assertEqual(state['observation']['task_id'], 'coastal-dev-000')
+            self.assertIn('mobility', state['observation'])
+            for unused in range(2):
+                response = client.post('/api/advance', json=dict(episode_id=state['episode_id'],
+                    expected_decision=state['observation']['decision'], policy='evacuate'))
+                self.assertEqual(response.status_code, 200, response.text)
+                state = response.json()
+                self.assertIsNone(state['info']['error'])
+            legacy = client.post('/api/reset', json=dict(task_id='topo-dev-000')).json()
+            self.assertNotIn('mobility', legacy['observation'])
+        with self.assertRaises(ValueError):
+            self.make_app(mobility_network=network)
+
     def token(self, state=None):
         state = self.state() if state is None else state
         return dict(episode_id=state['episode_id'], expected_decision=state['observation']['decision'])
@@ -485,7 +504,8 @@ class UIServerTests(unittest.TestCase):
         with patch('eval.ui_server.create_app') as factory, patch('uvicorn.run') as run:
             main([*arguments, '--enable-evaluator', '--catalog-sha256', self.catalog['sha256']])
             factory.assert_called_once_with('prepared.json', 'domain.json', **self.options(),
-                expected_catalog_sha256=self.catalog['sha256'], enable_evaluator=True, dist='ui/dist')
+                expected_catalog_sha256=self.catalog['sha256'], enable_evaluator=True, dist='ui/dist',
+                mobility_network=None, expected_mobility_sha256=None)
             run.assert_called_once_with(factory.return_value, host='127.0.0.1', port=8767)
         with self.assertRaises(SystemExit):
             main([*arguments, '--host', '0.0.0.0'])

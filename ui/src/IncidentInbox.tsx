@@ -2,6 +2,7 @@ import type {IncidentEvent,Resource} from './types';
 import {pretty} from './model';
 
 export function ResourceTiming({resource,minute}:{resource:Resource;minute?:number}){
+  if(resource.movement)return <div className="movement-summary"><ArrivalStages state={resource.state}/><small>{pretty(resource.state??'unknown')} · {(resource.movement.distance_m/1000).toFixed(1)} kilometres · {resource.movement.direction==='return'?'returning to staging':'outbound mission'}</small><small>Position observed at {resource.observed_at} minutes · received at {resource.received_at} minutes</small>{resource.arrival_at!==null&&resource.arrival_at!==undefined&&<small>Estimated arrival at {resource.arrival_at} minutes · {Math.max(0,resource.arrival_at-(minute??resource.observed_at??0))} minutes remaining</small>}<small>{resource.movement.legs.some(leg=>leg.mode==='walk')?'Includes an assumed walking access leg.':resource.kind==='aircraft'?'Illustrative direct flight; not an approved flight plan.':'Road geometry is source-derived; speed and availability are assumed.'}</small></div>;
   if(resource.state===null)return <small className="arrival-time">Awaiting base status</small>;
   if(resource.state==='on_scene')return <><ArrivalStages state={resource.state}/><small className="arrival-time">On scene</small></>;
   if(resource.arrival_at!==undefined&&resource.arrival_at!==null){
