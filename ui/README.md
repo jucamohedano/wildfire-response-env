@@ -1,7 +1,7 @@
 # Wildfire Ops: local 2D control centre
 
 A small React/TypeScript/Vite application with one OpenLayers map and four
-operational tabs. It uses the verified Python simulator, not a second JavaScript
+inline operational sections. It uses the verified Python simulator, not a second JavaScript
 simulation. No model, API key, GPU, live dispatch or HappyRobot account is needed.
 
 ## Build and run
@@ -67,8 +67,10 @@ no globe, camera pitch, rotation, 3D terrain mesh or extrusions.
   the existing episode rather than silently resetting it. **Stop generation**
   stops after any in-flight decision is recorded. Clear/apply drafts first;
   changing the policy mid-episode still creates a mixed-controller trace.
-- **History/replay:** the prominent slider below the map and **Start/Finish**
-  buttons traverse the recorded trajectory. **Play replay** animates those
+- **History/replay:** the thin footer inside the map component, below the image
+  (never over it), combines the slider with **Play**, **Pause**, **Reset** and
+  **Finish** icon buttons. Hover/focus gives full labels. Reset rewinds the
+  recorded replay; it never resets the live simulation. **Play replay** animates those
   recorded frames at the selected speed, without calling the simulator. Scrubbing
   pauses replay. In-progress runs expose only recorded frames, not guessed future
   states. Past/imported frames disable live mutations and private fire truth.
@@ -119,12 +121,36 @@ held-out evaluations or entries in an experience bank.
 
 ### Terrain-focused control center
 
-The map-first layout keeps a compact report/resource/population overview and
-action shortcuts on the right. Shortcuts only open the existing detailed panels;
+The map-first layout keeps incoming updates and submitted controller decisions
+together in one operations panel, without Reports/Resources/Orders/History tabs.
+It includes acknowledgements and causally available wind/sensor snapshots; orders
+sent are distinct from confirmed delivery/execution. Repeated waits and unchanged
+sensor footprints are summarized, not discarded from the underlying trajectory.
+Resource/population summaries and inline sections retain every existing control.
+Shortcuts only open the existing detailed sections;
 allocation, readback, protection, advanced JSON and check/apply controls remain
 available. Arrival stages use delivered resource status, never a guessed GPS
 position. Unknown population status remains unknown rather than counted as safe.
-The recorded-trajectory slider is below the map, separate from live stepping.
+The recorded-trajectory footer is below the image within the map component,
+separate from live stepping. Run to end remains in the live simulation controls.
+
+Three saved development trajectories informed the design: Luna's
+`bench-dev-71f777cb5ff8c9f2` (4 action-bearing decisions, 56 waits; a shelter order
+issued at minute 2, delivered at minute 4, executed at minute 6), Luna's
+`bench-dev-d9c78dfb35a04dff` (10 action-bearing decisions, 37 incident updates),
+and the same multi-fire case's passive reference (60 waits, no orders).
+These are recorded synthetic actions/observations, not private reasoning traces
+or new training labels. The multi-fire Luna replay was also opened through the
+UI's existing independent verifier to check chronology and read-only behavior.
+
+**Game symbols** enlarge illustrative flame, house, responder and mission-target
+glyphs in screen pixels only. Source imagery, geometry, distances, wind, travel,
+fire resolution and reward stay unchanged. Fire sightings, unconfirmed calls,
+and mission targets differ in shape as well as color; stale sightings are grey.
+Legend explanations use full time units and appear on hover, focus or touch.
+**Fit activity** zooms to public groups, received reports, observed fire and known
+assignments; it never reads private future events. **Fit domain** is still
+available for the complete study area. Neither changes any world coordinates.
 
 **Enhanced contrast** adjusts only the original imagery/terrain layer colors.
 Turn it off to compare the
@@ -190,8 +216,8 @@ leaves source-derived terrain and simulation local. Terrain hillshade retains
 higher display contrast. Display filters do not apply to operational overlays
 or alter simulation physics.
 
-The **Map key** uses SVG examples of the actual markers, short labels/captions,
-and an expandable reading guide with the full explanations. It leaves artificial
+The **Map key** uses SVG examples of the actual markers and short labels,
+with hover/focus explanations and an expandable display-assumptions guide. It leaves artificial
 simulation rectangles off the map; the automatic zoom shows the study area.
 Residents, evacuation destinations, exposed people and responders have separate
 entries. Recent sightings and older observations remain distinct. An empty

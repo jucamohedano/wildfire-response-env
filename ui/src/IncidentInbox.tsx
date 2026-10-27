@@ -5,11 +5,11 @@ export function ResourceTiming({resource,minute}:{resource:Resource;minute?:numb
   if(resource.state===null)return <small className="arrival-time">Awaiting base status</small>;
   if(resource.state==='on_scene')return <><ArrivalStages state={resource.state}/><small className="arrival-time">On scene</small></>;
   if(resource.arrival_at!==undefined&&resource.arrival_at!==null){
-    if(minute!==undefined&&minute>resource.arrival_at)return <><ArrivalStages state={resource.state}/><small className="arrival-time overdue">ETA {resource.arrival_at}m passed · awaiting status update</small></>;
+    if(minute!==undefined&&minute>resource.arrival_at)return <><ArrivalStages state={resource.state}/><small className="arrival-time overdue">ETA {resource.arrival_at} minutes passed · awaiting status update</small></>;
     const remaining=minute===undefined?resource.arrival_in_minutes:Math.max(0,resource.arrival_at-minute);
-    return <><ArrivalStages state={resource.state}/><small className="arrival-time" title={resource.travel_time_basis}>Estimated arrival at {resource.arrival_at}m · {remaining} min remaining</small></>;
+    return <><ArrivalStages state={resource.state}/><small className="arrival-time" title={resource.travel_time_basis}>Estimated arrival at {resource.arrival_at} minutes · {remaining} minutes remaining</small></>;
   }
-  return <><ArrivalStages state={resource.state}/><small className="arrival-time">{resource.due_at===null?'No arrival scheduled':`Next phase expected at ${resource.due_at}m`}</small></>;
+  return <><ArrivalStages state={resource.state}/><small className="arrival-time">{resource.due_at===null?'No arrival scheduled':`Next phase expected at ${resource.due_at} minutes`}</small></>;
 }
 
 function ArrivalStages({state}:{state:string|null}){
@@ -27,7 +27,7 @@ export default function IncidentInbox({events,minute}:{events:IncidentEvent[];mi
   const active=[...latest.values()].filter(event=>event.status==='open');
   const card=(event:IncidentEvent)=><article key={event.id} className={`incident-card ${event.priority==='urgent'&&event.status==='open'?'urgent':''}`}>
     <div><strong>{pretty(event.kind)}</strong><span>{event.status==='open'?'Open request':'Update / resolved'}</span></div>
-    <p>{event.text}</p><small>{event.source} · {pretty(event.channel.replace('synthetic_',''))} · cell {event.location.join(', ')}<br/>Observed {event.observed_at}m → received {event.received_at}m{event.received_at>minute-2?' · New':''}</small>
+    <p>{event.text}</p><small>{event.source} · {pretty(event.channel.replace('synthetic_',''))} · cell {event.location.join(', ')}<br/>Observed {event.observed_at} minutes → received {event.received_at} minutes{event.received_at>minute-2?' · New':''}</small>
   </article>;
   return <section className="incident-inbox" aria-label="Incoming incident updates">
     <div className="section-heading"><h2>Calls & crew updates</h2><span>{active.length} open</span></div>

@@ -4,7 +4,7 @@ import OperationsOverview,{populationSummary} from './OperationsOverview';
 import type {District,Observation,Resource} from './types';
 
 const district=(fields:Partial<District>)=>({id:'population-west',population:200,status:null,shelter_active:null,exposed:null,...fields}) as District;
-const observation={minute:10,bases:[{id:'cabezudos',name:'Exercise ground desk B'}],reports:[{id:'claim',received_at:8,observed_at:6,channel:'synthetic_phone',text:'Smoke visible.'},{id:'future',received_at:12,observed_at:10,channel:'synthetic_phone',text:'FUTURE SECRET'}],districts:[district({}),district({id:'population-east',population:150,status:'sheltering',shelter_active:true})],resources:[{id:'crew',kind:'crew',home_base:'cabezudos',state:null,due_at:null} as Resource]} as Observation;
+const observation={minute:10,acknowledgements:[],readback_events:[],bases:[{id:'cabezudos',name:'Exercise ground desk B'}],reports:[{id:'claim',received_at:8,observed_at:6,channel:'synthetic_phone',text:'Smoke visible.'},{id:'future',received_at:12,observed_at:10,channel:'synthetic_phone',text:'FUTURE SECRET'}],districts:[district({}),district({id:'population-east',population:150,status:'sheltering',shelter_active:true})],resources:[{id:'crew',kind:'crew',home_base:'cabezudos',state:null,due_at:null} as Resource]} as unknown as Observation;
 const render=(value:Observation)=>renderToStaticMarkup(<OperationsOverview observation={value} onReport={()=>{}} onResource={()=>{}} onPanel={()=>{}}/>);
 
 describe('control-center overview',()=>{
@@ -21,7 +21,7 @@ describe('control-center overview',()=>{
     const html=render(observation);
     expect(html).toContain('Smoke visible.');expect(html).not.toContain('FUTURE SECRET');
     expect(html).toContain('1 received');expect(html).not.toContain('2 received');
-    expect(html).toContain('Received 2m ago');expect(JSON.stringify(observation)).toBe(before);
+    expect(html).toContain('00:08');expect(JSON.stringify(observation)).toBe(before);
     expect(html).toContain('Investigate report');expect(html).toContain('Request support');expect(html).toContain('Protect population');
     expect(html).toContain('No order is sent');
   });
