@@ -1,4 +1,4 @@
-import type {Observation,Position,World} from './types';
+import type {Geography,MapMetadata,Observation,Position,World} from './types';
 import proj4 from 'proj4';
 import {register} from 'ol/proj/proj4.js';
 import {transformExtent} from 'ol/proj.js';
@@ -11,6 +11,13 @@ export const mapViewOptions={projection:mapProjection,minZoom:2,maxZoom:20,enabl
 export const spainExtent: [number,number,number,number]=[-9.7,35.3,4.5,44.3];
 export const aerialTileUrl='https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg';
 export const terrainOpacity=(enabled:boolean,style:'street'|'aerial')=>enabled?(style==='aerial'?.12:.38):1;
+
+export function mapMetadataMatches(metadata:MapMetadata,grid:Geography):boolean {
+  const [scaleX,rotateX,west,rotateY,scaleY,north]=grid.transform;
+  if(metadata.crs!==grid.crs||grid.crs!==mapProjection||rotateX!==0||rotateY!==0||scaleX!==500||scaleY!==-500)return false;
+  const expected=[west,north+grid.height*scaleY,west+grid.width*scaleX,north];
+  return expected.every((value,index)=>Number.isFinite(value)&&Number.isFinite(metadata.extent[index])&&Math.abs(value-metadata.extent[index])<1e-6);
+}
 
 export function limitCountryZoom(view:View,size:number[]):void {
   const extent=transformExtent(spainExtent,'EPSG:4326',mapProjection,16);

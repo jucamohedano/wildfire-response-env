@@ -67,7 +67,7 @@ no globe, camera pitch, rotation, 3D terrain mesh or extrusions.
   the existing episode rather than silently resetting it. **Stop generation**
   stops after any in-flight decision is recorded. Clear/apply drafts first;
   changing the policy mid-episode still creates a mixed-controller trace.
-- **History/replay:** the prominent slider above the map and **Start/Finish**
+- **History/replay:** the prominent slider below the map and **Start/Finish**
   buttons traverse the recorded trajectory. **Play replay** animates those
   recorded frames at the selected speed, without calling the simulator. Scrubbing
   pauses replay. In-progress runs expose only recorded frames, not guessed future
@@ -83,15 +83,16 @@ no globe, camera pitch, rotation, 3D terrain mesh or extrusions.
   they remain reachable by panning the worldwide street layer. A domain locator
   remains visible at national scale; operational markers/grid are hidden there
   to avoid overlapping labels. Simulation coverage is unchanged.
-- **Fire evolution:** contiguous fresh burning observations have a shared outer
-  cell-edge outline, rather than a border around every square. Older observations
+- **Fire evolution:** fresh burning observations use orange markers at their
+  original cell centers, not giant filled squares or an invented continuous fire
+  perimeter. Older observations
   become muted/dashed after four model minutes. The frame time and cell counts
   update with stepping, playback and history. A disappeared/stale observation
   does not establish containment, and new evidence does not establish ignition
   time. Public observations have no heat or burned-fraction measurements, so the
   UI does not invent them. Only the explicitly enabled live evaluator overlay
   colours actual simulator heat red-to-yellow and shows burned inactive cells.
-  Cell edges are not a measured continuous fire perimeter. There is no cosmetic
+  Observation markers are not a measured continuous fire perimeter. There is no cosmetic
   spread interpolation, flickering flame or continuous animation/render loop.
 - **Export/open:** export a complete public canonical JSON trace, or import a
   completed `.json`/`.json.gz` trace. Imports are bounded, independently replayed
@@ -116,6 +117,37 @@ held-out evaluations or entries in an experience bank.
 
 ## Terrain and map sources
 
+### Terrain-focused control center
+
+The map-first layout keeps a compact report/resource/population overview and
+action shortcuts on the right. Shortcuts only open the existing detailed panels;
+allocation, readback, protection, advanced JSON and check/apply controls remain
+available. Arrival stages use delivered resource status, never a guessed GPS
+position. Unknown population status remains unknown rather than counted as safe.
+The recorded-trajectory slider is below the map, separate from live stepping.
+
+**Enhanced contrast** adjusts only the original imagery/terrain layer colors.
+Turn it off (and disable **Terrain** for an imagery-only view) to compare the
+unfiltered basemap. The official tile URL, EPSG:25830 view, affine grid, geographic
+extent, roads, cell centers, group/refuge coordinates and source-height samples
+are unchanged. An extent/CRS mismatch withholds the overlay rather than stretching
+it onto the wrong landscape. Label offsets/decluttering do not relocate markers.
+
+The generated design image is not used as a map or image layer. Real roads and
+place names come from the source basemap. **Exercise settlement** markers retain
+the synthetic scenario's original population positions: they do not identify
+verified historical towns. Off-map bases remain abstract exercise desks. Source
+imagery dates vary and must not be presented as a reconstructed 2021 street map.
+This is a visual redesign, not a finer fire model, new routing or additional data.
+
+Validation: `npm test` covers source-coordinate alignment, unchanged marker
+geometry, public/evaluator separation, delivered-only summaries and unknown
+population state. `npm run build` checks the full UI. Existing Python transport
+and terrain tests cover core-action parity, clocks, checks, stale requests,
+read-only exports and pinned 25 m terrain crops; run those with the UI optional
+dependencies installed. Browser checks additionally cover draft/check/apply,
+authorization, replay, quick-action navigation and a 390 px mobile layout.
+
 The terrain overlay is an offline display-only PNG rendered from the exact
 pinned IGN MDT05 ASC sampled at25m, cropped with complete stencil support to the
 same EPSG:25830 domain. Elevation appears only as colour and hillshade on a flat
@@ -136,7 +168,7 @@ structured JSON, not a satellite screenshot.
 **Street map** remains available as OpenStreetMap's familiar worldwide raster
 style, not Google's proprietary tiles or the dense IGN chart. Interface labels
 are English; place names retain the provider's local names. **Basemap** toggles
-remote layers; disabling it shows local terrain. **Terrain** is optional and off
+remote layers; disabling it shows local terrain. **Terrain** is optional and on
 by default, blended at12% over imagery or38% over streets, and fully opaque when
 the basemap is off. No source elevations are changed. The map view uses native
 EPSG:25830, with rotation disabled, so domain/fire/grid edges meet at90degrees;
@@ -156,8 +188,8 @@ leaves source-derived terrain and simulation local. Terrain hillshade retains
 higher display contrast. Display filters do not apply to operational overlays
 or alter simulation physics.
 
-The **Map key** uses larger SVG examples of the actual circles and cell fills,
-with a plain-language label and explanation for each. It leaves artificial
+The **Map key** uses SVG examples of the actual markers, short labels/captions,
+and an expandable reading guide with the full explanations. It leaves artificial
 simulation rectangles off the map; the automatic zoom shows the study area.
 Residents, evacuation destinations, exposed people and responders have separate
 entries. Recent sightings and older observations remain distinct. An empty

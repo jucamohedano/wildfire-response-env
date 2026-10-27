@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {cellAt,cellCenter,currentWorld,parseAction,stageAction} from './model';
+import {baseName,cellAt,cellCenter,currentWorld,parseAction,stageAction} from './model';
 
 describe('structured action drafts',()=>{
   it('preserves combined fields without mutating or duplicating exact staged orders',()=>{
@@ -36,5 +36,11 @@ describe('metric simulator grid',()=>{
     expect(cellAt(grid,296999,4054250)).toBeNull();
     expect(cellAt(grid,315500,4054250)).toBeNull();
     expect(cellAt(grid,297250,4036500)).toBeNull();
+  });
+});
+describe('map labels',()=>{
+  it('renders resource base IDs as short readable place names',()=>{
+    expect(baseName('cabezudos')).toBe('Cabezudos');
+    expect(baseName('las-arenas')).toBe('Las Arenas');
   });
 });
