@@ -127,7 +127,7 @@ position. Unknown population status remains unknown rather than counted as safe.
 The recorded-trajectory slider is below the map, separate from live stepping.
 
 **Enhanced contrast** adjusts only the original imagery/terrain layer colors.
-Turn it off (and disable **Terrain** for an imagery-only view) to compare the
+Turn it off to compare the
 unfiltered basemap. The official tile URL, EPSG:25830 view, affine grid, geographic
 extent, roads, cell centers, group/refuge coordinates and source-height samples
 are unchanged. An extent/CRS mismatch withholds the overlay rather than stretching
@@ -168,9 +168,11 @@ structured JSON, not a satellite screenshot.
 **Street map** remains available as OpenStreetMap's familiar worldwide raster
 style, not Google's proprietary tiles or the dense IGN chart. Interface labels
 are English; place names retain the provider's local names. **Basemap** toggles
-remote layers; disabling it shows local terrain. **Terrain** is optional and on
-by default, blended at12% over imagery or38% over streets, and fully opaque when
-the basemap is off. No source elevations are changed. The map view uses native
+remote layers; disabling it shows local terrain. The cropped local elevation PNG
+is never blended over imagery or streets: that made the study area appear as a
+tinted rectangular patch around the settlements. It is shown only as a standalone
+local elevation view when the basemap is off. No source elevations are changed.
+The map view uses native
 EPSG:25830, with rotation disabled, so domain/fire/grid edges meet at90degrees;
 the basemap is reprojected to the terrain, not the reverse. Grid north is not
 exactly geographic true north. The national view is cartographic context, not a

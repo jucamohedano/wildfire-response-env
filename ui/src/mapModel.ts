@@ -10,7 +10,7 @@ export const mapProjection='EPSG:25830';
 export const mapViewOptions={projection:mapProjection,minZoom:2,maxZoom:20,enableRotation:false};
 export const spainExtent: [number,number,number,number]=[-9.7,35.3,4.5,44.3];
 export const aerialTileUrl='https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg';
-export const terrainOpacity=(enabled:boolean,style:'street'|'aerial')=>enabled?(style==='aerial'?.12:.38):1;
+export const localTerrainVisible=(showBasemap:boolean)=>!showBasemap;
 
 export function mapMetadataMatches(metadata:MapMetadata,grid:Geography):boolean {
   const [scaleX,rotateX,west,rotateY,scaleY,north]=grid.transform;

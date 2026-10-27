@@ -19,7 +19,7 @@ import {defaults as controls} from 'ol/control/defaults.js';
 import ScaleLine from 'ol/control/ScaleLine.js';
 import 'ol/ol.css';
 import {baseName,cellAt,cellCenter,groupName,resourceKindName} from './model';
-import {fireCells,mapViewOptions,spainExtent,mapProjection,limitCountryZoom,aerialTileUrl,terrainOpacity,mapMetadataMatches} from './mapModel';
+import {fireCells,mapViewOptions,spainExtent,mapProjection,limitCountryZoom,aerialTileUrl,localTerrainVisible,mapMetadataMatches} from './mapModel';
 import MapLegend from './MapLegend';
 import {featureStyle} from './mapStyle';
 import type {MapMetadata,Observation,Position,World} from './types';
@@ -34,7 +34,7 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
   const previousFocus=useRef(focusKey);
   const current=useRef(observation),select=useRef(onSelect);
   current.current=observation;select.current=onSelect;
-  const [grid,setGrid]=useState(false),[contextStatus,setContextStatus]=useState('loading'),[showMap,setShowMap]=useState(true),[showTerrain,setShowTerrain]=useState(true),[hover,setHover]=useState('Select a report or point at a cell to inspect its mean elevation.');
+  const [grid,setGrid]=useState(false),[contextStatus,setContextStatus]=useState('loading'),[showMap,setShowMap]=useState(true),[hover,setHover]=useState('Select a report or point at a cell to inspect its mean elevation.');
   const [contrast,setContrast]=useState(true);
   const aligned=mapMetadataMatches(metadata,observation.geography);
   const [baseStyle,setBaseStyle]=useState<'street'|'aerial'>('aerial'),[aerialStatus,setAerialStatus]=useState('loading');
@@ -50,7 +50,7 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
     aerialSource.on('tileloadend',()=>setAerialStatus(previous=>previous==='unavailable'?previous:'ready'));
     aerialSource.on('tileloaderror',()=>{setAerialStatus('unavailable');aerialLayer.setVisible(false);});
     const view=new View({...mapViewOptions,center:project([(metadata.extent[0]+metadata.extent[2])/2,(metadata.extent[1]+metadata.extent[3])/2]),zoom:12});
-    const terrainLayer=new ImageLayer({className:'terrain-relief',opacity:.38,source:new ImageStatic({url:metadata.image_url,projection:metadata.crs,imageExtent:metadata.extent,attributions:metadata.source_label.startsWith('IGN')?'Terrain © IGN · MDT05 (sampled at 25 m) · display only':'Coarse 500 m domain-height display'})});terrain.current=terrainLayer;
+    const terrainLayer=new ImageLayer({className:'terrain-relief',visible:false,source:new ImageStatic({url:metadata.image_url,projection:metadata.crs,imageExtent:metadata.extent,attributions:metadata.source_label.startsWith('IGN')?'Terrain © IGN · MDT05 (sampled at 25 m) · display only':'Coarse 500 m domain-height display'})});terrain.current=terrainLayer;
     const instance=new OLMap({target:container.current,view,interactions:interactions({altShiftDragRotate:false,pinchRotate:false}),controls:controls({rotate:false,attributionOptions:{collapsible:false}}).extend([new ScaleLine()]),layers:[contextLayer,aerialLayer,terrainLayer,new VectorLayer({source,declutter:true,style:(entry,resolution)=>featureStyle(entry as Feature,(map.current?.getSize()?.[0]??1000)<450,resolution)})]});
     map.current=instance;
     view.fit(transformExtent(spainExtent,'EPSG:4326',mapProjection,16),{padding:[25,25,25,25]});
@@ -79,7 +79,7 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
     aerial.current?.setVisible(showMap&&baseStyle==='aerial');
     if(showMap&&baseStyle==='aerial'){setAerialStatus('loading');aerial.current?.getSource()?.refresh();}
   },[showMap,baseStyle]);
-  useEffect(()=>{terrain.current?.setOpacity(terrainOpacity(showMap,baseStyle));terrain.current?.setVisible(showTerrain||!showMap);},[showTerrain,showMap,baseStyle]);
+  useEffect(()=>{terrain.current?.setVisible(localTerrainVisible(showMap));},[showMap]);
   useEffect(()=>{
     if(previousFocus.current===focusKey)return;
     previousFocus.current=focusKey;cancelIntro.current();
@@ -133,7 +133,7 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
   },[observation,world,grid,selectedReport,aligned]);
   useEffect(()=>{const report=observation.reports.find(report=>report.id===selectedReport);if(report?.location){cancelIntro.current();map.current?.getView().setCenter(project(cellCenter(observation.geography,...report.location)));}},[selectedReport]);
   return <section className="map-panel" aria-label="2D terrain map">
-    <div className="map-options"><strong>Incident map <span className="tag">2D · grid north up</span></strong><div><label><input type="checkbox" checked={grid} onChange={event=>setGrid(event.target.checked)}/> Grid</label><label><input type="checkbox" checked={showMap} onChange={event=>setShowMap(event.target.checked)}/> Basemap</label><select aria-label="Map style" value={baseStyle} disabled={!showMap} onChange={event=>setBaseStyle(event.target.value as 'street'|'aerial')}><option value="aerial">Aerial imagery</option><option value="street">Street map</option></select><label><input type="checkbox" checked={showTerrain} onChange={event=>setShowTerrain(event.target.checked)}/> Terrain</label><button title="Mainland Spain and Balearic Islands" onClick={()=>{cancelIntro.current();map.current?.getView().fit(transformExtent(spainExtent,'EPSG:4326',mapProjection,16),{padding:[25,25,25,25]});}}>Spain</button><button onClick={()=>{cancelIntro.current();map.current?.getView().fit(transformExtent(metadata.extent,metadata.crs,mapProjection),{padding:[35,30,35,30]});}}>Fit domain</button></div></div>
+    <div className="map-options"><strong>Incident map <span className="tag">2D · grid north up</span></strong><div><label><input type="checkbox" checked={grid} onChange={event=>setGrid(event.target.checked)}/> Grid</label><label><input type="checkbox" checked={showMap} onChange={event=>setShowMap(event.target.checked)}/> Basemap</label><select aria-label="Map style" value={baseStyle} disabled={!showMap} onChange={event=>setBaseStyle(event.target.value as 'street'|'aerial')}><option value="aerial">Aerial imagery</option><option value="street">Street map</option></select><button title="Mainland Spain and Balearic Islands" onClick={()=>{cancelIntro.current();map.current?.getView().fit(transformExtent(spainExtent,'EPSG:4326',mapProjection,16),{padding:[25,25,25,25]});}}>Spain</button><button onClick={()=>{cancelIntro.current();map.current?.getView().fit(transformExtent(metadata.extent,metadata.crs,mapProjection),{padding:[35,30,35,30]});}}>Fit domain</button></div></div>
     {!aligned&&<p className="map-key-warning" role="alert">Map extent or projection does not match this episode. Geographic overlays are withheld rather than placed on the wrong map.</p>}
     <div className="map-surface"><div ref={container} className={`map ${contrast?'enhanced-terrain':''}`} role="region" aria-label="Flat grid-aligned wildfire map" tabIndex={0}/><span className="map-north" title="Native EPSG:25830 grid north; not true north">↑<small>Grid N</small></span><div className="map-display-controls"><label><input type="checkbox" checked={contrast} onChange={event=>setContrast(event.target.checked)}/> Enhanced contrast</label><span>Display only · 500 m simulation cells</span></div></div>
     {showMap&&baseStyle==='aerial'&&<p className="imagery-note">{aerialStatus==='unavailable'?'Aerial imagery unavailable; showing the street-map fallback. Toggle Basemap to retry.':'PNOA aerial / Sentinel-2 background · not live. Fire overlays are simulated on 500 m cells.'}</p>}
