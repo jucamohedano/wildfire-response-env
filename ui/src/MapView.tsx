@@ -122,7 +122,7 @@ export default function MapView({metadata,observation,world,selectedReport,onSel
       if(!report.location)continue;
       const key=report.location.join(','),fresh=observation.sensor_memory.some(sample=>sample.x===report.location![0]&&sample.y===report.location![1]&&sample.observed_at>=report.observed_at&&observation.minute-sample.observed_at<=4);
       if(grouped.has(key)||fresh)continue;grouped.add(key);
-      marker('claim',report.location,report.id===selectedReport?'Selected report':'?',{type:'report',id:report.id});
+      marker('claim',report.location,report.id===selectedReport?'Selected report':'',{type:'report',id:report.id});
     }
     for(const [index,district] of observation.districts.entries()){marker('refuge',district.refuge,'Refuge');marker(district.exposed?'exposed':'population',district.position??district.home,`${groupName(district.id)} · ${district.population}${district.position===null?' · home; position unknown':''}`,{type:'district',id:district.id},index%2?-55:-25);}
     const arrivals=new Map<string,typeof observation.resources>();

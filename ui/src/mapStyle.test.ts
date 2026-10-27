@@ -5,6 +5,14 @@ import {Style} from 'ol/style.js';
 import {featureStyle} from './mapStyle';
 
 describe('map presentation is not simulated geography',()=>{
+  it('keeps an unlabelled unconfirmed-report icon without an extra text badge',()=>{
+    const feature=new Feature({kind:'claim',label:'',geometry:new Point([303250,4045250])});
+    const style=featureStyle(feature,false,20) as Style;
+    expect(style).toBeInstanceOf(Style);
+    expect(style.getRenderer()).toBeTypeOf('function');
+    expect(style.getText()).toBeNull();
+    expect(feature.getGeometry()?.getCoordinates()).toEqual([303250,4045250]);
+  });
   it('styles operational labels without moving their point or creating a second label',()=>{
     for(const kind of ['population','unit','claim','arrival-target']){
       const point=new Point([303250,4045250]),feature=new Feature({geometry:point,kind,label:'West settlement · 200'});
