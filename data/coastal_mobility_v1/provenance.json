@@ -1,0 +1,1683 @@
+{
+  "acquisition": {
+    "acquisition_completed_at": "2026-10-27T12:21:44Z",
+    "acquisition_started_at": "2026-10-27T12:19:24Z",
+    "official_source_attempt": {
+      "attempted_on": "2026-10-27",
+      "result": "Automated HTTPS acquisition failed: unexpected TLS EOF; web fetch HTTP 502. No official geometry was acquired.",
+      "url": "https://centrodedescargas.cnig.es/CentroDescargas/redes-transporte"
+    },
+    "overpass_attempt": {
+      "result": "overpass-api.de HTTP 406; public kumi/private.coffee mirrors timed out. Used the official OSM map API instead."
+    },
+    "requests": [
+      {
+        "acquired_at": "2026-10-27T12:19:25Z",
+        "bbox_wgs84": [
+          -5.42,
+          36.36,
+          -5.305,
+          36.505
+        ],
+        "bytes": 2726514,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-0-0.json.gz",
+        "requested_at": "2026-10-27T12:19:24Z",
+        "server_date": "Tue, 27 Oct 2026 12:19:25 GMT",
+        "sha256": "80372790fc69e1db77df029e146963fcfebb78c5df16d37f13067647aa82c40b",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.42,36.36,-5.305,36.505"
+      },
+      {
+        "acquired_at": "2026-10-27T12:19:29Z",
+        "bbox_wgs84": [
+          -5.42,
+          36.505,
+          -5.305,
+          36.65
+        ],
+        "bytes": 10136083,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-0-1.json.gz",
+        "requested_at": "2026-10-27T12:19:26Z",
+        "server_date": "Tue, 27 Oct 2026 12:19:28 GMT",
+        "sha256": "73e35564f2216e60e2f0cb3f476cca0ed12cee2ec3fa0cbb2e19ca00107747fa",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.42,36.505,-5.305,36.65"
+      },
+      {
+        "acquired_at": "2026-10-27T12:20:25Z",
+        "bbox_wgs84": [
+          -5.305,
+          36.36,
+          -5.2475,
+          36.4325
+        ],
+        "bytes": 2320611,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-1-0-0-0.json.gz",
+        "requested_at": "2026-10-27T12:20:24Z",
+        "server_date": "Tue, 27 Oct 2026 12:20:25 GMT",
+        "sha256": "54a864d3012f9f862c8f2bcdd5f522df7445207f23c16652d53b748b99b8eb08",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.305,36.36,-5.2475,36.4325"
+      },
+      {
+        "acquired_at": "2026-10-27T12:20:28Z",
+        "bbox_wgs84": [
+          -5.2475,
+          36.36,
+          -5.19,
+          36.4325
+        ],
+        "bytes": 11518439,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-1-0-0-1.json.gz",
+        "requested_at": "2026-10-27T12:20:25Z",
+        "server_date": "Tue, 27 Oct 2026 12:20:27 GMT",
+        "sha256": "b10c8c27a4e48f91599bd7b4d92f90e1785c96e9ebb209affbe76c6c4ee33213",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.2475,36.36,-5.19,36.4325"
+      },
+      {
+        "acquired_at": "2026-10-27T12:20:30Z",
+        "bbox_wgs84": [
+          -5.305,
+          36.4325,
+          -5.19,
+          36.505
+        ],
+        "bytes": 4216175,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-1-0-1.json.gz",
+        "requested_at": "2026-10-27T12:20:29Z",
+        "server_date": "Tue, 27 Oct 2026 12:20:30 GMT",
+        "sha256": "3bbdcb7cd3de3c6ca01199074c069cf23eeff760dd797cd4b9b94e0cc9991e4d",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.305,36.4325,-5.19,36.505"
+      },
+      {
+        "acquired_at": "2026-10-27T12:20:35Z",
+        "bbox_wgs84": [
+          -5.305,
+          36.505,
+          -5.19,
+          36.5775
+        ],
+        "bytes": 6057516,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-1-1-0.json.gz",
+        "requested_at": "2026-10-27T12:20:33Z",
+        "server_date": "Tue, 27 Oct 2026 12:20:34 GMT",
+        "sha256": "e644f90968367b98d8f586d67e79cce9dc517cc873ec2af2f987ff6019ad1bbb",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.305,36.505,-5.19,36.5775"
+      },
+      {
+        "acquired_at": "2026-10-27T12:20:37Z",
+        "bbox_wgs84": [
+          -5.305,
+          36.5775,
+          -5.19,
+          36.65
+        ],
+        "bytes": 6024450,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-1-1-1.json.gz",
+        "requested_at": "2026-10-27T12:20:35Z",
+        "server_date": "Tue, 27 Oct 2026 12:20:36 GMT",
+        "sha256": "e7fc53ac88ac5ec79d4826612f4de391e15d55d714bdefc7233dfc823f16e628",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.305,36.5775,-5.19,36.65"
+      },
+      {
+        "acquired_at": "2026-10-27T12:20:42Z",
+        "bbox_wgs84": [
+          -5.19,
+          36.36,
+          -5.075,
+          36.4325
+        ],
+        "bytes": 9871270,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-2-0-0.json.gz",
+        "requested_at": "2026-10-27T12:20:39Z",
+        "server_date": "Tue, 27 Oct 2026 12:20:41 GMT",
+        "sha256": "f37db14f31b2347d7e4b2d7282266c70cb9c210c9be22595faabf3c70e816507",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.19,36.36,-5.075,36.4325"
+      },
+      {
+        "acquired_at": "2026-10-27T12:20:45Z",
+        "bbox_wgs84": [
+          -5.19,
+          36.4325,
+          -5.075,
+          36.505
+        ],
+        "bytes": 10400457,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-2-0-1.json.gz",
+        "requested_at": "2026-10-27T12:20:42Z",
+        "server_date": "Tue, 27 Oct 2026 12:20:44 GMT",
+        "sha256": "34dc1e913c6c1908f26e3827ab59c9b43a0af5d1f2248bcef3bbfd77cb90bc9c",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.19,36.4325,-5.075,36.505"
+      },
+      {
+        "acquired_at": "2026-10-27T12:20:48Z",
+        "bbox_wgs84": [
+          -5.19,
+          36.505,
+          -5.075,
+          36.65
+        ],
+        "bytes": 10381828,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-2-1.json.gz",
+        "requested_at": "2026-10-27T12:20:45Z",
+        "server_date": "Tue, 27 Oct 2026 12:20:47 GMT",
+        "sha256": "a4ab7f6d739ab4ac075c190d79cfefc2bd76c6d0bd8995414ecce0f87fe48efe",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.19,36.505,-5.075,36.65"
+      },
+      {
+        "acquired_at": "2026-10-27T12:21:08Z",
+        "bbox_wgs84": [
+          -5.075,
+          36.36,
+          -4.96,
+          36.4325
+        ],
+        "bytes": 355,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-0.json.gz",
+        "requested_at": "2026-10-27T12:21:08Z",
+        "server_date": "Tue, 27 Oct 2026 12:21:08 GMT",
+        "sha256": "af966c55dcaa029bf18d264d956f12ededb6dacc9604cbd80509e05850f977e1",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.36,-4.96,36.4325"
+      },
+      {
+        "acquired_at": "2026-10-27T12:21:14Z",
+        "bbox_wgs84": [
+          -5.075,
+          36.4325,
+          -5.0175,
+          36.46875
+        ],
+        "bytes": 6292739,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-0-0.json.gz",
+        "requested_at": "2026-10-27T12:21:12Z",
+        "server_date": "Tue, 27 Oct 2026 12:21:13 GMT",
+        "sha256": "da2963d844fe54692032b257b28c97f2b079362f739db67276da69a4dcb0afee",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.4325,-5.0175,36.46875"
+      },
+      {
+        "acquired_at": "2026-10-27T12:21:18Z",
+        "bbox_wgs84": [
+          -5.075,
+          36.46875,
+          -5.04625,
+          36.505
+        ],
+        "bytes": 3990989,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-0-1-0.json.gz",
+        "requested_at": "2026-10-27T12:21:16Z",
+        "server_date": "Tue, 27 Oct 2026 12:21:17 GMT",
+        "sha256": "7475221144ed754517342702cc2cd6624fef253d1fb2bb34e74554f854057f1d",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.46875,-5.04625,36.505"
+      },
+      {
+        "acquired_at": "2026-10-27T12:21:20Z",
+        "bbox_wgs84": [
+          -5.04625,
+          36.46875,
+          -5.0175,
+          36.505
+        ],
+        "bytes": 8076234,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-0-1-1.json.gz",
+        "requested_at": "2026-10-27T12:21:18Z",
+        "server_date": "Tue, 27 Oct 2026 12:21:19 GMT",
+        "sha256": "3e5a305ed7c91ef19ffa3cd96b1a5e66edba839c8aa338febbd4a9dd771a6712",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.04625,36.46875,-5.0175,36.505"
+      },
+      {
+        "acquired_at": "2026-10-27T12:21:23Z",
+        "bbox_wgs84": [
+          -5.0175,
+          36.4325,
+          -4.96,
+          36.46875
+        ],
+        "bytes": 2881493,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-1-0.json.gz",
+        "requested_at": "2026-10-27T12:21:22Z",
+        "server_date": "Tue, 27 Oct 2026 12:21:23 GMT",
+        "sha256": "e448b55a758481b7c8684e5fae71a59fadef1113b4ed9b6d69283c30272dbc7d",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.0175,36.4325,-4.96,36.46875"
+      },
+      {
+        "acquired_at": "2026-10-27T12:21:28Z",
+        "bbox_wgs84": [
+          -5.0175,
+          36.46875,
+          -4.98875,
+          36.505
+        ],
+        "bytes": 10292658,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-1-1-0.json.gz",
+        "requested_at": "2026-10-27T12:21:25Z",
+        "server_date": "Tue, 27 Oct 2026 12:21:27 GMT",
+        "sha256": "c1157e6cefa05479167fd3350d65585053a4756b0c30da4be9f25c0dc75a9081",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.0175,36.46875,-4.98875,36.505"
+      },
+      {
+        "acquired_at": "2026-10-27T12:21:31Z",
+        "bbox_wgs84": [
+          -4.98875,
+          36.46875,
+          -4.96,
+          36.505
+        ],
+        "bytes": 7334336,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-1-1-1.json.gz",
+        "requested_at": "2026-10-27T12:21:29Z",
+        "server_date": "Tue, 27 Oct 2026 12:21:30 GMT",
+        "sha256": "71a7905df8d17febca72ad6b361b2e00feeeea2d4857e8efc746a6e804d46815",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-4.98875,36.46875,-4.96,36.505"
+      },
+      {
+        "acquired_at": "2026-10-27T12:21:39Z",
+        "bbox_wgs84": [
+          -5.075,
+          36.505,
+          -5.0175,
+          36.54125
+        ],
+        "bytes": 9077623,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-1-0-0-0.json.gz",
+        "requested_at": "2026-10-27T12:21:36Z",
+        "server_date": "Tue, 27 Oct 2026 12:21:38 GMT",
+        "sha256": "aa07e63d465b23e0247df0600468b8e7acf342e456e9d1362f229f58a8892986",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.505,-5.0175,36.54125"
+      },
+      {
+        "acquired_at": "2026-10-27T12:21:40Z",
+        "bbox_wgs84": [
+          -5.075,
+          36.54125,
+          -5.0175,
+          36.5775
+        ],
+        "bytes": 3169417,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-1-0-0-1.json.gz",
+        "requested_at": "2026-10-27T12:21:39Z",
+        "server_date": "Tue, 27 Oct 2026 12:21:40 GMT",
+        "sha256": "434fe9300c98d28e3f429a449dae2c5ef1b84484000e46b33dd8d6258a794303",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.54125,-5.0175,36.5775"
+      },
+      {
+        "acquired_at": "2026-10-27T12:21:43Z",
+        "bbox_wgs84": [
+          -5.0175,
+          36.505,
+          -4.96,
+          36.5775
+        ],
+        "bytes": 11561545,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-1-0-1.json.gz",
+        "requested_at": "2026-10-27T12:21:40Z",
+        "server_date": "Tue, 27 Oct 2026 12:21:42 GMT",
+        "sha256": "98144ddf0f91d85af48ebdb7befeebdacf7bfd9965fe263404ca7b6b5c063637",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.0175,36.505,-4.96,36.5775"
+      },
+      {
+        "acquired_at": "2026-10-27T12:21:44Z",
+        "bbox_wgs84": [
+          -5.075,
+          36.5775,
+          -4.96,
+          36.65
+        ],
+        "bytes": 3967648,
+        "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-1-1.json.gz",
+        "requested_at": "2026-10-27T12:21:43Z",
+        "server_date": "Tue, 27 Oct 2026 12:21:44 GMT",
+        "sha256": "0f28127ad28837ed88691edf45a5c4c8b99603bd8c3df74c2338fd51724eaab0",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.5775,-4.96,36.65"
+      }
+    ],
+    "snapshot": {
+      "bytes": 1961909,
+      "canonical_sha256": "7a5ce441b3de55ac72dff1fbc500473243a9d9213573415c151c45f1f04f183d",
+      "path": "source_snapshot.json.gz",
+      "sha256": "fd276b8a4a799cffedd268f485a97aaff5ff88d83d11726be0e23894d282f323"
+    },
+    "source": {
+      "attribution": "© OpenStreetMap contributors",
+      "license": "ODbL-1.0",
+      "name": "OpenStreetMap coastal Málaga extract",
+      "url": "https://www.openstreetmap.org/copyright"
+    },
+    "source_date_note": "OSM current map API at acquisition; non-atomic tiles, not a 2021 historical reconstruction. Highest element version wins overlaps. Initial 4x2 tiling is bisected when the API rejects more than 50000 nodes.",
+    "source_element_timestamp_max": "2026-10-24T14:27:08Z",
+    "source_element_timestamp_min": "2007-10-18T21:58:04Z",
+    "version": "coastal-road-acquisition-v1"
+  },
+  "coverage": {
+    "bounds_epsg25830": [
+      290015.7,
+      4026188.4,
+      309111.4,
+      4055676.8
+    ],
+    "interior_cell_centres_with_reachable_node_within_150m": [
+      {
+        "col": 1,
+        "directed_road_distance_m": 48802.98,
+        "node_gap_m": 43.489,
+        "node_id": "osm:n4368048082",
+        "node_position": [
+          297732.7,
+          4053210.1
+        ],
+        "position": [
+          297750.0,
+          4053250.0
+        ],
+        "row": 2
+      },
+      {
+        "col": 2,
+        "directed_road_distance_m": 47772.998,
+        "node_gap_m": 116.274,
+        "node_id": "osm:n1027184089",
+        "node_position": [
+          298215.7,
+          4053138.9
+        ],
+        "position": [
+          298250.0,
+          4053250.0
+        ],
+        "row": 2
+      },
+      {
+        "col": 3,
+        "directed_road_distance_m": 50059.897,
+        "node_gap_m": 22.853,
+        "node_id": "osm:n1027185439",
+        "node_position": [
+          298729.5,
+          4053239.9
+        ],
+        "position": [
+          298750.0,
+          4053250.0
+        ],
+        "row": 2
+      },
+      {
+        "col": 4,
+        "directed_road_distance_m": 49162.143,
+        "node_gap_m": 23.343,
+        "node_id": "osm:n1027185688",
+        "node_position": [
+          299227.7,
+          4052756.9
+        ],
+        "position": [
+          299250.0,
+          4052750.0
+        ],
+        "row": 3
+      },
+      {
+        "col": 1,
+        "directed_road_distance_m": 47149.608,
+        "node_gap_m": 3.569,
+        "node_id": "osm:n5222964768",
+        "node_position": [
+          297749.3,
+          4052253.5
+        ],
+        "position": [
+          297750.0,
+          4052250.0
+        ],
+        "row": 4
+      },
+      {
+        "col": 2,
+        "directed_road_distance_m": 47998.932,
+        "node_gap_m": 81.938,
+        "node_id": "osm:n1027185976",
+        "node_position": [
+          298209.1,
+          4051679.0
+        ],
+        "position": [
+          298250.0,
+          4051750.0
+        ],
+        "row": 5
+      },
+      {
+        "col": 11,
+        "directed_road_distance_m": 60964.651,
+        "node_gap_m": 34.879,
+        "node_id": "osm:n3461564663",
+        "node_position": [
+          302780.4,
+          4051732.9
+        ],
+        "position": [
+          302750.0,
+          4051750.0
+        ],
+        "row": 5
+      },
+      {
+        "col": 11,
+        "directed_road_distance_m": 59589.232,
+        "node_gap_m": 85.708,
+        "node_id": "osm:n3461554993",
+        "node_position": [
+          302664.4,
+          4051245.7
+        ],
+        "position": [
+          302750.0,
+          4051250.0
+        ],
+        "row": 6
+      },
+      {
+        "col": 11,
+        "directed_road_distance_m": 59028.717,
+        "node_gap_m": 141.095,
+        "node_id": "osm:n3461552190",
+        "node_position": [
+          302619.4,
+          4050803.4
+        ],
+        "position": [
+          302750.0,
+          4050750.0
+        ],
+        "row": 7
+      },
+      {
+        "col": 1,
+        "directed_road_distance_m": 45471.888,
+        "node_gap_m": 64.492,
+        "node_id": "osm:n1039249841",
+        "node_position": [
+          297690.1,
+          4050226.1
+        ],
+        "position": [
+          297750.0,
+          4050250.0
+        ],
+        "row": 8
+      },
+      {
+        "col": 2,
+        "directed_road_distance_m": 47663.7,
+        "node_gap_m": 93.98,
+        "node_id": "osm:n14096513097",
+        "node_position": [
+          298322.5,
+          4050309.8
+        ],
+        "position": [
+          298250.0,
+          4050250.0
+        ],
+        "row": 8
+      },
+      {
+        "col": 3,
+        "directed_road_distance_m": 49668.041,
+        "node_gap_m": 20.367,
+        "node_id": "osm:n3071690363",
+        "node_position": [
+          298738.2,
+          4050233.4
+        ],
+        "position": [
+          298750.0,
+          4050250.0
+        ],
+        "row": 8
+      },
+      {
+        "col": 9,
+        "directed_road_distance_m": 57540.699,
+        "node_gap_m": 120.679,
+        "node_id": "osm:n3461552182",
+        "node_position": [
+          301766.1,
+          4050130.4
+        ],
+        "position": [
+          301750.0,
+          4050250.0
+        ],
+        "row": 8
+      },
+      {
+        "col": 10,
+        "directed_road_distance_m": 58091.542,
+        "node_gap_m": 40.777,
+        "node_id": "osm:n3461552902",
+        "node_position": [
+          302224.6,
+          4050218.1
+        ],
+        "position": [
+          302250.0,
+          4050250.0
+        ],
+        "row": 8
+      },
+      {
+        "col": 2,
+        "directed_road_distance_m": 46688.822,
+        "node_gap_m": 70.853,
+        "node_id": "osm:n12726204559",
+        "node_position": [
+          298300.3,
+          4049799.9
+        ],
+        "position": [
+          298250.0,
+          4049750.0
+        ],
+        "row": 9
+      },
+      {
+        "col": 3,
+        "directed_road_distance_m": 48964.155,
+        "node_gap_m": 49.881,
+        "node_id": "osm:n3071687610",
+        "node_position": [
+          298789.7,
+          4049719.8
+        ],
+        "position": [
+          298750.0,
+          4049750.0
+        ],
+        "row": 9
+      },
+      {
+        "col": 9,
+        "directed_road_distance_m": 56822.218,
+        "node_gap_m": 66.383,
+        "node_id": "osm:n3461552924",
+        "node_position": [
+          301691.3,
+          4049719.0
+        ],
+        "position": [
+          301750.0,
+          4049750.0
+        ],
+        "row": 9
+      },
+      {
+        "col": 3,
+        "directed_road_distance_m": 49678.33,
+        "node_gap_m": 135.14,
+        "node_id": "osm:n12726204616",
+        "node_position": [
+          298884.7,
+          4049260.9
+        ],
+        "position": [
+          298750.0,
+          4049250.0
+        ],
+        "row": 10
+      },
+      {
+        "col": 4,
+        "directed_road_distance_m": 50346.996,
+        "node_gap_m": 25.034,
+        "node_id": "osm:n968027617",
+        "node_position": [
+          299274.4,
+          4049244.4
+        ],
+        "position": [
+          299250.0,
+          4049250.0
+        ],
+        "row": 10
+      },
+      {
+        "col": 5,
+        "directed_road_distance_m": 51463.52,
+        "node_gap_m": 53.397,
+        "node_id": "osm:n2399493245",
+        "node_position": [
+          299708.5,
+          4049283.6
+        ],
+        "position": [
+          299750.0,
+          4049250.0
+        ],
+        "row": 10
+      },
+      {
+        "col": 6,
+        "directed_road_distance_m": 52745.045,
+        "node_gap_m": 110.45,
+        "node_id": "osm:n13718510412",
+        "node_position": [
+          300328.2,
+          4049172.0
+        ],
+        "position": [
+          300250.0,
+          4049250.0
+        ],
+        "row": 10
+      },
+      {
+        "col": 7,
+        "directed_road_distance_m": 53414.89,
+        "node_gap_m": 57.904,
+        "node_id": "osm:n968027615",
+        "node_position": [
+          300734.9,
+          4049305.9
+        ],
+        "position": [
+          300750.0,
+          4049250.0
+        ],
+        "row": 10
+      },
+      {
+        "col": 8,
+        "directed_road_distance_m": 55160.802,
+        "node_gap_m": 58.863,
+        "node_id": "osm:n968027303",
+        "node_position": [
+          301216.5,
+          4049298.4
+        ],
+        "position": [
+          301250.0,
+          4049250.0
+        ],
+        "row": 10
+      },
+      {
+        "col": 9,
+        "directed_road_distance_m": 56204.939,
+        "node_gap_m": 144.729,
+        "node_id": "osm:n968028898",
+        "node_position": [
+          301743.9,
+          4049105.4
+        ],
+        "position": [
+          301750.0,
+          4049250.0
+        ],
+        "row": 10
+      },
+      {
+        "col": 5,
+        "directed_road_distance_m": 51534.051,
+        "node_gap_m": 20.751,
+        "node_id": "osm:n968027258",
+        "node_position": [
+          299770.6,
+          4048752.5
+        ],
+        "position": [
+          299750.0,
+          4048750.0
+        ],
+        "row": 11
+      },
+      {
+        "col": 6,
+        "directed_road_distance_m": 52699.969,
+        "node_gap_m": 91.437,
+        "node_id": "osm:n968028478",
+        "node_position": [
+          300255.0,
+          4048841.3
+        ],
+        "position": [
+          300250.0,
+          4048750.0
+        ],
+        "row": 11
+      },
+      {
+        "col": 7,
+        "directed_road_distance_m": 54134.492,
+        "node_gap_m": 140.014,
+        "node_id": "osm:n3037190648",
+        "node_position": [
+          300835.6,
+          4048860.8
+        ],
+        "position": [
+          300750.0,
+          4048750.0
+        ],
+        "row": 11
+      },
+      {
+        "col": 9,
+        "directed_road_distance_m": 55516.305,
+        "node_gap_m": 7.234,
+        "node_id": "osm:n968029035",
+        "node_position": [
+          301750.7,
+          4048757.2
+        ],
+        "position": [
+          301750.0,
+          4048750.0
+        ],
+        "row": 11
+      },
+      {
+        "col": 5,
+        "directed_road_distance_m": 52890.043,
+        "node_gap_m": 143.57,
+        "node_id": "osm:n968028514",
+        "node_position": [
+          299644.8,
+          4048152.3
+        ],
+        "position": [
+          299750.0,
+          4048250.0
+        ],
+        "row": 12
+      },
+      {
+        "col": 3,
+        "directed_road_distance_m": 54180.168,
+        "node_gap_m": 88.972,
+        "node_id": "osm:n3071716430",
+        "node_position": [
+          298793.7,
+          4047672.5
+        ],
+        "position": [
+          298750.0,
+          4047750.0
+        ],
+        "row": 13
+      },
+      {
+        "col": 4,
+        "directed_road_distance_m": 53604.744,
+        "node_gap_m": 35.072,
+        "node_id": "osm:n968027469",
+        "node_position": [
+          299216.6,
+          4047760.7
+        ],
+        "position": [
+          299250.0,
+          4047750.0
+        ],
+        "row": 13
+      },
+      {
+        "col": 2,
+        "directed_road_distance_m": 55171.129,
+        "node_gap_m": 97.306,
+        "node_id": "osm:n3071718276",
+        "node_position": [
+          298291.1,
+          4047161.8
+        ],
+        "position": [
+          298250.0,
+          4047250.0
+        ],
+        "row": 14
+      },
+      {
+        "col": 3,
+        "directed_road_distance_m": 54696.155,
+        "node_gap_m": 126.33,
+        "node_id": "osm:n968027159",
+        "node_position": [
+          298833.5,
+          4047155.2
+        ],
+        "position": [
+          298750.0,
+          4047250.0
+        ],
+        "row": 14
+      },
+      {
+        "col": 5,
+        "directed_road_distance_m": 56573.689,
+        "node_gap_m": 63.75,
+        "node_id": "osm:n968271465",
+        "node_position": [
+          299798.9,
+          4046709.1
+        ],
+        "position": [
+          299750.0,
+          4046750.0
+        ],
+        "row": 15
+      },
+      {
+        "col": 6,
+        "directed_road_distance_m": 56544.468,
+        "node_gap_m": 8.139,
+        "node_id": "osm:n968271079",
+        "node_position": [
+          300244.5,
+          4046756.0
+        ],
+        "position": [
+          300250.0,
+          4046750.0
+        ],
+        "row": 15
+      },
+      {
+        "col": 8,
+        "directed_road_distance_m": 57888.354,
+        "node_gap_m": 112.644,
+        "node_id": "osm:n3854610860",
+        "node_position": [
+          301170.8,
+          4046669.9
+        ],
+        "position": [
+          301250.0,
+          4046750.0
+        ],
+        "row": 15
+      },
+      {
+        "col": 7,
+        "directed_road_distance_m": 59015.659,
+        "node_gap_m": 78.862,
+        "node_id": "osm:n3854611057",
+        "node_position": [
+          300740.6,
+          4046171.7
+        ],
+        "position": [
+          300750.0,
+          4046250.0
+        ],
+        "row": 16
+      },
+      {
+        "col": 8,
+        "directed_road_distance_m": 58414.925,
+        "node_gap_m": 106.021,
+        "node_id": "osm:n968028004",
+        "node_position": [
+          301145.4,
+          4046232.7
+        ],
+        "position": [
+          301250.0,
+          4046250.0
+        ],
+        "row": 16
+      },
+      {
+        "col": 6,
+        "directed_road_distance_m": 60100.183,
+        "node_gap_m": 36.797,
+        "node_id": "osm:n968027292",
+        "node_position": [
+          300286.2,
+          4045756.6
+        ],
+        "position": [
+          300250.0,
+          4045750.0
+        ],
+        "row": 17
+      },
+      {
+        "col": 7,
+        "directed_road_distance_m": 60616.225,
+        "node_gap_m": 26.753,
+        "node_id": "osm:n3860479388",
+        "node_position": [
+          300776.3,
+          4045754.9
+        ],
+        "position": [
+          300750.0,
+          4045750.0
+        ],
+        "row": 17
+      },
+      {
+        "col": 8,
+        "directed_road_distance_m": 61858.704,
+        "node_gap_m": 91.913,
+        "node_id": "osm:n3860480600",
+        "node_position": [
+          301281.9,
+          4045163.8
+        ],
+        "position": [
+          301250.0,
+          4045250.0
+        ],
+        "row": 18
+      },
+      {
+        "col": 9,
+        "directed_road_distance_m": 62475.118,
+        "node_gap_m": 35.933,
+        "node_id": "osm:n3860480602",
+        "node_position": [
+          301732.0,
+          4045218.9
+        ],
+        "position": [
+          301750.0,
+          4045250.0
+        ],
+        "row": 18
+      },
+      {
+        "col": 15,
+        "directed_road_distance_m": 7740.557,
+        "node_gap_m": 60.629,
+        "node_id": "osm:n583274445",
+        "node_position": [
+          304703.0,
+          4039211.7
+        ],
+        "position": [
+          304750.0,
+          4039250.0
+        ],
+        "row": 30
+      },
+      {
+        "col": 15,
+        "directed_road_distance_m": 7311.287,
+        "node_gap_m": 108.136,
+        "node_id": "osm:n321315299",
+        "node_position": [
+          304827.9,
+          4038825.0
+        ],
+        "position": [
+          304750.0,
+          4038750.0
+        ],
+        "row": 31
+      },
+      {
+        "col": 19,
+        "directed_road_distance_m": 10591.499,
+        "node_gap_m": 2.28,
+        "node_id": "osm:n4340929767",
+        "node_position": [
+          306747.8,
+          4038750.6
+        ],
+        "position": [
+          306750.0,
+          4038750.0
+        ],
+        "row": 31
+      },
+      {
+        "col": 7,
+        "directed_road_distance_m": 15780.1,
+        "node_gap_m": 52.444,
+        "node_id": "osm:n4353742338",
+        "node_position": [
+          300705.1,
+          4038222.9
+        ],
+        "position": [
+          300750.0,
+          4038250.0
+        ],
+        "row": 32
+      },
+      {
+        "col": 16,
+        "directed_road_distance_m": 6556.184,
+        "node_gap_m": 38.196,
+        "node_id": "osm:n946554144",
+        "node_position": [
+          305288.1,
+          4038247.3
+        ],
+        "position": [
+          305250.0,
+          4038250.0
+        ],
+        "row": 32
+      },
+      {
+        "col": 19,
+        "directed_road_distance_m": 9895.538,
+        "node_gap_m": 20.541,
+        "node_id": "osm:n4340929779",
+        "node_position": [
+          306730.8,
+          4038257.3
+        ],
+        "position": [
+          306750.0,
+          4038250.0
+        ],
+        "row": 32
+      },
+      {
+        "col": 6,
+        "directed_road_distance_m": 14440.294,
+        "node_gap_m": 55.61,
+        "node_id": "osm:n4353742379",
+        "node_position": [
+          300195.7,
+          4037738.0
+        ],
+        "position": [
+          300250.0,
+          4037750.0
+        ],
+        "row": 33
+      },
+      {
+        "col": 7,
+        "directed_road_distance_m": 16297.216,
+        "node_gap_m": 9.552,
+        "node_id": "osm:n4353742318",
+        "node_position": [
+          300759.0,
+          4037753.2
+        ],
+        "position": [
+          300750.0,
+          4037750.0
+        ],
+        "row": 33
+      },
+      {
+        "col": 17,
+        "directed_road_distance_m": 5450.854,
+        "node_gap_m": 33.012,
+        "node_id": "osm:n321315386",
+        "node_position": [
+          305755.2,
+          4037782.6
+        ],
+        "position": [
+          305750.0,
+          4037750.0
+        ],
+        "row": 33
+      },
+      {
+        "col": 18,
+        "directed_road_distance_m": 5261.591,
+        "node_gap_m": 30.495,
+        "node_id": "osm:n603751017",
+        "node_position": [
+          306272.3,
+          4037729.2
+        ],
+        "position": [
+          306250.0,
+          4037750.0
+        ],
+        "row": 33
+      },
+      {
+        "col": 19,
+        "directed_road_distance_m": 6066.62,
+        "node_gap_m": 96.157,
+        "node_id": "osm:n603751040",
+        "node_position": [
+          306669.9,
+          4037696.8
+        ],
+        "position": [
+          306750.0,
+          4037750.0
+        ],
+        "row": 33
+      },
+      {
+        "col": 20,
+        "directed_road_distance_m": 9128.415,
+        "node_gap_m": 26.748,
+        "node_id": "osm:n4340929741",
+        "node_position": [
+          307273.7,
+          4037762.4
+        ],
+        "position": [
+          307250.0,
+          4037750.0
+        ],
+        "row": 33
+      },
+      {
+        "col": 1,
+        "directed_road_distance_m": 15064.269,
+        "node_gap_m": 25.371,
+        "node_id": "osm:n370862615",
+        "node_position": [
+          297733.3,
+          4037269.1
+        ],
+        "position": [
+          297750.0,
+          4037250.0
+        ],
+        "row": 34
+      },
+      {
+        "col": 5,
+        "directed_road_distance_m": 13558.014,
+        "node_gap_m": 49.133,
+        "node_id": "osm:n4353742414",
+        "node_position": [
+          299780.9,
+          4037211.8
+        ],
+        "position": [
+          299750.0,
+          4037250.0
+        ],
+        "row": 34
+      },
+      {
+        "col": 17,
+        "directed_road_distance_m": 5708.675,
+        "node_gap_m": 45.732,
+        "node_id": "osm:n600129523",
+        "node_position": [
+          305704.5,
+          4037245.4
+        ],
+        "position": [
+          305750.0,
+          4037250.0
+        ],
+        "row": 34
+      },
+      {
+        "col": 18,
+        "directed_road_distance_m": 4640.985,
+        "node_gap_m": 26.112,
+        "node_id": "osm:n3854563758",
+        "node_position": [
+          306276.1,
+          4037249.2
+        ],
+        "position": [
+          306250.0,
+          4037250.0
+        ],
+        "row": 34
+      },
+      {
+        "col": 19,
+        "directed_road_distance_m": 6051.218,
+        "node_gap_m": 53.948,
+        "node_id": "osm:n6118870189",
+        "node_position": [
+          306769.5,
+          4037300.3
+        ],
+        "position": [
+          306750.0,
+          4037250.0
+        ],
+        "row": 34
+      },
+      {
+        "col": 20,
+        "directed_road_distance_m": 7005.509,
+        "node_gap_m": 127.358,
+        "node_id": "osm:n603750945",
+        "node_position": [
+          307347.7,
+          4037331.7
+        ],
+        "position": [
+          307250.0,
+          4037250.0
+        ],
+        "row": 34
+      },
+      {
+        "col": 21,
+        "directed_road_distance_m": 7497.48,
+        "node_gap_m": 55.777,
+        "node_id": "osm:n12477984357",
+        "node_position": [
+          307742.0,
+          4037194.8
+        ],
+        "position": [
+          307750.0,
+          4037250.0
+        ],
+        "row": 34
+      },
+      {
+        "col": 22,
+        "directed_road_distance_m": 8484.285,
+        "node_gap_m": 126.341,
+        "node_id": "osm:n946659366",
+        "node_position": [
+          308148.7,
+          4037174.5
+        ],
+        "position": [
+          308250.0,
+          4037250.0
+        ],
+        "row": 34
+      }
+    ],
+    "interior_eligible_count": 62,
+    "interpretation": "Distances use nearest source-connected directed road geometry, then shortest road length to its projection. Off-network distance is Euclidean, not a traversable final route. Candidate coastal street nodes are exercise anchors, not verified fire stations, safe parking or approved staging grounds.",
+    "largest_weak_component_nodes": 4298,
+    "staging_candidates": [
+      {
+        "directed_reachable_nodes": 4227,
+        "lonlat": [
+          -5.1457536,
+          36.4268496
+        ],
+        "name": "Estepona exercise anchor",
+        "nearest_any_node": {
+          "node_id": "osm:n1676609079",
+          "offset_m": 14.239,
+          "position": [
+            307642.5,
+            4033433.4
+          ],
+          "weak_component_nodes": 4298
+        },
+        "node_id": "osm:n1676609079",
+        "offset_from_search_anchor_m": 14.239,
+        "position": [
+          307642.5,
+          4033433.4
+        ],
+        "search_anchor_epsg25830": [
+          307629.249,
+          4033428.189
+        ],
+        "weak_component_nodes": 4298
+      },
+      {
+        "directed_reachable_nodes": 4227,
+        "lonlat": [
+          -5.2740002,
+          36.4445057
+        ],
+        "name": "Casares exercise anchor",
+        "nearest_any_node": {
+          "node_id": "osm:n7179050537",
+          "offset_m": 9.009,
+          "position": [
+            296190.2,
+            4035655.8
+          ],
+          "weak_component_nodes": 4298
+        },
+        "node_id": "osm:n7179050537",
+        "offset_from_search_anchor_m": 9.009,
+        "position": [
+          296190.2,
+          4035655.8
+        ],
+        "search_anchor_epsg25830": [
+          296199.169,
+          4035654.952
+        ],
+        "weak_component_nodes": 4298
+      },
+      {
+        "directed_reachable_nodes": 4227,
+        "lonlat": [
+          -5.2511311,
+          36.3705314
+        ],
+        "name": "San Luis de Sabinillas coastal streets",
+        "nearest_any_node": {
+          "node_id": "osm:n4444590544",
+          "offset_m": 113.145,
+          "position": [
+            298048.7,
+            4027400.4
+          ],
+          "weak_component_nodes": 4298
+        },
+        "node_id": "osm:n4444590544",
+        "offset_from_search_anchor_m": 113.145,
+        "position": [
+          298048.7,
+          4027400.4
+        ],
+        "search_anchor_epsg25830": [
+          298150,
+          4027350
+        ],
+        "weak_component_nodes": 4298
+      }
+    ],
+    "status": "Partial conservative exercise coverage; each target reports its actual connected-road gap. No guaranteed 150 m suppression access or 1500 m walking access to arbitrary targets.",
+    "target_access": [
+      {
+        "access_from_staging": [
+          {
+            "directed_road_distance_m": 57888.354,
+            "edge_id": "chain:6f9800a7448be68a4539:f",
+            "nearest_road_position": [
+              301170.8,
+              4046669.9
+            ],
+            "off_network_distance_m": 112.644,
+            "road_class": "tertiary",
+            "staging_node_id": "osm:n1676609079"
+          },
+          {
+            "directed_road_distance_m": 41847.585,
+            "edge_id": "chain:6f9800a7448be68a4539:f",
+            "nearest_road_position": [
+              301170.8,
+              4046669.9
+            ],
+            "off_network_distance_m": 112.644,
+            "road_class": "tertiary",
+            "staging_node_id": "osm:n7179050537"
+          },
+          {
+            "directed_road_distance_m": 50500.74,
+            "edge_id": "chain:6f9800a7448be68a4539:f",
+            "nearest_road_position": [
+              301170.8,
+              4046669.9
+            ],
+            "off_network_distance_m": 112.644,
+            "road_class": "tertiary",
+            "staging_node_id": "osm:n4444590544"
+          }
+        ],
+        "nearest_any_road_distance_m": 112.644,
+        "nearest_any_road_edge_id": "chain:6f9800a7448be68a4539:f",
+        "nearest_reachable_node": {
+          "directed_road_distance_m": 57888.354,
+          "gap_m": 112.644,
+          "node_id": "osm:n3854610860",
+          "position": [
+            301170.8,
+            4046669.9
+          ]
+        },
+        "position": [
+          301250,
+          4046750
+        ]
+      },
+      {
+        "access_from_staging": [
+          {
+            "directed_road_distance_m": 62863.265,
+            "edge_id": "osm:w382835114:0013:f",
+            "nearest_road_position": [
+              301931.3,
+              4045087.9
+            ],
+            "off_network_distance_m": 4472.32,
+            "road_class": "tertiary",
+            "staging_node_id": "osm:n1676609079"
+          },
+          {
+            "directed_road_distance_m": 46822.496,
+            "edge_id": "osm:w382835114:0013:f",
+            "nearest_road_position": [
+              301931.3,
+              4045087.9
+            ],
+            "off_network_distance_m": 4472.32,
+            "road_class": "tertiary",
+            "staging_node_id": "osm:n7179050537"
+          },
+          {
+            "directed_road_distance_m": 55475.651,
+            "edge_id": "osm:w382835114:0013:f",
+            "nearest_road_position": [
+              301931.3,
+              4045087.9
+            ],
+            "off_network_distance_m": 4472.32,
+            "road_class": "tertiary",
+            "staging_node_id": "osm:n4444590544"
+          }
+        ],
+        "nearest_any_road_distance_m": 4472.32,
+        "nearest_any_road_edge_id": "osm:w382835114:0013:f",
+        "nearest_reachable_node": {
+          "directed_road_distance_m": 62863.265,
+          "gap_m": 4472.32,
+          "node_id": "osm:n3860480180",
+          "position": [
+            301931.3,
+            4045087.9
+          ]
+        },
+        "position": [
+          306250,
+          4046250
+        ]
+      },
+      {
+        "access_from_staging": [
+          {
+            "directed_road_distance_m": 62863.265,
+            "edge_id": "osm:w382835114:0013:f",
+            "nearest_road_position": [
+              301931.3,
+              4045087.9
+            ],
+            "off_network_distance_m": 1328.626,
+            "road_class": "tertiary",
+            "staging_node_id": "osm:n1676609079"
+          },
+          {
+            "directed_road_distance_m": 46822.496,
+            "edge_id": "osm:w382835114:0013:f",
+            "nearest_road_position": [
+              301931.3,
+              4045087.9
+            ],
+            "off_network_distance_m": 1328.626,
+            "road_class": "tertiary",
+            "staging_node_id": "osm:n7179050537"
+          },
+          {
+            "directed_road_distance_m": 55475.651,
+            "edge_id": "osm:w382835114:0013:f",
+            "nearest_road_position": [
+              301931.3,
+              4045087.9
+            ],
+            "off_network_distance_m": 1328.626,
+            "road_class": "tertiary",
+            "staging_node_id": "osm:n4444590544"
+          }
+        ],
+        "nearest_any_road_distance_m": 1328.626,
+        "nearest_any_road_edge_id": "osm:w382835114:0013:f",
+        "nearest_reachable_node": {
+          "directed_road_distance_m": 62863.265,
+          "gap_m": 1328.626,
+          "node_id": "osm:n3860480180",
+          "position": [
+            301931.3,
+            4045087.9
+          ]
+        },
+        "position": [
+          303250,
+          4045250
+        ]
+      }
+    ],
+    "weak_component_size_histogram": {
+      "4298": 1
+    },
+    "weak_components": 1
+  },
+  "filtering": {
+    "accepted_classes": [
+      "living_street",
+      "motorway",
+      "motorway_link",
+      "primary",
+      "primary_link",
+      "residential",
+      "secondary",
+      "secondary_link",
+      "service",
+      "tertiary",
+      "tertiary_link",
+      "track",
+      "trunk",
+      "trunk_link",
+      "unclassified"
+    ],
+    "access": "Most specific motorcar > motor_vehicle > vehicle > access; only absent/yes/permissive/designated/official allowed. Explicit HGV restrictions, conditional/directional access and vehicle dimension limits excluded.",
+    "barriers": "Segments incident to restricted nodes, fords or barriers excluded. Cattle grids allowed; gates require explicit motor access permission. No assumed emergency override.",
+    "oneway": "Explicit most-specific motorcar/motor_vehicle/vehicle/general oneway; -1 reversed; implicit motorway and roundabout forward; unknown/reversible/alternating excluded. Bidirectional arcs have explicit reversed coordinates.",
+    "service": "Driveways, parking aisles and drive-through service roads excluded.",
+    "speed_kph_by_class": {
+      "living_street": 10,
+      "motorway": 50,
+      "motorway_link": 25,
+      "primary": 40,
+      "primary_link": 20,
+      "residential": 20,
+      "secondary": 35,
+      "secondary_link": 20,
+      "service": 10,
+      "tertiary": 30,
+      "tertiary_link": 20,
+      "track": 8,
+      "trunk": 45,
+      "trunk_link": 25,
+      "unclassified": 20
+    },
+    "speeds": "Synthetic conservative class defaults for exercises; not observed/historical speed, legal maximum, or calibrated fire-engine travel time.",
+    "topology": "Connect only identical OSM node IDs, split at shared nodes/repeats/endpoints/bbox intersections, then contract unbranched same-class/speed chains. Retain the largest weak component, which contains the coastal exercise anchors, and exclude disconnected islands without invented bridges. No geometric crossing joins, nearest-neighbor bridges or random sampling. Boundary nodes are specific to their source way and segment.",
+    "tracks": "Only grade1/grade2 or explicit paved/solid gravel/compacted surface, excluding grade3-5 and explicit soft/rough surfaces. Unknown ungraded tracks excluded.",
+    "turn_restrictions": "Turn restrictions are retained in the source snapshot but not encoded in this edge-only exercise graph. One-way directions and access filtering are enforced. Routes require independent legal/operational validation."
+  },
+  "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "limitations": [
+    "Current OSM source, not IGN/CNIG or a historical incident road inventory; community coverage may be incomplete or incorrect.",
+    "Road class, surface and access tags do not certify fire-truck width, bearing capacity, gradients, turning space, bridge capacity or current legal/emergency access.",
+    "No live closures, gates, fire/smoke, traffic or dispatch data; no external calls during episodes. Operational use requires field verification.",
+    "Turn-restriction relations cannot be represented by the current graph contract and are not enforced; a graph route is not a legally validated road itinerary.",
+    "Conservative exclusions can fragment or remove real approaches. Disconnected components are omitted from the engine graph but retained in the minimized source snapshot. Weak connectivity does not guarantee directed reachability.",
+    "No fabricated geometry or off-network target connectors. A Euclidean road-access gap is not a drivable route.",
+    "Clipping can remove routes that leave and re-enter the bbox; source topology/grade separation is trusted without geometric repair.",
+    "Multi-tile API acquisition is not an atomic OSM snapshot. Raw tile hashes and acquisition windows are retained; the included minimized snapshot pins exact offline regeneration."
+  ],
+  "outputs": {
+    "network": {
+      "bytes": 2604364,
+      "file_sha256": "a09af571b7e83adeae4f02ffc5cb82f7fbf4050092605b88648de34ab0eaa165",
+      "path": "network.json",
+      "sha256": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16"
+    }
+  },
+  "preparation": {
+    "active_grid": {
+      "cell_size_m": 500,
+      "cols": 37,
+      "north": 4054500,
+      "rows": 36,
+      "west": 297000
+    },
+    "always_xy": true,
+    "canonical_json": "UTF-8, default ensure_ascii=true, sort_keys=true, separators=(comma,colon), allow_nan=false; SHA256 excludes only top-level sha256; file has a trailing LF",
+    "clip_bbox_wgs84": [
+      -5.345,
+      36.36,
+      -5.13,
+      36.625
+    ],
+    "coordinate_rounding_m": 0.1,
+    "crs": "EPSG:25830",
+    "geometry_simplification": "Douglas-Peucker in projected metres, maximum 2 m deviation, retaining graph endpoints; same-class/speed unbranched degree-two chains contracted without changing directed reachability. Retain the nearest original source vertex per source-way run and interior grid cell when within 150 m; protect such access nodes during contraction. Length recomputed on final geometry.",
+    "input_crs": "EPSG:4326",
+    "length_rounding_m": 0.001,
+    "proj_network_enabled": false,
+    "proj_version": "9.8.1",
+    "pyproj_version": "3.8.0",
+    "script": "eval/prepare_coastal_roads.py",
+    "script_sha256": "e16ccba4c1e21350ebcc02e950952165ecb5e352602ff49b9c815e05b3477f66"
+  },
+  "source": {
+    "attribution": "© OpenStreetMap contributors",
+    "license": "ODbL-1.0",
+    "name": "OpenStreetMap coastal Málaga extract",
+    "url": "https://www.openstreetmap.org/copyright"
+  },
+  "statistics": {
+    "accepted_ways_before_clipping": 4236,
+    "blocked_segments": 323,
+    "blocked_source_nodes": 655,
+    "compaction": {
+      "contracted_degree_two_nodes": 771,
+      "vertices_after_simplification": 60441,
+      "vertices_before_simplification": 106066
+    },
+    "component_filter": {
+      "excluded_disconnected_components": 182,
+      "excluded_disconnected_directed_edges": 1834,
+      "excluded_disconnected_nodes": 1068,
+      "source_weak_components": 183
+    },
+    "directed_edges": 8878,
+    "excluded_ways": {
+      "ambiguous_track_surface": 1211,
+      "conditional_or_directional_access": 3,
+      "ford": 21,
+      "non_motor_or_unsupported_class": 2658,
+      "poor_smoothness": 27,
+      "private_or_parking_service_class": 610,
+      "restricted_hgv_access": 1,
+      "restricted_motor_access": 232,
+      "rough_track_grade": 93,
+      "rough_track_surface": 12,
+      "unevaluated_vehicle_dimensions": 27
+    },
+    "nodes": 4298,
+    "road_class_arc_counts": {
+      "living_street": 136,
+      "motorway": 20,
+      "motorway_link": 30,
+      "residential": 4505,
+      "secondary": 567,
+      "secondary_link": 32,
+      "service": 1396,
+      "tertiary": 1012,
+      "tertiary_link": 26,
+      "track": 330,
+      "trunk": 100,
+      "trunk_link": 49,
+      "unclassified": 675
+    },
+    "source_highway_ways": 9131
+  },
+  "version": "coastal-road-provenance-v1"
+}
