@@ -6,6 +6,13 @@ probes are unchanged. Eight families each contribute 80 training, 20 validation
 and 20 test groups: **1,280 / 320 / 320 tasks** overall. Two wording/seed variants
 per group are repetitions, not independent historical incidents.
 
+Historical anchor: **Sierra Bermeja, Málaga, 8 September 2021**.
+Random-number design seed: **`20261026`**; case seeds:
+`82000000 + 2 * zero_based_catalog_group_index + variant` (variant 0 or 1).
+These are different meanings of “seed”; see [source context](source_context.json)
+and the [dataset card](../../DATASET_CARD.md). Randomized cases still use one
+regional landscape, not a geographically diverse incident dataset.
+
 The sampler independently draws ignition offsets/times, five wind vectors,
 report delays, duplicate bursts, resource holds, second-base engine holds,
 request delays, readback mismatch, broadcast delay/failure and wind-shift timing.
@@ -83,6 +90,8 @@ Five wind vectors are synthetic model-unit perturbations, not additional measure
 weather. New regions/population layouts require aligned source packs; daytime
 aviation, larger fleets and longer horizons need separate mechanics/acceptance.
 Do not scale all of these at once or relabel generated calls as historical data.
+The [long-session strategy](../../docs/long-sessions.html) proposes a separate
+six-hour pilot; existing two-hour cases and scores are not modified.
 
 The 80% population / 20% terrain reward is unchanged. Issue #27 remains open;
 more tasks do not resolve reward sensitivity or establish firefighting realism.

@@ -47,6 +47,21 @@ class ExpansionTests(unittest.TestCase):
             self.assertEqual(Counter(group['family'] for group in catalog['groups'] if group['split'] == split),
                              {family: count for family in FAMILIES})
 
+    def test_documented_historical_anchor_and_seeds_match_sources(self):
+        import json
+        from envs.wildfire_response.regional.expansion.catalog import DESIGN_SEED
+        root = Path(__file__).resolve().parents[1]
+        context = json.loads((root / 'data/synthetic_expansion_v1/source_context.json').read_text())
+        lock = json.loads((root / 'data/synthetic_expansion_v1/catalog_lock.json').read_text())
+        evidence = json.loads((root / 'data/malaga_2021/claims.json').read_text())
+        detection = next(record for record in evidence['records'] if record['id'] == 'technical-detection')
+        self.assertEqual(context['historical_anchor']['start_date_local'], detection['event_local'][:10])
+        self.assertEqual(context['randomization']['design_seed'], DESIGN_SEED)
+        self.assertEqual(context['randomization']['catalog_sha256'], lock['catalog_sha256'])
+        for index, group in enumerate(self.catalog['groups']):
+            for case in group['cases']:
+                self.assertEqual(case['seed'], 82000000 + index * 2 + case['variant'])
+
     def test_deterministic_defensive_copy_and_public_privacy(self):
         original = copy.deepcopy(self.catalog)
         returned = build_catalog(self.prepared, self.domain)
