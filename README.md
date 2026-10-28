@@ -18,7 +18,7 @@ state. It can inspect reports and routes, check draft actions, commit resource a
 protection orders, request status, and wait for new information. Orders and status
 requests take a minute; waiting stops early for actionable events or deadlines.
 
-Its twenty development cases span six families, including separately versioned
+Its twenty fixture development cases span six families, including separately versioned
 finite-shift, withdrawal, crew-access and relocation exercises. They use a
 synthetic fixture, not
 historical incident replays or a held-out evaluation set. The separate, frozen
@@ -29,6 +29,11 @@ incident-day run. See [incident-day](docs/incident-day.md),
 [benchmark](data/benchmark_v1/README.md) and [coastal mobility](docs/mobility.md).
 
 ## Score and limits
+
+Six additional `incident-day-realmap-v1-*` exercises require the pinned estimated
+map pack. They use synthetic incident sectors and temporary posts on cached road
+geometry, with crews traveling to work and returning. They do not reconstruct
+historical deployments. See the [real-map guide](docs/incident-day.md).
 
 At completion, the day reward is `0.8 × newly protected population fraction +
 0.2 × fraction of remaining burnable cells not newly burned`. Inherited exposure

@@ -1,6 +1,6 @@
 """Public incident-day API."""
 from envs.wildfire_response.incident_day import IncidentDayEnv, VERSION
-from envs.wildfire_response.incident_day.scenarios import ALL_CASE_IDS, CALIBRATED_CASE_IDS, CASE_IDS, EGRESS_CASE_IDS, COVERAGE_CASE_IDS, COVERAGE_VARIANT_IDS, fixture_inputs
+from envs.wildfire_response.incident_day.scenarios import ALL_CASE_IDS, CALIBRATED_CASE_IDS, CASE_IDS, EGRESS_CASE_IDS, COVERAGE_CASE_IDS, COVERAGE_VARIANT_IDS, REAL_MAP_CASE_IDS, fixture_inputs
 from envs.wildfire_response.incident_day.agent import IncidentDayTools, tools
 
-__all__ = ['IncidentDayEnv', 'VERSION', 'CASE_IDS', 'CALIBRATED_CASE_IDS', 'EGRESS_CASE_IDS', 'COVERAGE_CASE_IDS', 'COVERAGE_VARIANT_IDS', 'ALL_CASE_IDS', 'fixture_inputs', 'IncidentDayTools', 'tools']
+__all__ = ['IncidentDayEnv', 'VERSION', 'CASE_IDS', 'CALIBRATED_CASE_IDS', 'EGRESS_CASE_IDS', 'COVERAGE_CASE_IDS', 'COVERAGE_VARIANT_IDS', 'REAL_MAP_CASE_IDS', 'ALL_CASE_IDS', 'fixture_inputs', 'IncidentDayTools', 'tools']

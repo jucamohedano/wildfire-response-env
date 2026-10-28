@@ -16,7 +16,7 @@ def counterfactual_case(env):
     scenario = env._scenario
     family = scenario['family']
     burning = env._burning()
-    center = [env.inputs['grid']['width'] // 2, env.inputs['grid']['height'] // 2]
+    center = scenario.get('sector_grid', [env.inputs['grid']['width'] // 2, env.inputs['grid']['height'] // 2])
     events = scenario['events']
     details = {}
     demonstrated = False
@@ -151,7 +151,7 @@ def counterfactual_case(env):
 
 
 def static_case(scenario, inputs, network, burning, bounds, land_mask=None):
-    center = [inputs['grid']['width'] // 2, inputs['grid']['height'] // 2]
+    center = scenario.get('sector_grid', [inputs['grid']['width'] // 2, inputs['grid']['height'] // 2])
     findings = []
     resources = []
     for unit in scenario['resources']:
@@ -288,7 +288,7 @@ def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), 
                 findings.append(finding('work_outside_duty', 'Applied work after exercise duty exhausted.', minute, identifier))
             if unit['kind'] == 'aircraft':
                 lonlat = inputs['grid'].get('centre_lon_lat')
-                longitude, latitude = lonlat[inputs['grid']['height']//2][inputs['grid']['width']//2] if lonlat else (-5.15, 36.55)
+                longitude, latitude = lonlat[scenario.get('sector_grid', [inputs['grid']['width']//2, inputs['grid']['height']//2])[1]][scenario.get('sector_grid', [inputs['grid']['width']//2, inputs['grid']['height']//2])[0]] if lonlat else (-5.15, 36.55)
                 daylight = solar_daylight(datetime.fromisoformat(scenario['start_utc']) + timedelta(minutes=minute), longitude, latitude)
                 if not daylight or math.hypot(*record['wind']) > profile['aircraft_max_wind']:
                     findings.append(finding('air_work_outside_exercise_window', 'Aircraft work outside modeled daylight or wind window.', minute, identifier))

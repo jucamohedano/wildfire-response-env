@@ -267,6 +267,38 @@ Runtime and the corrected refill screen now both use `air_refill_minutes`.
 is empirically calibrated. The 80/20 reward and existing scenario identities are
 unchanged.
 
+## Source-specific ground exercises
+
+The six additive `incident-day-realmap-v1-000` through `005` cases require the
+estimated pack `50031b3029dcee0a1367ccdd8125d081d19d3b500b2dd373e30ef127d47a2c4d`
+and road graph `12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16`.
+They retain the full map, source masks, uncertain-land guard and existing speeds.
+
+These are new synthetic exercise placements. The incident uses source-known fuel
+around sector cell `[16, 28]`; temporary posts use actual mapped nodes
+`osm:n321315386` and `osm:n6119295366`. Posts sit within the active domain and
+outside the vehicle-exclusion radius. Source-pinned initial approaches and return
+routes are checked before compilation. Crews start at their posts and must
+travel and set up before work. Distinct synthetic population homes are retained;
+case 004 explicitly starts a cohort at the reception centre that later closes.
+
+No road connectors, new map data or historical bases are invented. Short walking
+legs still rely on declared terrain assumptions, and the existing graph does not
+enforce all turn restrictions globally. These cases do not approve historical
+fuel, field access or physical suppression. The earlier midpoint cases and their
+zero-ground-work reports remain unchanged rather than being silently resited.
+Fixture-only clients omit these map-specific IDs from task discovery.
+
+```sh
+python eval/check_incident_day_plausibility.py \
+  --inputs .runtime/estimated-incident-day-inputs-final.json \
+  --network data/coastal_mobility_v1/network.json --allow-unapproved-data \
+  --output /tmp/NEW-GROUND-RUN --wall-budget 600 \
+  --cases incident-day-realmap-v1-000 incident-day-realmap-v1-001 \
+          incident-day-realmap-v1-002 incident-day-realmap-v1-003 \
+          incident-day-realmap-v1-004 incident-day-realmap-v1-005
+```
+
 Run the separate six-case suite with:
 
 ```sh

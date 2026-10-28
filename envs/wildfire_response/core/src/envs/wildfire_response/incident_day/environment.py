@@ -127,6 +127,9 @@ class IncidentDayEnv:
                                       buffer_exited=journey['emergency_egress']['exited'])
         return value
 
+    def _sector(self):
+        return self._scenario.get('sector_grid', [self.fire.width // 2, self.fire.height // 2])[:]
+
     def _burning(self):
         return {(column, row) for row, cells in enumerate(self.fire.cells) for column, cell in enumerate(cells)
                 if self.fire.burning(cell)}
@@ -147,7 +150,7 @@ class IncidentDayEnv:
     def _calendar_daylight(self):
         current = datetime.fromisoformat(self._scenario['start_utc']) + timedelta(minutes=self.minute)
         centers = self.inputs['grid'].get('centre_lon_lat')
-        longitude, latitude = (centers[self.fire.height // 2][self.fire.width // 2] if centers else [-5.15, 36.55])
+        longitude, latitude = (centers[self._sector()[1]][self._sector()[0]] if centers else [-5.15, 36.55])
         return solar_daylight(current, longitude, latitude)
 
     def _daylight(self):
@@ -235,7 +238,7 @@ class IncidentDayEnv:
             access_restrictions=sorted(self._known_restrictions),
             protection_orders=[self._issued_orders[key] for key in sorted(self._issued_orders)],
             centers=self._scenario['centers'][:],
-            sectors=[dict(id='incident', center=[self.fire.width // 2, self.fire.height // 2])],
+            sectors=[dict(id='incident', center=self._sector())],
             input_approval=self.inputs['approval_status'],
             aircraft_operable=self._calendar_daylight() and math.hypot(*self._known_wind) <= 2.8
                 and self.minute >= self._known_air_unavailable_until,
@@ -256,7 +259,7 @@ class IncidentDayEnv:
         unit = self._known_resources.get(resource_id)
         if unit is None or sector_id != 'incident':
             raise ValueError('Choose a public resource and sector')
-        target = [self.fire.width // 2, self.fire.height // 2]
+        target = self._sector()
         known_fire = {point for point, cell in self._memory.items() if cell['burning']}
         if unit['kind'] == 'aircraft':
             target_native = native(self.inputs, target)
@@ -565,7 +568,7 @@ class IncidentDayEnv:
                 if unit['kind'] == 'aircraft':
                     self.ops.clear_aircraft(unit['id'], self.minute)
                 accepted = self.ops.dispatch(unit['id'], offer['sector_id'],
-                    [self.fire.width // 2, self.fire.height // 2], approach['journey'], self.minute)
+                    self._sector(), approach['journey'], self.minute)
                 self._emit(unit['home_base'], 'dispatch_accepted' if accepted else 'dispatch_declined', dict(resource_id=unit['id']))
             elif command['kind'] == 'release':
                 unit = self.ops.resources[data]
@@ -587,7 +590,7 @@ class IncidentDayEnv:
         if kind == 'aircraft':
             return True
         point = grid_point(self.inputs, position)
-        if kind in self._restrictions and math.dist(point, [self.fire.width // 2, self.fire.height // 2]) <= 5:
+        if kind in self._restrictions and math.dist(point, self._sector()) <= 5:
             return False
         return self.router.safe_position(position, self._burning(), list(self.fire.wind),
                                          mode='crew' if kind in ('crew', 'group') else 'engine')
@@ -596,10 +599,10 @@ class IncidentDayEnv:
         if kind not in restrictions:
             return set()
         return {(column, row) for row in range(self.fire.height) for column in range(self.fire.width)
-                if math.dist([column, row], [self.fire.width // 2, self.fire.height // 2]) <= 5}
+                if math.dist([column, row], self._sector()) <= 5}
 
     def _access_effect(self, event):
-        target = [self.fire.width // 2, self.fire.height // 2]
+        target = self._sector()
         effects = []
         for unit in self.ops.resources.values():
             if (unit['kind'] != event['resource_kind'] or unit['available_at'] > self.minute

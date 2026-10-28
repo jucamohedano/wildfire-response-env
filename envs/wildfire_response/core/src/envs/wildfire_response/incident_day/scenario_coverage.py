@@ -35,7 +35,7 @@ def _access(event, scenario, inputs, audit, reports, queries, snapshot):
                 and query['minute'] >= received and query['arguments'].get('resource_id') in affected
                 and query.get('public_route_summary', {}).get('option_count') == 0]
     units = {unit['id']: unit for unit in scenario['resources']}
-    center = [inputs['grid']['width'] // 2, inputs['grid']['height'] // 2]
+    center = scenario.get('sector_grid', [inputs['grid']['width'] // 2, inputs['grid']['height'] // 2])
     crew_work, forbidden_work = [], []
     for record in audit[event['minute']:]:
         for work in record['applied_work']:

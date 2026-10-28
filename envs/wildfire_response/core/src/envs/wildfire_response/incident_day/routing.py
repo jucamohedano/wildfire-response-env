@@ -66,6 +66,23 @@ class HazardRouter:
                                             or any(mode not in ('engine', 'crew') for mode in modes)):
                 raise ValueError('allowed_modes must be a list of engine and/or crew')
         self._cached_options = lru_cache(maxsize=128)(self._plan)
+        self._cached_origins = lru_cache(maxsize=256)(self._find_origins)
+        self._origin_tiles, self._origin_wide = {}, []
+        ordinal = 0
+        for identifier, edge in self.network.edges.items():
+            for index, (first, second) in enumerate(zip(edge['coordinates'], edge['coordinates'][1:])):
+                entry = (ordinal, identifier, index)
+                ordinal += 1
+                left, right = (math.floor((min(first[0], second[0]) - ORIGIN_TOLERANCE_M) / 500),
+                               math.floor((max(first[0], second[0]) + ORIGIN_TOLERANCE_M) / 500))
+                bottom, top = (math.floor((min(first[1], second[1]) - ORIGIN_TOLERANCE_M) / 500),
+                               math.floor((max(first[1], second[1]) + ORIGIN_TOLERANCE_M) / 500))
+                if (right - left + 1) * (top - bottom + 1) > 4096:
+                    self._origin_wide.append(entry)
+                else:
+                    for column in range(left, right + 1):
+                        for row in range(bottom, top + 1):
+                            self._origin_tiles.setdefault((column, row), []).append(entry)
 
     def _cell(self, position):
         return (math.floor((position[0] - self.transform[2]) / self.transform[0]),
@@ -224,27 +241,39 @@ class HazardRouter:
         return dict(safe=safe, egress_exited=exited) if metadata is not None else safe
 
     def _origins(self, origin, mode=None):
+        return copy.deepcopy(self._cached_origins(tuple(origin), mode))
+
+    def _find_origins(self, origin, mode=None, use_index=True):
+        origin = list(origin)
         nodes = sorted(identifier for identifier, position in self.network.nodes.items()
                        if math.dist(origin, position) <= ORIGIN_TOLERANCE_M)
         if nodes:
             return [(nodes[0], [])] if len(nodes) == 1 else []
         matches = []
-        for identifier, edge in self.network.edges.items():
+        if use_index:
+            tile = (math.floor(origin[0] / 500), math.floor(origin[1] / 500))
+            segments = [(identifier, index) for unused, identifier, index in sorted(
+                self._origin_tiles.get(tile, []) + self._origin_wide)]
+        else:
+            segments = [(identifier, index) for identifier, edge in self.network.edges.items()
+                        for index in range(len(edge['coordinates']) - 1)]
+        for identifier, index in segments:
+            edge = self.network.edges[identifier]
             if mode is not None and not self._edge_allowed(edge, mode):
                 continue
             coordinates = edge['coordinates']
-            for index, (first, second) in enumerate(zip(coordinates, coordinates[1:])):
-                vector = [second[axis] - first[axis] for axis in range(2)]
-                squared = sum(value * value for value in vector)
-                if not squared:
-                    continue
-                fraction = max(0, min(1, sum((origin[axis] - first[axis]) * vector[axis]
-                                              for axis in range(2)) / squared))
-                projection = [first[axis] + fraction * vector[axis] for axis in range(2)]
-                gap = math.dist(origin, projection)
-                if gap <= ORIGIN_TOLERANCE_M:
-                    suffix = [origin[:], *copy.deepcopy(coordinates[index + 1:])]
-                    matches.append((gap, identifier, edge, suffix))
+            first, second = coordinates[index], coordinates[index + 1]
+            vector = [second[axis] - first[axis] for axis in range(2)]
+            squared = sum(value * value for value in vector)
+            if not squared:
+                continue
+            fraction = max(0, min(1, sum((origin[axis] - first[axis]) * vector[axis]
+                                          for axis in range(2)) / squared))
+            projection = [first[axis] + fraction * vector[axis] for axis in range(2)]
+            gap = math.dist(origin, projection)
+            if gap <= ORIGIN_TOLERANCE_M:
+                suffix = [origin[:], *copy.deepcopy(coordinates[index + 1:])]
+                matches.append((gap, identifier, edge, suffix))
         if not matches:
             return []
         gap, identifier, edge, suffix = min(matches, key=lambda match: (match[0], match[1]))
@@ -387,9 +416,22 @@ class HazardRouter:
                 return self._egress_options(origin, tuple(target_grid), mode, key_burning,
                                             tuple(wind), revision, limit, hazards, excluded,
                                             tuple(target_metric))
-        return copy.deepcopy(self._cached_options(tuple(origin), tuple(target_grid), mode,
-            key_burning, tuple(wind), revision, limit, hazards, tuple(sorted(excluded)),
+        result = copy.deepcopy(self._cached_options(tuple(origin), tuple(target_grid), mode,
+            key_burning, tuple(wind), 0, 32, hazards, tuple(sorted(excluded)),
             tuple(target_metric) if target_metric is not None else None))
+        if revision:
+            for option in result['options']:
+                identity = dict(network=self.network.sha256, origin=tuple(origin), target=tuple(target_grid),
+                    mode=mode, burning=key_burning, wind=tuple(wind), excluded=tuple(sorted(excluded)),
+                    revision=revision, node=option['journey']['access_node'],
+                    cell=tuple(option['approach_grid']), destination=option['approach_point'],
+                    edges=[leg['edge_id'] for leg in option['journey']['legs']])
+                option['id'] = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()[:20]
+                option['knowledge_revision'] = revision
+            result['options'].sort(key=lambda option: (math.dist(option['approach_grid'], target_grid),
+                                                        option['travel_minutes'], option['id']))
+        result['options'] = result['options'][:limit]
+        return result
 
     def _egress_options(self, origin, target, mode, burning, wind, revision, limit,
                         hazards, excluded, target_metric):
