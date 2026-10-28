@@ -108,8 +108,15 @@ is supported. No checkpoint or private evaluator endpoint is exposed.
 
 For a Linux-host-network local container, build with
 `docker build -f envs/wildfire_response/openenv/Dockerfile.incident-day -t wildfire-day .`
-and run `docker run --rm --network host wildfire-day`. The image has not been
-executed where Docker is unavailable; the Python server/client are tested.
+and run `docker run --rm --network host wildfire-day`.
+`python eval/check_incident_day_container.py --output /tmp/NEW-CONTAINER.json`
+builds a digest-pinned base revision and checks the installed image through an
+external Python client. Both coverage variants complete a day with exact public
+step/reward parity against independently verified local episodes. The bounded
+GitHub job runs as a non-root user with a read-only filesystem and resource limits,
+then removes the test container. See `results/incident-day-container-20261028.json`
+for the actual image identity and CI link. This verifies the synthetic fixture,
+not real-source approval, other platforms, the legacy adapter or publication.
 
 Passing a fresh `artifact_dir` to the core streams public observation/action and
 query JSONL alongside a separate restricted `private/audit.jsonl`. Hourly gzip
@@ -237,6 +244,28 @@ Run the current acceptance suite with
 The `--cases` option still selects explicit earlier suites. Targeted partial
 selections remain incomplete suite reports even when their selected episodes
 finish and verify.
+
+## Calibration and source-pack readiness
+
+The [evidence ledger](../data/incident_day_v2/calibration/operational-evidence.md)
+and [data audit](../data/incident_day_v2/readiness/README.md) separate source
+identity, opt-in estimated exercises and operational validation. The cached
+weather clock is resolved; it is not a conversion from station m/s to model wind
+units. Detection-to-arrival records and aircraft specifications provide limited
+context, not setup, duty, suppression or flight-safety calibration.
+
+The actual estimated-map six-case run completes and replays, but has no applied
+ground work and lacks several intended family effects. Its current ground bases
+and bounded route candidates do not establish usable access. Retained display
+roads omit node-access metadata and cannot simply be relabeled as routing data.
+The smaller 20-by-26 candidate with fewer uncertain cells fails the existing
+minimum 24-by-24 scenario contract. The 80 estimates and 27 unresolved land/water
+centres remain visible; default source rejection and the censor guard stay active.
+
+Runtime and the corrected refill screen now both use `air_refill_minutes`.
+`aircraft_refill_minutes` remains a legacy compatibility field; neither setting
+is empirically calibrated. The 80/20 reward and existing scenario identities are
+unchanged.
 
 Run the separate six-case suite with:
 

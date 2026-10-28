@@ -9,11 +9,21 @@
   "runnable_data": {
     "kind": "fully_synthetic_development_fixture",
     "builder": "envs.wildfire_response.incident_day.scenarios.fixture_inputs",
-    "default_grid_cells": [32, 32],
+    "default_grid_cells": [
+      32,
+      32
+    ],
     "cell_metres": 500,
     "terrain_and_roads": "Synthetic complete elevations, fuel and directed road lattice; not a measured location",
     "warm_start_minutes": 60,
-    "development_seeds": [2844000, 2844001, 2844002, 2844003, 2844004, 2844005],
+    "development_seeds": [
+      2844000,
+      2844001,
+      2844002,
+      2844003,
+      2844004,
+      2844005
+    ],
     "start_utc": "2021-09-09T04:00:00Z",
     "horizon_minutes": 1440,
     "demonstrations": false,
@@ -23,7 +33,10 @@
     "approval": "blocked",
     "prepared_inputs_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
     "topographic_inputs_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
-    "cropped_grid_cells": [37, 36],
+    "cropped_grid_cells": [
+      37,
+      36
+    ],
     "unknown_fuel_cells": 80,
     "source_masked_pixels": 78,
     "outside_source_coverage": 2,
@@ -70,5 +83,17 @@
     "private_report_sha256": "9f7df7e0f715b226206581ab7ce4f403f3ec9b4b8b9d89e667c10d2472494aae",
     "expert_validation": false
   },
-  "publication": "Not included; source licensing and operational fidelity remain separate gates"
+  "publication": "Not included; source licensing and operational fidelity remain separate gates",
+  "readiness_review_20261028": {
+    "report": "data/incident_day_v2/readiness/readiness-v1.json",
+    "report_file_sha256": "d3c4c2fa7c19cdb52049dd192381c658317c9d745ed3354194c0cd34371f0dbe",
+    "operational_evidence": "data/incident_day_v2/calibration/operational-evidence-v1.json",
+    "container_report": "results/incident-day-container-20261028.json",
+    "container_ci_run": "https://github.com/jucamohedano/wildfire-response-env/actions/runs/40752171786",
+    "weather_clock": "All 384 normalized source timestamps and eight midnight rollovers verified against retained provider/chart/manual bytes; interval semantics, receipt and fire-front representativeness remain unverified.",
+    "estimated_source_experiment": "Six current-core 1440-minute cases complete and replay with unchanged source masks and explicit unapproved-data opt-in. No ground suppression occurs; family coverage is not established.",
+    "source_approval_changed": false,
+    "physical_calibration_established": false,
+    "no_new_heavy_map_acquisition": true
+  }
 }
