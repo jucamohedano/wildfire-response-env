@@ -1,0 +1,34 @@
+{
+  "version": "wildfire-imagery-gap-fill-v1",
+  "scope": "Display-only imagery repair; no elevation, simulation or route changes",
+  "observed_source_artifacts": [
+    {
+      "url": "https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/14/7959/9973.jpeg",
+      "sha256": "68322a1b25284107258a6a78e60c50b433b2be353153ecb292fa599f861cf583",
+      "observation": "Large near-black and dark-purple rectangular regions in the source JPEG"
+    },
+    {
+      "url": "https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/14/7962/9972.jpeg",
+      "sha256": "77fd803ad5d7f56409984de851eb980d7875408c0baf0925f4949af418381dfb",
+      "observation": "Uniform dark-purple source tile"
+    },
+    {
+      "url": "https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/13/3979/4986.jpeg",
+      "sha256": "39cc7baa2893d0d90fe5cb43baeadc5c80a6a77128aaa2a6200490648640cdb3",
+      "observation": "Lower-resolution imagery exists for the corresponding area"
+    },
+    {
+      "url": "https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/13/3981/4986.jpeg",
+      "sha256": "175bdbf9867dceb6fb1717d750a170bb2cdf85d51b48102edbc674ea26d94468",
+      "observation": "Lower-resolution imagery exists for the corresponding area"
+    }
+  ],
+  "policy": {
+    "detection": "Large connected near-black or dark-purple areas only where the terrain support mask is uncertain; this is a conservative visual heuristic, not official NoData semantics.",
+    "fallback": "Geographically registered lower-resolution IGN imagery; OpenStreetMap cartography only if lower-resolution imagery is also unavailable.",
+    "color": "Local color matching uses surrounding imagery and affects filled pixels only.",
+    "uncertainty": "Unsupported elevation remains unknown. The imagery fill does not classify water, assign a height or alter simulation data.",
+    "attribution": "IGN PNOA / Sentinel-2 and © OpenStreetMap contributors, ODbL 1.0"
+  },
+  "validation": "Visual iteration; tests deferred at user request"
+}

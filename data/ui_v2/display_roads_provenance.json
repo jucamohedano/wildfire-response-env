@@ -1,0 +1,396 @@
+{
+  "acquisition": {
+    "bundle": {
+      "bytes": 7846625,
+      "gzip_bytes": 1133663,
+      "gzip_sha256": "d6e1dac8bc97190f469e31736e6600e0020105aba43a70c716d3628225b8e401",
+      "path": "display-roads-source.json.gz",
+      "sha256": "4478f1295ee525bf1a6e6e56b8092d778894bdb046745f733b25963afb890ddf"
+    },
+    "completed_at": "2026-10-28T11:27:30Z",
+    "files": [
+      {
+        "bbox_wgs84": [
+          -5.26993,
+          36.452281,
+          -5.2171685,
+          36.493758
+        ],
+        "bytes": 922911,
+        "element_count": 5220,
+        "gzip_bytes": 81887,
+        "requested_at": "2026-10-28T11:27:13Z",
+        "retrieved_at": "2026-10-28T11:27:14Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:14 GMT",
+        "sha256": "16991ea8dca9e830ac5139be275f227cd28236480d96c1afd11d4c08b95753bf",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.26993,36.452281,-5.2171685,36.493758"
+      },
+      {
+        "bbox_wgs84": [
+          -5.26993,
+          36.493758,
+          -5.2171685,
+          36.535235
+        ],
+        "bytes": 992615,
+        "element_count": 5498,
+        "gzip_bytes": 88438,
+        "requested_at": "2026-10-28T11:27:14Z",
+        "retrieved_at": "2026-10-28T11:27:15Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:15 GMT",
+        "sha256": "e2dd0e34c3ee3564e53722fee7ea896e35e1dd3ae85f72bcc3bee32439900e90",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.26993,36.493758,-5.2171685,36.535235"
+      },
+      {
+        "bbox_wgs84": [
+          -5.26993,
+          36.535235,
+          -5.2171685,
+          36.576712
+        ],
+        "bytes": 2469718,
+        "element_count": 13378,
+        "gzip_bytes": 220865,
+        "requested_at": "2026-10-28T11:27:15Z",
+        "retrieved_at": "2026-10-28T11:27:16Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:16 GMT",
+        "sha256": "57f52985c6adbc3d5fbfcc72e408e0ad09829bae43a283061ce99b7825b71dd1",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.26993,36.535235,-5.2171685,36.576712"
+      },
+      {
+        "bbox_wgs84": [
+          -5.26993,
+          36.576712,
+          -5.2171685,
+          36.618189
+        ],
+        "bytes": 2174255,
+        "element_count": 11385,
+        "gzip_bytes": 187633,
+        "requested_at": "2026-10-28T11:27:16Z",
+        "retrieved_at": "2026-10-28T11:27:17Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:17 GMT",
+        "sha256": "3aba8df38097fe309b47103da9fd4561c2ec9f4d647eb9a0f50d745462d81d2e",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.26993,36.576712,-5.2171685,36.618189"
+      },
+      {
+        "bbox_wgs84": [
+          -5.2171685,
+          36.452281,
+          -5.164407,
+          36.493758
+        ],
+        "bytes": 980629,
+        "element_count": 5347,
+        "gzip_bytes": 96280,
+        "requested_at": "2026-10-28T11:27:17Z",
+        "retrieved_at": "2026-10-28T11:27:18Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:18 GMT",
+        "sha256": "eda0d11c37700b74e1c15d7c583d34a521e1a7af7b01bbf72beebfedf70ebd67",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.2171685,36.452281,-5.164407,36.493758"
+      },
+      {
+        "bbox_wgs84": [
+          -5.2171685,
+          36.493758,
+          -5.164407,
+          36.535235
+        ],
+        "bytes": 1117386,
+        "element_count": 6216,
+        "gzip_bytes": 107709,
+        "requested_at": "2026-10-28T11:27:18Z",
+        "retrieved_at": "2026-10-28T11:27:19Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:19 GMT",
+        "sha256": "5ceb47ae66843bf64212fa7f527a5de58fa50fb0e84b33c92f635323b1894889",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.2171685,36.493758,-5.164407,36.535235"
+      },
+      {
+        "bbox_wgs84": [
+          -5.2171685,
+          36.535235,
+          -5.164407,
+          36.576712
+        ],
+        "bytes": 1857319,
+        "element_count": 10266,
+        "gzip_bytes": 163832,
+        "requested_at": "2026-10-28T11:27:19Z",
+        "retrieved_at": "2026-10-28T11:27:20Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:20 GMT",
+        "sha256": "c000b5145410924a3f68c2d44240b459ce50c21c819933dc0503c9b2da79e658",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.2171685,36.535235,-5.164407,36.576712"
+      },
+      {
+        "bbox_wgs84": [
+          -5.2171685,
+          36.576712,
+          -5.164407,
+          36.618189
+        ],
+        "bytes": 3299133,
+        "element_count": 18384,
+        "gzip_bytes": 265927,
+        "requested_at": "2026-10-28T11:27:20Z",
+        "retrieved_at": "2026-10-28T11:27:21Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:21 GMT",
+        "sha256": "bf1fdd33b4ef887e57fe62178be278ba831de75f533ef7eaf2409541a97802f9",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.2171685,36.576712,-5.164407,36.618189"
+      },
+      {
+        "bbox_wgs84": [
+          -5.164407,
+          36.452281,
+          -5.1116455,
+          36.493758
+        ],
+        "bytes": 2177695,
+        "element_count": 10928,
+        "gzip_bytes": 200041,
+        "requested_at": "2026-10-28T11:27:21Z",
+        "retrieved_at": "2026-10-28T11:27:22Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:22 GMT",
+        "sha256": "d73cb280d22d870eff49f4b986573687e97fbe2aa99a01d78efbfbf71b94ec0e",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.164407,36.452281,-5.1116455,36.493758"
+      },
+      {
+        "bbox_wgs84": [
+          -5.164407,
+          36.493758,
+          -5.1116455,
+          36.535235
+        ],
+        "bytes": 928283,
+        "element_count": 5108,
+        "gzip_bytes": 89200,
+        "requested_at": "2026-10-28T11:27:22Z",
+        "retrieved_at": "2026-10-28T11:27:23Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:23 GMT",
+        "sha256": "c988681f9a9c7207e01576163d381c71e1995b1b42b0214a243446bcaf18fc7d",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.164407,36.493758,-5.1116455,36.535235"
+      },
+      {
+        "bbox_wgs84": [
+          -5.164407,
+          36.535235,
+          -5.1116455,
+          36.576712
+        ],
+        "bytes": 944935,
+        "element_count": 5182,
+        "gzip_bytes": 84359,
+        "requested_at": "2026-10-28T11:27:23Z",
+        "retrieved_at": "2026-10-28T11:27:24Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:24 GMT",
+        "sha256": "f6ae8bdf198b4866d411c6beed262c8235116a37bdcb8ec1971c243ed6807e4d",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.164407,36.535235,-5.1116455,36.576712"
+      },
+      {
+        "bbox_wgs84": [
+          -5.164407,
+          36.576712,
+          -5.1116455,
+          36.618189
+        ],
+        "bytes": 2336767,
+        "element_count": 12951,
+        "gzip_bytes": 202126,
+        "requested_at": "2026-10-28T11:27:24Z",
+        "retrieved_at": "2026-10-28T11:27:25Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:25 GMT",
+        "sha256": "ab44afab7b544de7a922c9da1e82f0b34e1284bcfe478e0b9cda651528220712",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.164407,36.576712,-5.1116455,36.618189"
+      },
+      {
+        "bbox_wgs84": [
+          -5.1116455,
+          36.452281,
+          -5.058884,
+          36.493758
+        ],
+        "bytes": 6250236,
+        "element_count": 32486,
+        "gzip_bytes": 533761,
+        "requested_at": "2026-10-28T11:27:25Z",
+        "retrieved_at": "2026-10-28T11:27:28Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:27 GMT",
+        "sha256": "4082dea935d6dfd441e2db02c8e59a9d3de0eb6fb9856e76bae2e797d7d12386",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.1116455,36.452281,-5.058884,36.493758"
+      },
+      {
+        "bbox_wgs84": [
+          -5.1116455,
+          36.493758,
+          -5.058884,
+          36.535235
+        ],
+        "bytes": 2333705,
+        "element_count": 13033,
+        "gzip_bytes": 199719,
+        "requested_at": "2026-10-28T11:27:28Z",
+        "retrieved_at": "2026-10-28T11:27:28Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:28 GMT",
+        "sha256": "1c0e1ec6aefff9309ea204caf1449b41b3ffc4eef8041d4b30ed0f159879a961",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.1116455,36.493758,-5.058884,36.535235"
+      },
+      {
+        "bbox_wgs84": [
+          -5.1116455,
+          36.535235,
+          -5.058884,
+          36.576712
+        ],
+        "bytes": 674117,
+        "element_count": 3673,
+        "gzip_bytes": 64256,
+        "requested_at": "2026-10-28T11:27:29Z",
+        "retrieved_at": "2026-10-28T11:27:29Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:29 GMT",
+        "sha256": "bd843c64889b21ee18e3479c70c263633251f03c559836f0dab96b3c26fa6a24",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.1116455,36.535235,-5.058884,36.576712"
+      },
+      {
+        "bbox_wgs84": [
+          -5.1116455,
+          36.576712,
+          -5.058884,
+          36.618189
+        ],
+        "bytes": 1213613,
+        "element_count": 6652,
+        "gzip_bytes": 111527,
+        "requested_at": "2026-10-28T11:27:30Z",
+        "retrieved_at": "2026-10-28T11:27:30Z",
+        "server_date": "Wed, 28 Oct 2026 11:27:30 GMT",
+        "sha256": "4bf4524e3158aa7b61a0e1d74efd7319284afa94a49554ed5b868b74a65030a3",
+        "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.1116455,36.576712,-5.058884,36.618189"
+      }
+    ],
+    "path": "data/ui_v2/snapshots/display-roads-manifest.json",
+    "prior_revision": "data/ui_v2/archive/20261027/manifest.json",
+    "sha256": "b21852b130cf02edebb15eab03c40d4b3ae4d8c805d11ee317233ccbbe9107d5",
+    "snapshot": "Portable normalized current-map derivative; not restoration of the lost original API cache.",
+    "started_at": "2026-10-28T11:27:13Z"
+  },
+  "contract": {
+    "access": "Most-specific motorcar > motor_vehicle > vehicle > access determines tagged restrictions; specific permission can override a broader restriction. Limited, conditional, directional, dimension or HGV restrictions mark restricted context. Even explicit positive OSM access tags remain unknown: no access, vehicle suitability or live availability is verified.",
+    "asset_url": "/assets/map-roads-v2.json",
+    "canonical_sha256": "json.dumps(payload_without_sha256, sort_keys=True, separators=(comma,colon), allow_nan=False), default ensure_ascii=True, UTF-8; file has trailing LF.",
+    "class_mapping": {
+      "bridleway": "path",
+      "busway": "local",
+      "cycleway": "path",
+      "footway": "path",
+      "living_street": "local",
+      "motorway": "major",
+      "motorway_link": "major",
+      "path": "path",
+      "pedestrian": "path",
+      "primary": "major",
+      "primary_link": "major",
+      "residential": "local",
+      "road": "local",
+      "secondary": "major",
+      "secondary_link": "major",
+      "service": "local",
+      "steps": "path",
+      "tertiary": "major",
+      "tertiary_link": "major",
+      "track": "track",
+      "trunk": "major",
+      "trunk_link": "major",
+      "unclassified": "local"
+    },
+    "geometry": "Area=yes and unsupported highway classes omitted; all supported intersecting line parts retained, including disconnected, restricted, track and non-motorized path context. No crossing noding, snapped junctions or network construction.",
+    "line_fields": {
+      "access": "unknown | restricted; no positive availability state",
+      "coordinates": "EPSG:25830 [easting,northing] projected metres",
+      "highway": "Original OSM highway class",
+      "id": "OSM way ID plus deterministic clipped part index; never a routing arc",
+      "kind": "major | local | track | path"
+    },
+    "suggested_palette": "Major roads cream; local roads subdued; tracks faint/dashed; paths thinner/dashed. Restricted and unknown access never indicate a drivable itinerary.",
+    "version": "wildfire-display-roads-v2"
+  },
+  "limitations": [
+    "Cartographic context only; not routing, physical road condition, fire-truck access, staffing or an availability claim.",
+    "Community source may be incomplete or inaccurate; the asset does not add missing roads or infer access across gates, fords or private land.",
+    "Road geometry date differs from the September 2021 exercise context; it does not reconstruct incident-time roads.",
+    "One-way rules, turn restrictions, gates, bridge/tunnel height and live closures are not modeled; geometric crossings are not connections.",
+    "No elevation, road width or new terrain is inferred. The frontend must clip/drape only against its independently validated terrain.",
+    "V1 road/cache/physics datasets are read-only; this file cannot substitute for the pinned v1 routing graph."
+  ],
+  "output": {
+    "bytes": 1086878,
+    "file_sha256": "dd17548c27dbbf0439c5610c679d4fa21baeb77d20ac93a870018127ff120ec3",
+    "path": "ui/public/assets/map-roads-v2.json",
+    "sha256": "772bec8285c0f2d67bb9cd049a27543afc47fe74fd114df758e531f79e155db3"
+  },
+  "preparation": {
+    "always_xy": true,
+    "clip_extent": [
+      297000,
+      4036500,
+      315500,
+      4054500
+    ],
+    "command": "PYTHONDONTWRITEBYTECODE=1 PROJ_NETWORK=OFF python eval/prepare_display_roads_v2.py",
+    "coordinate_rounding_metres": 0.1,
+    "crs": "EPSG:25830",
+    "deduplication": "Highest OSM element version wins by type/id; conflicting equal-version records fail closed.",
+    "duplicate_source_records": {
+      "node": 32255,
+      "way": 375
+    },
+    "execution": "Offline CPU only; verifies the pinned source and writes only the v2 display asset/provenance.",
+    "proj_network_enabled": false,
+    "proj_version": "9.8.1",
+    "pyproj_version": "3.8.0",
+    "script": "eval/prepare_display_roads_v2.py",
+    "script_sha256": "fc88b95c98ecf80aa314c040f52d84d241bbf77e1193c7cebb31321288bcb23d",
+    "simplification": "Projected Douglas-Peucker, unchanged clipped endpoints; closed-loop split retains a real opposite source vertex. No sampling or invented connectors.",
+    "simplification_metres": 3.0,
+    "source_crs": "EPSG:4326",
+    "source_loader": {
+      "script": "eval/display_road_snapshot.py",
+      "sha256": "88c2ff404801c8ea7e792a289adab91b9fdcd9833de96e2f60fb430d678e20f3"
+    }
+  },
+  "rights": {
+    "attribution": "Display \u00a9 OpenStreetMap contributors and link https://www.openstreetmap.org/copyright.",
+    "database_license": "ODbL-1.0",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "publication": "Local derivative database, not published by this preparation. Any public use/redistribution must retain attribution and licence notices and satisfy applicable ODbL derivative-database share-alike and database-availability obligations. This is not a blanket licence for unrelated imagery."
+  },
+  "role": "display_only_not_routing",
+  "source": {
+    "acquisition_date": "2026-10-28",
+    "attribution": "\u00a9 OpenStreetMap contributors",
+    "license": "ODbL-1.0",
+    "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "name": "OpenStreetMap current map API",
+    "revision": "display-road-source-20261028",
+    "temporal_scope": "Current, non-atomic API tile acquisition; not a 2021 historical reconstruction.",
+    "url": "https://www.openstreetmap.org/copyright"
+  },
+  "statistics": {
+    "access_counts": {
+      "restricted": 360,
+      "unknown": 2596
+    },
+    "intersecting_source_ways": 2931,
+    "intersecting_way_timestamp_max": "2026-10-21T12:20:23Z",
+    "intersecting_way_timestamp_min": "2009-12-08T14:15:26Z",
+    "kind_counts": {
+      "local": 1091,
+      "major": 118,
+      "path": 731,
+      "track": 1016
+    },
+    "lines": 2956,
+    "source_highway_ways": 2931,
+    "vertices": 37798,
+    "vertices_before_simplification": 81809
+  },
+  "version": "wildfire-display-roads-provenance-v2"
+}

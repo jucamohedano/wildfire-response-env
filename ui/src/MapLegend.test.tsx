@@ -1,6 +1,8 @@
 import {describe,it,expect} from 'vitest';
 import {renderToStaticMarkup} from 'react-dom/server';
 import MapLegend from './MapLegend';
+import {markerStyles} from './tacticalMarkersV2';
+import {glyphPaths} from './mapGlyphs';
 
 describe('plain-language map legend',()=>{
   it('explains operational symbols without artificial map boundaries or claiming an empty record means no fire',()=>{
@@ -22,5 +24,19 @@ describe('plain-language map legend',()=>{
     expect(html).toContain('Evaluator view');expect(html).toContain('Simulated heat');
     expect(html).toContain('1 burning cell · 1 burned cell without active heat.');
     expect(html).not.toContain('Fire seen recently');
+  });
+  it('calls the assumed assembly point a temporary response base, not a command post or verified station',()=>{
+    const html=renderToStaticMarkup(<MapLegend observation={{minute:0,sensor_memory:[],mobility:{version:'test',network_sha256:'test',telemetry_delay_minutes:1,basis:'synthetic'}}} world={null}/>);
+    expect(html).toContain('Temporary response base');
+    expect(html).toContain('Not a verified fire station, operations camp or incident command post');
+    expect(html).not.toContain('Exercise staging');
+  });
+  it('uses the actual v2 settlement and dashed-call silhouettes in the 3D legend',()=>{
+    const html=renderToStaticMarkup(<MapLegend observation={{minute:0,sensor_memory:[]}} world={null} tacticalWorld/>);
+    expect(html).toContain(markerStyles.settlement.badgePath);
+    expect(html).toContain('stroke-dasharray="3 2"');
+    expect(html).not.toContain(glyphPaths.claim);
+    expect(html).toContain('d="M16 3L30 28H2Z"');
+    expect(html).not.toContain('d="M16"');
   });
 });

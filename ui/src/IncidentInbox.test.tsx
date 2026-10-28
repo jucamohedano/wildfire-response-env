@@ -23,4 +23,16 @@ describe('incident updates and arrival timing',()=>{
     expect(renderToStaticMarkup(<ResourceTiming resource={resource} minute={8}/>)).toContain('10 minutes remaining');
     expect(renderToStaticMarkup(<ResourceTiming resource={resource} minute={20}/>)).toContain('awaiting status');
   });
+  it('shows an overdue routed ETA as awaiting an update in both views',()=>{
+    const resource={id:'engine',kind:'engine',state:'en_route',due_at:18,arrival_at:18,arrival_in_minutes:0,
+      movement:{distance_m:2200,direction:'outbound',observed_at:16,received_at:17,legs:[{mode:'road'}]}} as unknown as Resource;
+    for(const compact of [false,true]){
+      const html=renderToStaticMarkup(<ResourceTiming resource={resource} minute={20} compact={compact}/>);
+      expect(html).toContain('ETA 18 minutes passed · awaiting status update');
+      expect(html).not.toContain('0 minutes remaining');expect(html).not.toContain('Arrival progress: On scene');
+      expect(html).toContain('received at 17 minutes');
+    }
+    const exact=renderToStaticMarkup(<ResourceTiming resource={resource} minute={18} compact/>);
+    expect(exact).toContain('ETA 18 minutes reached · awaiting status update');expect(exact).not.toContain('0 minutes remaining');
+  });
 });

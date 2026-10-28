@@ -1,0 +1,44 @@
+{
+  "version": "wildfire-reference-map-appearance-v2.5",
+  "date": "2026-10-27",
+  "scope": "Map colors, decorative relief shading, source-image sharpness and road visibility only",
+  "palette": {
+    "default": "Illustrated relief",
+    "alternative": "Reference colors or Original colors",
+    "role": "Illustrative display styling, not vegetation, fuel, burn-state or historical imagery evidence",
+    "source_positions_alpha_and_dimensions_preserved": true,
+    "earth_midtone_strength": 1.55,
+    "mountain_gradient": "Continuous dark shading based on the validated 50-metre display-height mesh, increasing from 250 to 1300 metres; no change to elevation or terrain physics",
+    "illustrated_relief": "Source-hue-preserving brightness and illustrative directional highlights/neutral shadows calculated from the validated height mesh; does not add or move terrain, roads, settlements or vegetation",
+    "sharpening": "One-pixel capped luminance detail; no generated terrain, roads, buildings or vegetation"
+  },
+  "imagery": {
+    "provider": "IGN PNOA / Sentinel-2",
+    "panels": 4,
+    "panel_pixels": 1536,
+    "mosaic_pixels": 3072,
+    "maximum_concurrent_panels": 2,
+    "registration": "Accepted OpenLayers render-frame extent in EPSG:25830; crop source padding before stitching north-first",
+    "guards": "Reject stale-size frames, missing drawable canvases, fully transparent captures and empty cropped panels",
+    "fallback": "Cancel failed mosaic; use the existing registered single capture without claiming mosaic detail",
+    "actual_browser_result": "3072-pixel registered four-panel mosaic rendered successfully",
+    "limits": "More texture pixels do not establish a measured satellite ground resolution or reconstruct 2021 imagery; capture dates remain provider-dependent"
+  },
+  "roads": {
+    "asset": "ui/public/assets/map-roads-v2.json",
+    "provenance": "data/ui_v2/display_roads_provenance.json",
+    "role": "display_only_not_routing",
+    "source": "Portable normalized OSM snapshot acquired 2026-10-28 from 16 bounded current-map requests; same displayed road geometry as the archived 2026-10-27 revision",
+    "lines": 2956,
+    "vertices": 37798,
+    "toggle": "Roads",
+    "style": "Brighter cream main roads and warm local roads with contrasting outlines, weaker dashed tracks/paths; exaggerated widths are visual emphasis, not measurements",
+    "does_not_change": ["Vehicle access", "Agent route options", "Travel times", "Fire physics", "Resource policies"]
+  },
+  "validation": {
+    "status": "Visual iteration in progress; tests deferred at user request",
+    "previous_version": "Earlier frontend checks are not a validation of the new visual styling"
+  },
+  "committed": false,
+  "published": false
+}

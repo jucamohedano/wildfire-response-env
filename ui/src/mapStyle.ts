@@ -11,11 +11,14 @@ function label(text:string,offsetY=-25){
 
 export function featureStyle(feature:Feature,narrow=false,resolution=0,tactical=true):Style|Style[]|undefined {
   const kind=feature.get('kind') as string;
+  if(kind==='route')return resolution<=1500?new Style({stroke:new Stroke({color:feature.get('mode')==='flight'?'rgba(144,207,244,.85)':'rgba(255,200,81,.9)',width:2.5,lineDash:feature.get('mode')==='walk'?[2,5]:[8,5]}),zIndex:2}):undefined;
+  if(kind==='town')return resolution<=1800?new Style({text:label(feature.get('label'),0),zIndex:1}):undefined;
+  if(kind==='base'&&resolution>300)return resolution<=1800?new Style({image:new CircleStyle({radius:5,fill:new Fill({color:'#e6caa0'}),stroke:new Stroke({color:'#183129',width:2})}),text:label(feature.get('label')),zIndex:5}):undefined;
   if(resolution>300&&kind!=='locator')return undefined;
   if(kind==='locator')return resolution>300?new Style({image:new CircleStyle({radius:6,fill:new Fill({color:'#e88048'}),stroke:new Stroke({color:'#fff',width:2}),declutterMode:'none'}),text:label('Incident area'),zIndex:10}):undefined;
   if(kind==='grid')return new Style({stroke:new Stroke({color:'rgba(38,51,36,.5)',width:.8})});
   if(kind==='burned')return new Style({fill:new Fill({color:`rgba(48,34,31,${.28+.52*(feature.get('burned') as number)})`}),zIndex:1});
-  const glyph:GlyphKind|undefined=kind==='arrival-target'?'arrival':kind==='unit'?(feature.get('resourceKind')==='engine'?'truck':'unit'):['fire','stale','claim','population','refuge','exposed'].includes(kind)?kind as GlyphKind:undefined;
+  const glyph:GlyphKind|undefined=kind==='base'?'base':kind==='arrival-target'?'arrival':kind==='unit'||kind==='vehicle'?(feature.get('resourceKind')==='engine'?'truck':feature.get('resourceKind')==='aircraft'?'plane':'unit'):['fire','stale','claim','population','refuge','exposed'].includes(kind)?kind as GlyphKind:undefined;
   if(glyph&&(kind!=='fire'||feature.get('heat')===null)){
     const renderer:NonNullable<ConstructorParameters<typeof Style>[0]>['renderer']=(coordinates,state)=>{
       const point=coordinates as number[],context=state.context,ratio=state.pixelRatio;
@@ -24,6 +27,7 @@ export function featureStyle(feature:Feature,narrow=false,resolution=0,tactical=
       const symbolScale=tactical?(narrow?.7:.85):.55;context.scale(symbolScale,symbolScale);context.translate(-20,-20);
       context.fillStyle='#10291f';context.strokeStyle=glyphColors[glyph];context.lineWidth=1.6;
       context.beginPath();context.roundRect(2,2,36,36,9);context.fill();context.stroke();context.translate(4,4);
+      if(glyph==='plane'){context.translate(16,16);context.rotate((feature.get('heading') as number|undefined)??0);context.translate(-16,-16);}
       const path=new Path2D(glyphPaths[glyph]);context.strokeStyle=glyphColors[glyph];context.lineWidth=2;context.lineCap='round';context.lineJoin='round';
       if(glyph==='fire'){context.fillStyle='#f8792b';context.fill(path);}context.stroke(path);
       if(glyph==='fire'){context.fillStyle='#ffdc7f';context.fill(new Path2D('M16 16C21 22 20 27 16 27C11 27 12 21 16 16Z'));}

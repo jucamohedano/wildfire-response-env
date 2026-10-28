@@ -1,0 +1,23 @@
+{
+  "version": "wildfire-v1-local-freeze-20261027",
+  "git_revision": "55183a6ebe14dc9fbebb9156fa3d1d95d859db44",
+  "branch_at_freeze": "codex/coastal-routed-movement-v1",
+  "snapshot": ".runtime/v1-freeze-20261027/working-tree-v1.tar.gz",
+  "snapshot_sha256": "eb3f41e2c43820356850f06f806b98d00963da0d35469b226c314d195ef3c51b",
+  "manifest": ".runtime/v1-freeze-20261027/manifest.json",
+  "pending_diff": ".runtime/v1-freeze-20261027/pending.patch",
+  "durable_local_backup": "Codex task artifacts: wildfire-v1-freeze-20261027 (outside /tmp; same archive SHA-256)",
+  "snapshotted_source_files": 446,
+  "snapshotted_core_files": 217,
+  "snapshotted_data_files": 48,
+  "includes": [
+    "Current working tree including tracked edits and nonignored untracked files",
+    "Previously reviewed, uncommitted 3D prototype",
+    "Pinned prepared and topographic input JSON",
+    "Pinned raw source terrain ASC",
+    "Previous complete public trajectory"
+  ],
+  "excludes": ["Dependency installations and unrelated ignored runtime artifacts"],
+  "meaning": "Recoverable local freeze, not a release tag, Git commit, pushed archive or Hugging Face publication",
+  "v2_rule": "Do not alter existing core, scenario, reward or trajectory inputs to improve the screenshot; report geography and design gaps explicitly"
+}
