@@ -39,6 +39,19 @@
     "Calls, observations, handover history and reinforcement requests"
   ],
   "operational_parameters": "data/incident_day_v2/profile.json",
+  "estimated_exercise_inputs": {
+    "document": "data/incident_day_v2/fuel_estimation/estimates.json",
+    "canonical_sha256": "dfbe5fb8844954c15b31f1dd24f4167bc5460a14848c3a8a78df998821c44285",
+    "method": "Land-cover-constrained inverse-distance categorical voting, never arithmetic averaging of class IDs",
+    "estimated_cells": 80,
+    "known_source_cells_changed": 0,
+    "urban_mixed_centres": 3,
+    "unresolved_land_water_centres": 27,
+    "water_centres_confirmed_by_retained_evidence": 0,
+    "runtime_guard": "No initial ignition or fire progression at unresolved land/water context; censor instead of inventing a barrier",
+    "historical_source_approval": false,
+    "shift_exercise_profile": "data/incident_day_v2/plausibility/shift-profile-v1.json"
+  },
   "fuel_evidence_review": {
     "ledger": "data/incident_day_v2/fuel_review/unknown_cells.json",
     "ledger_file_sha256": "f9f437c68cf165ddff1920b783d13ecff7fb5abfed0e21f3f71df44024108146",

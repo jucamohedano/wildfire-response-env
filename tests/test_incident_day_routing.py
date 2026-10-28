@@ -30,6 +30,18 @@ def router(roads, *, heights=None, mask=None):
     return HazardRouter(roads, inputs, heights or [[100] * 15 for _ in range(15)], walk_mask=mask)
 
 
+@pytest.mark.parametrize('mode,cap', [('engine', 'MAX_CANDIDATES'), ('crew', 'MAX_WALK_CANDIDATES')])
+def test_unsafe_nearest_nodes_do_not_exhaust_the_staging_candidate_budget(monkeypatch, mode, cap):
+    from envs.wildfire_response.incident_day import routing
+    roads = network({'base': (0, 5), 'unsafe': (5, 4), 'safe': (5, 2)},
+                    [('unsafe-link', 'base', 'unsafe'), ('safe-link', 'base', 'safe')])
+    planner = router(roads)
+    monkeypatch.setattr(routing, cap, 1)
+    result = planner.options(center(0, 5), [5, 5], mode=mode, burning={(5, 5)}, wind=[0, 0])
+    assert result['status'] == 'reachable'
+    assert result['options'][0]['journey']['access_node'] == 'safe'
+
+
 def test_wind_reversal_changes_safe_approach_and_cache_is_knowledge_scoped():
     roads = network({'base': (0, 5), 'north-way': (2, 3), 'south-way': (2, 7),
                      'north': (5, 3), 'south': (5, 7)},

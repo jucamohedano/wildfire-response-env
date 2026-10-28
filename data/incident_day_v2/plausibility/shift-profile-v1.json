@@ -11,7 +11,7 @@
   "staffing": "Finite predeclared resource slots; no implied replacement.",
   "duty": "Eight-hour elapsed exercise shift including flight and driving; not a legal or certified duty rule. The shift profile requires dispatch return reserve and pre-deadline recovery.",
   "retained_values": "Existing setup, refill, work, rest, flight, fire spread and burn coefficients remain unchanged.",
-  "staging": "Inherited staging must be reachable and safe under the exercise router, have a route back to base, and be within three cells of eligible burning cells; not tactical safety certification.",
+  "staging": "On-scene staging must be reachable and safe under the exercise router, have a route back to base, and be within three cells of eligible burning cells. If unavailable, an explicitly synthetic mapped failed-access recovery is inherited instead; no suppression access is invented. Not tactical safety certification.",
   "minimum_fire_area_rule": null,
   "physical_validation": false
 }

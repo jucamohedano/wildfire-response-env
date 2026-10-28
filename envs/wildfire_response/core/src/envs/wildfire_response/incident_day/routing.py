@@ -379,6 +379,15 @@ class HazardRouter:
                             and self._inside(self._cell(position)))
         if not candidates:
             return dict(status='unmapped', options=[])
+        candidates = [(distance, node) for distance, node in candidates
+                      if self._safe_cell(self._cell(self.network.nodes[node]), hazards, 'engine')]
+        if not candidates:
+            return dict(status='blocked', options=[])
+        if mode == 'crew':
+            candidates = [(distance, node) for distance, node in candidates
+                          if self._walkable(self._cell(self.network.nodes[node]))]
+            if not candidates:
+                return dict(status='unmapped', options=[])
         truncated = len(candidates) > (MAX_WALK_CANDIDATES if mode == 'crew' else MAX_CANDIDATES)
         candidates = candidates[:MAX_WALK_CANDIDATES if mode == 'crew' else MAX_CANDIDATES]
         targets = {node for _, node in candidates}

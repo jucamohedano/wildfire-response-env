@@ -158,7 +158,7 @@ class IncidentDayEnv:
 
     def _emit(self, source, kind, payload, urgent=False, actionable=True):
         payload = copy.deepcopy(payload)
-        if kind in ('movement_blocked', 'work_target_unavailable'):
+        if kind in ('movement_blocked', 'work_target_unavailable', 'egress_unavailable'):
             point = grid_point(self.inputs, payload['position'])
             payload['cells'] = self._cells([(column, row)
                 for row in range(max(0, point[1] - 2), min(self.fire.height, point[1] + 3))

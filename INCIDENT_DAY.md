@@ -147,3 +147,27 @@ The road overlay now has a portable, pinned source bundle and an archived prior
 revision; see `data/ui_v2/snapshots/README.md`. New clones no longer depend on the
 lost ignored road cache. This repairs display reproducibility, not routing
 coverage or verified access for fire engines.
+
+## Estimated-map and shift exercises
+
+`data/incident_day_v2/fuel_estimation/` now supplies categorical, land-cover-aware
+estimates for the 80 missing fuel values without changing their source-known
+mask. The three urban centres use explicitly assumed mixed built/garden fuel,
+not neighbouring forest or a zero-fuel barrier. The 27 centres with unresolved
+land/water context remain flagged; a run is censored before fire advances near
+those cells. Missing land cover is never interpreted as sea or as a firebreak.
+The spatial holdout is exploratory, not a probability of correctness.
+
+Compile with `eval/prepare_incident_day.py --fuel-estimates FILE
+--fuel-estimates-sha256 HASH` and the usual pinned prepared/domain/network
+arguments. `--allow-unapproved` is required because estimated exercise inputs
+are not verified historical measurements. Do not combine this with the older
+uniform synthetic-fuel comparison option.
+
+The additive IDs `incident-day-shift-v1-000` through `005` use valid inherited
+staging or disclosed recovery, finite named eight-hour ground shifts, two
+daylight-gated aircraft slots, and return-time reserves. They preserve the older
+development IDs and the two-hour benchmark. Run
+`python eval/check_incident_day_plausibility.py --output /tmp/NEW --wall-budget 600`
+for all six verified days and readable timelines. Passing the automatic
+consistency screen is not physical calibration or expert human approval.

@@ -372,10 +372,12 @@ class Operations:
                 recovery = _route(recovery, unit['position'], unit['base_position'], minute)
                 if recovery is None:
                     unit['state'] = 'needs_assistance'
-                    if state != 'needs_assistance':
+                    if unit.get('egress_unavailable_since') is None:
+                        unit['egress_unavailable_since'] = minute
                         emit('operations', 'egress_unavailable', {'resource_id': unit['id'],
                              'position': copy.deepcopy(unit['position'])}, actionable=True)
                     continue
+                unit.pop('egress_unavailable_since', None)
                 if minute + math.ceil(recovery['duration_minutes']) >= unit['duty_end_at']:
                     self._return(unit, recovery, minute, None)
                     continue
