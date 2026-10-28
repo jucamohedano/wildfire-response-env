@@ -1,0 +1,236 @@
+{
+  "version": "incident-day-withdrawal-review-v1",
+  "date": "2026-10-28",
+  "code_commit": "2870bab49e193a284b009b3ee25d63dce28eba5f",
+  "implementation_sha256": "d5d6483ae5ee3b42c2530d863165ba007d55a9b1d31db0bd0dc0f9769dd24278",
+  "input_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+  "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+  "data_role": "Synthetic development fixture, not a real-map or held-out incident benchmark",
+  "policy": "Public-observation deterministic dispatcher; not an expert or trained model",
+  "change": "Return-only exit from the initial protective fire/wind buffer, with node/exit-state directed search and per-minute revalidation. Burning cells, exclusions, vehicle modes and supported walking terrain remain enforced.",
+  "compatibility": "Six new incident-day-egress-v1 IDs; existing twelve scenario identities and the frozen two-hour benchmark remain unchanged. Old results are not rescored.",
+  "tests": {
+    "passed": 243,
+    "skipped": 0,
+    "subtests_passed": 37,
+    "coverage": [
+      "Crew and engine exits",
+      "No burning/re-entry/restricted-edge/wrong-way/unsupported-terrain crossings",
+      "Longer valid detour over shorter illegal route",
+      "Dynamic hazards",
+      "Disk resume before buffer exit",
+      "Local versus HTTP full-day parity",
+      "Pinned old scenario hashes",
+      "Frozen benchmark extraction"
+    ]
+  },
+  "before": {
+    "reference": "incident-day-integration-review-20261028.json",
+    "late_recovery_exceptions": 14
+  },
+  "after": {
+    "completed_days": 6,
+    "late_recovery_exceptions": 0,
+    "contradictions": 0,
+    "blocking_findings": 0,
+    "cases": [
+      {
+        "case": "incident-day-egress-v1-000",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9981981981981982,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 225.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        },
+        "resources_using_withdrawal": 5,
+        "resources_observed_after_buffer_exit": 5,
+        "decisions": 662,
+        "intended_constraint_evidence": "work_observed_review_required"
+      },
+      {
+        "case": "incident-day-egress-v1-001",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9947947947947948,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 650.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        },
+        "resources_using_withdrawal": 7,
+        "resources_observed_after_buffer_exit": 7,
+        "decisions": 611,
+        "intended_constraint_evidence": "constraint_evidence_review_required"
+      },
+      {
+        "case": "incident-day-egress-v1-002",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9973973973973974,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 325.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        },
+        "resources_using_withdrawal": 5,
+        "resources_observed_after_buffer_exit": 5,
+        "decisions": 421,
+        "intended_constraint_evidence": "no_constraint_evidence_observed"
+      },
+      {
+        "case": "incident-day-egress-v1-003",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9963963963963964,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 450.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        },
+        "resources_using_withdrawal": 6,
+        "resources_observed_after_buffer_exit": 6,
+        "decisions": 564,
+        "intended_constraint_evidence": "constraint_evidence_review_required"
+      },
+      {
+        "case": "incident-day-egress-v1-004",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9981981981981982,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 225.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        },
+        "resources_using_withdrawal": 4,
+        "resources_observed_after_buffer_exit": 4,
+        "decisions": 639,
+        "intended_constraint_evidence": "no_constraint_evidence_observed"
+      },
+      {
+        "case": "incident-day-egress-v1-005",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9983983983983984,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 200.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        },
+        "resources_using_withdrawal": 5,
+        "resources_observed_after_buffer_exit": 5,
+        "decisions": 629,
+        "intended_constraint_evidence": "constraint_evidence_review_required"
+      }
+    ]
+  },
+  "performance": {
+    "workers": 1,
+    "single_verified_day_seconds": 25.672386215999722,
+    "single_job_peak_process_rss_mib": 78.69140625,
+    "six_case_suite_seconds": 263.77469185299924,
+    "suite_job_peak_process_rss_mib": 81.59765625,
+    "note": "Times include consistency checks and exact replay. The targeted one-day command intentionally reports an incomplete six-case suite, although its selected episode completes/verifies. The full six-case command exits successfully. Batch ran alongside regression tests; timing is not a controlled speed comparison. RSS is the maximum process RSS, not summed job memory."
+  },
+  "remaining": [
+    "Physical and operational calibration is not established.",
+    "Crew-only-access and destination-threat complications are not observed in these dispatcher runs; separate counterfactual mechanics tests pass, which is not coverage of difficult policy outcomes.",
+    "All six development days have zero newly exposed population and high scores. This does not establish benchmark difficulty or model learning.",
+    "Real-source fuel approval and complete road/passability coverage remain unresolved; estimates are not historical measurements.",
+    "Docker execution remains unverified. No paid inference, GPU training or publication ran."
+  ],
+  "issue_status": {
+    "34": "open",
+    "27": "open"
+  },
+  "pr_status": {
+    "38": "merged",
+    "41": "draft"
+  }
+}

@@ -45,7 +45,7 @@ See [fidelity](docs/fidelity.md) and [day data](data/incident_day_v2/README.md).
 
 ## Try it on CPU
 
-From a fresh clone, with Python 3.12 or newer, run the bundled synthetic fixture.
+From a fresh clone, with Python 3.12 or newer, run the bundled withdrawal fixture.
 This first step needs no prepared data, model, API key, GPU or extra packages:
 
 ```sh
@@ -55,7 +55,7 @@ from wildfire_core.incident_day import IncidentDayEnv, IncidentDayTools, fixture
 inputs, network = fixture_inputs()
 env = IncidentDayEnv(inputs, network, expected_inputs_sha256=inputs['sha256'],
                      expected_network_sha256=network['sha256'])
-observation, info = env.reset('incident-day-dev-000')
+observation, info = env.reset('incident-day-egress-v1-000')
 tools = IncidentDayTools(env)
 print('Horizon:', observation['clock']['horizon_minutes'], 'minutes')
 result = tools.execute('advance_time', {'max_minutes': 10})

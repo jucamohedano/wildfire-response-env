@@ -195,6 +195,14 @@ Delivered resource status identifies the withdrawal policy and whether the buffe
 has been exited. Initial buffer geometry stays in private evaluator records.
 Disk checkpoints preserve this state, including a checkpoint taken before exit.
 
+The final six-case fixture batch completes all days with exact replay and
+independent reward agreement, and records zero late-recovery exceptions (the
+older shift profile has fourteen). The final suite passes 243 tests without
+skips, including HTTP parity and frozen extraction checks. See
+`results/incident-day-withdrawal-20261028.html` and `.json`. This does not resolve
+physical calibration, real-source input approval, or the absence of observed
+crew-only-access and destination-threat complications in these policy runs.
+
 Run the separate six-case suite with:
 
 ```sh
