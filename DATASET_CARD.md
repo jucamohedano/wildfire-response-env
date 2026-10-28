@@ -1,5 +1,40 @@
 # Wildfire benchmark v1 catalog — private candidate
 
+An opt-in [synthetic coverage expansion](data/synthetic_expansion_v1/README.md)
+adds 960 configuration groups / 1,920 tasks. It does not replace this frozen v1
+catalog or add historical incidents. Its validation/test outcomes are not used
+by the initial CPU smoke run.
+
+## Historical anchor and randomization seed
+
+The historical anchor is the **Sierra Bermeja wildfire, Jubrique / Málaga,
+Spain, first reported on 8 September 2021**—not 2019 or 2020. See the
+[Copernicus EMSR545 activation](https://mapping.emergency.copernicus.eu/activations/EMSR545/)
+and the [Junta de Andalucía incident summary](https://www.juntadeandalucia.es/presidencia/portavoz/tierraymar/165737/fuego/Infoca/incendio/desarrollosostenible/medioambiente/SierraBermeja/Jubrique).
+This anchors the source evidence and landscape, not the actions or outcomes of
+the generated exercises. Other layers have their own editions and dates; the
+incident year is not a claim that every terrain/fuel input was surveyed in 2021.
+
+The expansion's **random-number design seed is `20261026`**, used with Python's
+`random.Random`. Per-episode seeds are `82000000 + 2 * group_index + variant`,
+where the deterministic catalog order supplies the zero-based group index and
+`variant` is 0 or 1. The original benchmark v1 has its own unchanged seed scheme.
+Seeds, compiler version and pinned input hashes jointly identify a dataset;
+a seed alone does not. Metadata is recorded in
+[`source_context.json`](data/synthetic_expansion_v1/source_context.json).
+
+The environment is a general operations-control-centre interface, with randomized
+synthetic scenarios. **Its current dataset is still grounded in one regional
+landscape.** Randomization does not create new regions or independent historical
+incidents. The legacy `regional/` module path is not a claim of multi-region
+validation, nor does renaming it add that coverage. No trained model is released
+here; this information belongs in the dataset/environment card.
+
+The current horizon remains 120 simulated minutes. A separately versioned
+six-hour pilot, followed conditionally by a twelve-hour night-to-day test, is
+proposed in the [long-session strategy](docs/long-sessions.html); it is not enabled
+by this documentation update.
+
 The compiler defines120configuration groups, not120historical wildfires. Eight
 families combine source-grounded geography with synthetic incident mechanics.
 There are80training,20validation and20test groups, with two seed/wording variants
