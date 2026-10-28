@@ -82,7 +82,9 @@ class DayDispatcher:
         for unit in observation['resources']:
             if not active:
                 break
-            if unit['state'] != 'available' or unit['id'] in pending:
+            if unit['state'] not in ('available', 'needs_assistance', 'blocked') or unit['id'] in pending:
+                continue
+            if unit.get('water_litres', 0) <= 0 and unit['kind'] in ('engine', 'aircraft'):
                 continue
             if unit['kind'] == 'aircraft' and not observation['aircraft_operable']:
                 continue

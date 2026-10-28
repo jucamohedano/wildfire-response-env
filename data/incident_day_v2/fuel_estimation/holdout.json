@@ -1,0 +1,511 @@
+{
+  "version": "incident-day-fuel-spatial-holdout-v1",
+  "estimate_sha256": "dfbe5fb8844954c15b31f1dd24f4167bc5460a14848c3a8a78df998821c44285",
+  "design": "Up to 10 deterministic known cells per quadrant; all known cells in their quadrant are held out. Unconstrained categorical vote, not a land-cover crosswalk test.",
+  "sample_count": 40,
+  "correct": 24,
+  "accuracy": 0.6,
+  "uncertainty_groups": [
+    {
+      "minimum_vote_share": 0.0,
+      "maximum_vote_share_exclusive": 0.5,
+      "sample_count": 4,
+      "correct": 1
+    },
+    {
+      "minimum_vote_share": 0.5,
+      "maximum_vote_share_exclusive": 0.75,
+      "sample_count": 22,
+      "correct": 13
+    },
+    {
+      "minimum_vote_share": 0.75,
+      "maximum_vote_share_exclusive": 1.01,
+      "sample_count": 14,
+      "correct": 10
+    }
+  ],
+  "limitations": "Exploratory spatial holdout on known source classes only; vote share is not calibrated uncertainty and does not establish accuracy for missing cells.",
+  "samples": [
+    {
+      "row": 0,
+      "column": 1,
+      "spatial_group": [
+        0,
+        0
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 0.62318
+    },
+    {
+      "row": 1,
+      "column": 17,
+      "spatial_group": [
+        0,
+        0
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 0.712357
+    },
+    {
+      "row": 3,
+      "column": 17,
+      "spatial_group": [
+        0,
+        0
+      ],
+      "actual": 4,
+      "predicted": 10,
+      "support_count": 8,
+      "vote_share": 0.564397
+    },
+    {
+      "row": 5,
+      "column": 13,
+      "spatial_group": [
+        0,
+        0
+      ],
+      "actual": 4,
+      "predicted": 10,
+      "support_count": 8,
+      "vote_share": 0.508033
+    },
+    {
+      "row": 7,
+      "column": 7,
+      "spatial_group": [
+        0,
+        0
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 0.627278
+    },
+    {
+      "row": 9,
+      "column": 2,
+      "spatial_group": [
+        0,
+        0
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 1.0
+    },
+    {
+      "row": 10,
+      "column": 17,
+      "spatial_group": [
+        0,
+        0
+      ],
+      "actual": 10,
+      "predicted": 5,
+      "support_count": 8,
+      "vote_share": 0.585969
+    },
+    {
+      "row": 12,
+      "column": 11,
+      "spatial_group": [
+        0,
+        0
+      ],
+      "actual": 10,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 0.509503
+    },
+    {
+      "row": 14,
+      "column": 6,
+      "spatial_group": [
+        0,
+        0
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 1.0
+    },
+    {
+      "row": 16,
+      "column": 3,
+      "spatial_group": [
+        0,
+        0
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 1.0
+    },
+    {
+      "row": 0,
+      "column": 18,
+      "spatial_group": [
+        0,
+        1
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 1.0
+    },
+    {
+      "row": 1,
+      "column": 34,
+      "spatial_group": [
+        0,
+        1
+      ],
+      "actual": 10,
+      "predicted": 2,
+      "support_count": 8,
+      "vote_share": 0.5
+    },
+    {
+      "row": 3,
+      "column": 33,
+      "spatial_group": [
+        0,
+        1
+      ],
+      "actual": 4,
+      "predicted": 2,
+      "support_count": 8,
+      "vote_share": 0.753737
+    },
+    {
+      "row": 5,
+      "column": 33,
+      "spatial_group": [
+        0,
+        1
+      ],
+      "actual": 4,
+      "predicted": 2,
+      "support_count": 8,
+      "vote_share": 0.754912
+    },
+    {
+      "row": 7,
+      "column": 29,
+      "spatial_group": [
+        0,
+        1
+      ],
+      "actual": 2,
+      "predicted": 2,
+      "support_count": 8,
+      "vote_share": 0.499344
+    },
+    {
+      "row": 9,
+      "column": 24,
+      "spatial_group": [
+        0,
+        1
+      ],
+      "actual": 7,
+      "predicted": 10,
+      "support_count": 8,
+      "vote_share": 0.491794
+    },
+    {
+      "row": 11,
+      "column": 19,
+      "spatial_group": [
+        0,
+        1
+      ],
+      "actual": 5,
+      "predicted": 10,
+      "support_count": 8,
+      "vote_share": 0.769471
+    },
+    {
+      "row": 12,
+      "column": 33,
+      "spatial_group": [
+        0,
+        1
+      ],
+      "actual": 2,
+      "predicted": 2,
+      "support_count": 8,
+      "vote_share": 0.766959
+    },
+    {
+      "row": 14,
+      "column": 28,
+      "spatial_group": [
+        0,
+        1
+      ],
+      "actual": 10,
+      "predicted": 10,
+      "support_count": 8,
+      "vote_share": 0.509839
+    },
+    {
+      "row": 16,
+      "column": 23,
+      "spatial_group": [
+        0,
+        1
+      ],
+      "actual": 4,
+      "predicted": 2,
+      "support_count": 8,
+      "vote_share": 0.520576
+    },
+    {
+      "row": 18,
+      "column": 0,
+      "spatial_group": [
+        1,
+        0
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 1.0
+    },
+    {
+      "row": 19,
+      "column": 14,
+      "spatial_group": [
+        1,
+        0
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 0.515536
+    },
+    {
+      "row": 21,
+      "column": 10,
+      "spatial_group": [
+        1,
+        0
+      ],
+      "actual": 10,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 1.0
+    },
+    {
+      "row": 23,
+      "column": 6,
+      "spatial_group": [
+        1,
+        0
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 1.0
+    },
+    {
+      "row": 25,
+      "column": 2,
+      "spatial_group": [
+        1,
+        0
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 1.0
+    },
+    {
+      "row": 26,
+      "column": 16,
+      "spatial_group": [
+        1,
+        0
+      ],
+      "actual": 7,
+      "predicted": 10,
+      "support_count": 8,
+      "vote_share": 0.63584
+    },
+    {
+      "row": 28,
+      "column": 12,
+      "spatial_group": [
+        1,
+        0
+      ],
+      "actual": 8,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 0.621733
+    },
+    {
+      "row": 30,
+      "column": 8,
+      "spatial_group": [
+        1,
+        0
+      ],
+      "actual": 5,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 0.50985
+    },
+    {
+      "row": 32,
+      "column": 4,
+      "spatial_group": [
+        1,
+        0
+      ],
+      "actual": 2,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 0.498737
+    },
+    {
+      "row": 34,
+      "column": 0,
+      "spatial_group": [
+        1,
+        0
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 0.878884
+    },
+    {
+      "row": 18,
+      "column": 18,
+      "spatial_group": [
+        1,
+        1
+      ],
+      "actual": 7,
+      "predicted": 7,
+      "support_count": 8,
+      "vote_share": 0.656245
+    },
+    {
+      "row": 19,
+      "column": 29,
+      "spatial_group": [
+        1,
+        1
+      ],
+      "actual": 10,
+      "predicted": 10,
+      "support_count": 8,
+      "vote_share": 0.575928
+    },
+    {
+      "row": 21,
+      "column": 21,
+      "spatial_group": [
+        1,
+        1
+      ],
+      "actual": 8,
+      "predicted": 8,
+      "support_count": 8,
+      "vote_share": 0.756883
+    },
+    {
+      "row": 22,
+      "column": 32,
+      "spatial_group": [
+        1,
+        1
+      ],
+      "actual": 4,
+      "predicted": 2,
+      "support_count": 8,
+      "vote_share": 0.491967
+    },
+    {
+      "row": 24,
+      "column": 26,
+      "spatial_group": [
+        1,
+        1
+      ],
+      "actual": 2,
+      "predicted": 2,
+      "support_count": 8,
+      "vote_share": 0.628888
+    },
+    {
+      "row": 26,
+      "column": 19,
+      "spatial_group": [
+        1,
+        1
+      ],
+      "actual": 10,
+      "predicted": 10,
+      "support_count": 8,
+      "vote_share": 0.527168
+    },
+    {
+      "row": 27,
+      "column": 30,
+      "spatial_group": [
+        1,
+        1
+      ],
+      "actual": 2,
+      "predicted": 2,
+      "support_count": 8,
+      "vote_share": 0.618284
+    },
+    {
+      "row": 29,
+      "column": 24,
+      "spatial_group": [
+        1,
+        1
+      ],
+      "actual": 4,
+      "predicted": 4,
+      "support_count": 8,
+      "vote_share": 0.623092
+    },
+    {
+      "row": 30,
+      "column": 35,
+      "spatial_group": [
+        1,
+        1
+      ],
+      "actual": 2,
+      "predicted": 2,
+      "support_count": 8,
+      "vote_share": 0.503436
+    },
+    {
+      "row": 32,
+      "column": 36,
+      "spatial_group": [
+        1,
+        1
+      ],
+      "actual": 2,
+      "predicted": 2,
+      "support_count": 8,
+      "vote_share": 0.624254
+    }
+  ]
+}

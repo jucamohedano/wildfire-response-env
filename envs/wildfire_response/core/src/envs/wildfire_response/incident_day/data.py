@@ -50,6 +50,26 @@ def _crop(value, crop):
     return [row[left:left + crop['width']] for row in value[top:top + crop['height']]]
 
 
+def _resolved_fuels(source, known, grid, resolution, pins):
+    if resolution is None:
+        return [[fuel if valid else None for fuel, valid in zip(source_row, known_row)]
+                for source_row, known_row in zip(source, known)]
+    if type(resolution) is not dict:
+        raise ValueError('Invalid fuel resolution')
+    if resolution.get('kind') == 'estimated' and set(resolution) == {'kind', 'document'}:
+        from .fuel_estimation import validate_estimates
+        document = validate_estimates(resolution['document'], source, known, grid)
+        if (document['source_pins']['prepared_sha256'] != pins['prepared_sha256']
+                or document['source_pins']['domain_sha256'] != pins['domain_sha256']):
+            raise ValueError('Fuel estimates refer to different source inputs')
+        return copy.deepcopy(document['fuel_classes'])
+    if (set(resolution) != {'kind', 'class'} or resolution.get('kind') != 'synthetic'
+            or type(resolution.get('class')) is not int or resolution['class'] not in range(1, 11)):
+        raise ValueError('Only explicit synthetic or source-pinned estimated fuel is supported')
+    return [[fuel if valid else resolution['class'] for fuel, valid in zip(source_row, known_row)]
+            for source_row, known_row in zip(source, known)]
+
+
 def prepare_inputs(prepared, domain, network_document, *, fuel_resolution=None):
     """Build a hash-pinned pack; source uncertainty is never counted as known.
 
@@ -102,14 +122,9 @@ def prepare_inputs(prepared, domain, network_document, *, fuel_resolution=None):
             source = source_classes[row][column]
             if type(source) is not int or source not in range(11) or bool(source) != bool(source_known[row][column]):
                 raise ValueError('Source fuel and validity mask disagree')
-    if fuel_resolution is not None and (type(fuel_resolution) is not dict
-            or set(fuel_resolution) != {'kind', 'class'} or fuel_resolution['kind'] != 'synthetic'
-            or type(fuel_resolution['class']) is not int or fuel_resolution['class'] not in range(1, 11)):
-        raise ValueError('Only an explicitly synthetic fuel assumption is supported')
     unknown = sum(not value for row in source_known for value in row)
-    classes = [[source if known else (fuel_resolution['class'] if fuel_resolution else None)
-                for source, known in zip(source_row, known_row)]
-               for source_row, known_row in zip(source_classes, source_known)]
+    classes = _resolved_fuels(source_classes, source_known, grid, fuel_resolution,
+                             dict(prepared_sha256=prepared_hash, domain_sha256=domain_hash))
     synthetic_fixture = prepared.get('role') == 'synthetic_fixture' and domain.get('role') == 'synthetic_fixture'
     status = 'approved_synthetic_fixture' if synthetic_fixture and not unknown else 'unapproved_source_pack'
     payload = dict(version=VERSION, grid=grid, heights=heights, fuel_classes=classes,
@@ -180,10 +195,7 @@ def load_inputs(value, expected_sha256, *, allow_unapproved=False):
             or value['walk_mask'] != study or any(not cell for row in study for cell in row)):
         raise ValueError('Masks cannot conceal source uncertainty or restrict traversal')
     resolution = provenance.get('fuel_resolution')
-    if resolution is not None and (type(resolution) is not dict or set(resolution) != {'kind', 'class'}
-            or resolution['kind'] != 'synthetic' or type(resolution['class']) is not int
-            or resolution['class'] not in range(1, 11)):
-        raise ValueError('Invalid synthetic fuel assumption')
+    resolved = _resolved_fuels(source, known, value['grid'], resolution, pins)
     unknown = 0
     for row in range(height):
         for column in range(width):
@@ -194,7 +206,7 @@ def load_inputs(value, expected_sha256, *, allow_unapproved=False):
             is_known = known[row][column]
             if type(original) is not int or original not in range(11) or bool(original) != bool(is_known):
                 raise ValueError('Source fuel and validity mask disagree')
-            expected = original if is_known else (resolution['class'] if resolution else None)
+            expected = resolved[row][column]
             if value['fuel_classes'][row][column] != expected or type(value['fuel_classes'][row][column]) is bool:
                 raise ValueError('Fuel differs from its source or declared assumption')
             unknown += not is_known

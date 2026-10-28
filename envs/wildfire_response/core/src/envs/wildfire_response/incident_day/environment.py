@@ -39,6 +39,9 @@ class IncidentDayEnv:
         if self.inputs['network_sha256'] != self.network.sha256:
             raise ValueError('Input pack and road network pins disagree')
         self.router = HazardRouter(self.network, self.inputs, self.inputs['heights'], walk_mask=self.inputs['walk_mask'])
+        resolution = self.inputs['provenance'].get('fuel_resolution') or {}
+        self._uncertain_land = {(cell['column'], cell['row'])
+            for cell in resolution.get('document', {}).get('cells', []) if cell['land_kind'] == 'unresolved'}
         self.artifact_dir = Path(artifact_dir) if artifact_dir else None
         self._scenario = None
 
@@ -46,12 +49,17 @@ class IncidentDayEnv:
         self._scenario = build_scenario(self.inputs, self.network, scenario_id, seed)
         self.minute = self.decision = self.invalid_streak = 0
         self.terminated = self.truncated = self.censored = self.abandoned = False
+        self._input_censored = False
         self.reward = 0.
         self.fire = DayFire(self.inputs, self._scenario['seed'])
         self.fire.set_wind(x=self._scenario['wind'][0], y=self._scenario['wind'][1])
         for column, row in self._scenario['initial_fire']:
+            if (column, row) in self._uncertain_land:
+                raise ValueError('Cannot initialize an incident on unresolved land or water')
             self.fire.add_fire(column, row)
         for unused in range(self._scenario['warmup_minutes']):
+            if self._land_guard():
+                raise ValueError('Warm start reaches unresolved land or water')
             self.fire.step()
         self.fire.tick = 0
         self.fire.boundary_contact_at = None
@@ -93,7 +101,8 @@ class IncidentDayEnv:
         initial_seen = sorted(self._burning())[:max(1, len(self._burning()) // 2)]
         self._capture_cells(initial_seen, 0)
         self.bus.emit('handover', 'handover', dict(text='EXERCISE. Large-fire operational handover. '
-            'Reported perimeter is partial; resource stocks and assignments are carried forward.',
+            'Reported perimeter is partial; resource stocks and assignments are carried forward. '
+            + self._scenario.get('handover_notice', ''),
             cells=self._cells(initial_seen)), 0, role='center', delay=0)
         self.bus.emit('prior-shift', 'handover_followup', dict(text='EXERCISE. Confirmation of the carried '
             'ground assignment and remaining stock. Prehistory is initialization, not an expert policy.',
@@ -149,7 +158,7 @@ class IncidentDayEnv:
 
     def _emit(self, source, kind, payload, urgent=False, actionable=True):
         payload = copy.deepcopy(payload)
-        if kind == 'movement_blocked':
+        if kind in ('movement_blocked', 'work_target_unavailable'):
             point = grid_point(self.inputs, payload['position'])
             payload['cells'] = self._cells([(column, row)
                 for row in range(max(0, point[1] - 2), min(self.fire.height, point[1] + 3))
@@ -214,10 +223,12 @@ class IncidentDayEnv:
             resources=list(self._known_resources.values()), districts=list(self._known_groups.values()),
             destinations=list(self._known_destinations.values()), sensor_memory=list(self._memory.values()),
             wind=self._known_wind[:], reports=self.bus.reports[-20:], report_count=len(self.bus.reports),
-            status_requests=list(self.bus.requests.values()), offers=list(self._offers.values()),
+            status_requests=[self.bus.requests[key] for key in sorted(self.bus.requests)],
+            offers=[self._offers[key] for key in sorted(self._offers)],
             pending_resource_requests=sorted(self._pending_requests),
             access_restrictions=sorted(self._known_restrictions),
-            protection_orders=list(self._issued_orders.values()), centers=self._scenario['centers'][:],
+            protection_orders=[self._issued_orders[key] for key in sorted(self._issued_orders)],
+            centers=self._scenario['centers'][:],
             sectors=[dict(id='incident', center=[self.fire.width // 2, self.fire.height // 2])],
             input_approval=self.inputs['approval_status'],
             aircraft_operable=self._calendar_daylight() and math.hypot(*self._known_wind) <= 2.8
@@ -292,7 +303,7 @@ class IncidentDayEnv:
         result = self.router.options(unit['position'], grid_point(self.inputs, unit['base_position']),
             mode=unit['kind'], burning=self._burning(), wind=list(self.fire.wind),
             excluded_cells=self._excluded(unit['kind'], self._restrictions),
-            revision=self.minute, target_metric=unit['base_position'], limit=1)
+            revision=0, target_metric=unit['base_position'], limit=1)
         return result['options'][0]['journey'] if result['options'] else None
 
     def check_action(self, action):
@@ -399,7 +410,7 @@ class IncidentDayEnv:
             if self.censored or self.invalid_streak >= 3:
                 self.abandoned = self.invalid_streak >= 3
                 self.truncated = True
-                wake = 'boundary_censored' if self.censored else 'invalid_abandonment'
+                wake = ('input_uncertainty_censored' if self._input_censored else 'boundary_censored') if self.censored else 'invalid_abandonment'
                 break
             if self.minute == 1440:
                 self.terminated = True
@@ -455,7 +466,9 @@ class IncidentDayEnv:
         self.ops.tick(self.minute, wind=list(self.fire.wind), daylight=self._daylight(),
             hazard_check=self._hazard_safe, suppress=self._suppress, emit=self._emit,
             movement_check=self._movement_safe)
-        self.fire.step()
+        self._input_censored = self._land_guard()
+        if not self._input_censored:
+            self.fire.step()
         for group in self.ops.groups.values():
             if self._exposure(group):
                 group['exposed'] = True
@@ -493,7 +506,7 @@ class IncidentDayEnv:
                           self.minute, role='satellite', channel='routine', actionable=False)
         records = self.bus.tick(self.minute, self._center_views())
         self._receive(records)
-        self.censored = self.fire.boundary_contact_at is not None
+        self.censored = self._input_censored or self.fire.boundary_contact_at is not None
         self._record()
         deadline = any(offer['status'] == 'offered' and offer['expires_at'] - self.minute in (1, 2)
                        for offer in self._offers.values())
@@ -569,7 +582,7 @@ class IncidentDayEnv:
     def _suppress(self, unit):
         target = unit.get('target_grid')
         if target is None:
-            return
+            return False
         for column, row in sorted(self._burning()):
             position = grid_point(self.inputs, unit['position'])
             if (math.dist([column, row], target) <= 3
@@ -579,7 +592,8 @@ class IncidentDayEnv:
                 cell['wet'] = max(cell['wet'], 5)
                 self._work_log.append(dict(resource_id=unit['id'], location=[column, row],
                                            position=unit['position'][:], state=unit['state']))
-                break
+                return True
+        return False
 
     def _exposure(self, group):
         point = grid_point(self.inputs, group['position'])
@@ -587,6 +601,11 @@ class IncidentDayEnv:
         if threatened:
             self._dose[group['id']] += 2 if group['status'] == 'sheltering' else 10
         return tuple(point) in self._burning() or self._dose[group['id']] >= 180
+
+    def _land_guard(self):
+        return bool(self._uncertain_land and any(
+            max(abs(column - other_column), abs(row - other_row)) <= 1
+            for column, row in self._burning() for other_column, other_row in self._uncertain_land))
 
     def _record(self, initial=False):
         footprint = self._burned()
@@ -618,6 +637,8 @@ class IncidentDayEnv:
 
     def _info(self, error, wake):
         value = dict(interface_version=VERSION, minute=self.minute, error=error, wake_reason=wake)
+        if self._input_censored:
+            value['model_limit'] = 'unresolved_land_or_water_not_a_firebreak'
         if self.terminated or self.truncated:
             value['outcomes'] = self.outcomes()
         return value
@@ -638,6 +659,7 @@ class IncidentDayEnv:
             '_work_log')
         state = {key: copy.deepcopy(getattr(self, key)) for key in fields}
         state.update(memory=list(self._memory.values()), footprint=sorted(self._footprint),
+            _input_censored=self._input_censored,
             known_restrictions=sorted(self._known_restrictions),
             restrictions=sorted(self._restrictions), air_unavailable_until=getattr(self, '_air_unavailable_until', 0),
             pending_requests=sorted(self._pending_requests),

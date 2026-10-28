@@ -119,7 +119,7 @@ class Operations:
             if value['id'] in result:
                 raise ValueError('Duplicate identifier')
             result[value['id']] = value
-        return result
+        return dict(sorted(result.items()))
 
     def _occupancy(self, destination_id, excluding=None):
         return sum(group['count'] for group_id, group in self.groups.items()
@@ -153,7 +153,8 @@ class Operations:
         plan = _route(journey, unit['position'], journey.get('destination') if isinstance(journey, dict) else None, minute)
         if plan is None:
             return False
-        if unit['kind'] == 'aircraft' and 'fuel_minutes' in unit:
+        if ((unit['kind'] == 'aircraft' and ('fuel_minutes' in unit or self.profile.get('require_sortie_within_shift')))
+                or self.profile.get('require_return_within_shift')):
             if _same_position(plan['destination'], unit['base_position']):
                 return_duration = 0
             else:
@@ -167,8 +168,15 @@ class Operations:
                 if returning is None:
                     return False
                 return_duration = math.ceil(returning['duration_minutes'])
-            if unit['fuel_minutes'] < math.ceil(plan['duration_minutes']) + return_duration:
+            if (unit['kind'] == 'aircraft' and 'fuel_minutes' in unit
+                    and unit['fuel_minutes'] < math.ceil(plan['duration_minutes']) + return_duration):
                 return False
+            if self.profile.get('require_sortie_within_shift') or self.profile.get('require_return_within_shift'):
+                needed = (self.profile.get('mobilization_minutes', 1) + plan['duration_minutes']
+                          + self.profile.get('aircraft_setup_minutes' if unit['kind'] == 'aircraft' else 'ground_setup_minutes',
+                                             2 if unit['kind'] == 'aircraft' else 5) + 1 + return_duration)
+                if minute + needed > unit.get('duty_end_at', math.inf):
+                    return False
         unit.pop('blocked_state', None)
         unit.update(state='mobilizing', sector_id=sector_id, target_grid=copy.deepcopy(target_grid),
                     journey=plan, due_at=minute + self.profile.get('mobilization_minutes', 1))
@@ -357,6 +365,20 @@ class Operations:
         for unit in self.resources.values():
             state = unit['state']
             movement_state = unit.get('blocked_state') if state == 'blocked' else state
+            if (self.profile.get('require_return_within_shift') and unit.get('duty_end_at') is not None
+                    and state in ('mobilizing', 'travel', 'on_scene', 'working', 'blocked', 'needs_assistance')
+                    and movement_state != 'returning'):
+                recovery = planner(copy.deepcopy(unit), minute) if planner is not None else None
+                recovery = _route(recovery, unit['position'], unit['base_position'], minute)
+                if recovery is None:
+                    unit['state'] = 'needs_assistance'
+                    if state != 'needs_assistance':
+                        emit('operations', 'egress_unavailable', {'resource_id': unit['id'],
+                             'position': copy.deepcopy(unit['position'])}, actionable=True)
+                    continue
+                if minute + math.ceil(recovery['duration_minutes']) >= unit['duty_end_at']:
+                    self._return(unit, recovery, minute, None)
+                    continue
             if _duty_finished(unit, minute):
                 if _same_position(unit['position'], unit['base_position']):
                     self._off_duty(unit)
@@ -443,7 +465,15 @@ class Operations:
                     if return_journey is None or unit['fuel_minutes'] < math.ceil(return_journey['duration_minutes']):
                         self._return(unit, return_journey, minute, None)
                         continue
-                suppress(copy.deepcopy(unit))
+                applied = suppress(copy.deepcopy(unit))
+                if applied is False:
+                    emit('operations', 'work_target_unavailable', {'resource_id': unit['id'],
+                         'position': copy.deepcopy(unit['position'])}, actionable=True)
+                    if unit['kind'] == 'aircraft':
+                        self._return(unit, return_journey, minute, planner)
+                    else:
+                        unit['state'] = 'needs_assistance'
+                    continue
                 unit['work_remaining'] -= 1
                 if unit.get('total_work_remaining') is not None:
                     unit['total_work_remaining'] -= 1

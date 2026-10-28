@@ -3,6 +3,7 @@
   "version": "wildfire-incident-day-v2",
   "description": "Synthetic incident-day coordination exercise with a single-session local REST transport.",
   "scenario_ids": ["incident-day-dev-000", "incident-day-dev-001", "incident-day-dev-002", "incident-day-dev-003", "incident-day-dev-004", "incident-day-dev-005"],
+  "calibrated_scenario_ids": ["incident-day-shift-v1-000", "incident-day-shift-v1-001", "incident-day-shift-v1-002", "incident-day-shift-v1-003", "incident-day-shift-v1-004", "incident-day-shift-v1-005"],
   "horizon_minutes": 1440,
   "transport": "loopback-http-json",
   "server_module": "eval.incident_day_server",

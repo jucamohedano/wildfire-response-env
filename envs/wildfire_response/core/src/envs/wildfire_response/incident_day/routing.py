@@ -37,6 +37,10 @@ class HazardRouter:
         self.inputs = copy.deepcopy(inputs)
         self.heights = copy.deepcopy(heights)
         self.walk_mask = copy.deepcopy(walk_mask)
+        resolution = self.inputs.get('provenance', {}).get('fuel_resolution') or {}
+        self._estimated_land = {(cell['column'], cell['row'])
+            for cell in resolution.get('document', {}).get('cells', [])
+            if cell['land_kind'] in ('vegetation', 'urban_mixed')}
         grid = self.inputs['grid']
         self.width, self.height = grid['width'], grid['height']
         self.transform = grid['transform'][:]
@@ -84,7 +88,8 @@ class HazardRouter:
         for field in ('study_mask', 'fuel_valid_mask', 'fuel_known_mask'):
             mask = self.inputs.get(field)
             if mask is not None and mask[row][column] != 1:
-                return False
+                if field == 'study_mask' or (column, row) not in self._estimated_land:
+                    return False
         fuel = self.inputs.get('fuel_classes')
         if fuel is not None and (type(fuel[row][column]) is not int or not 1 <= fuel[row][column] <= 10):
             return False

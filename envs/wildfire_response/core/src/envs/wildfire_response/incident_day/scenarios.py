@@ -18,6 +18,8 @@ PROFILE = dict(version='wildfire-incident-day-profile-v2', horizon_minutes=1440,
     air_refill_minutes=6, aircraft_max_wind=2.8, engine_litres_per_minute=500,
     spread_interval_multiplier=60, burn_duration_multiplier=12,
     evidence='Declared exercise assumptions, not aviation/labour-law or fire-spread calibration')
+CALIBRATED_CASE_IDS = tuple(f'incident-day-shift-v1-{index:03}' for index in range(6))
+ALL_CASE_IDS = CASE_IDS + CALIBRATED_CASE_IDS
 
 
 class DayFire(RegionalFire, EdgeFireStep):
@@ -25,14 +27,21 @@ class DayFire(RegionalFire, EdgeFireStep):
         super().__init__(load_pack(), seed)
         self.width, self.height = inputs['grid']['width'], inputs['grid']['height']
         self.cells = []
-        for row in inputs['fuel_classes']:
+        resolution = inputs['provenance'].get('fuel_resolution') or {}
+        estimates = {(cell['row'], cell['column']): cell for cell in resolution.get('document', {}).get('cells', [])}
+        for row_index, row in enumerate(inputs['fuel_classes']):
             cells = []
-            for code in row:
+            for column_index, code in enumerate(row):
                 mapped = FUEL_MAPPING.get(code)
                 if mapped is None:
                     raise ValueError('Day physics requires resolved fuel; unknown is not a firebreak')
                 fuel = mapped['initial_fuel']
-                cells.append(dict(terrain=mapped['terrain'], fuel=fuel, initial_fuel=fuel,
+                estimate = estimates.get((row_index, column_index))
+                terrain = mapped['terrain']
+                if estimate is not None:
+                    terrain = estimate['runtime_terrain']
+                    fuel *= estimate['fuel_multiplier']
+                cells.append(dict(terrain=terrain, fuel=fuel, initial_fuel=fuel,
                                   heat=0., age=0, wet=0, burned=0.))
             self.cells.append(cells)
         self.groups = {}
@@ -56,6 +65,9 @@ def grid_point(inputs, position):
 
 
 def build_scenario(inputs, network, identifier, seed=None):
+    if identifier in CALIBRATED_CASE_IDS:
+        from .calibrated_scenarios import build_calibrated_scenario
+        return build_calibrated_scenario(inputs, network, identifier, seed)
     if identifier not in CASE_IDS:
         raise ValueError('Unknown incident-day development scenario')
     index = CASE_IDS.index(identifier)

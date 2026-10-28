@@ -30,7 +30,7 @@ except ModuleNotFoundError as error:
         episode_id: str | None = None
         step_count: int = 0
 
-from wildfire_core.incident_day import CASE_IDS, IncidentDayEnv
+from wildfire_core.incident_day import ALL_CASE_IDS, CASE_IDS, IncidentDayEnv
 
 
 Identifier = Annotated[str, Field(strict=True, min_length=1, max_length=128, pattern=r'^[A-Za-z0-9_.:-]+$')]
@@ -132,7 +132,7 @@ class IncidentDayEnvironment(Environment):
     def reset(self, seed=None, episode_id=None, task_id=CASE_IDS[0], **kwargs):
         if kwargs:
             raise ValueError('Unknown reset options')
-        if task_id not in CASE_IDS:
+        if task_id not in ALL_CASE_IDS:
             raise ValueError('Unknown incident-day scenario')
         if seed is not None and (type(seed) is not int or not 0 <= seed <= 2**63 - 1):
             raise ValueError('seed must be a bounded nonnegative integer')
@@ -204,7 +204,7 @@ class IncidentDayEnvironment(Environment):
     def list_tasks(self, split):
         if split != 'development':
             raise ValueError('Unknown split')
-        return [dict(id=identifier, split=split) for identifier in CASE_IDS]
+        return [dict(id=identifier, split=split) for identifier in ALL_CASE_IDS]
 
 
 def _identifier(value):
