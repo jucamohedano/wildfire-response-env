@@ -1,0 +1,22 @@
+{
+  "original_raw_cache_available": false,
+  "records": {
+    "display_roads_provenance.json.gz": {
+      "bytes": 20412,
+      "gzip_bytes": 5690,
+      "gzip_sha256": "bc762649f3f0ed456280cdfa4ce63f2126b25346c6f07aa73889d09979f9fd5d",
+      "sha256": "2b69a78791199c30e2a205e17c1b5d4a8ae5a311083a5a16025b4d92e53f1bc8",
+      "source_path": "data/ui_v2/display_roads_provenance.json"
+    },
+    "map-roads-v2.json.gz": {
+      "bytes": 1086697,
+      "gzip_bytes": 270686,
+      "gzip_sha256": "002861f25ee4fb6e9ba0a7b91f6d97583549b29308c6649cd70d037f808a1759",
+      "sha256": "5f379c84b53523e2f1aee9758eb71979e1b4f5dccd869001a932fa5b5158cd7d",
+      "source_path": "ui/public/assets/map-roads-v2.json"
+    }
+  },
+  "revision": "20261027",
+  "role": "frozen_prior_display_revision_not_reproduced_today",
+  "version": "display-road-archive-v1"
+}

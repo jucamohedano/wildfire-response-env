@@ -28,7 +28,7 @@
     "asset": "ui/public/assets/map-roads-v2.json",
     "provenance": "data/ui_v2/display_roads_provenance.json",
     "role": "display_only_not_routing",
-    "source": "21 existing hash-verified OSM map replies; no new road acquisition",
+    "source": "Portable normalized OSM snapshot acquired 2026-10-28 from 16 bounded current-map requests; same displayed road geometry as the archived 2026-10-27 revision",
     "lines": 2956,
     "vertices": 37798,
     "toggle": "Roads",

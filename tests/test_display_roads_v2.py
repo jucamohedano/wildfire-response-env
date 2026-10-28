@@ -63,13 +63,19 @@ class CachedSourceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 roads.collect_elements([dict(elements=[first]), dict(elements=[second])])
 
-    def test_real_cached_tile_matches_frozen_acquisition(self):
+    def test_real_portable_source_is_pinned_without_an_ignored_cache(self):
+        from eval.display_road_snapshot import load_snapshot
+
         acquisition_bytes = (roads.ROOT / roads.ACQUISITION).read_bytes()
         self.assertEqual(roads.digest(acquisition_bytes), roads.ACQUISITION_SHA256)
         acquisition = json.loads(acquisition_bytes)
         self.assertEqual(len(acquisition['requests']), 21)
-        record = acquisition['requests'][0]
-        self.assertGreater(len(roads.verified_tile((roads.ROOT / record['raw_cache']).read_bytes(), record)['elements']), 0)
+        manifest, nodes, ways = load_snapshot(roads.ROOT / roads.SNAPSHOT_MANIFEST,
+                                              roads.SNAPSHOT_MANIFEST_SHA256)
+        self.assertEqual(manifest['extent'], list(roads.EXTENT))
+        self.assertGreater(len(nodes), 0)
+        self.assertGreater(len(ways), 0)
+        self.assertIn('not a 2021', manifest['source']['temporal_scope'])
 
 
 class GeometryTests(unittest.TestCase):
@@ -167,12 +173,30 @@ class DisplayCompilerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             roads.build_asset(nodes, ways)
         nodes, ways = self.elements()
-        for cap in ('MAX_VERTICES', 'MAX_ASSET_BYTES'):
-            with patch.object(roads, cap, 1), self.assertRaises(ValueError):
-                roads.build_asset(nodes, ways)
+        for cap in ('max_vertices', 'max_asset_bytes'):
+            with self.subTest(cap=cap), self.assertRaises(ValueError):
+                roads.build_asset(nodes, ways, **{cap: 1})
 
 
 class PinnedDisplayAssetTests(unittest.TestCase):
+    def test_prior_asset_and_original_provenance_remain_archived(self):
+        root = roads.ROOT / 'data/ui_v2/archive/20261027'
+        manifest = json.loads((root / 'manifest.json').read_bytes())
+        self.assertFalse(manifest['original_raw_cache_available'])
+        for name, record in manifest['records'].items():
+            compressed = (root / name).read_bytes()
+            self.assertEqual(roads.digest(compressed), record['gzip_sha256'])
+            raw = gzip.decompress(compressed)
+            self.assertEqual(len(raw), record['bytes'])
+            self.assertEqual(roads.digest(raw), record['sha256'])
+
+    def test_portable_revision_preserves_the_prior_display_geometry(self):
+        archived = gzip.decompress((roads.ROOT / 'data/ui_v2/archive/20261027/map-roads-v2.json.gz').read_bytes())
+        old_asset = json.loads(archived)
+        new_asset = json.loads((roads.ROOT / roads.ASSET).read_bytes())
+        self.assertEqual(new_asset['lines'], old_asset['lines'])
+        self.assertNotEqual(new_asset['source'], old_asset['source'])
+
     def test_asset_hash_extent_full_domain_coverage_caps_and_license(self):
         encoded = (roads.ROOT / roads.ASSET).read_bytes()
         asset = json.loads(encoded)
@@ -182,6 +206,9 @@ class PinnedDisplayAssetTests(unittest.TestCase):
         self.assertEqual(provenance['output']['sha256'], asset['sha256'])
         self.assertEqual(provenance['output']['file_sha256'], roads.digest(encoded))
         self.assertEqual(provenance['preparation']['script_sha256'], roads.digest(Path(roads.__file__).read_bytes()))
+        from eval import display_road_snapshot
+        self.assertEqual(provenance['preparation']['source_loader']['sha256'],
+                         roads.digest(Path(display_road_snapshot.__file__).read_bytes()))
         self.assertEqual(asset['source']['license'], 'ODbL-1.0')
         self.assertIn('OpenStreetMap contributors', asset['source']['attribution'])
         self.assertEqual(asset['role'], 'display_only_not_routing')

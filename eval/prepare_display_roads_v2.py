@@ -1,4 +1,4 @@
-"""Compile display-only road cartography from existing pinned OSM cache, offline."""
+"""Compile display-only roads from a portable pinned source bundle, offline."""
 
 from collections import Counter
 import gzip
@@ -7,13 +7,18 @@ import io
 import json
 import math
 from pathlib import Path
+import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 ACQUISITION = 'data/coastal_mobility_v1/acquisition.json'
 ACQUISITION_SHA256 = '43ddc5a7aeac534a23ee1c013a93cd623eaff3836f4738141f125e5d92926aa8'
 ASSET = 'ui/public/assets/map-roads-v2.json'
 PROVENANCE = 'data/ui_v2/display_roads_provenance.json'
+SNAPSHOT_MANIFEST = 'data/ui_v2/snapshots/display-roads-manifest.json'
+SNAPSHOT_MANIFEST_SHA256 = 'b21852b130cf02edebb15eab03c40d4b3ae4d8c805d11ee317233ccbbe9107d5'
 EXTENT = (297000, 4036500, 315500, 4054500)
 VERSION = 'wildfire-display-roads-v2'
 MAX_TILE_BYTES = 20_000_000
@@ -211,7 +216,8 @@ def access_category(tags):
     return 'unknown'
 
 
-def build_asset(nodes, ways, *, extent=EXTENT, max_vertices=MAX_VERTICES, max_asset_bytes=MAX_ASSET_BYTES):
+def build_asset(nodes, ways, *, extent=EXTENT, max_vertices=MAX_VERTICES, max_asset_bytes=MAX_ASSET_BYTES,
+                source=None):
     from pyproj import Transformer, network
 
     network.set_network_enabled(False)
@@ -249,7 +255,7 @@ def build_asset(nodes, ways, *, extent=EXTENT, max_vertices=MAX_VERTICES, max_as
             statistics['vertices_before_simplification'] += len(part)
     lines.sort(key=lambda line: line['id'])
     asset = dict(version=VERSION, crs='EPSG:25830', extent=list(extent),
-                 role='display_only_not_routing', source=dict(SOURCE), lines=lines)
+                 role='display_only_not_routing', source=dict(SOURCE if source is None else source), lines=lines)
     asset['sha256'] = asset_digest(asset)
     statistics.update(lines=len(lines), vertices=sum(len(line['coordinates']) for line in lines))
     if not lines or statistics['vertices'] > max_vertices or len(canonical(asset)) + 1 >= max_asset_bytes:
@@ -261,21 +267,39 @@ def build_asset(nodes, ways, *, extent=EXTENT, max_vertices=MAX_VERTICES, max_as
     return asset, report
 
 
-def prepare(root=ROOT):
+def prepare(root=ROOT, *, legacy_raw_cache=False):
     import pyproj
 
     root = Path(root)
-    acquisition, nodes, ways, records, duplicates = read_cached_sources(root)
-    asset, statistics = build_asset(nodes, ways)
+    if legacy_raw_cache:
+        acquisition, nodes, ways, records, duplicates = read_cached_sources(root)
+        source = dict(SOURCE)
+        source_record = dict(path=ACQUISITION, sha256=ACQUISITION_SHA256,
+            started_at=acquisition['acquisition_started_at'], completed_at=acquisition['acquisition_completed_at'],
+            files=records, snapshot='Original pinned API cache; fails closed when any raw tile is missing.')
+        loader_record = None
+    else:
+        from eval import display_road_snapshot
+        manifest, nodes, ways = display_road_snapshot.load_snapshot(root / SNAPSHOT_MANIFEST,
+                                                                 SNAPSHOT_MANIFEST_SHA256)
+        source = dict(manifest['source'], acquisition_date=manifest['acquisition']['completed_at'][:10],
+                      revision='display-road-source-20261028')
+        source_record = dict(path=SNAPSHOT_MANIFEST, sha256=SNAPSHOT_MANIFEST_SHA256,
+            started_at=manifest['acquisition']['started_at'], completed_at=manifest['acquisition']['completed_at'],
+            files=manifest['requests'], bundle=manifest['bundle'],
+            snapshot='Portable normalized current-map derivative; not restoration of the lost original API cache.',
+            prior_revision='data/ui_v2/archive/20261027/manifest.json')
+        duplicates = manifest['normalization']['duplicate_source_records']
+        loader_record = dict(script='eval/display_road_snapshot.py',
+                             sha256=digest(Path(display_road_snapshot.__file__).read_bytes()))
+    asset, statistics = build_asset(nodes, ways, source=source)
     encoded = canonical(asset) + b'\n'
-    provenance = dict(version='wildfire-display-roads-provenance-v2', role=asset['role'], source=SOURCE,
-        acquisition=dict(path=ACQUISITION, sha256=ACQUISITION_SHA256,
-                         started_at=acquisition['acquisition_started_at'],
-                         completed_at=acquisition['acquisition_completed_at'], files=records,
-                         snapshot='Existing current-map API replies from 2026-10-27; non-atomic tile acquisition, not a 2021 road inventory.'),
+    provenance = dict(version='wildfire-display-roads-provenance-v2', role=asset['role'], source=source,
+        acquisition=source_record,
         preparation=dict(script='eval/prepare_display_roads_v2.py', script_sha256=digest(Path(__file__).read_bytes()),
                          command='PYTHONDONTWRITEBYTECODE=1 PROJ_NETWORK=OFF python eval/prepare_display_roads_v2.py',
-                         execution='Offline CPU only; reads existing acquisition/cache and writes only the v2 display asset/provenance.',
+                         execution='Offline CPU only; verifies the pinned source and writes only the v2 display asset/provenance.',
+                         source_loader=loader_record,
                          pyproj_version=pyproj.__version__, proj_version=pyproj.proj_version_str,
                          source_crs='EPSG:4326', crs=asset['crs'], always_xy=True, proj_network_enabled=False,
                          clip_extent=list(EXTENT), coordinate_rounding_metres=0.1,
