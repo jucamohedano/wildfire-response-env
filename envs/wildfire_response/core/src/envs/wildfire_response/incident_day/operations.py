@@ -175,8 +175,6 @@ class Operations:
         return True
 
     def _current_position(self, unit, minute):
-        if unit.get('journey') and unit['state'] in ('travel', 'returning'):
-            return journey_position(unit['journey'], minute)[0]
         return copy.deepcopy(unit['position'])
 
     def _return(self, unit, journey, minute, planner=None):
@@ -209,31 +207,35 @@ class Operations:
         group = self.groups[group_id]
         if action not in ('evacuate', 'shelter'):
             raise ValueError('Unsupported protection action')
+        replacement = group.get('order_id') in self.orders
         if action == 'evacuate':
             destination = self.destinations.get(destination_id)
             if (destination is None or destination['status'] != 'open'
                     or self._occupancy(destination_id, group_id) + group['count'] > destination['capacity']):
                 raise ValueError('Destination unavailable or capacity exceeded')
-            plan = _route(journey, group['position'], destination['position'], minute)
+            origin = journey.get('origin') if replacement and isinstance(journey, dict) else group['position']
+            plan = _route(journey, origin, destination['position'], minute)
             if plan is None:
                 raise ValueError('A valid routed journey is required')
         else:
             if destination_id is not None or journey is not None:
                 raise ValueError('Shelter does not take a destination or journey')
             plan = None
-        old_order = group.get('order_id')
-        if old_order in self.orders and self.orders[old_order]['state'] not in ('completed', 'cancelled'):
-            self.orders[old_order]['state'] = 'cancelled'
-        if action == 'evacuate':
-            self.reservations[group_id] = destination_id
-        else:
-            self.reservations.pop(group_id, None)
+        pending = group.get('pending_order_id')
+        if pending in self.orders:
+            self.orders[pending]['state'] = 'cancelled'
+            group.pop('pending_order_id', None)
+        if not replacement:
+            if action == 'evacuate':
+                self.reservations[group_id] = destination_id
+            else:
+                self.reservations.pop(group_id, None)
         self.order_serial += 1
         order_id = f'order-{self.order_serial}'
         self.orders[order_id] = dict(id=order_id, group_id=group_id, action=action,
                                      destination_id=destination_id, journey=plan, state='issued',
                                      issued_at=minute, due_at=minute + self.profile.get('order_delivery_minutes', 1))
-        group['order_id'] = order_id
+        group['pending_order_id' if replacement else 'order_id'] = order_id
         return order_id
 
     def _at_base(self, unit, minute):
@@ -329,6 +331,9 @@ class Operations:
         speed = math.hypot(*wind) if isinstance(wind, (list, tuple)) and len(wind) == 2 else wind
         return bool(daylight) and speed <= self.profile.get('aircraft_max_wind', 40)
 
+    def set_flight_conditions(self, wind, daylight):
+        self.air_window_open = self._flight_window(wind, daylight)
+
     def tick(self, minute, *, wind, daylight, hazard_check, suppress, emit, return_planner=None,
              exposure_check=None, movement_check=None):
         """Check each proposed step with movement_check(journey_copy, minute, kind).
@@ -374,11 +379,6 @@ class Operations:
                 unit['fuel_minutes'] -= 1
             if unit['kind'] == 'aircraft' and movement_state in ('mobilizing', 'travel', 'on_scene', 'working'):
                 if not unit['clearance'] or not self.air_window_open:
-                    if state == 'travel':
-                        position = self._current_position(unit, minute)
-                        if not _movement_safe(unit['journey'], minute, unit['kind'], position,
-                                              hazard_check, movement_check):
-                            unit.update(state='blocked', blocked_state='travel')
                     unit['clearance'] = False
                     self._return(unit, None, minute, planner)
                     emit('operations', 'aircraft_aborted', {'resource_id': unit['id']}, urgent=True)
@@ -475,81 +475,109 @@ class Operations:
 
         for group in self.groups.values():
             order = self.orders.get(group.get('order_id'))
-            if order is None:
-                continue
-            if order['state'] == 'issued' and minute >= order['due_at']:
-                order.update(state='delivered', delivered_at=minute,
-                             due_at=minute + self.profile.get('order_ack_minutes', 1))
-                emit('operations', 'order_delivered', {'order_id': order['id'], 'group_id': group['id']})
-            elif order['state'] == 'delivered' and minute >= order['due_at']:
-                order.update(state='acknowledged', acknowledged_at=minute,
-                             due_at=minute + self.profile.get('order_execution_minutes', 1))
-                emit('operations', 'order_acknowledged', {'order_id': order['id'], 'group_id': group['id']})
-            elif order['state'] == 'acknowledged' and minute >= order['due_at']:
-                if order['action'] == 'shelter':
-                    destination = self.destinations.get(group.get('destination_id'))
-                    if (_same_position(group['position'], group.get('home')) or
-                            (destination is not None and
-                             _same_position(group['position'], destination['position']))):
-                        group['status'] = 'sheltering'
-                        order.update(state='completed', completed_at=minute)
-                    else:
-                        group['status'] = 'unable_to_comply'
-                        order.update(state='unable_to_comply', completed_at=minute)
-                        emit('operations', 'unable_to_comply',
-                             {'order_id': order['id'], 'group_id': group['id'],
-                              'position': copy.deepcopy(group['position'])}, actionable=True)
-                elif self.destinations[order['destination_id']]['status'] != 'open':
-                    order['state'] = 'blocked'
-                    group['status'] = 'blocked'
-                    emit('operations', 'movement_blocked',
-                         {'order_id': order['id'], 'group_id': group['id'],
-                          'position': copy.deepcopy(group['position'])}, actionable=True)
-                else:
-                    order.update(state='executing', started_at=minute)
-                    order['journey']['departed_at'] = minute
-                    order['journey']['arrives_at'] = minute + order['journey']['duration_minutes']
-                    group.update(status='evacuating', destination_id=None)
-            elif order['state'] in ('executing', 'blocked') and order['action'] == 'evacuate':
-                route = order['journey']
-                if order['state'] == 'blocked' and 'started_at' not in order:
-                    if self.destinations[order['destination_id']]['status'] == 'open':
-                        order.update(state='executing', started_at=minute)
-                        route['departed_at'] = minute
-                        route['arrives_at'] = minute + route['duration_minutes']
-                        group.update(status='evacuating', destination_id=None)
-                        emit('operations', 'movement_resumed',
-                             {'order_id': order['id'], 'group_id': group['id'],
-                              'position': copy.deepcopy(group['position'])}, actionable=True)
-                    continue
-                position = journey_position(route, minute)[0]
-                if (self.destinations[order['destination_id']]['status'] != 'open'
-                        or not _movement_safe(route, minute, 'group', position, hazard_check, movement_check)):
-                    route['departed_at'] += 1
-                    route['arrives_at'] += 1
-                    was_blocked = order['state'] == 'blocked'
-                    order['state'] = group['status'] = 'blocked'
-                    if not was_blocked:
-                        emit('operations', 'movement_blocked',
-                             {'order_id': order['id'], 'group_id': group['id'],
-                              'position': copy.deepcopy(group['position'])}, actionable=True)
-                    continue
-                group['position'] = position
-                was_blocked = order['state'] == 'blocked'
-                order['state'], group['status'] = 'executing', 'evacuating'
-                if was_blocked:
-                    emit('operations', 'movement_resumed',
-                         {'order_id': order['id'], 'group_id': group['id'],
-                          'position': copy.deepcopy(position)}, actionable=True)
-                if minute >= route['arrives_at']:
-                    group.update(status='arrived', destination_id=order['destination_id'])
-                    order.update(state='completed', completed_at=minute)
-                    emit('operations', 'evacuation_arrived', {'order_id': order['id'], 'group_id': group['id']})
+            if order is not None:
+                self._advance_order(group, order, minute, hazard_check, movement_check, emit, False)
+            pending = self.orders.get(group.get('pending_order_id'))
+            if pending is not None:
+                self._advance_order(group, pending, minute, hazard_check, movement_check, emit, True)
 
         if exposure_check is not None:
             for group in self.groups.values():
                 if exposure_check(copy.deepcopy(group)):
                     group['exposed'] = True
+
+    def _reject_order(self, group, order, minute, emit, pending):
+        order.update(state='unable_to_comply', completed_at=minute)
+        if pending:
+            group.pop('pending_order_id', None)
+        else:
+            group['status'] = 'unable_to_comply'
+            if self.reservations.get(group['id']) == order['destination_id']:
+                self.reservations.pop(group['id'], None)
+        emit('operations', 'unable_to_comply',
+             {'order_id': order['id'], 'group_id': group['id'],
+              'position': copy.deepcopy(group['position'])}, actionable=True)
+
+    def _activate_order(self, group, order, minute, emit, pending):
+        if order['action'] == 'shelter':
+            destination = self.destinations.get(group.get('destination_id'))
+            if not (_same_position(group['position'], group.get('home')) or
+                    (destination is not None and _same_position(group['position'], destination['position']))):
+                self._reject_order(group, order, minute, emit, pending)
+                return
+        else:
+            destination = self.destinations[order['destination_id']]
+            if destination['status'] != 'open' and not pending:
+                order['state'] = group['status'] = 'blocked'
+                emit('operations', 'movement_blocked',
+                     {'order_id': order['id'], 'group_id': group['id'],
+                      'position': copy.deepcopy(group['position'])}, actionable=True)
+                return
+            plan = _route(order['journey'], group['position'], destination['position'], minute)
+            if (destination['status'] != 'open' or plan is None or
+                    self._occupancy(destination['id'], group['id']) + group['count'] > destination['capacity']):
+                self._reject_order(group, order, minute, emit, pending)
+                return
+            order['journey'] = plan
+        if pending:
+            previous = self.orders.get(group.get('order_id'))
+            if previous is not None and previous['state'] not in ('completed', 'cancelled', 'unable_to_comply'):
+                previous['state'] = 'cancelled'
+            group['order_id'] = order['id']
+            group.pop('pending_order_id', None)
+        if order['action'] == 'shelter':
+            self.reservations.pop(group['id'], None)
+            group['status'] = 'sheltering'
+            order.update(state='completed', completed_at=minute)
+        else:
+            self.reservations[group['id']] = order['destination_id']
+            order.update(state='executing', started_at=minute)
+            group.update(status='evacuating', destination_id=None)
+
+    def _advance_order(self, group, order, minute, hazard_check, movement_check, emit, pending):
+        if order['state'] == 'issued' and minute >= order['due_at']:
+            order.update(state='delivered', delivered_at=minute,
+                         due_at=minute + self.profile.get('order_ack_minutes', 1))
+            emit('operations', 'order_delivered', {'order_id': order['id'], 'group_id': group['id']})
+        elif order['state'] == 'delivered' and minute >= order['due_at']:
+            order.update(state='acknowledged', acknowledged_at=minute,
+                         due_at=minute + self.profile.get('order_execution_minutes', 1))
+            emit('operations', 'order_acknowledged', {'order_id': order['id'], 'group_id': group['id']})
+        elif order['state'] == 'acknowledged' and minute >= order['due_at']:
+            self._activate_order(group, order, minute, emit, pending)
+        elif order['state'] in ('executing', 'blocked') and order['action'] == 'evacuate':
+            route = order['journey']
+            if order['state'] == 'blocked' and 'started_at' not in order:
+                if self.destinations[order['destination_id']]['status'] == 'open':
+                    self._activate_order(group, order, minute, emit, False)
+                    if order['state'] == 'executing':
+                        emit('operations', 'movement_resumed',
+                             {'order_id': order['id'], 'group_id': group['id'],
+                              'position': copy.deepcopy(group['position'])}, actionable=True)
+                return
+            position = journey_position(route, minute)[0]
+            if (self.destinations[order['destination_id']]['status'] != 'open'
+                    or not _movement_safe(route, minute, 'group', position, hazard_check, movement_check)):
+                route['departed_at'] += 1
+                route['arrives_at'] += 1
+                was_blocked = order['state'] == 'blocked'
+                order['state'] = group['status'] = 'blocked'
+                if not was_blocked:
+                    emit('operations', 'movement_blocked',
+                         {'order_id': order['id'], 'group_id': group['id'],
+                          'position': copy.deepcopy(group['position'])}, actionable=True)
+                return
+            group['position'] = position
+            was_blocked = order['state'] == 'blocked'
+            order['state'], group['status'] = 'executing', 'evacuating'
+            if was_blocked:
+                emit('operations', 'movement_resumed',
+                     {'order_id': order['id'], 'group_id': group['id'],
+                      'position': copy.deepcopy(position)}, actionable=True)
+            if minute >= route['arrives_at']:
+                group.update(status='arrived', destination_id=order['destination_id'])
+                order.update(state='completed', completed_at=minute)
+                emit('operations', 'evacuation_arrived', {'order_id': order['id'], 'group_id': group['id']})
 
     def snapshot(self):
         return copy.deepcopy(dict(resources=self.resources, destinations=self.destinations, groups=self.groups,

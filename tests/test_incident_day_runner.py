@@ -140,11 +140,33 @@ class IncidentDayRunnerTests(unittest.TestCase):
         env.reset('unrelated-label')
         for unused in range(3):
             env.step({'advance_minutes': 480})
+        for record in env._audit:
+            record['population']['group']['protection_pending'] = record['minute'] >= 1000
         self.assertEqual(runner.audit_phenomena(env._audit), dict(
             inherited_burning_footprint_cells=1, new_burned_cells=1, new_exposed_population=1,
-            resource_behavior='not_observable_in_audit'))
+            resource_behavior=None))
         env._audit[50]['minute'] = 51
         with self.assertRaisesRegex(ValueError, 'audit coverage'):
+            runner.audit_phenomena(env._audit)
+
+    def test_resource_phenomena_measure_audit_states_and_applied_work(self):
+        env = FakeEnv({}, {})
+        env.reset('arbitrary')
+        for unused in range(3):
+            env.step({'advance_minutes': 480})
+        for record in env._audit:
+            minute = record['minute']
+            state = {10: 'working', 11: 'refilling', 12: 'resting', 13: 'blocked'}.get(minute, 'available')
+            record['resources'] = {'unit': dict(state=state, water_litres=100 if minute >= 12 else 20,
+                                                fuel_minutes=90 if minute >= 13 else 30)}
+            record['applied_work'] = ([dict(resource_id='unit', state='working', location=[1, 2],
+                                           position=[500, 1000])] if minute == 10 else [])
+        evidence = runner.audit_phenomena(env._audit)['resource_behavior']
+        self.assertEqual(evidence, dict(state_changes=5, entered_refilling=1, entered_resting=1,
+                                        entered_blocked=1, entered_working=1, water_increases=1,
+                                        fuel_increases=1, applied_suppression=1, working_resource_snapshots=1))
+        del env._audit[100]['resources']
+        with self.assertRaisesRegex(ValueError, 'every minute'):
             runner.audit_phenomena(env._audit)
 
 

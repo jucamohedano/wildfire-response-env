@@ -23,8 +23,12 @@ VERSION = 'wildfire-incident-day-v2'
 
 
 def implementation_digest():
-    return digest({path.name: hashlib.sha256(path.read_bytes()).hexdigest()
-                   for path in sorted(Path(__file__).parent.glob('*.py'))})
+    root = Path(__file__).parents[3]
+    folders = [root / 'envs/wildfire_response', root / 'wildfire_core', root / 'simulator']
+    paths = [path for folder in folders for path in folder.rglob('*.py') if 'tests' not in path.parts]
+    paths.append(root / 'envs/wildfire_response/data/huelva_regional_v2.json')
+    return digest({str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
+                   for path in sorted(paths)})
 
 
 class IncidentDayEnv:
@@ -58,6 +62,7 @@ class IncidentDayEnv:
         self._known_groups = copy.deepcopy(self.ops.groups)
         self._known_destinations = copy.deepcopy(self.ops.destinations)
         self._known_wind = self._scenario['wind'][:]
+        self._known_wind_at = 0
         self._memory = {}
         self._known_revision = 0
         self._offers, self._issued_orders, self._commands, self._approaches = {}, {}, [], {}
@@ -65,6 +70,7 @@ class IncidentDayEnv:
         self._query_log = []
         self._signals = {}
         self._invalid_log = []
+        self._work_log = []
         self._closed_centers, self._restrictions = {}, set()
         self._known_restrictions = set()
         self._air_unavailable_until = self._known_air_unavailable_until = 0
@@ -168,7 +174,10 @@ class IncidentDayEnv:
                     self._known_groups[group_id] = dict(copy.deepcopy(payload['group']),
                         observed_at=record['observed_at'], received_at=record['received_at'])
             if 'destination' in payload:
-                self._known_destinations[payload['destination']['id']] = copy.deepcopy(payload['destination'])
+                destination = payload['destination']
+                if record['observed_at'] >= self._known_destinations.get(destination['id'], {}).get('observed_at', -1):
+                    self._known_destinations[destination['id']] = dict(copy.deepcopy(destination),
+                        observed_at=record['observed_at'], received_at=record['received_at'])
             if 'cells' in payload:
                 for cell in payload['cells']:
                     point = (cell['x'], cell['y'])
@@ -176,8 +185,10 @@ class IncidentDayEnv:
                         self._memory[point] = dict(copy.deepcopy(cell), received_at=record['received_at'])
                 self._known_revision += 1
             if 'wind' in payload:
-                self._known_wind = payload['wind'][:]
-                self._known_revision += 1
+                if record['observed_at'] >= self._known_wind_at:
+                    self._known_wind = payload['wind'][:]
+                    self._known_wind_at = record['observed_at']
+                    self._known_revision += 1
             if 'offer' in payload:
                 self._offers[payload['offer']['id']] = copy.deepcopy(payload['offer'])
                 self._pending_requests.discard(payload['offer']['resource_id'])
@@ -189,7 +200,10 @@ class IncidentDayEnv:
                 self._known_restrictions.add(payload['resource_kind'])
                 self._known_revision += 1
             if 'order' in payload:
-                self._issued_orders[payload['order']['id']] = copy.deepcopy(payload['order'])
+                order = payload['order']
+                if record['observed_at'] >= self._issued_orders.get(order['id'], {}).get('observed_at', -1):
+                    self._issued_orders[order['id']] = dict(copy.deepcopy(order), observed_at=record['observed_at'],
+                                                           received_at=record['received_at'])
 
     def get_situation(self):
         if self._scenario is None:
@@ -240,6 +254,7 @@ class IncidentDayEnv:
                 wind=self._known_wind, revision=self._known_revision,
                 excluded_cells=self._excluded(unit['kind'], self._known_restrictions))
         for option in result['options']:
+            option['id'] = digest(dict(route_id=option['id'], resource_id=resource_id, sector_id=sector_id))[:20]
             self._approaches[option['id']] = dict(copy.deepcopy(option), resource_id=resource_id, sector_id=sector_id)
         self._log_query('route_options', dict(resource_id=resource_id, sector_id=sector_id), result)
         return copy.deepcopy(result)
@@ -274,25 +289,11 @@ class IncidentDayEnv:
         if unit['kind'] == 'aircraft':
             return make_journey([make_leg('flight', [unit['position'], unit['base_position']], 240)],
                                 unit['position'], unit['base_position'], 'Declared recovery-to-base flight')
-        if unit['kind'] == 'crew':
-            result = self.router.options(unit['position'], grid_point(self.inputs, unit['base_position']),
-                mode='crew', burning=self._burning(), wind=list(self.fire.wind),
-                revision=self.minute, target_metric=unit['base_position'], limit=1)
-            return result['options'][0]['journey'] if result['options'] else None
-        base = self.network.nearest(unit['base_position'])
-        previous = unit.get('journey')
-        if previous:
-            try:
-                return self.network.return_journey(previous, minute, base)
-            except (ValueError, KeyError):
-                return None
-        origin = self.network.nearest(unit['position'])
-        if math.dist(unit['position'], self.network.nodes[origin]) > .01:
-            return None
-        try:
-            return make_journey(self.network.legs(origin, base), unit['position'], unit['base_position'], 'Directed road return')
-        except ValueError:
-            return None
+        result = self.router.options(unit['position'], grid_point(self.inputs, unit['base_position']),
+            mode=unit['kind'], burning=self._burning(), wind=list(self.fire.wind),
+            excluded_cells=self._excluded(unit['kind'], self._restrictions),
+            revision=self.minute, target_metric=unit['base_position'], limit=1)
+        return result['options'][0]['journey'] if result['options'] else None
 
     def check_action(self, action):
         try:
@@ -388,8 +389,7 @@ class IncidentDayEnv:
                 self._offers[identifier]['status'] = 'authorized'
                 self._commands.append(dict(due=self.minute + 1, kind='authorize', data=identifier))
             for identifier in action.get('releases', []):
-                unit = self.ops.resources[identifier]
-                self.ops.release(identifier, self._return_route(unit, self.minute), self.minute)
+                self._commands.append(dict(due=self.minute + 1, kind='release', data=identifier))
             for order in action.get('protection_orders', []):
                 self._commands.append(dict(due=self.minute + 1, kind='protect', data=copy.deepcopy(order)))
         duration = action.get('advance_minutes', 1) if valid else 1
@@ -430,6 +430,7 @@ class IncidentDayEnv:
 
     def _tick(self):
         self.minute += 1
+        self._work_log = []
         for event in [event for event in self._events if event['minute'] == self.minute]:
             self._events.remove(event)
             if event['kind'] == 'wind':
@@ -448,8 +449,9 @@ class IncidentDayEnv:
                 self._emit('destination', 'destination_threatened', dict(destination=copy.deepcopy(destination)), urgent=True)
             elif event['kind'] == 'center_unavailable':
                 self._closed_centers[event['center_id']] = event['until']
-        self._execute_commands()
         before = {identifier: unit['state'] for identifier, unit in self.ops.resources.items()}
+        self.ops.set_flight_conditions(list(self.fire.wind), self._daylight())
+        self._execute_commands()
         self.ops.tick(self.minute, wind=list(self.fire.wind), daylight=self._daylight(),
             hazard_check=self._hazard_safe, suppress=self._suppress, emit=self._emit,
             movement_check=self._movement_safe)
@@ -479,8 +481,9 @@ class IncidentDayEnv:
                     text='EXERCISE. Resident reports ' + level.replace('_', ' ') + ' conditions.'), self.minute,
                     role='resident', channel='phone', location=grid_point(self.inputs, group['position']),
                     urgent=level == 'exposed', actionable=changed)
-        working = sum(unit['state'] == 'working' for unit in self.ops.resources.values())
-        shortage = len(self._burning()) > max(8, 4 * working)
+        working = sum(unit['state'] == 'working' for unit in self._known_resources.values())
+        observed_fire = sum(cell['burning'] for cell in self._memory.values())
+        shortage = observed_fire > max(8, 4 * working)
         if shortage and not self._signals.get('shortage', False):
             self._emit('center-0', 'reinforcement_needed', dict(text='EXERCISE. Observed incident exceeds '
                 'the exercise capacity of the working assignment. Request assistance.', working_resources=working), urgent=True)
@@ -526,6 +529,11 @@ class IncidentDayEnv:
                 accepted = self.ops.dispatch(unit['id'], offer['sector_id'],
                     [self.fire.width // 2, self.fire.height // 2], approach['journey'], self.minute)
                 self._emit(unit['home_base'], 'dispatch_accepted' if accepted else 'dispatch_declined', dict(resource_id=unit['id']))
+            elif command['kind'] == 'release':
+                unit = self.ops.resources[data]
+                accepted = self.ops.release(data, self._return_route(unit, self.minute), self.minute)
+                self._emit(unit['home_base'], 'release_accepted' if accepted else 'release_declined',
+                    dict(resource_id=data, resource=self._resource_view(unit, self.minute)))
             else:
                 group = self.ops.groups[data['group_id']]
                 journey = None
@@ -533,7 +541,7 @@ class IncidentDayEnv:
                     journey = self._approaches[data['approach_id']]['journey']
                 try:
                     identifier = self.ops.protect(group['id'], data['action'], data['destination_id'], journey, self.minute)
-                    self._issued_orders[identifier] = {key: value for key, value in self.ops.orders[identifier].items() if key not in ('journey', 'due_at')}
+                    self._emit('population', 'protection_accepted', dict(order_id=identifier, group_id=group['id']))
                 except ValueError:
                     self._emit('population', 'protection_declined', dict(group_id=group['id']), urgent=True)
 
@@ -569,6 +577,8 @@ class IncidentDayEnv:
                 cell = self.fire.cells[row][column]
                 cell['heat'] = max(0., cell['heat'] - (.15 if unit['kind'] == 'aircraft' else .06))
                 cell['wet'] = max(cell['wet'], 5)
+                self._work_log.append(dict(resource_id=unit['id'], location=[column, row],
+                                           position=unit['position'][:], state=unit['state']))
                 break
 
     def _exposure(self, group):
@@ -581,8 +591,15 @@ class IncidentDayEnv:
     def _record(self, initial=False):
         footprint = self._burned()
         record = dict(minute=self.minute, new_footprint=sorted(footprint - self._footprint),
+            resources={key: {field: copy.deepcopy(unit.get(field)) for field in ('state', 'position', 'water_litres',
+                'work_remaining', 'total_work_remaining', 'fuel_minutes', 'due_at', 'duty_end_at')}
+                for key, unit in self.ops.resources.items()},
+            destinations={key: destination['status'] for key, destination in self.ops.destinations.items()},
+            wind=list(self.fire.wind), applied_work=copy.deepcopy(self._work_log),
             population={key: dict(count=group['count'], exposed=group['count'] if group['exposed'] else 0,
-                                  status=group['status']) for key, group in self.ops.groups.items()})
+                status=group['status'], protection_pending=any(order['group_id'] == key
+                    and order['state'] not in ('completed', 'cancelled', 'unable_to_comply')
+                    for order in self.ops.orders.values())) for key, group in self.ops.groups.items()})
         if initial:
             record.update(footprint=sorted(footprint), cell_area_hectares=self.inputs['grid']['cell_km'] ** 2 * 100,
                           burnable=[row * self.fire.width + column for row, cells in enumerate(self.fire.cells)
@@ -596,7 +613,8 @@ class IncidentDayEnv:
                 stream.write(json.dumps(record, sort_keys=True, allow_nan=False) + '\n')
 
     def outcomes(self):
-        return self._counter.result(self.ops.groups, self.minute, self.terminated, self.abandoned, self.censored)
+        return self._counter.result(self.ops.groups, self.minute, self.terminated, self.abandoned, self.censored,
+                                    self.ops.orders)
 
     def _info(self, error, wake):
         value = dict(interface_version=VERSION, minute=self.minute, error=error, wake_reason=wake)
@@ -616,7 +634,8 @@ class IncidentDayEnv:
             'reward', '_scenario', '_known_resources', '_known_groups', '_known_destinations', '_known_wind',
             '_known_revision', '_offers', '_issued_orders', '_commands', '_approaches', '_closed_centers',
             '_dose', '_events', '_audit', '_actions', '_prehistory', '_initial_observation',
-            '_known_air_unavailable_until', '_offer_serial', '_query_log', '_signals', '_invalid_log')
+            '_known_air_unavailable_until', '_offer_serial', '_query_log', '_signals', '_invalid_log', '_known_wind_at',
+            '_work_log')
         state = {key: copy.deepcopy(getattr(self, key)) for key in fields}
         state.update(memory=list(self._memory.values()), footprint=sorted(self._footprint),
             known_restrictions=sorted(self._known_restrictions),

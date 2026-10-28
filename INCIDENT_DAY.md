@@ -26,6 +26,9 @@ Each minute applies environmental changes, due commands, movement/work, fire and
 population effects, observations/deliveries, then audit recording. Routine
 telemetry is retained without waking the policy. Reads do not consume time or
 fire randomness. Reports distinguish observation, reporting and receipt times.
+Allocation expiry is the local authorization-submission deadline; an order
+submitted before expiry still takes its one-minute command latency. Actual
+resource readiness and flight conditions are rechecked when it executes.
 
 The six IDs `incident-day-dev-000` through `005` cover quiet handover, wind/access
 loss, crew-only approaches, aircraft operating windows, a threatened evacuation
@@ -44,6 +47,8 @@ open.
 The fixture, capacities, weather and roster are synthetic. The profile's default
 240 minutes of work and 60 minutes of rest are exercise assumptions, not labour
 law. Fixed-wing aircraft are landloaded; no minimum fire-area rule is assumed.
+Their finite fuel endurance and the bases' water stocks are exercise values.
+Only a co-located, kind-compatible declared facility can refill a unit.
 Communication delays depend on source and channel, with a synthetic maximum of
 60 minutes. Road coverage is partial to the east, with only 62 truck-accessible
 grid centres under the existing rule; a route gap does not prove a footpath.
@@ -101,5 +106,9 @@ the private audit; a zero count is an observed gap, not a successful coverage
 claim. A completed suite requires fire growth in at least one batch case; a
 passive suite also requires new population exposure in at least one batch case.
 These checks make no claim that every named scenario exercised its intended
-phenomenon. Resource behavior is not observable in that audit and needs separate
-behavioral tests. A change to the incident-day implementation invalidates a run.
+phenomenon. When present, the resource audit counts observed state changes,
+refill, rest and blocked entries, stock increases and applied suppression.
+Minute snapshots can miss transient states; stock increases alone do not prove a
+refill succeeded, and missing resource audit data is reported explicitly. These
+counts do not replace behavioral tests. A change to the implementation invalidates
+a run.

@@ -1,0 +1,52 @@
+{
+  "version": "wildfire-incident-day-provenance-v2",
+  "historical_context": {
+    "name": "Sierra Bermeja, Malaga, Spain",
+    "incident_start_date": "2021-09-08",
+    "registry": "data/malaga_2021/provenance.json",
+    "role": "Geographic and incident context only; no claim of reconstructing historical dispatch"
+  },
+  "runnable_data": {
+    "kind": "fully_synthetic_development_fixture",
+    "builder": "envs.wildfire_response.incident_day.scenarios.fixture_inputs",
+    "default_grid_cells": [32, 32],
+    "cell_metres": 500,
+    "terrain_and_roads": "Synthetic complete elevations, fuel and directed road lattice; not a measured location",
+    "warm_start_minutes": 60,
+    "development_seeds": [2844000, 2844001, 2844002, 2844003, 2844004, 2844005],
+    "start_utc": "2021-09-09T04:00:00Z",
+    "horizon_minutes": 1440,
+    "demonstrations": false,
+    "historical_replay": false
+  },
+  "real_source_pack": {
+    "approval": "blocked",
+    "prepared_inputs_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
+    "topographic_inputs_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+    "cropped_grid_cells": [37, 36],
+    "unknown_fuel_cells": 80,
+    "source_masked_pixels": 78,
+    "outside_source_coverage": 2,
+    "road_coverage": "Partial coastal graph; real temporal passability is not verified",
+    "gate": "Unknown fuel cannot be silently converted to nonburnable terrain or approved by a synthetic replacement"
+  },
+  "synthetic_components": [
+    "Fire initialization and spread parameters",
+    "Weather schedule and randomized communications delays",
+    "Firefighter roster, water stocks, fuel endurance and duty windows",
+    "Safe-staging hazard buffers and walking assumptions",
+    "Population cohorts, named destinations and capacity",
+    "Calls, observations, handover history and reinforcement requests"
+  ],
+  "operational_parameters": "data/incident_day_v2/profile.json",
+  "legacy_variant_review": {
+    "reviewed": 32,
+    "preignition_weather_cases_retained_as_legacy": 28,
+    "unsafe_refuge_cases_requiring_redesign": 4,
+    "old_scenarios_changed": 0,
+    "imported_into_day_mode": 0,
+    "private_report_sha256": "9f7df7e0f715b226206581ab7ce4f403f3ec9b4b8b9d89e667c10d2472494aae",
+    "expert_validation": false
+  },
+  "publication": "Not included; source licensing and operational fidelity remain separate gates"
+}

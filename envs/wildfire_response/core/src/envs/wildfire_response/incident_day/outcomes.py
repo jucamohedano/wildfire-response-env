@@ -14,12 +14,17 @@ class OutcomeCounter:
     def update(self, new_cells):
         self.additional.update(set(new_cells) & self.eligible)
 
-    def result(self, groups, minute, terminal, abandoned, censored):
+    def result(self, groups, minute, terminal, abandoned, censored, orders=None):
         exposed = sum(group['count'] for group in groups.values() if group['exposed']) - self.initial_exposure
         denominator = self.population - self.initial_exposure
         protected = (denominator - exposed) / denominator if denominator else 1.
         retained = (len(self.eligible) - len(self.additional)) / len(self.eligible) if self.eligible else 1.
-        moving = sum(group['status'] in ('evacuating', 'blocked') for group in groups.values())
+        unresolved = {identifier for identifier, group in groups.items()
+                      if group['status'] in ('evacuating', 'blocked', 'unable_to_comply')}
+        for order in (orders or {}).values():
+            if order['state'] not in ('completed', 'cancelled', 'unable_to_comply'):
+                unresolved.add(order['group_id'])
+        moving = len(unresolved)
         complete = terminal and minute == 1440 and not abandoned and not censored
         return dict(reward_version=VERSION, graded_score=.8 * protected + .2 * retained if complete else 0.,
             protected_population_fraction=protected, additional_burned_hectares=len(self.additional) * self.cell_area,
@@ -69,7 +74,8 @@ def recompute(records, *, terminal=True, abandoned=False, censored=False):
     protected = 1 - new_exposure / (population - original_exposure) if population > original_exposure else 1.
     new_burned = len((footprint - initial) & eligible)
     unburned = 1 - new_burned / len(eligible) if eligible else 1.
-    moving = sum(group['status'] in ('evacuating', 'blocked') for group in last['population'].values())
+    moving = sum(group['status'] in ('evacuating', 'blocked', 'unable_to_comply') or group.get('protection_pending', False)
+                 for group in last['population'].values())
     complete = terminal and last['minute'] == 1440 and not censored and not abandoned
     score = .8 * protected + .2 * unburned if complete else 0.
     return dict(reward_version=VERSION, graded_score=score, protected_population_fraction=protected,

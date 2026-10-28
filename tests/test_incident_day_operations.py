@@ -87,6 +87,23 @@ def test_return_requires_continuous_supplied_route_and_preserves_position():
     assert resource['position'] == [0, 0]
 
 
+def test_release_before_movement_uses_last_validated_position():
+    operations = Operations([unit()], [], [], {})
+    operations.dispatch('engine-1', 's', [0, 0], route([0, 0], [5000, 0]), 0)
+    for minute in range(3):
+        run(operations, minute)
+    resource = operations.resources['engine-1']
+    assert resource['position'] == [1000, 0]
+    assert operations.release('engine-1', route([1000, 0], [0, 0]), 3)
+    assert resource['state'] == 'returning'
+    assert resource['position'] == [1000, 0]
+    assert resource['journey']['origin'] == [1000, 0]
+    run(operations, 3)
+    assert resource['position'] == [1000, 0]
+    run(operations, 4)
+    assert resource['position'] == [0, 0]
+
+
 @pytest.mark.parametrize('stopped_state', ['blocked', 'needs_assistance'])
 def test_stopped_resource_can_dispatch_alternative_route_from_actual_position(stopped_state):
     operations = Operations([unit(water_litres=37, work_remaining=23)], [], [], {})
@@ -414,6 +431,16 @@ def test_fuelled_aircraft_requires_planned_recovery_and_refuel_capability():
     assert resource['position'] == [0, 0]
 
 
+def test_flight_conditions_can_be_updated_before_commands():
+    operations = Operations([unit(kind='aircraft')], [], [], {})
+    operations.clear_aircraft('engine-1', 0)
+    run(operations, 0, daylight=True)
+    operations.set_flight_conditions([0, 0], False)
+    assert not operations.dispatch('engine-1', 's', [0, 0], route([0, 0], [1000, 0], 'flight'), 1)
+    operations.set_flight_conditions([0, 0], True)
+    assert operations.dispatch('engine-1', 's', [0, 0], route([0, 0], [1000, 0], 'flight'), 1)
+
+
 def test_aircraft_skips_drop_without_return_reserve_and_never_teleports():
     aircraft = unit(kind='aircraft', water_litres=100, fuel_minutes=8, fuel_capacity_minutes=8)
     operations = Operations([aircraft], [], [], {}, return_planner=return_plan)
@@ -447,12 +474,12 @@ def test_aircraft_recovers_without_new_clearance_after_abort(abort_weather):
     for minute in range(4):
         run(operations, minute)
     run(operations, 4, events=events, effects=effects, **abort_weather)
-    assert aircraft['position'] == [3000, 0]
+    assert aircraft['position'] == [2000, 0]
     assert aircraft['state'] == 'returning'
-    assert aircraft['journey']['origin'] == [3000, 0]
+    assert aircraft['journey']['origin'] == [2000, 0]
     assert not aircraft['clearance']
     run(operations, 5, daylight=False, safe=lambda position, kind: False, events=events, effects=effects)
-    assert aircraft['position'] == [2000, 0]
+    assert aircraft['position'] == [1000, 0]
     for minute in range(6, 9):
         run(operations, minute, daylight=False, safe=lambda position, kind: False,
             events=events, effects=effects)
@@ -484,7 +511,7 @@ def test_blocked_aircraft_abort_recovers_from_last_actual_position():
     assert aircraft['position'] == [0, 0]
 
 
-def test_aircraft_abort_checks_outbound_segment_but_recovery_is_exempt():
+def test_aircraft_abort_uses_validated_position_and_recovery_is_exempt():
     operations = Operations([unit(kind='aircraft')], [], [], {}, return_planner=return_plan)
     operations.clear_aircraft('engine-1', 0)
     operations.dispatch('engine-1', 's', [0, 0], route([0, 0], [5000, 0], 'flight'), 0)
@@ -500,7 +527,7 @@ def test_aircraft_abort_checks_outbound_segment_but_recovery_is_exempt():
     assert aircraft['journey']['origin'] == [1000, 0]
     run(operations, 4, daylight=False, movement_check=unsafe)
     assert aircraft['position'] == [0, 0]
-    assert calls == [(3, 'aircraft')]
+    assert calls == []
 
 
 def test_single_drop_and_single_server_refill_queue():
@@ -582,6 +609,75 @@ def test_evacuation_block_emits_once_and_resumes_without_teleport():
     assert operations.groups['g1']['status'] == 'arrived'
 
 
+@pytest.mark.parametrize('fresh_origin', [False, True])
+def test_pending_redirect_preserves_active_trip_until_execution(fresh_origin):
+    operations = Operations([], [destination('d1', position=[8000, 0]),
+                                 destination('d2', position=[4000, 5000])], [group()], {})
+    events = []
+    original = operations.protect('g1', 'evacuate', 'd1', route([0, 0], [8000, 0]), 0)
+    for minute in range(5):
+        run(operations, minute, events=events)
+    origin = [4000, 0] if fresh_origin else [1000, 0]
+    redirect = operations.protect('g1', 'evacuate', 'd2', route(origin, [4000, 5000]), 4)
+    assert operations.groups['g1']['order_id'] == original
+    assert operations.groups['g1']['pending_order_id'] == redirect
+    assert operations.reservations['g1'] == 'd1'
+    restored = Operations.restore(json.loads(json.dumps(operations.checkpoint())))
+    for minute in range(5, 8):
+        run(operations, minute, events=events)
+        run(restored, minute)
+    assert operations.checkpoint() == restored.checkpoint()
+    assert operations.groups['g1']['position'] == [4000, 0]
+    if fresh_origin:
+        assert operations.orders[original]['state'] == 'cancelled'
+        assert operations.orders[redirect]['state'] == 'executing'
+        assert operations.groups['g1']['order_id'] == redirect
+        assert operations.reservations['g1'] == 'd2'
+        run(operations, 8, events=events)
+        assert operations.groups['g1']['position'] == [4000, 1000]
+    else:
+        assert operations.orders[original]['state'] == 'executing'
+        assert operations.orders[redirect]['state'] == 'unable_to_comply'
+        assert operations.groups['g1']['order_id'] == original
+        assert operations.reservations['g1'] == 'd1'
+        for minute in range(8, 12):
+            run(operations, minute, events=events)
+        assert operations.groups['g1']['destination_id'] == 'd1'
+        assert [event[1] for event in events].count('unable_to_comply') == 1
+
+
+def test_pending_redirect_rechecks_capacity_without_losing_active_reservation():
+    operations = Operations([], [destination('d1', position=[8000, 0]),
+                                 destination('d2', position=[4000, 5000])],
+                            [group(), group('g2', count=2)], {})
+    original = operations.protect('g1', 'evacuate', 'd1', route([0, 0], [8000, 0]), 0)
+    for minute in range(5):
+        run(operations, minute)
+    redirect = operations.protect('g1', 'evacuate', 'd2', route([4000, 0], [4000, 5000]), 4)
+    operations.protect('g2', 'evacuate', 'd2', route([0, 0], [4000, 5000]), 4)
+    for minute in range(5, 8):
+        run(operations, minute)
+    assert operations.orders[redirect]['state'] == 'unable_to_comply'
+    assert operations.orders[original]['state'] == 'executing'
+    assert operations.reservations == {'g1': 'd1', 'g2': 'd2'}
+    assert operations.groups['g1']['position'] == [4000, 0]
+
+
+def test_pending_shelter_uses_location_at_execution():
+    operations = Operations([], [destination(position=[4000, 0])], [group()], {})
+    original = operations.protect('g1', 'evacuate', 'd1', route([0, 0], [4000, 0]), 0)
+    for minute in range(5):
+        run(operations, minute)
+    pending = operations.protect('g1', 'shelter', None, None, 4)
+    for minute in range(5, 8):
+        run(operations, minute)
+    assert operations.orders[original]['state'] == 'completed'
+    assert operations.orders[pending]['state'] == 'completed'
+    assert operations.groups['g1']['status'] == 'sheltering'
+    assert operations.groups['g1']['destination_id'] == 'd1'
+    assert operations._occupancy('d1') == 4
+
+
 def test_evacuation_swept_check_blocks_intermediate_hazard():
     operations = Operations([], [destination(position=[3000, 0])], [group()], {})
     events = []
@@ -605,12 +701,12 @@ def test_evacuation_swept_check_blocks_intermediate_hazard():
 
 
 def test_shelter_order_fails_on_road_but_succeeds_at_home_or_destination():
-    operations = Operations([], [destination(position=[4000, 0])],
+    operations = Operations([], [destination(position=[8000, 0])],
                             [group(), group('home', count=1),
-                             group('arrived', count=1, position=[4000, 0],
+                             group('arrived', count=1, position=[8000, 0],
                                    destination_id='d1', status='arrived')], {})
     events = []
-    evacuation = operations.protect('g1', 'evacuate', 'd1', route([0, 0], [4000, 0]), 0)
+    evacuation = operations.protect('g1', 'evacuate', 'd1', route([0, 0], [8000, 0]), 0)
     for minute in range(5):
         run(operations, minute, events=events)
     shelter = operations.protect('g1', 'shelter', None, None, 4)
@@ -618,10 +714,11 @@ def test_shelter_order_fails_on_road_but_succeeds_at_home_or_destination():
     arrived_order = operations.protect('arrived', 'shelter', None, None, 4)
     for minute in range(5, 8):
         run(operations, minute, events=events)
-    assert operations.orders[evacuation]['state'] == 'cancelled'
+    assert operations.orders[evacuation]['state'] == 'executing'
     assert operations.orders[shelter]['state'] == 'unable_to_comply'
-    assert operations.groups['g1']['status'] == 'unable_to_comply'
-    assert operations.groups['g1']['position'] == [1000, 0]
+    assert operations.groups['g1']['status'] == 'evacuating'
+    assert operations.groups['g1']['position'] == [4000, 0]
+    assert operations.reservations['g1'] == 'd1'
     assert operations.orders[home_order]['state'] == 'completed'
     assert operations.orders[arrived_order]['state'] == 'completed'
     reports = [event for event in events if event[1] == 'unable_to_comply']

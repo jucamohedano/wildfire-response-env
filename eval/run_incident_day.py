@@ -79,9 +79,50 @@ def audit_phenomena(audit):
     new_cells = {cell for record in audit[1:] for cell in record['new_footprint']}
     if new_cells.intersection(initial['footprint']) or final_exposed < initial_exposed:
         raise ValueError('Audit contains inconsistent fire or exposure evidence')
+    resource_fields = [('resources' in record, 'applied_work' in record) for record in audit]
+    if all(fields == (False, False) for fields in resource_fields):
+        resources = None
+    elif not all(fields == (True, True) for fields in resource_fields):
+        raise ValueError('Resource audit must cover every minute')
+    else:
+        roster = initial['resources']
+        if type(roster) is not dict or not roster:
+            raise ValueError('Resource audit needs a finite roster')
+        resources = dict(state_changes=0, entered_refilling=0, entered_resting=0,
+                         entered_blocked=0, entered_working=0, water_increases=0,
+                         fuel_increases=0, applied_suppression=0, working_resource_snapshots=0)
+        previous = None
+        for record in audit:
+            current = record['resources']
+            work = record['applied_work']
+            if type(current) is not dict or set(current) != set(roster) or type(work) is not list:
+                raise ValueError('Resource roster or applied work audit is inconsistent')
+            for identifier, unit in current.items():
+                if type(unit) is not dict or type(unit.get('state')) is not str:
+                    raise ValueError('Resource state is missing')
+                resources['working_resource_snapshots'] += int(unit['state'] == 'working')
+                if previous is not None:
+                    earlier = previous[identifier]
+                    if unit['state'] != earlier['state']:
+                        resources['state_changes'] += 1
+                        for state in ('refilling', 'resting', 'blocked', 'working'):
+                            resources['entered_' + state] += int(unit['state'] == state)
+                    for field, counter in (('water_litres', 'water_increases'), ('fuel_minutes', 'fuel_increases')):
+                        old, new = earlier.get(field), unit.get(field)
+                        if old is not None and new is not None:
+                            if type(old) not in (int, float) or type(new) not in (int, float):
+                                raise ValueError('Invalid resource stock audit')
+                            resources[counter] += int(new > old)
+            for event in work:
+                if (type(event) is not dict or event.get('resource_id') not in current
+                        or event.get('state') != 'working' or not isinstance(event.get('location'), list)
+                        or not isinstance(event.get('position'), list)):
+                    raise ValueError('Invalid applied suppression audit')
+            resources['applied_suppression'] += len(work)
+            previous = current
     return dict(inherited_burning_footprint_cells=len(initial['footprint']),
                 new_burned_cells=len(new_cells), new_exposed_population=final_exposed - initial_exposed,
-                resource_behavior='not_observable_in_audit')
+                resource_behavior=resources)
 
 
 def _new_environment(inputs, network):
@@ -139,7 +180,9 @@ def run(output, *, policy_name='dispatcher', wall_budget=None, resume=None, cloc
                       inputs_sha256=inputs['sha256'], network_sha256=network['sha256'],
                       implementation_sha256=implementation_digest(),
                       audit_coverage=dict(cases_with_fire_growth=0, cases_with_new_exposure=0,
-                                          resource_behavior='not_observable_in_audit'),
+                                          cases_with_resource_audit=0, cases_with_applied_suppression=0,
+                                          cases_with_refill_entry=0, cases_with_rest_entry=0,
+                                          cases_with_blocked_entry=0),
                       cases=[], elapsed_seconds=0., peak_rss_bytes=peak_memory())
         write_report(output, report)
         restored = None
@@ -232,6 +275,14 @@ def run(output, *, policy_name='dispatcher', wall_budget=None, resume=None, cloc
                     if phase == 'batch':
                         report['audit_coverage']['cases_with_fire_growth'] += int(phenomena['new_burned_cells'] > 0)
                         report['audit_coverage']['cases_with_new_exposure'] += int(phenomena['new_exposed_population'] > 0)
+                        resource_evidence = phenomena['resource_behavior']
+                        if resource_evidence is not None:
+                            report['audit_coverage']['cases_with_resource_audit'] += 1
+                            for key, field in (('cases_with_applied_suppression', 'applied_suppression'),
+                                               ('cases_with_refill_entry', 'entered_refilling'),
+                                               ('cases_with_rest_entry', 'entered_resting'),
+                                               ('cases_with_blocked_entry', 'entered_blocked')):
+                                report['audit_coverage'][key] += int(resource_evidence[field] > 0)
                     result.update(status='complete', score=outcome['graded_score'], verification='passed')
             else:
                 result['verification'] = 'passed_incomplete_episode'
@@ -249,7 +300,7 @@ def run(output, *, policy_name='dispatcher', wall_budget=None, resume=None, cloc
         report['coverage_checks'] = dict(fire_growth=coverage['cases_with_fire_growth'] > 0,
                                          passive_population_exposure=(coverage['cases_with_new_exposure'] > 0
                                                                       if policy_name == 'passive' else None),
-                                         resource_behavior='unverified')
+                                         resource_audit_complete=coverage['cases_with_resource_audit'] == len(CASE_IDS))
         coverage_passed = (report['coverage_checks']['fire_growth']
                            and report['coverage_checks']['passive_population_exposure'] is not False)
         report['status'] = ('complete' if coverage_passed
