@@ -1,0 +1,41 @@
+name: Incident-day container
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/incident-day-container.yml'
+      - '.dockerignore'
+      - 'envs/wildfire_response/core/**'
+      - 'envs/wildfire_response/openenv/**'
+      - 'eval/incident_day_server.py'
+      - 'eval/check_incident_day_container.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: incident-day-container-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  container:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Build and exercise the installed image
+        run: python eval/check_incident_day_container.py --output /tmp/container-report.json --wall-budget 240
+      - name: Preserve bounded check evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: incident-day-container-report
+          path: /tmp/container-report.json
+          retention-days: 1
+          if-no-files-found: warn
