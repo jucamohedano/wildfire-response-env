@@ -21,6 +21,11 @@ def counterfactual_case(env):
     details = {}
     demonstrated = False
     if family == 'quiet_handover':
+        if scenario['version'] == 'wildfire-incident-day-realmap-scenarios-v2':
+            from .real_map_acceptance import ready_route_work_return_probe
+            probe = ready_route_work_return_probe(env)
+            return dict(status=probe['status'], details=probe,
+                        qualification='Bounded independent exercise probe, not historical or physical validation.')
         staged = [unit for unit in scenario['resources'] if unit['state'] == 'on_scene' and unit['kind'] != 'aircraft']
         useful = [unit['id'] for unit in staged if env.router.safe_position(unit['position'], burning, scenario['wind'], mode=unit['kind'])
                   and any(math.dist(grid_point(env.inputs, unit['position']), cell) <= 3 and math.dist(center, cell) <= 3 for cell in burning)]
@@ -39,7 +44,8 @@ def counterfactual_case(env):
                        recovery_does_not_establish_suppression_access=True)
         demonstrated = bool(useful or recovery)
     elif family == 'wind_access_loss':
-        event = next(item for item in events if item['kind'] == 'wind' and item['minute'] == 180)
+        event_minute = 15 if scenario['profile'].get('realmap_v2_wind_coverage') else 180
+        event = next(item for item in events if item['kind'] == 'wind' and item['minute'] == event_minute)
         before, after = scenario['wind'], event['wind']
         before_safe = {identifier for identifier, position in env.network.nodes.items()
                        if env.router.safe_position(position, burning, before, mode='crew')}
@@ -57,7 +63,8 @@ def counterfactual_case(env):
                                lost_approach_cells=[list(point) for point in sorted(before_goals - after_goals)]))
         details = dict(old_wind=before, new_wind=after, safe_nodes_before=len(before_safe), safe_nodes_after=len(after_safe),
                        nodes_losing_safety=sorted(before_safe - after_safe), candidate_routes=routes)
-        demonstrated = bool(before_safe - after_safe)
+        demonstrated = (any(item['lost_approach_cells'] and item['after'] > 0 for item in routes)
+                        if scenario['profile'].get('realmap_v2_wind_coverage') else bool(before_safe - after_safe))
     elif family == 'crew_only_access':
         event = next(item for item in events if item['kind'] == 'access_restriction')
         excluded = env._excluded(event['resource_kind'], {event['resource_kind']})
@@ -321,6 +328,9 @@ def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), 
                        or (event['kind'] == 'center_unavailable' and item['kind'] == 'status_response'
                            and item['source'] == event['center_id'] and item['payload'].get('available') is False)]
         event_evidence.append(dict(event=event, status='constraint_evidence_observed' if consequence else 'event_only_or_no_constraint_evidence', reports=matching))
+        if scenario['profile'].get('realmap_v2_wind_coverage') and event['kind'] == 'wind' and event['minute'] == 15:
+            from .real_map_acceptance import wind_event_coverage
+            event_evidence[-1].update(wind_event_coverage(event, inputs, audit, reports))
         if (scenario['profile'].get('causal_coverage')
                 and event['kind'] in ('access_restriction', 'destination_closed')):
             from .scenario_coverage import event_coverage

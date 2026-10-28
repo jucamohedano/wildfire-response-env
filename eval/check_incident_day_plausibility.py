@@ -16,7 +16,7 @@ from wildfire_core.incident_day import IncidentDayEnv, fixture_inputs
 from envs.wildfire_response.incident_day.baselines import DayDispatcher
 from envs.wildfire_response.incident_day.environment import implementation_digest
 from envs.wildfire_response.incident_day.plausibility import audit_case, counterfactual_case, route_checks, static_case
-from envs.wildfire_response.incident_day.scenarios import ALL_CASE_IDS, CASE_IDS, CALIBRATED_CASE_IDS, EGRESS_CASE_IDS, COVERAGE_CASE_IDS, REAL_MAP_CASE_IDS
+from envs.wildfire_response.incident_day.scenarios import ALL_CASE_IDS, CASE_IDS, CALIBRATED_CASE_IDS, EGRESS_CASE_IDS, COVERAGE_CASE_IDS, REAL_MAP_CASE_IDS, REAL_MAP_ACCEPTANCE_CASE_IDS
 
 
 VERSION = 'incident-day-plausibility-report-v2'
@@ -213,7 +213,7 @@ def run(output, cases, wall_budget, inputs=None, network=None, land_mask=None, a
     started = time.monotonic()
     digest_before = implementation_digest()
     selected = set(cases)
-    catalog_suites = (COVERAGE_CASE_IDS, REAL_MAP_CASE_IDS, EGRESS_CASE_IDS, CALIBRATED_CASE_IDS, CASE_IDS)
+    catalog_suites = (COVERAGE_CASE_IDS, REAL_MAP_ACCEPTANCE_CASE_IDS, REAL_MAP_CASE_IDS, REAL_MAP_ACCEPTANCE_CASE_IDS, EGRESS_CASE_IDS, CALIBRATED_CASE_IDS, CASE_IDS)
     suites = next((list(suite) for suite in catalog_suites if selected <= set(suite)), None)
     if suites is None:
         suites = list(dict.fromkeys(case for suite in catalog_suites

@@ -21,6 +21,9 @@ ALLOWED_ROAD_EDGES = frozenset(
     for way, parts in ((374742043, ('0000', '0001', '0002', '0003')),
                        (425501364, ('0000',)), (47052550, ('0010',)), (652843749, ('0000',)))
     for part in parts for direction in ('f', 'r'))
+WIND_ROAD_EDGES = ALLOWED_ROAD_EDGES | frozenset(
+    f'osm:w29211939:{part}:{direction}' for part in ('0009', '0010', '0011')
+    for direction in ('f', 'r'))
 
 
 def _burning(fire):
@@ -57,12 +60,12 @@ def _warm_handover(inputs, initial_fire, seed, wind):
     return active
 
 
-def _supported_journey(router, journey, hazards):
+def _supported_journey(router, journey, hazards, allowed_edges=ALLOWED_ROAD_EDGES):
     if not journey['legs']:
         return False
     for leg in journey['legs']:
         if leg['mode'] == 'road':
-            if leg['edge_id'] not in ALLOWED_ROAD_EDGES:
+            if leg['edge_id'] not in allowed_edges:
                 return False
             segment_mode = 'engine'
         elif leg['mode'] == 'walk':
@@ -172,5 +175,51 @@ def build_real_map_scenario(inputs, network, identifier, seed=None):
                                         'their prior journey is a declared initialization assumption.')
     scenario['source_context'] = dict(pack_sha256=PACK_PIN, network_sha256=NETWORK_PIN,
         road_snapshot_raw_sha256=SNAPSHOT_PIN, status='estimated_exercise_not_historical_replay')
+    scenario['sha256'] = digest({key: value for key, value in scenario.items() if key != 'sha256'})
+    return scenario
+
+
+def build_real_map_v2_scenario(inputs, network, identifier, seed=None):
+    from .scenarios import REAL_MAP_CASE_IDS
+
+    identifiers = tuple(f'incident-day-realmap-v2-{index:03}' for index in range(6))
+    if identifier not in identifiers:
+        raise ValueError('Unknown real-map v2 exercise scenario')
+    index = identifiers.index(identifier)
+    scenario = copy.deepcopy(build_real_map_scenario(inputs, network, REAL_MAP_CASE_IDS[index], seed))
+    parent_sha256 = scenario['sha256']
+    scenario.update(id=identifier, version='wildfire-incident-day-realmap-scenarios-v2',
+                    parent_scenario_sha256=parent_sha256)
+    scenario['profile']['version'] = 'wildfire-incident-day-realmap-profile-v2'
+    scenario['profile']['allowed_road_edge_ids'] = sorted(
+        WIND_ROAD_EDGES if index == 1 else ALLOWED_ROAD_EDGES)
+    if index == 1:
+        scenario['initial_fire'] = [[column, row] for row in range(SECTOR[1] - 4, SECTOR[1] + 1)
+                                    for column in range(SECTOR[0] - 2, SECTOR[0] + 3)]
+        burning = _warm_handover(inputs, scenario['initial_fire'], scenario['seed'], scenario['wind'])
+        router = HazardRouter(network, inputs, inputs['heights'], walk_mask=inputs['fuel_known_mask'])
+        base = network.nodes[POST_NODES[0]]
+        before = router.options(base, list(SECTOR), mode='engine', burning=burning,
+                                wind=scenario['wind'], limit=32)['options']
+        after = router.options(base, list(SECTOR), mode='engine', burning=burning,
+                               wind=[0., 2.], limit=32)['options']
+        before_goals = {tuple(option['approach_grid']) for option in before}
+        after_goals = {tuple(option['approach_grid']) for option in after}
+        if not (before_goals - after_goals and after_goals):
+            raise ValueError('Wind exercise requires both lost and retained approaches')
+        for option, wind in ((before[0], scenario['wind']), (after[0], [0., 2.])):
+            hazards = router._hazards(burning, wind)
+            return_options = router.options(option['approach_point'], router._cell(base), mode='engine',
+                burning=burning, wind=wind, target_metric=base, limit=1)['options']
+            if (not return_options or not _supported_journey(router, option['journey'], hazards, WIND_ROAD_EDGES)
+                    or not _supported_journey(router, return_options[0]['journey'], hazards, WIND_ROAD_EDGES)):
+                raise ValueError('Wind exercise needs supported approach and return routes')
+        scenario['events'] = [event for event in scenario['events']
+                              if not (event['kind'] == 'wind' and event['minute'] == 180)]
+        scenario['events'].append(dict(minute=15, kind='wind', wind=[0., 2.]))
+        scenario['events'].sort(key=lambda item: item['minute'])
+        scenario['profile'].update(causal_coverage=True, realmap_v2_wind_coverage=True)
+    if index == 2:
+        scenario['profile']['causal_coverage'] = True
     scenario['sha256'] = digest({key: value for key, value in scenario.items() if key != 'sha256'})
     return scenario

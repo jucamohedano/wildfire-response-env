@@ -47,6 +47,7 @@ class IncidentDayEnv:
 
     def reset(self, scenario_id=CASE_IDS[0], seed=None):
         self._scenario = build_scenario(self.inputs, self.network, scenario_id, seed)
+        self._configure_router()
         self.minute = self.decision = self.invalid_streak = 0
         self.terminated = self.truncated = self.censored = self.abandoned = False
         self._input_censored = False
@@ -129,6 +130,11 @@ class IncidentDayEnv:
 
     def _sector(self):
         return self._scenario.get('sector_grid', [self.fire.width // 2, self.fire.height // 2])[:]
+
+    def _configure_router(self):
+        self.router = HazardRouter(self.network, self.inputs, self.inputs['heights'],
+            walk_mask=self.inputs['walk_mask'],
+            allowed_edge_ids=self._scenario['profile'].get('allowed_road_edge_ids'))
 
     def _burning(self):
         return {(column, row) for row, cells in enumerate(self.fire.cells) for column, cell in enumerate(cells)
@@ -458,6 +464,10 @@ class IncidentDayEnv:
         for event in [event for event in self._events if event['minute'] == self.minute]:
             self._events.remove(event)
             if event['kind'] == 'wind':
+                if self._scenario['profile'].get('realmap_v2_wind_coverage') and event['minute'] == 15:
+                    from .real_map_acceptance import capture_wind_effect
+
+                    self._event_effects.append(capture_wind_effect(self, event))
                 self.fire.set_wind(x=event['wind'][0], y=event['wind'][1])
                 self.bus.emit('weather', 'wind_update', dict(wind=event['wind'][:]), self.minute, channel='radio')
             elif event['kind'] == 'access_restriction':
@@ -749,6 +759,7 @@ class IncidentDayEnv:
         self._air_unavailable_until = state.pop('air_unavailable_until')
         for key, item in state.items():
             setattr(self, key, item)
+        self._configure_router()
         if self.artifact_dir:
             self._start_artifacts()
         return self.get_situation()

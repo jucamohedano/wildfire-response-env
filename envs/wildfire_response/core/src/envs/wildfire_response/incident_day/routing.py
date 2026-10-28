@@ -32,8 +32,12 @@ PROFILE = ('Exercise only: one-cell fire buffer plus one cell downwind; '
 
 
 class HazardRouter:
-    def __init__(self, network, inputs, heights, *, walk_mask=None):
+    def __init__(self, network, inputs, heights, *, walk_mask=None, allowed_edge_ids=None):
         self.network = network
+        if allowed_edge_ids is not None and (not isinstance(allowed_edge_ids, (list, tuple, set, frozenset))
+                or any(not isinstance(identifier, str) or identifier not in network.edges for identifier in allowed_edge_ids)):
+            raise ValueError('Corridors must identify existing source edges')
+        self.allowed_edge_ids = None if allowed_edge_ids is None else frozenset(allowed_edge_ids)
         self.inputs = copy.deepcopy(inputs)
         self.heights = copy.deepcopy(heights)
         self.walk_mask = copy.deepcopy(walk_mask)
@@ -144,7 +148,8 @@ class HazardRouter:
         return frozenset(cells)
 
     def _edge_allowed(self, edge, mode):
-        return 'allowed_modes' not in edge or mode in edge['allowed_modes']
+        return ((self.allowed_edge_ids is None or edge['id'] in self.allowed_edge_ids)
+                and (mode is None or 'allowed_modes' not in edge or mode in edge['allowed_modes']))
 
     def safe_position(self, position_metric, burning, wind, *, mode='engine', excluded_cells=()):
         if mode not in ('engine', 'crew'):
@@ -212,7 +217,7 @@ class HazardRouter:
             if elapsed >= duration:
                 elapsed -= duration
                 continue
-            if (leg['mode'] == 'road' and mode is not None
+            if (leg['mode'] == 'road' and (mode is not None or self.allowed_edge_ids is not None)
                     and (leg.get('edge_id') not in self.network.edges
                          or not self._edge_allowed(self.network.edges[leg['edge_id']], mode))):
                 return failure()
@@ -259,7 +264,7 @@ class HazardRouter:
                         for index in range(len(edge['coordinates']) - 1)]
         for identifier, index in segments:
             edge = self.network.edges[identifier]
-            if mode is not None and not self._edge_allowed(edge, mode):
+            if not self._edge_allowed(edge, mode):
                 continue
             coordinates = edge['coordinates']
             first, second = coordinates[index], coordinates[index + 1]
@@ -325,7 +330,7 @@ class HazardRouter:
             if node in targets:
                 return True, True
             pending.extend(self.network.edges[edge]['target'] for edge in self.network.adjacency[node]
-                           if mode is None or self._edge_allowed(self.network.edges[edge], mode))
+                           if self._edge_allowed(self.network.edges[edge], mode))
         return False, not pending
 
     def _walk(self, access, goal, hazards, destination=None):

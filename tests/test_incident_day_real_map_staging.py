@@ -9,7 +9,7 @@ import pytest
 
 from envs.wildfire_response.incident_day.baselines import DayDispatcher
 from envs.wildfire_response.incident_day.real_map_scenarios import (
-    ALLOWED_ROAD_EDGES, HOME_NODES, NETWORK_PIN, PACK_PIN, POST_NODES, SECTOR, SNAPSHOT_PIN,
+    ALLOWED_ROAD_EDGES, WIND_ROAD_EDGES, HOME_NODES, NETWORK_PIN, PACK_PIN, POST_NODES, SECTOR, SNAPSHOT_PIN,
     build_real_map_scenario)
 from envs.wildfire_response.incident_day.scenarios import REAL_MAP_CASE_IDS
 from wildfire_core.incident_day import IncidentDayEnv
@@ -43,7 +43,7 @@ def test_pinned_road_segments_avoid_retained_restrictions_and_barriers(real_inpu
     restricted_nodes = {member['ref'] for relation in restrictions for member in relation['members']
                         if member['type'] == 'node'}
     graph_edges = {edge['id']: edge for edge in document['edges']}
-    for identifier in ALLOWED_ROAD_EDGES:
+    for identifier in WIND_ROAD_EDGES:
         edge = graph_edges[identifier]
         way_id = int(identifier.split(':')[1][1:])
         assert way_id not in restricted_ways

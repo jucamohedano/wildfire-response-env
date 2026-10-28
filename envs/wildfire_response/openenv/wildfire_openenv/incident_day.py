@@ -30,7 +30,7 @@ except ModuleNotFoundError as error:
         episode_id: str | None = None
         step_count: int = 0
 
-from wildfire_core.incident_day import ALL_CASE_IDS, CASE_IDS, REAL_MAP_CASE_IDS, IncidentDayEnv
+from wildfire_core.incident_day import ALL_CASE_IDS, CASE_IDS, REAL_MAP_CASE_IDS, REAL_MAP_V2_CASE_IDS, IncidentDayEnv
 
 
 Identifier = Annotated[str, Field(strict=True, min_length=1, max_length=128, pattern=r'^[A-Za-z0-9_.:-]+$')]
@@ -208,7 +208,7 @@ class IncidentDayEnvironment(Environment):
 
         supported = (self.core.inputs['sha256'] == PACK_PIN and self.core.network.sha256 == NETWORK_PIN)
         return [dict(id=identifier, split=split) for identifier in ALL_CASE_IDS
-                if supported or identifier not in REAL_MAP_CASE_IDS]
+                if supported or identifier not in REAL_MAP_CASE_IDS + REAL_MAP_V2_CASE_IDS]
 
 
 def _identifier(value):
