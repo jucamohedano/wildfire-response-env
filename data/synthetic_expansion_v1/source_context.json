@@ -1,0 +1,35 @@
+{
+  "version": "wildfire-expansion-source-context-v1",
+  "checked_on": "2026-10-27",
+  "historical_anchor": {
+    "incident_id": "ES-MA-SIERRA-BERMEJA-2021",
+    "name": "Sierra Bermeja wildfire",
+    "municipality": "Jubrique",
+    "province": "Malaga",
+    "country": "Spain",
+    "start_date_local": "2021-09-08",
+    "role": "Retrospective incident evidence and source landscape, not generated operational ground truth",
+    "sources": [
+      "https://mapping.emergency.copernicus.eu/activations/EMSR545/",
+      "https://www.juntadeandalucia.es/presidencia/portavoz/tierraymar/165737/fuego/Infoca/incendio/desarrollosostenible/medioambiente/SierraBermeja/Jubrique"
+    ]
+  },
+  "randomization": {
+    "catalog_version": "wildfire-synthetic-expansion-catalog-v1",
+    "design_seed": 20261026,
+    "rng": "Python random.Random",
+    "case_seed_formula": "82000000 + 2 * zero_based_catalog_group_index + variant",
+    "variants": [0, 1],
+    "compiler": "envs/wildfire_response/core/src/envs/wildfire_response/regional/expansion/catalog.py",
+    "catalog_sha256": "80fef6516618f77e669aad4e2bc7f754002aac59181e6f0d6e7bfce222118de4"
+  },
+  "source_landscapes": 1,
+  "new_historical_incidents": 0,
+  "limitations": [
+    "Synthetic calls, incidents, availability, delays and counterfactual decisions are not historical logs",
+    "Individual terrain, fuel and population layers retain their own editions and dates",
+    "Randomization does not establish geographic or real-world operational generalization",
+    "Reproduction also requires the compiler and pinned prepared/topographic input hashes",
+    "Dataset metadata and seeds must not be inserted into actor observations as private scenario evidence"
+  ]
+}

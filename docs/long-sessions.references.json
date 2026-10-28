@@ -1,0 +1,32 @@
+{
+  "checked_on": "2026-10-27",
+  "reference_cards": [
+    {
+      "name": "airops",
+      "dataset_commit": "a83af3b7226bd37c915238f4ef3b804a17db3db1",
+      "readme_sha256": "afe8943c5af2f87fdc74681065c917f964f7bab738e7d55589d695542f454ed9"
+    },
+    {
+      "name": "portsim",
+      "dataset_commit": "7090b1808e030ed8946deca342e166cfc24a1abc",
+      "readme_sha256": "87eba8f6df03b3aea0c09f97a8a463f5d7b5eb8327d4d5a0348d830708747185"
+    }
+  ],
+  "airops_code": {
+    "repository": "earakely-scale/agentenv-airops-plugin",
+    "tag": "v0.5.0",
+    "commit": "b6b71d867661b410d06e1c06af7c46c1c8985501",
+    "files": [
+      "src/agentenv_airops/day.py",
+      "src/agentenv_airops/occ/day.py",
+      "src/agentenv_airops/occ/day3.py"
+    ]
+  },
+  "sources": [
+    "https://huggingface.co/datasets/earakely-scale/AirOpsEnv-AgentEnv",
+    "https://huggingface.co/datasets/earakely-scale/PortSimEnv-AgentEnv",
+    "https://mapping.emergency.copernicus.eu/activations/EMSR545/"
+  ],
+  "status": "Research proposal only; no horizon, simulator or reward change",
+  "tracking_issue": "https://github.com/jucamohedano/wildfire-response-env/issues/34"
+}
