@@ -17,20 +17,66 @@ class DayDispatcher:
             return {'authorizations': offers[:6]}
         active = [cell for cell in observation['sensor_memory']
                   if cell['burning'] and observation['minute'] - cell['observed_at'] <= 120]
+        active_order_states = ('issued', 'delivered', 'acknowledged', 'executing', 'blocked')
+        orders = observation.get('protection_orders', [])
         for group in observation['districts']:
-            closed = any(destination['id'] == group.get('destination_id') and destination['status'] != 'open'
-                         for destination in observation['destinations'])
-            smoke_reported = any(report['source'] == group['id'] and report['kind'] == 'resident_update'
-                                 and report['actionable'] for report in observation['reports'])
-            if closed or group.get('exposed') or smoke_reported:
+            group_orders = [order for order in orders if order.get('group_id') == group['id']
+                            and order.get('state') in active_order_states
+                            and order.get('action') == 'evacuate' and order.get('destination_id') is not None]
+            latest_order = max(group_orders, key=lambda order: (order.get('issued_at', -1),
+                               order.get('observed_at', -1), order.get('id', '')), default=None)
+            target = latest_order['destination_id'] if latest_order else group.get('destination_id')
+            closed_destination = next((destination for destination in observation['destinations']
+                                       if destination['id'] == target and destination['status'] != 'open'), None)
+            closed = closed_destination is not None
+            pending_open = (latest_order is not None and latest_order['state'] in ('issued', 'delivered', 'acknowledged')
+                            and any(destination['id'] == target and destination['status'] == 'open'
+                                    for destination in observation['destinations']))
+            if pending_open:
+                continue
+            reports = [report for report in observation['reports']
+                       if report['source'] == group['id'] and report['kind'] == 'resident_update']
+            latest = max(reports, key=lambda report: (report['observed_at'], report['received_at']), default=None)
+            recent = bool(latest and 0 <= observation['minute'] - latest['observed_at'] <= 60
+                          and latest['observed_at'] >= group.get('observed_at', -1))
+            current_condition = latest['payload'].get('condition') if recent else None
+            smoke_reported = current_condition in ('nearby_smoke', 'exposed')
+            settled = group.get('status') in ('arrived', 'sheltering')
+            if not closed and (group.get('status') == 'evacuating' or
+                               (settled and current_condition != 'exposed')):
+                continue
+            if closed or (not settled and group.get('exposed')) or smoke_reported:
+                previous_attempts = [item[2] for item in self.asked if len(item) == 3
+                                     and item[0] == 'protection' and item[1] == group['id']]
+                closure_key = (('closure', group['id'], target, closed_destination.get('observed_at', -1))
+                               if closed else None)
+                cooling = any(0 <= observation['minute'] - attempt < 60 for attempt in previous_attempts)
+                new_closure = (closed and closure_key not in self.asked
+                               and closed_destination.get('observed_at', -1) >= max(previous_attempts, default=0))
+                if cooling and not new_closure:
+                    continue
+                choices = []
                 for destination in observation['destinations']:
-                    key = ('protection', group['id'], destination['id'], observation['minute'] // 60)
-                    if destination['status'] == 'open' and key not in self.asked:
-                        self.asked.add(key)
+                    if destination['status'] == 'open' and destination['id'] != group.get('destination_id'):
+                        occupants = {other['id']: other.get('count', 0) for other in observation['districts']
+                                     if other['id'] != group['id'] and other.get('destination_id') == destination['id']}
+                        for order in orders:
+                            if (order.get('destination_id') == destination['id'] and order.get('group_id') != group['id']
+                                    and order.get('state') in active_order_states):
+                                occupants.update({other['id']: other.get('count', 0) for other in observation['districts']
+                                                  if other['id'] == order.get('group_id')})
+                        if sum(occupants.values()) + group.get('count', 0) > destination.get('capacity', float('inf')):
+                            continue
                         result = environment.evacuation_options(group['id'], destination['id'])
-                        if result['options']:
-                            return {'protection_orders': [dict(group_id=group['id'], action='evacuate',
-                                destination_id=destination['id'], approach_id=result['options'][0]['id'])]}
+                        for option in result['options']:
+                            choices.append((option['travel_minutes'], destination['id'], option['id']))
+                self.asked.add(('protection', group['id'], observation['minute']))
+                if choices:
+                    _, destination_id, approach_id = min(choices)
+                    if closure_key is not None:
+                        self.asked.add(closure_key)
+                    return {'protection_orders': [dict(group_id=group['id'], action='evacuate',
+                        destination_id=destination_id, approach_id=approach_id)]}
         pending = set(observation['pending_resource_requests'])
         requested = []
         for unit in observation['resources']:

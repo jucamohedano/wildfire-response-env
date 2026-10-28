@@ -473,7 +473,7 @@ class IncidentDayEnv:
         for identifier, group in self.ops.groups.items():
             point = grid_point(self.inputs, group['position'])
             distance = min((math.dist(point, cell) for cell in self._burning()), default=math.inf)
-            level = 'exposed' if group['exposed'] else 'nearby_smoke' if distance <= 3 else 'clear'
+            level = 'exposed' if distance <= 1.5 else 'nearby_smoke' if distance <= 3 else 'clear'
             changed = level != self._signals.get(identifier, 'clear')
             self._signals[identifier] = level
             if changed or self.minute % 30 == 0:

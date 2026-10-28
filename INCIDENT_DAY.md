@@ -126,3 +126,24 @@ Minute snapshots can miss transient states; stock increases alone do not prove a
 refill succeeded, and missing resource audit data is reported explicitly. These
 counts do not replace behavioral tests. A change to the implementation invalidates
 a run.
+
+## Quality follow-up
+
+`eval/check_incident_day_calibration.py` runs bounded, paired development cases
+and single-mechanic probes. The reference dispatcher compares public route
+options, respects reported capacity (including blocked reservations), avoids
+duplicate orders and reacts to newly reported destination closures. Resident
+condition reports distinguish current danger from cumulative exposure; reaching
+a clear destination does not erase past exposure or trigger endless relocation.
+These are causal-behaviour checks, not a claim of calibrated wildfire physics.
+
+The reproducible 80-cell evidence ledger and the official-source investigation
+are in `data/incident_day_v2/fuel_review/`. Optional real-geography runs vary
+explicit synthetic fuel assumptions without changing the unknown mask or
+approving the source pack. They are ungraded sensitivity exercises, not training
+labels. The low-cost synthetic development fixture remains the default.
+
+The road overlay now has a portable, pinned source bundle and an archived prior
+revision; see `data/ui_v2/snapshots/README.md`. New clones no longer depend on the
+lost ignored road cache. This repairs display reproducibility, not routing
+coverage or verified access for fire engines.

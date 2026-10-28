@@ -39,6 +39,15 @@
     "Calls, observations, handover history and reinforcement requests"
   ],
   "operational_parameters": "data/incident_day_v2/profile.json",
+  "fuel_evidence_review": {
+    "ledger": "data/incident_day_v2/fuel_review/unknown_cells.json",
+    "ledger_file_sha256": "f9f437c68cf165ddff1920b783d13ecff7fb5abfed0e21f3f71df44024108146",
+    "known_fuel_cells_added": 0,
+    "approval_changed": false,
+    "independent_land_cover_probe": "data/incident_day_v2/fuel_review/siose2020_wfs_probe.json",
+    "land_cover_is_not_fuel": true,
+    "sensitivity_runner": "eval/check_incident_day_fuel_sensitivity.py"
+  },
   "legacy_variant_review": {
     "reviewed": 32,
     "preignition_weather_cases_retained_as_legacy": 28,
