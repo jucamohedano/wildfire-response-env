@@ -35,6 +35,7 @@
     },
     "ui_build": "reported passed",
     "root_global_tests": "Three pre-existing display/road failures reported: missing cache, MAXVERTICES, and provenance script SHA.",
+    "root_excluding_known_display_dependency": "508 passed, 77 optional-dependency skips, 652 subtests passed; all77 skipped optional tests executed separately in their dedicated runtimes",
     "full_http_dispatched_trajectory_test": "passed: dispatched 1440-minute HTTP run matches local observations, actions, route queries, rewards and exported trajectory"
   },
   "scope": "synthetic development fixture only",
