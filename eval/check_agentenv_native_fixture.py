@@ -11,10 +11,32 @@ def canonical(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
 
 
-def choose_run(instances, episode_id, rewrite):
-    matches = [instance for instance in instances if rewrite(instance['instance_id']) == episode_id]
+class NativeLinkError(ValueError):
+    def __init__(self, message, diagnostics):
+        super().__init__(message)
+        self.diagnostics = diagnostics
+
+
+def safe_id(value):
+    if not isinstance(value, str):
+        return '<missing>'
+    allowed = frozenset('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@/._-~')
+    if len(value) > 512 or any(char not in allowed for char in value):
+        return '<redacted-invalid-id>'
+    return value
+
+
+def choose_run(instances, episode_id, rewrite, record_builder, published_record):
+    diagnostics = {'expected_native_id': safe_id(episode_id),
+                   'candidates': [{'instance_id': safe_id(instance.get('instance_id')),
+                                   'rewritten_id': safe_id(rewrite(record_builder(instance)).get('instance_id'))}
+                                  for instance in instances[:20]],
+                   'candidate_count': len(instances)}
+    matches = [instance for instance in instances
+               if rewrite(record_builder(instance)) == published_record
+               and rewrite(record_builder(instance)).get('instance_id') == episode_id]
     if len(matches) != 1 or matches[0]['status'] != 'completed':
-        raise ValueError('native episode must match exactly one completed framework run')
+        raise NativeLinkError('native episode must match exactly one completed framework record', diagnostics)
     record = matches[0]
     steps = {step['step_id']: step['status'] for step in record.get('completed_steps', [])}
     if any(steps.get(step) != 'success' for step in ('deploy', 'drive', 'verify')):
@@ -23,6 +45,13 @@ def choose_run(instances, episode_id, rewrite):
     if not isinstance(result, dict) or result.get('model_used') is not False:
         raise ValueError('no-model driver result is absent from the native framework record')
     return record, result
+
+
+def native_instance_id(episode_id, dataset_name, bundle_id_root):
+    prefix = dataset_name + '/'
+    if not isinstance(episode_id, str) or not episode_id.startswith(prefix):
+        return None
+    return bundle_id_root + episode_id[len(dataset_name):]
 
 
 def verify_reward(native_reward, recorded_reward, replayed_reward):
@@ -44,6 +73,8 @@ def export_and_check(dataset_dir, bundle_dir):
     from datasets import load_dataset
     from huggingface_hub import DatasetCard
     from agentenv_hf import records, runs
+    from agent_env.task.store import find_task_instance
+    from dataclasses import asdict
     from envs.wildfire_response.agentenv.export import (
         TRAJECTORY_EPISODES, TRAJECTORY_TRANSITIONS, _contains_private_key, _write_parquet)
     from envs.wildfire_response.regional.benchmark_v1 import verify_benchmark_trajectory
@@ -70,11 +101,18 @@ def export_and_check(dataset_dir, bundle_dir):
             or native_raw[0].get('trajectories') or episode['messages']):
         raise ValueError('native record identity differs or contains unexpected chat trajectory')
     bundle = runs.locate(str(bundle_dir))
-    instances, unfinished = runs.instances(bundle, 'latest')
+    instances, unfinished = runs.instances(bundle, 'all')
     if unfinished:
         raise ValueError('unfinished framework runs exist')
     rewrite = records.Rewrite(bundle.id_root, 'wildfire-ci')
-    framework, result = choose_run(instances, episode['episode_id'], rewrite)
+    direct_id = native_instance_id(episode['episode_id'], 'wildfire-ci', bundle.id_root)
+    if direct_id is not None:
+        direct = find_task_instance(direct_id)
+        if direct is not None and all(item['instance_id'] != direct.instance_id for item in instances):
+            instances.append(asdict(direct))
+    framework, result = choose_run(instances, episode['episode_id'], rewrite, records.record, native_raw[0]['record'])
+    if framework['task_id'] not in {entry.id for entry in runs.tasks(bundle)}:
+        raise ValueError('matched framework run does not belong to this bundle')
     trajectory, verification = result.get('trajectory'), result.get('verification')
     if not isinstance(trajectory, dict) or not isinstance(verification, dict) or verification.get('passed') is not True:
         raise ValueError('framework record lacks verified public trajectory')
@@ -177,8 +215,17 @@ def main():
     parser.add_argument('--bundle-dir', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
-    result = export_and_check(args.dataset_dir, args.bundle_dir)
     args.report.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        result = export_and_check(args.dataset_dir, args.bundle_dir)
+    except Exception as exc:
+        result = {'status': 'failed', 'error_type': type(exc).__name__,
+                  'error': str(exc) if isinstance(exc, NativeLinkError) else 'validation failed; diagnostic details withheld'}
+        if isinstance(exc, NativeLinkError):
+            result['id_diagnostics'] = exc.diagnostics
+        args.report.write_text(json.dumps(result, indent=2) + '\n')
+        print(json.dumps(result))
+        raise SystemExit(1) from None
     args.report.write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result))
 

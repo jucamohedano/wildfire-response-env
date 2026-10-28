@@ -66,20 +66,38 @@ class FrameworkLinkTests(unittest.TestCase):
             native.verify_reward(float('nan'), 0.42, 0.42)
 
     def test_requires_exact_completed_native_episode_and_driver(self):
+        from agentenv_hf import records, tables
         spec = importlib.util.spec_from_file_location('native_fixture', ROOT / 'eval/check_agentenv_native_fixture.py')
         native = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(native)
-        good = {'instance_id': 'run-1', 'status': 'completed',
+        root = '@local/tmp/fixture'
+        task_id = root + '/bench-dev-123'
+        instance_id = task_id + '-a1b2c3d4'
+        good = {'instance_id': instance_id, 'task_id': task_id, 'task_version': 1, 'status': 'completed',
                 'completed_steps': [{'step_id': name, 'status': 'success'} for name in ('deploy', 'drive', 'verify')],
                 'context': {'metadata': {'script_results': {'drive': {'model_used': False}}}}}
-        self.assertEqual(native.choose_run([good], 'run-1', lambda x: x)[0], good)
-        for instances, episode in [([], 'run-1'), ([good, good], 'run-1'), ([good], 'run-2')]:
-            with self.subTest(instances=instances, episode=episode), self.assertRaises(ValueError):
-                native.choose_run(instances, episode, lambda x: x)
+        rewrite = records.Rewrite(root, 'wildfire-ci')
+        published = rewrite(records.record(good))
+        episode = tables.episode_row('bench-dev-123', [], published, [], None)['episode_id']
+        self.assertEqual(native.native_instance_id(episode, 'wildfire-ci', root), instance_id)
+        self.assertEqual(native.choose_run([good], episode, rewrite, records.record, published)[0], good)
+        for instances, identifier in [([], episode), ([good, good], episode), ([good], episode + '-wrong')]:
+            with self.subTest(instances=instances, episode=identifier), self.assertRaises(native.NativeLinkError) as failure:
+                native.choose_run(instances, identifier, rewrite, records.record, published)
+            self.assertEqual(failure.exception.diagnostics['expected_native_id'], identifier)
+            self.assertNotIn('context', json.dumps(failure.exception.diagnostics))
+        other = copy.deepcopy(good)
+        other['instance_id'] = task_id + '-a1b2c3d5'
+        with self.assertRaises(native.NativeLinkError):
+            native.choose_run([other], episode, rewrite, records.record, published)
+        changed = copy.deepcopy(good)
+        changed['task_version'] = 2
+        with self.assertRaises(native.NativeLinkError):
+            native.choose_run([changed], episode, rewrite, records.record, published)
         missing = copy.deepcopy(good)
         del missing['context']['metadata']['script_results']
         with self.assertRaisesRegex(ValueError, 'driver result'):
-            native.choose_run([missing], 'run-1', lambda x: x)
+            native.choose_run([missing], episode, rewrite, records.record, published)
 
 
 if __name__ == '__main__':
