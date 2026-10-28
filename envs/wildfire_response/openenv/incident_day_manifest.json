@@ -1,0 +1,22 @@
+{
+  "name": "wildfire_incident_day",
+  "version": "wildfire-incident-day-v2",
+  "description": "Synthetic incident-day coordination exercise with a single-session local REST transport.",
+  "scenario_ids": ["incident-day-dev-000", "incident-day-dev-001", "incident-day-dev-002", "incident-day-dev-003", "incident-day-dev-004", "incident-day-dev-005"],
+  "horizon_minutes": 1440,
+  "transport": "loopback-http-json",
+  "server_module": "eval.incident_day_server",
+  "fixture_server_arguments": ["--fixture"],
+  "client_class": "wildfire_openenv.incident_day_client.IncidentDayClient",
+  "rollout_module": "wildfire_openenv.incident_day_rollout",
+  "endpoints": {
+    "reset": "POST /reset",
+    "step": "POST /step",
+    "check_action": "POST /check",
+    "route_options": "POST /routes",
+    "evacuation_options": "POST /evacuation-options",
+    "request_status": "POST /status",
+    "get_reports": "POST /reports",
+    "get_state": "GET /state"
+  }
+}

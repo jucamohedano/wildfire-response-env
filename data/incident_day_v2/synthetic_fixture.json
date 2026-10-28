@@ -1,0 +1,25 @@
+{
+  "prepared": {
+    "role": "synthetic_fixture",
+    "grid": {"width": 2, "height": 2, "cell_km": 0.5, "crs": "EPSG:25830", "transform": [500, 0, 0, 0, -500, 1000]},
+    "fuel_classes": [[1, 2], [4, 10]],
+    "fuel_valid_mask": [[1, 1], [1, 1]],
+    "study_mask": [[1, 1], [1, 1]],
+    "provenance": {"description": "invented for tests"},
+    "sha256": "4e03ec1c22839907ef5ab7093ed32879563f7bdb3b965080ee6849f920ad3147"
+  },
+  "domain": {
+    "role": "synthetic_fixture",
+    "grid": {"width": 2, "height": 2, "cell_km": 0.5, "crs": "EPSG:25830", "transform": [500, 0, 0, 0, -500, 1000]},
+    "crop": {"left": 0, "top": 0, "width": 2, "height": 2},
+    "prepared_inputs_sha256": "4e03ec1c22839907ef5ab7093ed32879563f7bdb3b965080ee6849f920ad3147",
+    "elevations_metres": [[100, 110], [120, 130]],
+    "height_support_mask": [[1, 1], [1, 1]],
+    "provenance": {"description": "invented for tests"},
+    "sha256": "5673511f57ef42ac679298ed4639e51972a2322634f0988a1367d111e87c149f"
+  },
+  "network": {
+    "version": "synthetic-network-fixture", "nodes": [], "edges": [],
+    "sha256": "89a7adf2fd669d84a22902893b7945d4b0c7c97f8d26b0c4e31f937fea9e824a"
+  }
+}

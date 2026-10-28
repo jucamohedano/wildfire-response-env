@@ -25,6 +25,12 @@ An opt-in [coastal mobility development mode](MOBILITY.md) adds real road geomet
 reported truck/crew movement and illustrative aircraft sorties. It has separate
 task IDs and replay pins; it does not replace or rescore benchmark v1.
 
+The separate [incident-day v2 prototype](INCIDENT_DAY.md) starts from a large-fire
+handover and runs 24 simulated hours with sparse decisions, delayed status
+requests, hazard-aware approaches and finite duty/refill cycles. Six CPU-only
+development scenarios are included. Its real-data approval gate remains closed;
+the runnable fixture is explicitly synthetic, not a new historical dataset.
+
 The catalog contains **120 configuration groups** on one Málaga study area:
 80 train, 20 validation and 20 test groups, with two variants each, plus 12
 development probes. Families include uncertain smoke, conflicting reports,

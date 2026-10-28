@@ -1,0 +1,46 @@
+{
+  "version": "incident-day-profile-v2",
+  "status": "synthetic_prototype_not_historical_replay",
+  "clock": {"tick_minutes": 1, "horizon_minutes": 1440},
+  "runtime": {
+    "version": "wildfire-incident-day-profile-v2",
+    "horizon_minutes": 1440,
+    "work_minutes": 240,
+    "duty_minutes": 240,
+    "rest_minutes": 60,
+    "ground_setup_minutes": 5,
+    "aircraft_setup_minutes": 2,
+    "ground_refill_minutes": 4,
+    "aircraft_refill_minutes": 6,
+    "flight_speed_kph": 240,
+    "air_refill_minutes": 6,
+    "aircraft_max_wind": 2.8,
+    "engine_litres_per_minute": 500,
+    "spread_interval_multiplier": 60,
+    "burn_duration_multiplier": 12,
+    "evidence": "Declared exercise assumptions, not aviation/labour-law or fire-spread calibration"
+  },
+  "spatial_effects": {
+    "fire_and_population": "Reusable coarse cellular kernel, not calibrated predictive fire physics or health modelling",
+    "ground_work": "Assigned-sector cooling within three grid cells of the safe staging point; abstract sector work, not hose range",
+    "solar_window": "Offline solar-elevation approximation; not certified operating minima",
+    "fixed_wing_recovery": "Finite preplanned return to a synthetic compatible base, exempt from new takeoff/drop clearance"
+  },
+  "aviation": {"class": "fixed_wing_landloaded", "minimum_fire_area_rule": null, "capacity_status": "synthetic"},
+  "communications": {"maximum_delay_minutes": 60, "conditioning": "source and channel", "status": "synthetic_upper_bound_not_verified_dispatch_standard"},
+  "resources": {"roster": "finite_scenario_defined", "capacities": "finite_synthetic_scenario_defined", "states": ["available", "dispatched", "travelling", "arrived", "setup", "working", "resting"]},
+  "duty": {"work_minutes": 240, "rest_minutes": 60, "status": "synthetic_default_pending_verified_duty_evidence_not_labour_law"},
+  "fuel": {"unknown_source_values": "remain_unknown", "prototype_fallback": "optional_explicit_synthetic_assumption_never_resolution", "real_source_pack_approval": "blocked"},
+  "roads": {"coverage": "coastal_graph_partial_to_east", "truck_accessible_grid_centres": 62, "walking": "a_route_gap_alone_does_not_establish_a_footpath"},
+  "sources": [
+    {"description": "INFOCA operational structure and aerial initial attack; not a universal minimum area requirement", "url": "https://www.juntadeandalucia.es/medioambiente/web/Bloques_Tematicos/Patrimonio_Natural._Uso_Y_Gestion/Montes/Incendios_Forestales/plan_infoca/Cap16_operatividad.pdf"},
+    {"description": "INFOCA coordination structure; no universal15-20minute polling rule inferred", "url": "https://www.juntadeandalucia.es/boja/2010/192/1"},
+    {"description": "2026 planning directive; supports coordination, not the exercise's numerical durations", "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-9159&p=20260427&tn=0"},
+    {"description": "EFFIS European fuel map", "url": "https://forest-fire.emergency.copernicus.eu/applications/data-and-services"},
+    {"description": "CORINE Land Cover 2018 product", "url": "https://land.copernicus.eu/en/products/corine-land-cover/clc2018"},
+    {"description": "Exercise design guidance", "url": "https://training.fema.gov/programs/nsec/hseep/"},
+    {"description": "Exercise design guidance", "url": "https://www.gov.uk/government/publications/exercising-best-practice-guidance/exercising-best-practice-guidance-html"},
+    {"description": "Road data attribution", "url": "https://www.openstreetmap.org/copyright"},
+    {"description": "Malaga airport geographic reference", "url": "https://aip.enaire.es/aip/contenido_AMDT/LE_Amdt_A_2026_09_AD_2_LEMG_es.html"}
+  ]
+}
