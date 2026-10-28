@@ -98,6 +98,10 @@ def counterfactual_case(env):
         fits = [group['id'] for group in scenario['groups'] if group['count'] <= destination['capacity']]
         movement = []
         for group in scenario['groups']:
+            if (group.get('destination_id') == destination['id']
+                    and group['position'] == destination['position']):
+                movement.append(dict(group=group['id'], already_at_destination=True))
+                continue
             route = env.router.options(group['position'], grid_point(env.inputs, destination['position']), mode='crew',
                 burning=burning, wind=scenario['wind'], limit=1, target_metric=destination['position'])
             if not route['options']:
@@ -194,7 +198,7 @@ def recovery_overrun_finding(identifier, unit, minute, audit, reports, profile):
     return finding('recovery_after_shift_end', 'Return travel continues beyond the declared shift; safe recovery must still continue.', minute, identifier)
 
 
-def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), land_mask=None):
+def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), land_mask=None, queries=()):
     if not audit or any(record['minute'] != index for index, record in enumerate(audit)):
         raise ValueError('Audit must start at minute zero and cover consecutive minutes')
     units = {unit['id']: unit for unit in scenario['resources']}
@@ -317,6 +321,16 @@ def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), 
                        or (event['kind'] == 'center_unavailable' and item['kind'] == 'status_response'
                            and item['source'] == event['center_id'] and item['payload'].get('available') is False)]
         event_evidence.append(dict(event=event, status='constraint_evidence_observed' if consequence else 'event_only_or_no_constraint_evidence', reports=matching))
+        if (scenario['profile'].get('causal_coverage')
+                and event['kind'] in ('access_restriction', 'destination_closed')):
+            from .scenario_coverage import event_coverage
+
+            event_evidence[-1].update(event_coverage(event, scenario, inputs, audit, reports, orders, queries))
+            forbidden = event_evidence[-1].get('causal_evidence', {}).get('forbidden_work', [])
+            for work in forbidden:
+                findings.append(finding('work_despite_access_restriction',
+                    'Restricted vehicle applied work inside its exclusion zone.',
+                    work['minute'], work['resource_id']))
     return dict(minutes_observed=audit[-1]['minute'], complete=audit[-1]['minute'] == scenario['horizon_minutes'],
                 findings=findings, resource_timeline=timeline, applied_work_counts=work_counts, first_applied_work=first_work,
                 water_litres_spent_without_applied_work=water_without_applied_work,

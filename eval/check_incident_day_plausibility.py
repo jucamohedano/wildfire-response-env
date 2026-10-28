@@ -16,10 +16,10 @@ from wildfire_core.incident_day import IncidentDayEnv, fixture_inputs
 from envs.wildfire_response.incident_day.baselines import DayDispatcher
 from envs.wildfire_response.incident_day.environment import implementation_digest
 from envs.wildfire_response.incident_day.plausibility import audit_case, counterfactual_case, route_checks, static_case
-from envs.wildfire_response.incident_day.scenarios import ALL_CASE_IDS, CASE_IDS, CALIBRATED_CASE_IDS, EGRESS_CASE_IDS
+from envs.wildfire_response.incident_day.scenarios import ALL_CASE_IDS, CASE_IDS, CALIBRATED_CASE_IDS, EGRESS_CASE_IDS, COVERAGE_CASE_IDS
 
 
-VERSION = 'incident-day-plausibility-report-v1'
+VERSION = 'incident-day-plausibility-report-v2'
 BOUNDS_PATH = Path(__file__).resolve().parents[1] / 'data/incident_day_v2/plausibility/bounds-v1.json'
 
 
@@ -93,7 +93,8 @@ def episode(case, inputs, network, bounds, land_mask, private, connection, allow
         trajectory = env.trajectory()
         reports = env.bus.reports
         orders = list(env.ops.orders.values())
-        analysis = audit_case(env._scenario, env.inputs, env.network, env._audit, bounds, reports, orders, land_mask)
+        analysis = audit_case(env._scenario, env.inputs, env.network, env._audit, bounds, reports, orders,
+                              land_mask, queries=env._query_log)
         analysis['route_checks'] = route_checks(env._approaches, env.network)
         analysis['findings'].extend(analysis['route_checks']['findings'])
         analysis.update(case=case, status=status, verification=verification,
@@ -211,13 +212,12 @@ def run(output, cases, wall_budget, inputs=None, network=None, land_mask=None, a
     bounds = json.loads(BOUNDS_PATH.read_text())
     started = time.monotonic()
     digest_before = implementation_digest()
-    suites = []
-    if any(case in CASE_IDS for case in cases):
-        suites.extend(CASE_IDS)
-    if not cases or any(case in CALIBRATED_CASE_IDS for case in cases):
-        suites.extend(CALIBRATED_CASE_IDS)
-    if any(case in EGRESS_CASE_IDS for case in cases):
-        suites.extend(EGRESS_CASE_IDS)
+    selected = set(cases)
+    catalog_suites = (COVERAGE_CASE_IDS, EGRESS_CASE_IDS, CALIBRATED_CASE_IDS, CASE_IDS)
+    suites = next((list(suite) for suite in catalog_suites if selected <= set(suite)), None)
+    if suites is None:
+        suites = list(dict.fromkeys(case for suite in catalog_suites
+                                   if selected.intersection(suite) for case in suite))
     static = static_audit(inputs, network, bounds, land_mask, suites, allow_unapproved)
     report = dict(version=VERSION, bounds=bounds, input_sha256=inputs['sha256'], network_sha256=network['sha256'],
                   implementation_sha256=digest_before, wall_budget_seconds=wall_budget, static_cases=static, dynamic_cases=[],
@@ -278,7 +278,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', required=True)
     parser.add_argument('--wall-budget', type=float, default=600)
-    parser.add_argument('--cases', nargs='*', choices=ALL_CASE_IDS, default=list(CALIBRATED_CASE_IDS))
+    parser.add_argument('--cases', nargs='*', choices=ALL_CASE_IDS, default=list(COVERAGE_CASE_IDS))
     parser.add_argument('--inputs', type=Path)
     parser.add_argument('--network', type=Path)
     parser.add_argument('--land-mask', type=Path, help='Optional cached grid-aligned 0/1/null land-mask JSON matrix')

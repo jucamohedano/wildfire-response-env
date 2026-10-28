@@ -67,6 +67,13 @@ Their scenario/profile identities differ; existing scenario IDs and hashes are
 unchanged. This is a mechanics comparison, not new historical evidence or a
 larger held-out dataset. See `docs/incident-day.md` for the constraints and command.
 
+Two further additive IDs, `incident-day-coverage-v1-002` and `004`, provide direct
+access/relocation evidence. The access case retains the paired restriction and
+records actual loss of engine approaches plus crew work. The destination case
+declares an initial cohort at the centre that will close, rather than closing an
+unused facility. Its occupancy and prior arrival are synthetic handover
+assumptions. No new historical data or expert trajectories are implied.
+
 `eval/review_incident_day_variants.py` materializes and inspects every flagged
 variant from the existing pinned catalog. The first review covered all32 cases:
 28 remain frozen pre-ignition-weather exercises, explicitly not post-ignition

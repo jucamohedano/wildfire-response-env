@@ -203,6 +203,33 @@ skips, including HTTP parity and frozen extraction checks. See
 physical calibration, real-source input approval, or the absence of observed
 crew-only-access and destination-threat complications in these policy runs.
 
+## Current access and destination coverage
+
+The default six-family acceptance suite now uses two additive variants:
+`incident-day-coverage-v1-002` and `incident-day-coverage-v1-004`. The other four
+IDs come from the egress suite. All previous IDs and scenario hashes remain
+available; earlier reports keep their original interpretation.
+
+In the access variant, a private same-state route comparison records the actual
+effect of the vehicle restriction. Coverage additionally requires received public
+route refusals and applied crew work inside the restricted sector, with no engine
+work there. A report appearing near the event is insufficient. The private
+comparison never enters actor observations or route previews.
+
+The destination variant starts with a declared, synthetic handover cohort of 150
+people already at the reception centre that later closes. Closure marks those
+occupants blocked and sends a delayed relocation warning. Coverage requires a new
+order after a delivered warning and actual arrival at another open destination.
+Ignoring the warning leaves an unresolved cohort. An unused centre, a warning
+alone, or an unrelated movement cannot satisfy this check. The pre-handover
+occupancy is initialization, not a historical journey or expert demonstration.
+
+Run the current acceptance suite with
+`python eval/check_incident_day_plausibility.py --output /tmp/NEW-COVERAGE-RUN --wall-budget 600`.
+The `--cases` option still selects explicit earlier suites. Targeted partial
+selections remain incomplete suite reports even when their selected episodes
+finish and verify.
+
 Run the separate six-case suite with:
 
 ```sh

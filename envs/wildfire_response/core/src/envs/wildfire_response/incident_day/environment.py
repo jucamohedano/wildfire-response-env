@@ -79,6 +79,7 @@ class IncidentDayEnv:
         self._signals = {}
         self._invalid_log = []
         self._work_log = []
+        self._event_effects = []
         self._closed_centers, self._restrictions = {}, set()
         self._known_restrictions = set()
         self._air_unavailable_until = self._known_air_unavailable_until = 0
@@ -296,6 +297,8 @@ class IncidentDayEnv:
     def _log_query(self, tool, arguments, result):
         query = dict(tool=tool, arguments=arguments, before_decision=self.decision,
                      minute=self.minute, result_sha256=digest(result))
+        if self._scenario['profile'].get('causal_coverage') and tool == 'route_options':
+            query['public_route_summary'] = dict(status=result['status'], option_count=len(result['options']))
         self._query_log.append(query)
         if self.artifact_dir:
             with (self.artifact_dir / 'queries.jsonl').open('a') as stream:
@@ -448,12 +451,15 @@ class IncidentDayEnv:
     def _tick(self):
         self.minute += 1
         self._work_log = []
+        self._event_effects = []
         for event in [event for event in self._events if event['minute'] == self.minute]:
             self._events.remove(event)
             if event['kind'] == 'wind':
                 self.fire.set_wind(x=event['wind'][0], y=event['wind'][1])
                 self.bus.emit('weather', 'wind_update', dict(wind=event['wind'][:]), self.minute, channel='radio')
             elif event['kind'] == 'access_restriction':
+                if self._scenario['profile'].get('causal_coverage'):
+                    self._event_effects.append(self._access_effect(event))
                 self._restrictions.add(event['resource_kind'])
                 self._emit('road-patrol', 'access_restriction', dict(resource_kind=event['resource_kind'],
                     text='EXERCISE. Central-sector approach restricted for this vehicle class.'), urgent=True)
@@ -463,6 +469,19 @@ class IncidentDayEnv:
             elif event['kind'] == 'destination_closed':
                 destination = self.ops.destinations[event['destination_id']]
                 destination['status'] = 'closed'
+                if self._scenario['profile'].get('closure_affects_occupants'):
+                    affected = []
+                    for group in self.ops.groups.values():
+                        if (group.get('destination_id') == destination['id']
+                                and group['position'] == destination['position']):
+                            affected.append(dict(group_id=group['id'], count=group['count'],
+                                                 previous_status=group['status']))
+                            group['status'] = 'blocked'
+                            self._emit(destination['id'], 'relocation_required',
+                                dict(group=copy.deepcopy(group), destination_id=destination['id'],
+                                     event_minute=self.minute), urgent=True)
+                    self._event_effects.append(dict(kind='destination_closed', minute=self.minute,
+                        destination_id=destination['id'], affected_occupants=affected))
                 self._emit('destination', 'destination_threatened', dict(destination=copy.deepcopy(destination)), urgent=True)
             elif event['kind'] == 'center_unavailable':
                 self._closed_centers[event['center_id']] = event['until']
@@ -579,6 +598,25 @@ class IncidentDayEnv:
         return {(column, row) for row in range(self.fire.height) for column in range(self.fire.width)
                 if math.dist([column, row], [self.fire.width // 2, self.fire.height // 2]) <= 5}
 
+    def _access_effect(self, event):
+        target = [self.fire.width // 2, self.fire.height // 2]
+        effects = []
+        for unit in self.ops.resources.values():
+            if (unit['kind'] != event['resource_kind'] or unit['available_at'] > self.minute
+                    or unit['duty_end_at'] <= self.minute or unit['water_litres'] <= 0):
+                continue
+            arguments = dict(mode=unit['kind'], burning=self._burning(), wind=list(self.fire.wind),
+                             revision=0, limit=32)
+            before = self.router.options(unit['position'], target, **arguments,
+                excluded_cells=self._excluded(unit['kind'], self._restrictions))
+            after = self.router.options(unit['position'], target, **arguments,
+                excluded_cells=self._excluded(unit['kind'], self._restrictions | {event['resource_kind']}))
+            effects.append(dict(resource_id=unit['id'], state=unit['state'],
+                options_before=len(before['options']), options_after=len(after['options']),
+                before_status=before['status'], after_status=after['status']))
+        return dict(kind=event['kind'], minute=self.minute, resource_kind=event['resource_kind'],
+                    resource_access=effects)
+
     def _movement_safe(self, journey, minute, kind):
         if kind == 'aircraft':
             return True
@@ -635,6 +673,11 @@ class IncidentDayEnv:
             record['emergency_withdrawals'] = {identifier: copy.deepcopy(unit['journey']['emergency_egress'])
                 for identifier, unit in self.ops.resources.items()
                 if (unit.get('journey') or {}).get('_trusted_return_egress') is True}
+        if self._scenario['profile'].get('causal_coverage'):
+            record['event_effects'] = copy.deepcopy(getattr(self, '_event_effects', []))
+            for identifier, group in self.ops.groups.items():
+                record['population'][identifier].update(position=group['position'][:],
+                                                       destination_id=group.get('destination_id'))
         self._footprint.update(footprint)
         self._counter.update(record['new_footprint'])
         self._audit.append(record)

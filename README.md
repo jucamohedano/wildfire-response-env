@@ -18,8 +18,9 @@ state. It can inspect reports and routes, check draft actions, commit resource a
 protection orders, request status, and wait for new information. Orders and status
 requests take a minute; waiting stops early for actionable events or deadlines.
 
-Its eighteen development cases span six families, including separately versioned
-finite-shift and emergency-withdrawal exercises. They use a synthetic fixture, not
+Its twenty development cases span six families, including separately versioned
+finite-shift, withdrawal, crew-access and relocation exercises. They use a
+synthetic fixture, not
 historical incident replays or a held-out evaluation set. The separate, frozen
 **benchmark v1** runs up to 120 minutes in two-minute turns, with 80 train, 20
 validation and 20 test configuration groups and separate development probes.

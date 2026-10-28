@@ -43,5 +43,17 @@
     "incident-day-egress-v1-003",
     "incident-day-egress-v1-004",
     "incident-day-egress-v1-005"
+  ],
+  "coverage_variant_scenario_ids": [
+    "incident-day-coverage-v1-002",
+    "incident-day-coverage-v1-004"
+  ],
+  "coverage_suite_scenario_ids": [
+    "incident-day-egress-v1-000",
+    "incident-day-egress-v1-001",
+    "incident-day-coverage-v1-002",
+    "incident-day-egress-v1-003",
+    "incident-day-coverage-v1-004",
+    "incident-day-egress-v1-005"
   ]
 }

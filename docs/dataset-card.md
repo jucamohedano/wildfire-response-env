@@ -30,10 +30,13 @@ incidents. The legacy `regional/` module path is not a claim of multi-region
 validation, nor does renaming it add that coverage. No trained model is released
 here; this information belongs in the dataset/environment card.
 
-The current horizon remains 120 simulated minutes. A separately versioned
-six-hour pilot, followed conditionally by a twelve-hour night-to-day test, is
-proposed in the [long-session strategy](long-sessions.html); it is not enabled
-by this documentation update.
+The frozen catalog retains its 120-minute horizon. A separate
+[24-hour incident-day prototype](incident-day.md) now has twenty synthetic
+development configurations across six families. They are not additions to the
+held-out dataset and are not historical incidents. Its current acceptance suite
+contains two additive access/relocation variants, preserving earlier scenario
+identities and results. The [earlier long-session proposal](long-sessions.html)
+is retained as historical planning context.
 
 Versioned [scenario-quality rules](../data/scenario_quality_v1/README.md) now audit
 every concrete case in the expansion, benchmark and topographic-stress catalogs.
