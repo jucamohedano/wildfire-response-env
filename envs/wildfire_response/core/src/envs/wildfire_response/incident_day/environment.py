@@ -118,8 +118,13 @@ class IncidentDayEnv:
         fields = ('id', 'kind', 'home_base', 'position', 'base_position', 'capacity_litres',
                   'water_litres', 'state', 'available_at', 'work_remaining', 'sector_id', 'target_grid',
                   'duty_end_at', 'total_work_remaining', 'facility_id', 'fuel_minutes', 'fuel_capacity_minutes')
-        return dict({key: copy.deepcopy(unit[key]) for key in fields if key in unit},
-                    observed_at=minute, received_at=minute)
+        value = dict({key: copy.deepcopy(unit[key]) for key in fields if key in unit},
+                     observed_at=minute, received_at=minute)
+        journey = unit.get('journey') or {}
+        if journey.get('_trusted_return_egress') is True:
+            value['withdrawal'] = dict(policy=journey['emergency_egress']['version'],
+                                      buffer_exited=journey['emergency_egress']['exited'])
+        return value
 
     def _burning(self):
         return {(column, row) for row, cells in enumerate(self.fire.cells) for column, cell in enumerate(cells)
@@ -303,7 +308,8 @@ class IncidentDayEnv:
         result = self.router.options(unit['position'], grid_point(self.inputs, unit['base_position']),
             mode=unit['kind'], burning=self._burning(), wind=list(self.fire.wind),
             excluded_cells=self._excluded(unit['kind'], self._restrictions),
-            revision=0, target_metric=unit['base_position'], limit=1)
+            revision=0, target_metric=unit['base_position'], limit=1,
+            emergency_egress=self._scenario['profile'].get('emergency_egress_policy') == 'return-only-buffer-exit-v1')
         return result['options'][0]['journey'] if result['options'] else None
 
     def check_action(self, action):
@@ -577,7 +583,9 @@ class IncidentDayEnv:
         if kind == 'aircraft':
             return True
         return self.router.safe_journey_segment(journey, minute - 1, self._burning(), list(self.fire.wind),
-            excluded_cells=self._excluded(kind, self._restrictions), mode='crew' if kind == 'group' else kind)
+            excluded_cells=self._excluded(kind, self._restrictions), mode='crew' if kind == 'group' else kind,
+            egress_status=(self._scenario['profile'].get('emergency_egress_policy') == 'return-only-buffer-exit-v1'
+                           and journey.get('_trusted_return_egress') is True))
 
     def _suppress(self, unit):
         target = unit.get('target_grid')
@@ -623,6 +631,10 @@ class IncidentDayEnv:
             record.update(footprint=sorted(footprint), cell_area_hectares=self.inputs['grid']['cell_km'] ** 2 * 100,
                           burnable=[row * self.fire.width + column for row, cells in enumerate(self.fire.cells)
                                     for column, cell in enumerate(cells) if cell['initial_fuel'] > 0])
+        if self._scenario['profile'].get('emergency_egress_policy') == 'return-only-buffer-exit-v1':
+            record['emergency_withdrawals'] = {identifier: copy.deepcopy(unit['journey']['emergency_egress'])
+                for identifier, unit in self.ops.resources.items()
+                if (unit.get('journey') or {}).get('_trusted_return_egress') is True}
         self._footprint.update(footprint)
         self._counter.update(record['new_footprint'])
         self._audit.append(record)

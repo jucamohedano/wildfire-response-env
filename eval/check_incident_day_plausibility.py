@@ -16,7 +16,7 @@ from wildfire_core.incident_day import IncidentDayEnv, fixture_inputs
 from envs.wildfire_response.incident_day.baselines import DayDispatcher
 from envs.wildfire_response.incident_day.environment import implementation_digest
 from envs.wildfire_response.incident_day.plausibility import audit_case, counterfactual_case, route_checks, static_case
-from envs.wildfire_response.incident_day.scenarios import ALL_CASE_IDS, CASE_IDS, CALIBRATED_CASE_IDS
+from envs.wildfire_response.incident_day.scenarios import ALL_CASE_IDS, CASE_IDS, CALIBRATED_CASE_IDS, EGRESS_CASE_IDS
 
 
 VERSION = 'incident-day-plausibility-report-v1'
@@ -216,6 +216,8 @@ def run(output, cases, wall_budget, inputs=None, network=None, land_mask=None, a
         suites.extend(CASE_IDS)
     if not cases or any(case in CALIBRATED_CASE_IDS for case in cases):
         suites.extend(CALIBRATED_CASE_IDS)
+    if any(case in EGRESS_CASE_IDS for case in cases):
+        suites.extend(EGRESS_CASE_IDS)
     static = static_audit(inputs, network, bounds, land_mask, suites, allow_unapproved)
     report = dict(version=VERSION, bounds=bounds, input_sha256=inputs['sha256'], network_sha256=network['sha256'],
                   implementation_sha256=digest_before, wall_budget_seconds=wall_budget, static_cases=static, dynamic_cases=[],

@@ -167,8 +167,24 @@ class HazardRouter:
                    for first, second in zip(coordinates, coordinates[1:])
                    for cell in self._segment_cells(first, second)))
 
-    def safe_journey_segment(self, journey, minute, burning, wind, *, excluded_cells=(), mode=None):
-        hazards = self._hazards(burning, wind) | self._excluded(excluded_cells)
+    def safe_journey_segment(self, journey, minute, burning, wind, *, excluded_cells=(), mode=None,
+                             egress_status=False):
+        excluded = self._excluded(excluded_cells)
+        hazards = self._hazards(burning, wind) | excluded
+        metadata = journey.get('emergency_egress') if egress_status else None
+        if metadata is not None:
+            if (not isinstance(metadata, dict) or type(metadata.get('exited')) is not bool
+                    or not isinstance(metadata.get('initial_buffer'), list)):
+                raise ValueError('Invalid egress metadata')
+            initial_buffer = self._excluded(metadata['initial_buffer'])
+            hard = frozenset(tuple(cell) for cell in burning) | excluded
+            exited = metadata['exited']
+
+            def failure():
+                return dict(safe=False, egress_exited=metadata['exited'])
+        else:
+            def failure():
+                return False
         mode = mode if mode is not None else journey.get('resource_mode')
         if mode is not None and mode not in ('engine', 'crew'):
             raise ValueError('Mode must be engine or crew')
@@ -182,19 +198,30 @@ class HazardRouter:
             if (leg['mode'] == 'road' and mode is not None
                     and (leg.get('edge_id') not in self.network.edges
                          or not self._edge_allowed(self.network.edges[leg['edge_id']], mode))):
-                return False
+                return failure()
             start_fraction = elapsed / duration
             end_fraction = min(1, (elapsed + remaining) / duration)
             _, _, suffix = split_line(leg['coordinates'], start_fraction)
             _, segment, _ = split_line(suffix, (end_fraction - start_fraction) / (1 - start_fraction))
-            if not self._safe_line(segment, hazards, 'crew' if leg['mode'] == 'walk' else 'engine'):
-                return False
+            segment_mode = 'crew' if leg['mode'] == 'walk' else 'engine'
+            if metadata is None:
+                if not self._safe_line(segment, hazards, segment_mode):
+                    return False
+            else:
+                if not self._safe_line(segment, hard, segment_mode):
+                    return failure()
+                for cells in self._ordered_cells(segment):
+                    if not cells & hazards:
+                        exited = True
+                    elif exited or not (cells & hazards) <= initial_buffer:
+                        return failure()
             remaining -= min(remaining, duration - elapsed)
             elapsed = 0
             if remaining <= 0:
-                return True
-        return self._safe_cell(self._cell(point(journey['destination'])), hazards,
+                return dict(safe=True, egress_exited=exited) if metadata is not None else True
+        safe = self._safe_cell(self._cell(point(journey['destination'])), hazards,
                                'crew' if journey['legs'] and journey['legs'][-1]['mode'] == 'walk' else 'engine')
+        return dict(safe=safe, egress_exited=exited) if metadata is not None else safe
 
     def _origins(self, origin, mode=None):
         nodes = sorted(identifier for identifier, position in self.network.nodes.items()
@@ -336,9 +363,9 @@ class HazardRouter:
         return result
 
     def options(self, origin_metric, target_grid, *, mode='engine', burning, wind, revision=0, limit=3,
-                excluded_cells=(), target_metric=None):
+                excluded_cells=(), target_metric=None, emergency_egress=False):
         origin = point(origin_metric)
-        if (mode not in ('engine', 'crew') or not isinstance(target_grid, (tuple, list))
+        if (type(emergency_egress) is not bool or mode not in ('engine', 'crew') or not isinstance(target_grid, (tuple, list))
                 or len(target_grid) != 2 or any(type(value) is not int for value in target_grid)
                 or type(revision) is not int or type(limit) is not int or not 1 <= limit <= 32):
             raise ValueError('Invalid mode, target, revision or option limit')
@@ -350,9 +377,163 @@ class HazardRouter:
         excluded = self._excluded(excluded_cells)
         hazards = self._hazards(burning, wind) | excluded
         key_burning = tuple(sorted(tuple(cell) for cell in burning))
+        if emergency_egress:
+            if target_metric is None:
+                raise ValueError('Emergency return requires an exact destination')
+            origin_cell = self._cell(origin)
+            if tuple(target_grid) in hazards or origin_cell in set(key_burning) | excluded:
+                return dict(status='blocked', options=[])
+            if origin_cell in hazards:
+                return self._egress_options(origin, tuple(target_grid), mode, key_burning,
+                                            tuple(wind), revision, limit, hazards, excluded,
+                                            tuple(target_metric))
         return copy.deepcopy(self._cached_options(tuple(origin), tuple(target_grid), mode,
             key_burning, tuple(wind), revision, limit, hazards, tuple(sorted(excluded)),
             tuple(target_metric) if target_metric is not None else None))
+
+    def _egress_options(self, origin, target, mode, burning, wind, revision, limit,
+                        hazards, excluded, target_metric):
+        hard = frozenset(burning) | excluded
+        if not self._inside(target) or not self._inside(self._cell(origin)):
+            return dict(status='unmapped', options=[])
+        if mode == 'crew' and not self._walkable(target):
+            return dict(status='unmapped', options=[])
+        origins = self._origins(list(origin), mode)
+        if not origins and mode == 'crew' and not self._origins(list(origin)):
+            origins = self._walking_origins(list(origin), hard)
+        if not origins:
+            return dict(status='unmapped', options=[])
+        cell_size = max(self.transform[0], -self.transform[4])
+        candidates = sorted((math.dist(position, self._center(target)), node)
+                            for node, position in self.network.nodes.items()
+                            if math.dist(position, self._center(target)) <= MAX_STAGING_CELLS * cell_size
+                            and self._safe_cell(self._cell(position), hazards, 'engine')
+                            and (mode != 'crew' or self._walkable(self._cell(position)))
+                            and (mode != 'engine' or position == list(target_metric)))
+        candidates = candidates[:MAX_WALK_CANDIDATES if mode == 'crew' else MAX_CANDIDATES]
+        if not candidates:
+            return dict(status='unmapped', options=[])
+        targets = {node for _, node in candidates}
+        paths = self._egress_roads(origins, hard, hazards, targets, mode)
+        options = []
+        for _, node in candidates:
+            if node not in paths:
+                continue
+            access = self.network.nodes[node]
+            walk_legs = [] if mode == 'engine' else self._walk(access, target, hazards,
+                                                                destination=list(target_metric))
+            if walk_legs is None:
+                continue
+            journey = make_journey(paths[node] + walk_legs, list(origin), list(target_metric), PROFILE)
+            for leg in journey['legs']:
+                leg['speed_kph'] = leg['distance_m'] / leg['duration_minutes'] * .06
+            journey.update(access_node=node, access_point=access[:],
+                           access_distance_m=math.dist(access, target_metric), departed_at=0, resource_mode=mode)
+            journey['emergency_egress'] = dict(version='return-only-buffer-exit-v1',
+                                                initial_buffer=[list(cell) for cell in sorted(hazards - excluded)],
+                                                exited=False)
+            if not self._egress_path_valid(journey, hazards, hard):
+                continue
+            identity = dict(network=self.network.sha256, origin=origin, target=target, mode=mode,
+                            burning=burning, wind=wind, excluded=tuple(sorted(excluded)), revision=revision,
+                            node=node, cell=target, destination=list(target_metric),
+                            edges=[leg['edge_id'] for leg in journey['legs']])
+            identifier = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()[:20]
+            options.append(dict(id=identifier, approach_grid=list(target), approach_point=list(target_metric),
+                                journey=journey, distance_m=journey['distance_m'],
+                                travel_minutes=journey['duration_minutes'], knowledge_revision=revision,
+                                uncertainty=PROFILE))
+        options.sort(key=lambda option: (option['travel_minutes'], option['id']))
+        return dict(status='reachable' if options else 'unmapped', options=options[:limit])
+
+    def _egress_roads(self, origins, hard, hazards, targets, mode):
+        queue, costs, paths = [], {}, {}
+        for node, legs in origins:
+            exited = self._egress_legs(legs, False, hard, hazards)
+            if exited is None:
+                continue
+            state = (node, exited)
+            cost = sum(leg['duration_minutes'] for leg in legs)
+            if cost < costs.get(state, math.inf):
+                costs[state], paths[state] = cost, legs
+                heapq.heappush(queue, (cost, node, exited))
+        settled, found = set(), {}
+        while queue and len(settled) < MAX_ROAD_VISITS:
+            cost, node, exited = heapq.heappop(queue)
+            state = (node, exited)
+            if cost != costs[state] or state in settled:
+                continue
+            settled.add(state)
+            if node in targets and exited:
+                found[node] = paths[state]
+                if targets <= found.keys():
+                    break
+            for identifier in self.network.adjacency[node]:
+                edge = self.network.edges[identifier]
+                if not self._edge_allowed(edge, mode):
+                    continue
+                leg = make_leg('road', edge['coordinates'], edge['speed_kph'], identifier, edge['target'])
+                next_exited = self._egress_legs([leg], exited, hard, hazards)
+                if next_exited is None:
+                    continue
+                next_state = (edge['target'], next_exited)
+                next_cost = cost + leg['duration_minutes']
+                if next_cost < costs.get(next_state, math.inf):
+                    costs[next_state] = next_cost
+                    paths[next_state] = paths[state] + [leg]
+                    heapq.heappush(queue, (next_cost, *next_state))
+        return found
+
+    def _egress_legs(self, legs, exited, hard, hazards):
+        for leg in legs:
+            mode = 'crew' if leg['mode'] == 'walk' else 'engine'
+            if not self._safe_line(leg['coordinates'], hard, mode):
+                return None
+            for cells in self._ordered_cells(leg['coordinates']):
+                if not cells & hazards:
+                    exited = True
+                elif exited:
+                    return None
+        return exited
+
+    def _egress_path_valid(self, journey, buffer_cells, hard):
+        exited = False
+        for leg in journey['legs']:
+            mode = 'crew' if leg['mode'] == 'walk' else 'engine'
+            if not self._safe_line(leg['coordinates'], hard, mode):
+                return False
+            for cells in self._ordered_cells(leg['coordinates']):
+                if not cells & buffer_cells:
+                    exited = True
+                elif exited:
+                    return False
+        return exited
+
+    def _ordered_cells(self, coordinates):
+        """Yield cells touched by each open interval between grid crossings."""
+        for first, second in zip(coordinates, coordinates[1:]):
+            start = ((first[0] - self.transform[2]) / self.transform[0],
+                     (first[1] - self.transform[5]) / self.transform[4])
+            end = ((second[0] - self.transform[2]) / self.transform[0],
+                   (second[1] - self.transform[5]) / self.transform[4])
+            times = {0., 1.}
+            for axis in range(2):
+                change = end[axis] - start[axis]
+                if change:
+                    for boundary in range(math.floor(min(start[axis], end[axis])) + 1,
+                                          math.ceil(max(start[axis], end[axis]))):
+                        times.add((boundary - start[axis]) / change)
+            times = sorted(times)
+            for left, right in zip(times, times[1:]):
+                fraction = (left + right) / 2
+                coordinate = [start[axis] + fraction * (end[axis] - start[axis])
+                              for axis in range(2)]
+                axes = []
+                for value in coordinate:
+                    nearest = round(value)
+                    axes.append((nearest - 1, nearest) if abs(value - nearest) < 1e-10
+                                else (math.floor(value),))
+                yield {(column, row) for column in axes[0] for row in axes[1]}
 
     def _plan(self, origin, target, mode, burning, wind, revision, limit, hazards, excluded, target_metric):
         if not self._inside(target):

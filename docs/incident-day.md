@@ -16,8 +16,9 @@ The initial synthetic runs are archived in
 not the latest implementation assessment. Later dispatcher fixes and the additive
 shift scenarios are summarized in `results/estimated-fuel-shift-checks-20261028.json`
 and `.html`. All six shift days complete, replay exactly and agree with independent
-reward accounting. Fourteen late ground recoveries remain modeled access
-exceptions requiring review. These development cases establish neither physical
+reward accounting. Their fourteen late ground recoveries led to an additive,
+opt-in withdrawal profile; the old IDs retain their original behavior. These
+development cases establish neither physical
 calibration nor benchmark saturation.
 
 The display-road regressions are fixed in merged PR #38. Its focused validation
@@ -173,3 +174,31 @@ development IDs and the two-hour benchmark. Run
 `python eval/check_incident_day_plausibility.py --output /tmp/NEW --wall-budget 600`
 for all six verified days and readable timelines. Passing the automatic
 consistency screen is not physical calibration or expert human approval.
+
+## Emergency withdrawal exercises
+
+`incident-day-egress-v1-000` through `005` pair the same seeds, events and roster
+with `return-only-buffer-exit-v1`. All previous IDs and their scenario identities
+remain available. This is a synthetic emergency-withdrawal assumption, not an
+operationally certified escape rule.
+
+Only a trusted return-to-base journey may leave a non-burning origin inside the
+protective fire/wind buffer. It must follow existing directed roads or supported
+crew walking terrain, exit the initial buffered section, and never re-enter.
+Burning cells, explicit access restrictions and vehicle-mode prohibitions remain
+forbidden. Each minute rechecks the complete swept segment against current
+conditions. Once outside, ordinary buffer and endpoint checks apply. The bounded
+search may fail to establish a route; `unmapped` does not prove physical
+impossibility. No route is invented to make a scenario pass.
+
+Delivered resource status identifies the withdrawal policy and whether the buffer
+has been exited. Initial buffer geometry stays in private evaluator records.
+Disk checkpoints preserve this state, including a checkpoint taken before exit.
+
+Run the separate six-case suite with:
+
+```sh
+python eval/check_incident_day_plausibility.py --output /tmp/NEW-EGRESS-RUN --wall-budget 600 \
+  --cases incident-day-egress-v1-000 incident-day-egress-v1-001 incident-day-egress-v1-002 \
+          incident-day-egress-v1-003 incident-day-egress-v1-004 incident-day-egress-v1-005
+```

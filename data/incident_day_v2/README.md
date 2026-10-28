@@ -61,6 +61,12 @@ or a separately versioned redesign. These warnings do not prove infeasibility.
 No cases are automatically deleted. Per-case evaluator labels and curation
 records remain private and must not enter actor observations or public packs.
 
+The additive `incident-day-egress-v1-*` fixtures pair the finite-shift seeds and
+initial state with an explicit return-only protective-buffer exit assumption.
+Their scenario/profile identities differ; existing scenario IDs and hashes are
+unchanged. This is a mechanics comparison, not new historical evidence or a
+larger held-out dataset. See `docs/incident-day.md` for the constraints and command.
+
 `eval/review_incident_day_variants.py` materializes and inspects every flagged
 variant from the existing pinned catalog. The first review covered all32 cases:
 28 remain frozen pre-ignition-weather exercises, explicitly not post-ignition

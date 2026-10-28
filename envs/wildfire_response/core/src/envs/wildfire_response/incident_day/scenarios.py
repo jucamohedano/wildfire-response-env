@@ -19,7 +19,8 @@ PROFILE = dict(version='wildfire-incident-day-profile-v2', horizon_minutes=1440,
     spread_interval_multiplier=60, burn_duration_multiplier=12,
     evidence='Declared exercise assumptions, not aviation/labour-law or fire-spread calibration')
 CALIBRATED_CASE_IDS = tuple(f'incident-day-shift-v1-{index:03}' for index in range(6))
-ALL_CASE_IDS = CASE_IDS + CALIBRATED_CASE_IDS
+EGRESS_CASE_IDS = tuple(f'incident-day-egress-v1-{index:03}' for index in range(6))
+ALL_CASE_IDS = CASE_IDS + CALIBRATED_CASE_IDS + EGRESS_CASE_IDS
 
 
 class DayFire(RegionalFire, EdgeFireStep):
@@ -65,6 +66,9 @@ def grid_point(inputs, position):
 
 
 def build_scenario(inputs, network, identifier, seed=None):
+    if identifier in EGRESS_CASE_IDS:
+        from .calibrated_scenarios import build_egress_scenario
+        return build_egress_scenario(inputs, network, identifier, seed)
     if identifier in CALIBRATED_CASE_IDS:
         from .calibrated_scenarios import build_calibrated_scenario
         return build_calibrated_scenario(inputs, network, identifier, seed)

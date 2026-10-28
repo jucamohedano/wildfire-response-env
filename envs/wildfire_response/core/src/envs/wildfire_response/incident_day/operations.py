@@ -57,7 +57,19 @@ def _route(journey, origin, destination, minute):
     return result
 
 
-def _movement_safe(journey, minute, kind, position, hazard_check, movement_check):
+def _movement_safe(journey, minute, kind, position, hazard_check, movement_check, *, returning_egress=False):
+    metadata = journey.get('emergency_egress')
+    if returning_egress and journey.get('_trusted_return_egress') is True and isinstance(metadata, dict):
+        if movement_check is None:
+            return False
+        result = movement_check(copy.deepcopy(journey), minute, kind)
+        if (not isinstance(result, dict) or result.get('safe') is not True
+                or type(result.get('egress_exited')) is not bool
+                or (metadata.get('exited') is True and not result['egress_exited'])
+                or (result['egress_exited'] and not hazard_check(copy.deepcopy(position), kind))):
+            return False
+        metadata['exited'] = result['egress_exited']
+        return True
     return (hazard_check(copy.deepcopy(position), kind)
             and (movement_check is None or movement_check(copy.deepcopy(journey), minute, kind)))
 
@@ -191,6 +203,21 @@ class Operations:
         if journey is None and planner is not None:
             journey = planner(copy.deepcopy(unit), minute)
         plan = _route(journey, unit['position'], unit['base_position'], minute)
+        if plan is not None:
+            plan.pop('_trusted_return_egress', None)
+            if 'emergency_egress' in plan:
+                metadata = plan['emergency_egress']
+                trusted = None
+                if (self.profile.get('emergency_egress_policy') == 'return-only-buffer-exit-v1'
+                        and planner is not None and isinstance(metadata, dict)
+                        and metadata.get('version') == 'return-only-buffer-exit-v1'
+                        and metadata.get('exited') is False):
+                    trusted = _route(planner(copy.deepcopy(unit), minute), unit['position'],
+                                     unit['base_position'], minute)
+                if trusted != plan:
+                    plan = None
+                else:
+                    plan['_trusted_return_egress'] = True
         if _same_position(unit['position'], unit['base_position']):
             unit['journey'] = None
             self._at_base(unit, minute)
@@ -379,7 +406,7 @@ class Operations:
                     continue
                 unit.pop('egress_unavailable_since', None)
                 if minute + math.ceil(recovery['duration_minutes']) >= unit['duty_end_at']:
-                    self._return(unit, recovery, minute, None)
+                    self._return(unit, recovery, minute, planner)
                     continue
             if _duty_finished(unit, minute):
                 if _same_position(unit['position'], unit['base_position']):
@@ -418,7 +445,9 @@ class Operations:
                     unit['clearance'] = False
                 position = journey_position(unit['journey'], minute)[0]
                 if not (unit['kind'] == 'aircraft' and movement_state == 'returning') and not _movement_safe(
-                        unit['journey'], minute, unit['kind'], position, hazard_check, movement_check):
+                        unit['journey'], minute, unit['kind'], position, hazard_check, movement_check,
+                        returning_egress=(movement_state == 'returning' and
+                            self.profile.get('emergency_egress_policy') == 'return-only-buffer-exit-v1')):
                     unit['journey']['departed_at'] += 1
                     unit['journey']['arrives_at'] += 1
                     if state != 'blocked':

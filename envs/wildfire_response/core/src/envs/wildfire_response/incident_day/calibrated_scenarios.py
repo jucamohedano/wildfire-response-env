@@ -12,6 +12,7 @@ SHIFT_PROFILE_VERSION = 'wildfire-incident-day-shift-v1'
 SHIFT_SCENARIO_VERSION = 'wildfire-incident-day-shift-scenarios-v1'
 SHIFT_MINUTES = 480
 GROUND_WORK_REACH_CELLS = 3
+EGRESS_POLICY = 'return-only-buffer-exit-v1'
 
 
 class NoSafeStaging(ValueError):
@@ -156,5 +157,24 @@ def build_calibrated_scenario(inputs, network, identifier, seed=None):
     if fallback_units:
         scenario['handover_notice'] = ('EXERCISE. Partial mapped ground access; ' + ', '.join(fallback_units) +
             ' are returning from a synthetic failed-access reconnaissance. No incident-ground suppression access is established.')
+    scenario['sha256'] = digest({key: value for key, value in scenario.items() if key != 'sha256'})
+    return scenario
+
+
+def build_egress_scenario(inputs, network, identifier, seed=None):
+    from .scenarios import EGRESS_CASE_IDS
+
+    if identifier not in EGRESS_CASE_IDS:
+        raise ValueError('Unknown emergency-egress exercise scenario')
+    index = EGRESS_CASE_IDS.index(identifier)
+    scenario = copy.deepcopy(build_calibrated_scenario(inputs, network, SHIFT_CASE_IDS[index], seed))
+    scenario.update(id=identifier, version='wildfire-incident-day-egress-scenarios-v1',
+                    parent_scenario_sha256=scenario['sha256'])
+    scenario['profile'].update(version='wildfire-incident-day-egress-profile-v1',
+                               emergency_egress_policy=EGRESS_POLICY)
+    scenario['handover_notice'] = (scenario.get('handover_notice', '') +
+        ' EXERCISE. Returning ground units may leave a protective fire/wind buffer '
+        'through a supported route. They cannot cross burning cells or re-enter the buffer '
+        'after exit. This withdrawal rule is a synthetic assumption, not tactical safety certification.').strip()
     scenario['sha256'] = digest({key: value for key, value in scenario.items() if key != 'sha256'})
     return scenario
