@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import View from 'ol/View.js';
 import {transform,transformExtent} from 'ol/proj.js';
-import {fireBoundary,fireCells,mapViewOptions,spainExtent,mapProjection,limitCountryZoom,aerialTileUrl,terrainOpacity} from './mapModel';
+import {fireBoundary,fireCells,mapViewOptions,spainExtent,mapProjection,limitCountryZoom,aerialTileUrl,localTerrainVisible} from './mapModel';
 
 describe('fire evolution display',()=>{
   const sample=(x:number,y:number,observed_at=8,burning=true)=>({x,y,burning,observed_at});
@@ -89,8 +89,7 @@ describe('national map navigation',()=>{
 describe('aerial background display',()=>{
   it('uses the official PNOA/Sentinel TMS layer and does not assume it is live sensor data',()=>{
     expect(aerialTileUrl).toBe('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg');
-    expect(terrainOpacity(true,'aerial')).toBe(.12);
-    expect(terrainOpacity(true,'street')).toBe(.38);
-    expect(terrainOpacity(false,'aerial')).toBe(1);
+    expect(localTerrainVisible(true)).toBe(false);
+    expect(localTerrainVisible(false)).toBe(true);
   });
 });

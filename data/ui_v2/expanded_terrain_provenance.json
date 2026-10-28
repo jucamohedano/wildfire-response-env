@@ -1,0 +1,46 @@
+{
+  "display": {
+    "area_ratio": 3.075075,
+    "bytes": 3423261,
+    "columns": 641,
+    "extent": [
+      290250,
+      4029500,
+      322250,
+      4061500
+    ],
+    "mask": "Any stencil with a nonpositive value is unsupported; zero is a transport placeholder, not a measured height. Underlying flat imagery is context only.",
+    "method": "Each valid vertex averages its four adjacent source cell centres. No nonpositive source value is used as an elevation.",
+    "output_path": "ui/public/assets/map-mesh-expanded-v2.json",
+    "output_sha256": "b1ab88dc315e95adc0654f7133e2dcc618dd7878af8b18964dea9fbbe52f377f",
+    "rows": 641,
+    "simulation_extent": [
+      297000,
+      4036500,
+      315500,
+      4054500
+    ],
+    "spacing_metres": 50,
+    "supported_vertices": 369507,
+    "unsupported_vertices": 41374
+  },
+  "limitations": [
+    "The larger WCS request differs from the previous pinned 25 m sample on overlapping pixels; it is display-only and does not replace simulator terrain.",
+    "Nonpositive values can be water, legitimate near-sea-level land or missing data; no class is inferred.",
+    "Source edition, capture date and precise vertical realization are not established.",
+    "The expanded area is not a simulated fire domain, routing network or real-time observation."
+  ],
+  "prepared_at_utc": "2026-10-27T19:17:19.486607+00:00",
+  "role": "display_only",
+  "source": {
+    "bytes": 12827584,
+    "crs": "EPSG:25830",
+    "local_path": ".runtime/display-terrain-expanded-v2/ign-mdt05-expanded-25m.asc",
+    "note": "ASC response declares no NoData value; acquisition is not an independent survey.",
+    "provider": "Instituto Geogr\u00e1fico Nacional, MDT05 WCS",
+    "sha256": "3a17740cbfd1d40ef2194ee684a9b2cd23d0caa2876f47ab935c5389c1d506aa",
+    "spacing_metres": 25,
+    "url": "https://servicios.idee.es/wcs-inspire/mdt?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&COVERAGE=Elevacion25830_5&CRS=EPSG%3A25830&RESPONSE_CRS=EPSG%3A25830&BBOX=290225%2C4029475%2C322275%2C4061525&RESX=25&RESY=25&FORMAT=ArcGrid&INTERPOLATION=nearest+neighbor"
+  },
+  "version": "wildfire-expanded-display-terrain-v2"
+}

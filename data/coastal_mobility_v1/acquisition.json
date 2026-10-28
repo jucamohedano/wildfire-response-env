@@ -1,0 +1,345 @@
+{
+  "acquisition_completed_at": "2026-10-27T12:21:44Z",
+  "acquisition_started_at": "2026-10-27T12:19:24Z",
+  "official_source_attempt": {
+    "attempted_on": "2026-10-27",
+    "result": "Automated HTTPS acquisition failed: unexpected TLS EOF; web fetch HTTP 502. No official geometry was acquired.",
+    "url": "https://centrodedescargas.cnig.es/CentroDescargas/redes-transporte"
+  },
+  "overpass_attempt": {
+    "result": "overpass-api.de HTTP 406; public kumi/private.coffee mirrors timed out. Used the official OSM map API instead."
+  },
+  "requests": [
+    {
+      "acquired_at": "2026-10-27T12:19:25Z",
+      "bbox_wgs84": [
+        -5.42,
+        36.36,
+        -5.305,
+        36.505
+      ],
+      "bytes": 2726514,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-0-0.json.gz",
+      "requested_at": "2026-10-27T12:19:24Z",
+      "server_date": "Tue, 27 Oct 2026 12:19:25 GMT",
+      "sha256": "80372790fc69e1db77df029e146963fcfebb78c5df16d37f13067647aa82c40b",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.42,36.36,-5.305,36.505"
+    },
+    {
+      "acquired_at": "2026-10-27T12:19:29Z",
+      "bbox_wgs84": [
+        -5.42,
+        36.505,
+        -5.305,
+        36.65
+      ],
+      "bytes": 10136083,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-0-1.json.gz",
+      "requested_at": "2026-10-27T12:19:26Z",
+      "server_date": "Tue, 27 Oct 2026 12:19:28 GMT",
+      "sha256": "73e35564f2216e60e2f0cb3f476cca0ed12cee2ec3fa0cbb2e19ca00107747fa",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.42,36.505,-5.305,36.65"
+    },
+    {
+      "acquired_at": "2026-10-27T12:20:25Z",
+      "bbox_wgs84": [
+        -5.305,
+        36.36,
+        -5.2475,
+        36.4325
+      ],
+      "bytes": 2320611,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-1-0-0-0.json.gz",
+      "requested_at": "2026-10-27T12:20:24Z",
+      "server_date": "Tue, 27 Oct 2026 12:20:25 GMT",
+      "sha256": "54a864d3012f9f862c8f2bcdd5f522df7445207f23c16652d53b748b99b8eb08",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.305,36.36,-5.2475,36.4325"
+    },
+    {
+      "acquired_at": "2026-10-27T12:20:28Z",
+      "bbox_wgs84": [
+        -5.2475,
+        36.36,
+        -5.19,
+        36.4325
+      ],
+      "bytes": 11518439,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-1-0-0-1.json.gz",
+      "requested_at": "2026-10-27T12:20:25Z",
+      "server_date": "Tue, 27 Oct 2026 12:20:27 GMT",
+      "sha256": "b10c8c27a4e48f91599bd7b4d92f90e1785c96e9ebb209affbe76c6c4ee33213",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.2475,36.36,-5.19,36.4325"
+    },
+    {
+      "acquired_at": "2026-10-27T12:20:30Z",
+      "bbox_wgs84": [
+        -5.305,
+        36.4325,
+        -5.19,
+        36.505
+      ],
+      "bytes": 4216175,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-1-0-1.json.gz",
+      "requested_at": "2026-10-27T12:20:29Z",
+      "server_date": "Tue, 27 Oct 2026 12:20:30 GMT",
+      "sha256": "3bbdcb7cd3de3c6ca01199074c069cf23eeff760dd797cd4b9b94e0cc9991e4d",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.305,36.4325,-5.19,36.505"
+    },
+    {
+      "acquired_at": "2026-10-27T12:20:35Z",
+      "bbox_wgs84": [
+        -5.305,
+        36.505,
+        -5.19,
+        36.5775
+      ],
+      "bytes": 6057516,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-1-1-0.json.gz",
+      "requested_at": "2026-10-27T12:20:33Z",
+      "server_date": "Tue, 27 Oct 2026 12:20:34 GMT",
+      "sha256": "e644f90968367b98d8f586d67e79cce9dc517cc873ec2af2f987ff6019ad1bbb",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.305,36.505,-5.19,36.5775"
+    },
+    {
+      "acquired_at": "2026-10-27T12:20:37Z",
+      "bbox_wgs84": [
+        -5.305,
+        36.5775,
+        -5.19,
+        36.65
+      ],
+      "bytes": 6024450,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-1-1-1.json.gz",
+      "requested_at": "2026-10-27T12:20:35Z",
+      "server_date": "Tue, 27 Oct 2026 12:20:36 GMT",
+      "sha256": "e7fc53ac88ac5ec79d4826612f4de391e15d55d714bdefc7233dfc823f16e628",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.305,36.5775,-5.19,36.65"
+    },
+    {
+      "acquired_at": "2026-10-27T12:20:42Z",
+      "bbox_wgs84": [
+        -5.19,
+        36.36,
+        -5.075,
+        36.4325
+      ],
+      "bytes": 9871270,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-2-0-0.json.gz",
+      "requested_at": "2026-10-27T12:20:39Z",
+      "server_date": "Tue, 27 Oct 2026 12:20:41 GMT",
+      "sha256": "f37db14f31b2347d7e4b2d7282266c70cb9c210c9be22595faabf3c70e816507",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.19,36.36,-5.075,36.4325"
+    },
+    {
+      "acquired_at": "2026-10-27T12:20:45Z",
+      "bbox_wgs84": [
+        -5.19,
+        36.4325,
+        -5.075,
+        36.505
+      ],
+      "bytes": 10400457,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-2-0-1.json.gz",
+      "requested_at": "2026-10-27T12:20:42Z",
+      "server_date": "Tue, 27 Oct 2026 12:20:44 GMT",
+      "sha256": "34dc1e913c6c1908f26e3827ab59c9b43a0af5d1f2248bcef3bbfd77cb90bc9c",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.19,36.4325,-5.075,36.505"
+    },
+    {
+      "acquired_at": "2026-10-27T12:20:48Z",
+      "bbox_wgs84": [
+        -5.19,
+        36.505,
+        -5.075,
+        36.65
+      ],
+      "bytes": 10381828,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-2-1.json.gz",
+      "requested_at": "2026-10-27T12:20:45Z",
+      "server_date": "Tue, 27 Oct 2026 12:20:47 GMT",
+      "sha256": "a4ab7f6d739ab4ac075c190d79cfefc2bd76c6d0bd8995414ecce0f87fe48efe",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.19,36.505,-5.075,36.65"
+    },
+    {
+      "acquired_at": "2026-10-27T12:21:08Z",
+      "bbox_wgs84": [
+        -5.075,
+        36.36,
+        -4.96,
+        36.4325
+      ],
+      "bytes": 355,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-0.json.gz",
+      "requested_at": "2026-10-27T12:21:08Z",
+      "server_date": "Tue, 27 Oct 2026 12:21:08 GMT",
+      "sha256": "af966c55dcaa029bf18d264d956f12ededb6dacc9604cbd80509e05850f977e1",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.36,-4.96,36.4325"
+    },
+    {
+      "acquired_at": "2026-10-27T12:21:14Z",
+      "bbox_wgs84": [
+        -5.075,
+        36.4325,
+        -5.0175,
+        36.46875
+      ],
+      "bytes": 6292739,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-0-0.json.gz",
+      "requested_at": "2026-10-27T12:21:12Z",
+      "server_date": "Tue, 27 Oct 2026 12:21:13 GMT",
+      "sha256": "da2963d844fe54692032b257b28c97f2b079362f739db67276da69a4dcb0afee",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.4325,-5.0175,36.46875"
+    },
+    {
+      "acquired_at": "2026-10-27T12:21:18Z",
+      "bbox_wgs84": [
+        -5.075,
+        36.46875,
+        -5.04625,
+        36.505
+      ],
+      "bytes": 3990989,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-0-1-0.json.gz",
+      "requested_at": "2026-10-27T12:21:16Z",
+      "server_date": "Tue, 27 Oct 2026 12:21:17 GMT",
+      "sha256": "7475221144ed754517342702cc2cd6624fef253d1fb2bb34e74554f854057f1d",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.46875,-5.04625,36.505"
+    },
+    {
+      "acquired_at": "2026-10-27T12:21:20Z",
+      "bbox_wgs84": [
+        -5.04625,
+        36.46875,
+        -5.0175,
+        36.505
+      ],
+      "bytes": 8076234,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-0-1-1.json.gz",
+      "requested_at": "2026-10-27T12:21:18Z",
+      "server_date": "Tue, 27 Oct 2026 12:21:19 GMT",
+      "sha256": "3e5a305ed7c91ef19ffa3cd96b1a5e66edba839c8aa338febbd4a9dd771a6712",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.04625,36.46875,-5.0175,36.505"
+    },
+    {
+      "acquired_at": "2026-10-27T12:21:23Z",
+      "bbox_wgs84": [
+        -5.0175,
+        36.4325,
+        -4.96,
+        36.46875
+      ],
+      "bytes": 2881493,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-1-0.json.gz",
+      "requested_at": "2026-10-27T12:21:22Z",
+      "server_date": "Tue, 27 Oct 2026 12:21:23 GMT",
+      "sha256": "e448b55a758481b7c8684e5fae71a59fadef1113b4ed9b6d69283c30272dbc7d",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.0175,36.4325,-4.96,36.46875"
+    },
+    {
+      "acquired_at": "2026-10-27T12:21:28Z",
+      "bbox_wgs84": [
+        -5.0175,
+        36.46875,
+        -4.98875,
+        36.505
+      ],
+      "bytes": 10292658,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-1-1-0.json.gz",
+      "requested_at": "2026-10-27T12:21:25Z",
+      "server_date": "Tue, 27 Oct 2026 12:21:27 GMT",
+      "sha256": "c1157e6cefa05479167fd3350d65585053a4756b0c30da4be9f25c0dc75a9081",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.0175,36.46875,-4.98875,36.505"
+    },
+    {
+      "acquired_at": "2026-10-27T12:21:31Z",
+      "bbox_wgs84": [
+        -4.98875,
+        36.46875,
+        -4.96,
+        36.505
+      ],
+      "bytes": 7334336,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-0-1-1-1-1.json.gz",
+      "requested_at": "2026-10-27T12:21:29Z",
+      "server_date": "Tue, 27 Oct 2026 12:21:30 GMT",
+      "sha256": "71a7905df8d17febca72ad6b361b2e00feeeea2d4857e8efc746a6e804d46815",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-4.98875,36.46875,-4.96,36.505"
+    },
+    {
+      "acquired_at": "2026-10-27T12:21:39Z",
+      "bbox_wgs84": [
+        -5.075,
+        36.505,
+        -5.0175,
+        36.54125
+      ],
+      "bytes": 9077623,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-1-0-0-0.json.gz",
+      "requested_at": "2026-10-27T12:21:36Z",
+      "server_date": "Tue, 27 Oct 2026 12:21:38 GMT",
+      "sha256": "aa07e63d465b23e0247df0600468b8e7acf342e456e9d1362f229f58a8892986",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.505,-5.0175,36.54125"
+    },
+    {
+      "acquired_at": "2026-10-27T12:21:40Z",
+      "bbox_wgs84": [
+        -5.075,
+        36.54125,
+        -5.0175,
+        36.5775
+      ],
+      "bytes": 3169417,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-1-0-0-1.json.gz",
+      "requested_at": "2026-10-27T12:21:39Z",
+      "server_date": "Tue, 27 Oct 2026 12:21:40 GMT",
+      "sha256": "434fe9300c98d28e3f429a449dae2c5ef1b84484000e46b33dd8d6258a794303",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.54125,-5.0175,36.5775"
+    },
+    {
+      "acquired_at": "2026-10-27T12:21:43Z",
+      "bbox_wgs84": [
+        -5.0175,
+        36.505,
+        -4.96,
+        36.5775
+      ],
+      "bytes": 11561545,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-1-0-1.json.gz",
+      "requested_at": "2026-10-27T12:21:40Z",
+      "server_date": "Tue, 27 Oct 2026 12:21:42 GMT",
+      "sha256": "98144ddf0f91d85af48ebdb7befeebdacf7bfd9965fe263404ca7b6b5c063637",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.0175,36.505,-4.96,36.5775"
+    },
+    {
+      "acquired_at": "2026-10-27T12:21:44Z",
+      "bbox_wgs84": [
+        -5.075,
+        36.5775,
+        -4.96,
+        36.65
+      ],
+      "bytes": 3967648,
+      "raw_cache": "data/coastal_mobility_v1/.runtime/osm-3-1-1.json.gz",
+      "requested_at": "2026-10-27T12:21:43Z",
+      "server_date": "Tue, 27 Oct 2026 12:21:44 GMT",
+      "sha256": "0f28127ad28837ed88691edf45a5c4c8b99603bd8c3df74c2338fd51724eaab0",
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.075,36.5775,-4.96,36.65"
+    }
+  ],
+  "snapshot": {
+    "bytes": 1961909,
+    "canonical_sha256": "7a5ce441b3de55ac72dff1fbc500473243a9d9213573415c151c45f1f04f183d",
+    "path": "source_snapshot.json.gz",
+    "sha256": "fd276b8a4a799cffedd268f485a97aaff5ff88d83d11726be0e23894d282f323"
+  },
+  "source": {
+    "attribution": "© OpenStreetMap contributors",
+    "license": "ODbL-1.0",
+    "name": "OpenStreetMap coastal Málaga extract",
+    "url": "https://www.openstreetmap.org/copyright"
+  },
+  "source_date_note": "OSM current map API at acquisition; non-atomic tiles, not a 2021 historical reconstruction. Highest element version wins overlaps. Initial 4x2 tiling is bisected when the API rejects more than 50000 nodes.",
+  "source_element_timestamp_max": "2026-10-24T14:27:08Z",
+  "source_element_timestamp_min": "2007-10-18T21:58:04Z",
+  "version": "coastal-road-acquisition-v1"
+}

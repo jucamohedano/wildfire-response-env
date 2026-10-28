@@ -1,0 +1,67 @@
+{
+  "version": "wildfire-tactical-design-assessment-v2",
+  "date": "2026-10-27",
+  "reference_role": "User-supplied generated design, not geographic or operational ground truth",
+  "capture": ".runtime/tactical-v2-final.png",
+  "case": "coastal-dev-000",
+  "recorded_minute": 26,
+  "fresh_received_burning_cells": 1,
+  "criteria": [
+    {
+      "criterion": "Overhead 3D composition",
+      "status": "Matched presentation",
+      "evidence": "60-degree north-up orthographic view, source relief filling the frame, no horizon or enclosing domain walls. Corrected stale OrbitControls zoom limits that initially clipped both edges."
+    },
+    {
+      "criterion": "Settlement and responder beacons",
+      "status": "Closer match",
+      "evidence": "Blue white-house circles, green refuge beacons and distinct crew/vehicle symbols follow the reference. Existing synthetic population coordinates remain fixed; these are not verified historic village placements."
+    },
+    {
+      "criterion": "Labels and map key",
+      "status": "Matched hierarchy",
+      "evidence": "Compact white-on-dark labels, leader lines, collision avoidance and full time units. The 3D key uses the same silhouettes as the actual sprites. Returning units do not retain an active fire-assignment label."
+    },
+    {
+      "criterion": "Fire and smoke",
+      "status": "Intentional evidence limit",
+      "evidence": "Visible seeded flames and a downwind smoke column derive from one fresh received fire-cell observation. We do not invent the reference's larger central burn scar or fire perimeter; the replay has no fresh fire sighting at minute 38."
+    },
+    {
+      "criterion": "Terrain and coastline",
+      "status": "Partial; more geography needed",
+      "evidence": "The pinned 25-metre source supports a registered 50-metre display mesh with 1x heights and official imagery. It does not cover the full Sierra Bermeja/coastal towns; the reference's wide coastal context remains unimplemented rather than filled with imaginary heights."
+    },
+    {
+      "criterion": "Geographic scene placement",
+      "status": "Not a pixel-perfect copy",
+      "evidence": "The real source landscape and frozen scenario put the observed fire west of the population groups, unlike the invented reference layout. Matching its exact composition would require moving populations or selecting a different declared scenario; neither was done silently."
+    },
+    {
+      "criterion": "Controls and operations panel",
+      "status": "Partial; preserved workflow",
+      "evidence": "3D world is in the shared view selector; Coast is removed. Replay stays below the map. The existing single operations panel and action checks remain instead of the reference's older tabs. Read-only notices still consume more room than in the concept; map controls and explanatory notes were compacted."
+    }
+  ],
+  "independent_review": {
+    "agents": 2,
+    "code_findings_resolved": [
+      "Future/contradictory resource and population packets could affect camera placement",
+      "Route rendering initially bypassed the stricter causal guard",
+      "Stale OrbitControls zoom limits clipped the newly fitted scene"
+    ],
+    "visual_findings_addressed": [
+      "V2 legend now matches the actual beacons and dashed claim symbol",
+      "Camera-aware grid-north indicator and a real projected-distance scale added",
+      "Neutral lighting brightened without inventing surface features",
+      "Repeated explanatory chrome compacted"
+    ],
+    "remaining": [
+      "Terrain imagery is less crisp and vivid than the generated concept",
+      "A colocated aircraft beacon can still visually compete with the single fire illustration",
+      "Map-first layout can be refined further without hiding operation controls",
+      "Full coastal context and real settlement placement need the deferred geography work"
+    ]
+  },
+  "conclusion": "The v2 visual direction matches the reference more closely, but it is not an exact scene recreation. Complete verified geographic coverage and real settlement/facility inputs before claiming a whole-Sierra-Bermeja world. V1 remains frozen and no simulator or reward changes were used to improve the screenshot."
+}

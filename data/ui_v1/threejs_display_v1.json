@@ -1,0 +1,69 @@
+{
+  "version": "wildfire-threejs-display-v1",
+  "checked_on": "2026-10-27",
+  "scope": "Uncommitted, display-only close-up prototype; no simulator, reward, action, scenario or trajectory changes",
+  "terrain": {
+    "provider": "IGN MDT05 WCS",
+    "source_provenance": "data/malaga_2021/terrain_metadata_validation_v2.json",
+    "control_checks": "data/malaga_2021/terrain_control_validation_v1.json",
+    "source_sha256": "1b2e4f470bf456b0189cf22e60dddcf09af413617eb9b76f5a2c1650be70e917",
+    "source_spacing_metres": 25,
+    "display_spacing_metres": 50,
+    "display_columns": 371,
+    "display_rows": 361,
+    "crs": "EPSG:25830",
+    "extent": [297000, 4036500, 315500, 4054500],
+    "vertical_scale": 1,
+    "registration": {
+      "format_reference": "https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/esri-ascii-raster-format.htm",
+      "local_cross_check": "eval/validate_terrain_controls.py: sample() locates raster cell centres using half-cell offsets",
+      "issue_found": "Using cell-centre heights at ArcGrid corner coordinates shifts terrain sampling 12.5 metres along each axis",
+      "remedy": "Interpolate each domain-aligned display vertex from its four surrounding validated 25 metre cell-centre heights; retain the complete source halo",
+      "no_missing_value_fill": true,
+      "no_extrapolation": true,
+      "original_2d_raster_unchanged": true
+    },
+    "limitations": "50 metre display interpolation is not new measured detail. Source survey edition and exact vertical realization remain unverified. Unsupported terrain outside the validated domain is not rendered."
+  },
+  "imagery": {
+    "provider": "IGN PNOA / Sentinel-2",
+    "documentation": "https://pnoa.ign.es/web/portal/pnoa-imagen/visualizadores-y-servicios-web",
+    "source_provenance": "data/ui_v1/legend_imagery_v3.json",
+    "tile_url": "https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg",
+    "capture_pixels_max": [2048, 2048],
+    "slow_load_capture_pixels": [1536, 1536],
+    "quality_gate": "A 3072-pixel full-domain capture timed out during browser testing; use a smaller bounded viewport rather than inventing sharper imagery",
+    "registration": "OpenLayers native EPSG:25830 viewport extent mapped directly to terrain UVs",
+    "retrieval": "One bounded on-demand interactive source-map capture, normal browser tile requests/cache; no bulk archive, AI map texture or training-image export",
+    "aerial_requests_street_tiles": false,
+    "street_fallback": "Only when explicitly selected or an aerial tile fails",
+    "local_acquisition_epoch": null,
+    "local_ground_sampling_distance_metres": null,
+    "limitations": "More display pixels do not establish provider ground resolution, live sensing or incident-era imagery. No individual trees or building geometry is inferred from photographs."
+  },
+  "illustrative_overlays": {
+    "inputs": "Received public observation at the selected replay frame only",
+    "fire_cells_max": 40,
+    "flame_particles_per_cell": 28,
+    "smoke_puffs_per_cell": 10,
+    "freshness_minutes_max": 4,
+    "smoke_requires_finite_nonzero_wind": true,
+    "reduced_motion_hidden_offscreen_pause": true,
+    "labels": "Screen-sized decluttering without changing source coordinates",
+    "not_measurements": [
+      "Flame or smoke height, density, intensity and shape",
+      "Fine fire perimeter or sub-cell spread",
+      "Aircraft display altitude and enlarged vehicle/building symbols",
+      "Historical town population or building placement; exercise groups remain synthetic"
+    ]
+  },
+  "validation": {
+    "frontend_tests_passed": 64,
+    "backend_ui_terrain_tests_passed": 54,
+    "production_build": "passed; existing large-bundle advisory remains",
+    "independent_review": "Three issues corrected and rechecked: uncleared duplicate report handling, camera-depth label sizing, near-vertical top-down preset. Independent planar-height fixture confirms centre-to-corner interpolation.",
+    "browser": "Live pinned mesh371x361 verified. Official2048-pixel aerial capture rendered. Oblique/top-down, public61-frame replay, play/pause and below-map footer checked; no browser console errors observed.",
+    "performance_scope": "One development replay, not a40-fire-cell stress benchmark. First GPU draw required shader/texture warmup; later paused redraws were below1ms in the JavaScript render callback, which is not total GPU frame time."
+  },
+  "publication_status": "Prototype pending user visual review; do not commit or publish without approval"
+}

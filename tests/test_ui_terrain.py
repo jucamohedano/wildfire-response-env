@@ -68,6 +68,41 @@ def decode_png(data):
 
 
 class ShadingTests(unittest.TestCase):
+    def test_relief_is_transparent_on_flat_ground_and_feathered_without_height_changes(self):
+        samples = plane(height=22, width=22, column_rise=-25, row_rise=-12, offset=3000)
+        before = copy.deepcopy(samples)
+        width, height, pixels = terrain.terrain_relief(samples, cell_size_metres=25)
+        self.assertEqual((width, height), (20, 20))
+        self.assertEqual(samples, before)
+        alpha = list(pixels[3::4])
+        self.assertGreater(alpha[10 * width + 10], 0)
+        self.assertLessEqual(max(alpha), 105)
+        self.assertTrue(all(alpha[column] == alpha[(height - 1) * width + column] == 0
+                            for column in range(width)))
+        self.assertTrue(all(alpha[row * width] == alpha[row * width + width - 1] == 0
+                            for row in range(height)))
+        flat = terrain.terrain_relief(plane(), cell_size_metres=25)[2]
+        self.assertEqual(set(flat[3::4]), {0})
+
+    def test_relief_png_is_rgba_and_retains_validated_grid_and_missing_data_rules(self):
+        prepared, domain = documents(width=5, height=5)
+        result = terrain.render_terrain(prepared, domain, source_reader=lambda: None,
+                                        relief=True)
+        header = struct.unpack_from('>IIBBBBB', result['png'], 16)
+        self.assertEqual(header, (5, 5, 8, 6, 0, 0, 0))
+        self.assertEqual(result['extent'], [297000, 4052000, 299500, 4054500])
+        self.assertEqual(result['crs'], terrain.CRS)
+        self.assertIn('500 m', result['source_label'])
+        domain['elevations_metres'][1][1] = -9999
+        with self.assertRaises(ValueError):
+            terrain.render_terrain(prepared, domain, source_reader=lambda: None,
+                                   relief=True)
+        with self.assertRaises(ValueError):
+            terrain.terrain_relief([[100, float('nan')], [100, 100]],
+                                   cell_size_metres=25, halo=0)
+        with self.assertRaises(ValueError):
+            terrain.encode_png(1, 1, b'1234', channels=2)
+
     def expected_pixel(self, height, column_gradient=0, row_gradient=0):
         light = max(0, (0.5 * column_gradient + 0.5 * row_gradient + math.sqrt(0.5))
                     / math.sqrt(1 + column_gradient ** 2 + row_gradient ** 2))
@@ -173,6 +208,110 @@ class CropTests(unittest.TestCase):
             domain['grid']['transform'] = transform
             with self.assertRaises(ValueError):
                 terrain.crop_samples(samples, domain['grid'])
+
+
+class MeshTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        header = b'ncols 780\nnrows 860\nxllcorner 296500\nyllcorner 4033500\ncellsize 25\n'
+        cls.source = header + b''.join(
+            (' '.join(str(row * 1000 + column + 1) for column in range(780)) + '\n').encode()
+            for row in range(860))
+        cls.source_sha256 = hashlib.sha256(cls.source).hexdigest()
+
+    def mesh(self, parent, domain, data=None):
+        data = self.source if data is None else data
+        with patch.dict(terrain.compiler.INPUT_PINS,
+                        {terrain.compiler.TERRAIN_ASCII: hashlib.sha256(data).hexdigest()}):
+            return terrain.terrain_mesh(parent, domain, source_reader=lambda: data)
+
+    def test_active_mesh_axes_cell_centre_interpolation_edges_and_input_immutability(self):
+        parent, domain = documents(37, 36)
+        before = copy.deepcopy((parent, domain))
+        result = self.mesh(parent, domain)
+        self.assertEqual(set(result), {'version', 'crs', 'extent', 'columns', 'rows',
+            'eastings', 'northings', 'heights_metres', 'source_sha256', 'source_label', 'role'})
+        self.assertEqual(result['version'], 'wildfire-display-mesh-v1')
+        self.assertEqual(result['role'], 'display_only')
+        self.assertEqual(result['crs'], 'EPSG:25830')
+        self.assertEqual(result['extent'], [297000, 4036500, 315500, 4054500])
+        self.assertEqual((result['columns'], result['rows']), (371, 361))
+        self.assertLessEqual(result['columns'] * result['rows'], 160_000)
+        self.assertEqual(result['eastings'], list(range(297000, 315501, 50)))
+        self.assertEqual(result['northings'], list(range(4054500, 4036499, -50)))
+        expected = [[(19.5 + row * 2) * 1000 + 19.5 + column * 2 + 1
+                     for column in range(371)] for row in range(361)]
+        self.assertEqual(result['heights_metres'], expected)
+        self.assertEqual(result['source_sha256'], self.source_sha256)
+        self.assertIn('50 m display mesh', result['source_label'])
+        self.assertNotIn(terrain.compiler.TERRAIN_ASCII, result['source_label'])
+        self.assertEqual((parent, domain), before)
+        result['heights_metres'][0][0] = -1
+        self.assertEqual(self.mesh(parent, domain)['heights_metres'][0][0], 19520.5)
+
+    def test_nonzero_crop_offsets_keep_their_own_projected_extent(self):
+        parent, domain = documents(width=2, height=3, left=2, top=4)
+        result = self.mesh(parent, domain)
+        self.assertEqual(result['extent'], [298000, 4051000, 299000, 4052500])
+        self.assertEqual((result['columns'], result['rows']), (21, 31))
+        self.assertEqual((result['eastings'][0], result['eastings'][-1]), (298000, 299000))
+        self.assertEqual((result['northings'][0], result['northings'][-1]), (4052500, 4051000))
+        self.assertEqual(result['heights_metres'][0][0], 99560.5)
+        self.assertEqual(result['heights_metres'][-1][-1], 159600.5)
+
+    def test_exact_final_edge_is_retained_for_nondivisible_stride_and_cap_is_enforced(self):
+        self.assertEqual(terrain._mesh_indices(8), [1, 3, 5, 7])
+        self.assertEqual(terrain._mesh_indices(6), [1, 3, 5])
+        self.assertEqual(terrain._mesh_indices(7), [1, 3, 5, 6])
+        parent, domain = documents()
+        with patch.object(terrain, 'MAX_MESH_VERTICES', 1), self.assertRaises(ValueError):
+            self.mesh(parent, domain)
+        domain['grid']['width'] = 129
+        with self.assertRaises(ValueError):
+            self.mesh(parent, domain)
+
+    def test_absent_changed_oversized_and_malformed_sources_never_use_coarse_heights(self):
+        parent, domain = documents()
+        for data in (None, b'', b'changed', self.source, 'not bytes',
+                     b'x' * (terrain.compiler.MAX_ASCII_BYTES + 1)):
+            with self.subTest(kind=type(data)), self.assertRaises(ValueError):
+                terrain.terrain_mesh(parent, domain, source_reader=lambda: data)
+        declared_nodata = ascii_source().replace(b'cellsize 25\n', b'cellsize 25\nNODATA_value -9999\n')
+        for data in (b'malformed but hash matches', ascii_source('nan'), ascii_source('0'),
+                     ascii_source('-9999'), declared_nodata):
+            with self.subTest(size=len(data)), self.assertRaises(ValueError):
+                self.mesh(parent, domain, data)
+        for error in (PermissionError('unreadable'), OSError('read failure')):
+            with self.assertRaises(type(error)):
+                terrain.terrain_mesh(parent, domain, source_reader=unittest.mock.Mock(side_effect=error))
+
+    def test_unsampled_holes_and_last_edge_halo_are_validated_without_fill(self):
+        parent, domain = documents(37, 36)
+        for row, column in ((19, 19), (21, 21), (740, 760)):
+            lines = ascii_source().splitlines()
+            tokens = lines[5 + row].split()
+            tokens[column] = b'-9999'
+            lines[5 + row] = b' '.join(tokens)
+            data = b'\n'.join(lines) + b'\n'
+            with self.subTest(row=row, column=column), self.assertRaises(ValueError):
+                self.mesh(parent, domain, data)
+
+    def test_domain_and_prepared_parent_validation_are_shared_with_png(self):
+        for mutate in (
+                lambda parent, domain: domain['height_support_mask'][0].__setitem__(0, 0),
+                lambda parent, domain: domain['elevations_metres'][0].__setitem__(0, None),
+                lambda parent, domain: domain.__setitem__('prepared_inputs_sha256', 'other parent'),
+                lambda parent, domain: domain['grid']['transform'].__setitem__(1, 1),
+                lambda parent, domain: domain['grid']['transform'].__setitem__(2, 297001)):
+            parent, domain = documents()
+            mutate(parent, domain)
+            with self.assertRaises(ValueError):
+                self.mesh(parent, domain)
+        parent, domain = documents()
+        parent['grid']['transform'][2] += 500
+        domain['grid']['transform'][2] += 500
+        with self.assertRaises(ValueError):
+            self.mesh(parent, domain)
 
 
 class RendererTests(unittest.TestCase):

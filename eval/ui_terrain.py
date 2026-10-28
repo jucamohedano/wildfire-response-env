@@ -11,6 +11,11 @@ Pure helpers: crop_samples(samples, grid) selects the pinned 25 m lattice with
 one sample of halo; terrain_rgb(elevations, *, cell_size_metres, halo=1) returns
 (width, height, row-major RGB bytes); encode_png(width, height, rgb) encodes those
 pixels. All matrices are north-first. No heights are repaired or interpolated.
+terrain_relief uses the same validated stencil for transparent, edge-feathered
+RGBA lighting; render_terrain(relief=True) encodes that display-only layer.
+terrain_mesh uses only the pinned ASC, interpolating its cell-centre samples
+onto 50 m vertex positions through the exact domain edges. It never selects
+the coarse fallback or extrapolates outside the validated halo.
 """
 import hashlib
 import math
@@ -22,6 +27,7 @@ from eval import compile_topographic_domain as compiler
 
 
 MAX_SAMPLES = 1024 * 1024
+MAX_MESH_VERTICES = 160_000
 CRS = 'EPSG:25830'
 
 
@@ -102,7 +108,18 @@ def crop_samples(samples, grid):
 
 
 def terrain_rgb(elevations, *, cell_size_metres, halo=1):
-    """Return (width, height, RGB bytes), without changing any input.
+    """Return deterministic north-first RGB terrain without modifying heights."""
+    return _terrain_pixels(elevations, cell_size_metres=cell_size_metres, halo=halo)
+
+
+def terrain_relief(elevations, *, cell_size_metres, halo=1):
+    """Transparent feathered hillshade; exaggeration changes lighting, not heights."""
+    return _terrain_pixels(elevations, cell_size_metres=cell_size_metres, halo=halo,
+                           relief=True)
+
+
+def _terrain_pixels(elevations, *, cell_size_metres, halo=1, relief=False):
+    """Return (width, height, RGB or relief RGBA bytes), without input changes.
 
     Heights and spacing are metres; all samples, including the halo, must be
     positive finite numbers. halo=1 removes a complete Horn stencil border.
@@ -141,12 +158,25 @@ def terrain_rgb(elevations, *, cell_size_metres, halo=1):
                                 / spacing)
             if not math.isfinite(column_gradient) or not math.isfinite(row_gradient):
                 raise ValueError('Nonfinite terrain gradient')
+            if relief:
+                column_gradient *= 2.5
+                row_gradient *= 2.5
             normal_length = math.hypot(column_gradient, row_gradient, 1)
             if not math.isfinite(normal_length):
                 raise ValueError('Nonfinite terrain normal')
             light = max(0, 0.5 * (column_gradient / normal_length)
                         + 0.5 * (row_gradient / normal_length)
                         + math.sqrt(0.5) / normal_length)
+            if relief:
+                horizontal = min(column - halo, width - halo - 1 - column)
+                vertical = min(row_index - halo, height - halo - 1 - row_index)
+                feather = min(1, horizontal / max(1, output_width * 0.08),
+                              vertical / max(1, output_height * 0.08))
+                shade = light - math.sqrt(0.5)
+                colour = 255 if shade > 0 else 0
+                alpha = round(min(105, abs(shade) * 165) * feather)
+                pixels.extend((colour, colour, colour, alpha))
+                continue
             brightness = 0.72 + 0.28 * light
             tint = min(1, centre[column] / 2000)
             pixels.extend(round((low + (high - low) * tint) * brightness)
@@ -154,22 +184,23 @@ def terrain_rgb(elevations, *, cell_size_metres, halo=1):
     return output_width, output_height, bytes(pixels)
 
 
-def encode_png(width, height, rgb):
-    """Encode bounded row-major RGB bytes as deterministic 8-bit RGB PNG."""
+def encode_png(width, height, rgb, *, channels=3):
+    """Encode bounded row-major RGB/RGBA bytes as deterministic 8-bit PNG."""
     if (type(width) is not int or type(height) is not int or width <= 0 or height <= 0
             or width * height > MAX_SAMPLES or type(rgb) is not bytes
-            or len(rgb) != width * height * 3):
-        raise ValueError('Expected bounded dimensions and exactly three bytes per pixel')
+            or type(channels) is not int or channels not in (3, 4)
+            or len(rgb) != width * height * channels):
+        raise ValueError('Expected bounded dimensions and exactly RGB or RGBA bytes')
 
     def chunk(kind, payload):
         return (struct.pack('>I', len(payload)) + kind + payload
                 + struct.pack('>I', zlib.crc32(kind + payload) & 0xffffffff))
 
-    stride = width * 3
+    stride = width * channels
     scanlines = b''.join(b'\x00' + rgb[start:start + stride]
                          for start in range(0, len(rgb), stride))
     return (b'\x89PNG\r\n\x1a\n'
-            + chunk(b'IHDR', struct.pack('>IIBBBBB', width, height, 8, 2, 0, 0, 0))
+            + chunk(b'IHDR', struct.pack('>IIBBBBB', width, height, 8, 6 if channels == 4 else 2, 0, 0, 0))
             + chunk(b'IDAT', zlib.compress(scanlines, 9)) + chunk(b'IEND', b''))
 
 
@@ -184,14 +215,7 @@ def _read_source():
         return None
 
 
-def render_terrain(prepared, domain, *, source_reader=None):
-    """Return {png: bytes, extent: [W,S,E,N], crs, source_label} for display.
-
-    The optional source_reader() -> bytes | None bypasses filesystem discovery,
-    never SHA verification. Errors reading or validating a present source are
-    propagated, never converted into fallback. This function has no mutable cache
-    and never writes to prepared, domain, or simulator state.
-    """
+def _display_domain(prepared, domain):
     width, height, transform, extent = _grid(domain['grid'])
     parent_width, parent_height, parent_transform, _ = _grid(prepared['grid'])
     crop = domain['crop']
@@ -211,18 +235,76 @@ def render_terrain(prepared, domain, *, source_reader=None):
     if any(type(value) not in (int, bool) or value != 1 for row in support for value in row):
         raise ValueError('Domain contains unsupported heights; no fill')
     _positive_heights(elevations)
+    return extent, (parent_width, parent_height, parent_transform)
+
+
+def _source_window(data, domain, parent_grid):
+    if (type(data) is not bytes or not 0 < len(data) <= compiler.MAX_ASCII_BYTES
+            or hashlib.sha256(data).hexdigest() != compiler.INPUT_PINS[compiler.TERRAIN_ASCII]):
+        raise ValueError('Present terrain source differs from its pinned SHA-256 or size')
+    parent_width, parent_height, parent_transform = parent_grid
+    if ((parent_width, parent_height) != (37, 41)
+            or parent_transform != (500, 0, 297000, 0, -500, 4054500)):
+        raise ValueError('Raw terrain requires the pinned prepared parent grid')
+    return crop_samples(compiler.read_ascii(data), domain['grid'])
+
+
+def _mesh_indices(size):
+    indices = list(range(1, size, 2))
+    if indices[-1] != size - 1:
+        indices.append(size - 1)
+    return indices
+
+
+def terrain_mesh(prepared, domain, *, source_reader=None):
+    """Return a bounded, north-first display-only mesh derived from source heights.
+
+    Indices start at the crop's first interior sample and include the final
+    east/south halo samples at the exact extent edges. ArcGrid xllcorner/yllcorner
+    describe pixel edges; its heights belong to centres, displaced half a cell.
+    Each vertex is interpolated from its four surrounding validated centres,
+    without filling, extrapolation, exaggeration, mutation or coarse fallback.
+    """
+    extent, parent_grid = _display_domain(prepared, domain)
     data = (source_reader or _read_source)()
     if data is None:
-        pixels = terrain_rgb(elevations, cell_size_metres=500, halo=0)
+        raise ValueError('Display mesh requires the pinned 25 m ASC source; no coarse fallback')
+    samples = _source_window(data, domain, parent_grid)
+    height, width = _shape(samples)
+    columns, rows = _mesh_indices(width), _mesh_indices(height)
+    if len(columns) * len(rows) > MAX_MESH_VERTICES:
+        raise ValueError('Display mesh exceeds the vertex cap')
+    source_sha256 = compiler.INPUT_PINS[compiler.TERRAIN_ASCII]
+    return dict(version='wildfire-display-mesh-v1', crs=CRS, extent=extent,
+                columns=len(columns), rows=len(rows),
+                eastings=[extent[0] + (column - 1) * 25 for column in columns],
+                northings=[extent[3] - (row - 1) * 25 for row in rows],
+                heights_metres=[[
+                    (samples[row - 1][column - 1] + samples[row - 1][column]
+                     + samples[row][column - 1] + samples[row][column]) / 4
+                    for column in columns] for row in rows],
+                source_sha256=source_sha256,
+                source_label='IGN MDT05, 25 m cell-centre ASC; interpolated 50 m display mesh; pinned SHA-256 ' + source_sha256,
+                role='display_only')
+
+
+def render_terrain(prepared, domain, *, source_reader=None, relief=False):
+    """Return {png: bytes, extent: [W,S,E,N], crs, source_label} for display.
+
+    The optional source_reader() -> bytes | None bypasses filesystem discovery,
+    never SHA verification. Errors reading or validating a present source are
+    propagated, never converted into fallback. This function has no mutable cache
+    and never writes to prepared, domain, or simulator state.
+    """
+    extent, parent_grid = _display_domain(prepared, domain)
+    data = (source_reader or _read_source)()
+    renderer = terrain_relief if relief else terrain_rgb
+    if data is None:
+        pixels = renderer(domain['elevations_metres'], cell_size_metres=500, halo=0)
         label = 'Coarse 500 m domain-render fallback (raw ASC absent; display only)'
     else:
-        if (type(data) is not bytes or not 0 < len(data) <= compiler.MAX_ASCII_BYTES
-                or hashlib.sha256(data).hexdigest() != compiler.INPUT_PINS[compiler.TERRAIN_ASCII]):
-            raise ValueError('Present terrain source differs from its pinned SHA-256 or size')
-        if ((parent_width, parent_height) != (37, 41)
-                or parent_transform != (500, 0, 297000, 0, -500, 4054500)):
-            raise ValueError('Raw terrain requires the pinned prepared parent grid')
-        samples = crop_samples(compiler.read_ascii(data), domain['grid'])
-        pixels = terrain_rgb(samples, cell_size_metres=25)
+        samples = _source_window(data, domain, parent_grid)
+        pixels = renderer(samples, cell_size_metres=25)
         label = 'IGN MDT05, 25 m sampled ASC; pinned SHA-256 ' + compiler.INPUT_PINS[compiler.TERRAIN_ASCII]
-    return dict(png=encode_png(*pixels), extent=extent, crs=CRS, source_label=label)
+    return dict(png=encode_png(*pixels, channels=4 if relief else 3), extent=extent,
+                crs=CRS, source_label=label)

@@ -1,0 +1,47 @@
+{
+  "acquisition_completed_at": "2026-10-27T12:21:44Z",
+  "acquisition_manifest": "data/coastal_mobility_v1/acquisition.json",
+  "duplicates": {
+    "node": 76227,
+    "way": 1446
+  },
+  "extent": [
+    290250,
+    4029500,
+    322250,
+    4061500
+  ],
+  "limitations": [
+    "The existing source cache does not cover the full northern edge of the expanded terrain.",
+    "Displayed roads are cartography, not a complete or verified vehicle-routing network.",
+    "Road conditions, accessibility, closures and historical 2021 geometry are not established."
+  ],
+  "output": {
+    "bytes": 4265196,
+    "path": "ui/public/assets/map-roads-expanded-v2.json",
+    "sha256": "2f378dab6a73641848e99219c54a1764fca53daef1ce32b07f51c732333be2b4"
+  },
+  "role": "display_only_not_routing",
+  "source": "Existing pinned OSM cache; \u00a9 OpenStreetMap contributors, ODbL-1.0",
+  "source_files": 21,
+  "statistics": {
+    "access_counts": {
+      "restricted": 1689,
+      "unknown": 15431
+    },
+    "intersecting_source_ways": 17108,
+    "intersecting_way_timestamp_max": "2026-10-26T23:14:50Z",
+    "intersecting_way_timestamp_min": "2009-12-08T14:15:26Z",
+    "kind_counts": {
+      "local": 8024,
+      "major": 1923,
+      "path": 4765,
+      "track": 2408
+    },
+    "lines": 17120,
+    "source_highway_ways": 20522,
+    "vertices": 121689,
+    "vertices_before_simplification": 262955
+  },
+  "version": "wildfire-expanded-display-roads-v2"
+}

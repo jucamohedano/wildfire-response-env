@@ -15,6 +15,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 
 from wildfire_core.prepared import load_inputs
+from wildfire_core.mobility import CASE_IDS as MOBILITY_CASE_IDS, CoastalMobilityEnv, MobilityBaseline, verify_mobility_trajectory
+from wildfire_core.mobility_routing import RoadNetwork
 from wildfire_core.incident import CASE_IDS as INCIDENT_CASE_IDS, ReactiveOpsEnv, verify_reactive_trajectory
 from wildfire_core.benchmark_v1 import BenchmarkEnv, verify_benchmark_trajectory
 from envs.wildfire_response.regional.benchmark_v1.catalog import build_catalog as build_benchmark_catalog, task_ids
@@ -169,11 +171,14 @@ def trace_frames(trajectory):
 
 
 class Episode:
-    def __init__(self, prepared, domain, catalog):
+    def __init__(self, prepared, domain, catalog, *, mobility_network=None):
         self.prepared, self.domain, self.catalog = prepared, domain, catalog
+        self.mobility_network = mobility_network
         self.lock = RLock()
         self.cases = {identifier: 'development' for identifier in CASE_IDS}
         self.cases.update({identifier: 'reactive' for identifier in INCIDENT_CASE_IDS})
+        if mobility_network is not None:
+            self.cases.update({identifier: 'mobility' for identifier in MOBILITY_CASE_IDS})
         self.benchmark_catalog = build_benchmark_catalog(prepared, domain)
         self.cases.update({identifier: 'benchmark' for identifier in task_ids(self.benchmark_catalog, 'development')})
         for index in SMOKE_GROUP_INDICES:
@@ -182,7 +187,7 @@ class Episode:
             if group['split'] != 'train' or case['variant'] != 0:
                 raise ValueError('Registered smoke cases must be training variant zero')
             self.cases[case['id']] = 'stress'
-        self.reset(CASE_IDS[0])
+        self.reset(MOBILITY_CASE_IDS[0] if mobility_network is not None else CASE_IDS[0])
 
     def reset(self, task_id):
         if task_id not in self.cases:
@@ -190,7 +195,10 @@ class Episode:
         options = dict(expected_prepared_sha256=self.prepared['sha256'],
             expected_topographic_sha256=self.domain['sha256'], slope_enabled=True,
             allow_synthetic_conditions=True, max_decisions=60, ticks_per_action=2)
-        if self.cases[task_id] == 'stress':
+        if self.cases[task_id] == 'mobility':
+            environment = CoastalMobilityEnv(self.prepared, self.domain, self.mobility_network,
+                expected_network_sha256=self.mobility_network['sha256'], **options)
+        elif self.cases[task_id] == 'stress':
             environment = StressEnv(self.prepared, self.domain, self.catalog,
                 expected_catalog_sha256=self.catalog['sha256'], **options)
         elif self.cases[task_id] == 'reactive':
@@ -206,6 +214,8 @@ class Episode:
                          for name in ('evacuate', 'shelter')}
         if self.cases[task_id] == 'benchmark':
             self.policies = dict(evacuate=PublicDispatcher('cooperative'), shelter=PublicDispatcher('dispatcher'))
+        elif self.cases[task_id] == 'mobility':
+            self.policies = dict(evacuate=MobilityBaseline(prefer_aircraft=True), shelter=MobilityBaseline())
         self.envelope = dict(episode_id=uuid4().hex, observation=observation, reward=0,
             total_reward=0, terminated=False, truncated=False, info={}, last_action=None)
         self.frames = [dict(observation=copy.deepcopy(observation), action=None, reward=0,
@@ -242,6 +252,8 @@ class Episode:
         try:
             if self.cases[task_id] == 'development':
                 result = verify_topographic_trajectory(trajectory, self.prepared, self.domain)
+            elif self.cases[task_id] == 'mobility':
+                result = verify_mobility_trajectory(trajectory, self.prepared, self.domain, self.mobility_network)
             elif self.cases[task_id] == 'reactive':
                 result = verify_reactive_trajectory(trajectory, self.prepared, self.domain)
             elif self.cases[task_id] == 'benchmark':
@@ -256,14 +268,20 @@ class Episode:
 
 def create_app(prepared_inputs, topographic_inputs, *, expected_prepared_sha256,
                expected_topographic_sha256, expected_catalog_sha256=None,
-               enable_evaluator=False, terrain=None, dist=None):
+               enable_evaluator=False, terrain=None, dist=None,
+               mobility_network=None, expected_mobility_sha256=None):
     prepared = load_inputs(prepared_inputs, expected_sha256=expected_prepared_sha256)
     domain = load_domain(topographic_inputs, prepared, expected_topographic_sha256)
     catalog = build_catalog(prepared, domain)
     if expected_catalog_sha256 is not None and expected_catalog_sha256 != catalog['sha256']:
         raise ValueError('Catalog differs from the caller-pinned digest')
-    episode = Episode(prepared, domain, catalog)
+    if (mobility_network is None) != (expected_mobility_sha256 is None):
+        raise ValueError('Supply both mobility network and its SHA256 pin')
+    roads = None if mobility_network is None else RoadNetwork(mobility_network, expected_mobility_sha256).document
+    episode = Episode(prepared, domain, catalog, mobility_network=roads)
     terrain_cache = copy.deepcopy(terrain)
+    relief_cache = None
+    mesh_cache = None
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(LocalRequests)
 
@@ -293,6 +311,30 @@ def create_app(prepared_inputs, topographic_inputs, *, expected_prepared_sha256,
     def map_png():
         with episode.lock:
             return Response(map_data()['png'], media_type='image/png')
+
+    @app.get('/api/map-relief.png')
+    def map_relief():
+        nonlocal relief_cache
+        with episode.lock:
+            if relief_cache is None:
+                from eval.ui_terrain import render_terrain
+                try:
+                    relief_cache = render_terrain(prepared, domain, relief=True)
+                except (ValueError, OSError) as error:
+                    raise HTTPException(503, 'Relief display failed source validation') from error
+            return Response(relief_cache['png'], media_type='image/png')
+
+    @app.get('/api/map-mesh')
+    def map_mesh():
+        nonlocal mesh_cache
+        with episode.lock:
+            if mesh_cache is None:
+                from eval.ui_terrain import terrain_mesh
+                try:
+                    mesh_cache = terrain_mesh(prepared, domain)
+                except (ValueError, OSError) as error:
+                    raise HTTPException(503, 'Terrain mesh unavailable; the pinned 25 m source is required and must pass validation') from error
+            return JSONResponse(mesh_cache)
 
     @app.get('/api/state')
     def state():
@@ -401,6 +443,8 @@ def main(argv=None):
     parser.add_argument('--topographic-inputs', required=True)
     parser.add_argument('--topographic-sha256', required=True)
     parser.add_argument('--catalog-sha256')
+    parser.add_argument('--mobility-network')
+    parser.add_argument('--mobility-sha256')
     parser.add_argument('--enable-evaluator', action='store_true')
     parser.add_argument('--dist', default='ui/dist')
     parser.add_argument('--host', choices=('127.0.0.1', 'localhost', '::1'), default='127.0.0.1')
@@ -410,7 +454,8 @@ def main(argv=None):
         expected_prepared_sha256=options.prepared_sha256,
         expected_topographic_sha256=options.topographic_sha256,
         expected_catalog_sha256=options.catalog_sha256,
-        enable_evaluator=options.enable_evaluator, dist=options.dist)
+        enable_evaluator=options.enable_evaluator, dist=options.dist,
+        mobility_network=options.mobility_network, expected_mobility_sha256=options.mobility_sha256)
     import uvicorn
     uvicorn.run(app, host=options.host, port=options.port)
 

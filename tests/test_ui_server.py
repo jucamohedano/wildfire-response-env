@@ -27,6 +27,11 @@ except ModuleNotFoundError as error:
 PNG = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aXZkAAAAASUVORK5CYII=')
 TERRAIN = dict(png=PNG, extent=[297000, 4036500, 315500, 4054500],
                crs='EPSG:25830', source_label='Fixture terrain')
+MESH = dict(version='wildfire-display-mesh-v1', crs='EPSG:25830',
+            extent=[297000, 4054400, 297100, 4054500], columns=2, rows=2,
+            eastings=[297000, 297100], northings=[4054500, 4054400],
+            heights_metres=[[100, 110], [120, 130]], source_sha256='1' * 64,
+            source_label='Fixture pinned 25 m source, 100 m display mesh', role='display_only')
 ACTION_FIELDS = ('requests', 'authorizations', 'releases', 'messages', 'readback_confirmations',
                  'readback_corrections', 'triage', 'clarifications', 'protection_orders')
 PRIVATE_FIELDS = {'world_fire', 'evaluator_evidence', 'core_accounting', 'protection_checkpoint',
@@ -117,6 +122,25 @@ class UIServerTests(unittest.TestCase):
                 self.assertEqual(response.status_code, 503)
                 self.assertIn('failed validation', response.json()['detail'])
             self.assertEqual(client.get('/api/state').json()['observation']['minute'], 0)
+
+    def test_opt_in_mobility_cases_use_new_contract_without_replacing_legacy_cases(self):
+        from tests.test_mobility import network_fixture
+        network = network_fixture()
+        app = self.make_app(mobility_network=network, expected_mobility_sha256=network['sha256'])
+        with TestClient(app, base_url='http://127.0.0.1:8767') as client:
+            state = client.get('/api/state').json()
+            self.assertEqual(state['observation']['task_id'], 'coastal-dev-000')
+            self.assertIn('mobility', state['observation'])
+            for unused in range(2):
+                response = client.post('/api/advance', json=dict(episode_id=state['episode_id'],
+                    expected_decision=state['observation']['decision'], policy='evacuate'))
+                self.assertEqual(response.status_code, 200, response.text)
+                state = response.json()
+                self.assertIsNone(state['info']['error'])
+            legacy = client.post('/api/reset', json=dict(task_id='topo-dev-000')).json()
+            self.assertNotIn('mobility', legacy['observation'])
+        with self.assertRaises(ValueError):
+            self.make_app(mobility_network=network)
 
     def token(self, state=None):
         state = self.state() if state is None else state
@@ -212,6 +236,91 @@ class UIServerTests(unittest.TestCase):
             with TestClient(app, base_url='http://localhost') as client:
                 self.assertEqual(client.get('/api/map.png').content, PNG)
                 self.assertEqual(client.get('/api/map').json()['extent'], TERRAIN['extent'])
+
+    def test_relief_is_separately_validated_cached_and_does_not_advance_the_episode(self):
+        before = self.client.get('/api/state').json()
+        with patch('eval.ui_terrain.render_terrain', return_value=TERRAIN) as renderer:
+            for unused in range(2):
+                response = self.client.get('/api/map-relief.png')
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.headers['content-type'], 'image/png')
+                self.assertEqual(response.content, PNG)
+            self.assertEqual(renderer.call_count, 1)
+            self.assertEqual(renderer.call_args.kwargs, {'relief': True})
+        self.assertEqual(self.client.get('/api/state').json(), before)
+        with TestClient(self.make_app(), base_url='http://127.0.0.1:8767') as client:
+            with patch('eval.ui_terrain.render_terrain', side_effect=ValueError('bad heights')):
+                self.assertEqual(client.get('/api/map-relief.png').status_code, 503)
+
+    def test_mesh_is_lazy_separately_cached_public_and_does_not_change_episode(self):
+        before = [self.client.get('/api/' + endpoint).json()
+                  for endpoint in ('state', 'history', 'trajectory')]
+        environment = self.core()
+        with patch('eval.ui_terrain.terrain_mesh', return_value=MESH) as builder, \
+                patch('eval.ui_terrain.render_terrain', return_value=TERRAIN) as renderer:
+            builder.assert_not_called()
+            first = self.client.get('/api/map-mesh')
+            self.assertEqual(first.status_code, 200)
+            self.assertEqual(first.headers['content-type'], 'application/json')
+            self.assertEqual(first.json(), MESH)
+            self.assert_public(first.json())
+            changed = first.json()
+            changed['heights_metres'][0][0] = -9999
+            self.assertEqual(self.client.get('/api/map.png').content, PNG)
+            self.assertEqual(self.client.get('/api/map-relief.png').content, PNG)
+            second = self.client.get('/api/map-mesh?path=/etc/passwd&stride=1')
+            self.assertEqual(second.json(), MESH)
+            self.assertEqual(second.content, first.content)
+            builder.assert_called_once()
+            self.assertEqual(builder.call_args.kwargs, {})
+            renderer.assert_called_once()
+            self.assertEqual(renderer.call_args.kwargs, {'relief': True})
+            after = [self.client.get('/api/' + endpoint).json()
+                     for endpoint in ('state', 'history', 'trajectory')]
+            self.assertEqual(after, before)
+            self.assert_step(self.submit({}).json(), environment.step({}), environment, {})
+            self.client.post('/api/reset', json=dict(task_id=CASE_IDS[0]))
+            self.assertEqual(self.client.get('/api/map-mesh').json(), MESH)
+            builder.assert_called_once()
+
+    def test_concurrent_mesh_requests_build_once_under_the_existing_lock(self):
+        with patch('eval.ui_terrain.terrain_mesh', return_value=MESH) as builder:
+            with ThreadPoolExecutor(max_workers=4) as executor:
+                responses = list(executor.map(lambda unused: self.client.get('/api/map-mesh'), range(4)))
+            self.assertTrue(all(response.status_code == 200 and response.json() == MESH
+                                for response in responses))
+            builder.assert_called_once()
+            with TestClient(self.make_app(), base_url='http://localhost') as client:
+                self.assertEqual(client.get('/api/map-mesh').json(), MESH)
+            self.assertEqual(builder.call_count, 2)
+
+    def test_mesh_failure_is_sanitized_not_cached_and_does_not_affect_png_or_episode(self):
+        initial = self.state()
+        for error in (ValueError('bad source /private/cache.asc'), OSError('/private/cache.asc')):
+            with self.subTest(error=type(error)), TestClient(self.make_app(), base_url='http://localhost') as client:
+                with patch('eval.ui_terrain.terrain_mesh', side_effect=[error, MESH]) as builder:
+                    response = client.get('/api/map-mesh')
+                    self.assertEqual(response.status_code, 503)
+                    self.assertIn('25 m source', response.json()['detail'])
+                    self.assertNotIn('/private/', response.text)
+                    self.assertEqual(client.get('/api/map.png').content, PNG)
+                    self.assertEqual(client.get('/api/state').json()['observation'], initial['observation'])
+                    self.assertEqual(client.get('/api/map-mesh').json(), MESH)
+                    self.assertEqual(builder.call_count, 2)
+        with patch('eval.ui_terrain._read_source', return_value=None):
+            self.assertEqual(self.client.get('/api/map-mesh').status_code, 503)
+            self.assertEqual(self.client.get('/api/map.png').content, PNG)
+        self.assertEqual(self.state(), initial)
+
+    def test_mesh_is_read_only_and_uses_the_same_loopback_guard(self):
+        initial = self.state()
+        with patch('eval.ui_terrain.terrain_mesh', return_value=MESH) as builder:
+            for host in ('evil.example', '127.0.0.1.evil.example'):
+                self.assertEqual(self.client.get('/api/map-mesh', headers={'Host': host}).status_code, 403)
+            builder.assert_not_called()
+            self.assertEqual(self.client.post('/api/map-mesh', json={}).status_code, 405)
+            self.assertEqual(self.client.get('/api/map-mesh').json(), MESH)
+        self.assertEqual(self.state(), initial)
 
     def test_full_raw_combined_action_matches_core_and_history(self):
         environment = self.core()
@@ -470,7 +579,8 @@ class UIServerTests(unittest.TestCase):
         with patch('eval.ui_server.create_app') as factory, patch('uvicorn.run') as run:
             main([*arguments, '--enable-evaluator', '--catalog-sha256', self.catalog['sha256']])
             factory.assert_called_once_with('prepared.json', 'domain.json', **self.options(),
-                expected_catalog_sha256=self.catalog['sha256'], enable_evaluator=True, dist='ui/dist')
+                expected_catalog_sha256=self.catalog['sha256'], enable_evaluator=True, dist='ui/dist',
+                mobility_network=None, expected_mobility_sha256=None)
             run.assert_called_once_with(factory.return_value, host='127.0.0.1', port=8767)
         with self.assertRaises(SystemExit):
             main([*arguments, '--host', '0.0.0.0'])

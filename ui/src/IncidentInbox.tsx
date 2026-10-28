@@ -1,15 +1,23 @@
 import type {IncidentEvent,Resource} from './types';
 import {pretty} from './model';
 
-export function ResourceTiming({resource,minute}:{resource:Resource;minute?:number}){
-  if(resource.state===null)return <small className="arrival-time">Awaiting base status</small>;
-  if(resource.state==='on_scene')return <><ArrivalStages state={resource.state}/><small className="arrival-time">On scene</small></>;
-  if(resource.arrival_at!==undefined&&resource.arrival_at!==null){
-    if(minute!==undefined&&minute>resource.arrival_at)return <><ArrivalStages state={resource.state}/><small className="arrival-time overdue">ETA {resource.arrival_at}m passed · awaiting status update</small></>;
-    const remaining=minute===undefined?resource.arrival_in_minutes:Math.max(0,resource.arrival_at-minute);
-    return <><ArrivalStages state={resource.state}/><small className="arrival-time" title={resource.travel_time_basis}>Estimated arrival at {resource.arrival_at}m · {remaining} min remaining</small></>;
-  }
-  return <><ArrivalStages state={resource.state}/><small className="arrival-time">{resource.due_at===null?'No arrival scheduled':`Next phase expected at ${resource.due_at}m`}</small></>;
+export function ResourceTiming({resource,minute,compact=false}:{resource:Resource;minute?:number;compact?:boolean}){
+  const arrival=resource.arrival_at;
+  const awaitingArrival=resource.state!==null&&resource.state!=='on_scene'&&arrival!==null&&arrival!==undefined&&minute!==undefined&&minute>=arrival;
+  const remaining=arrival===null||arrival===undefined?null:minute===undefined?resource.arrival_in_minutes:Math.max(0,arrival-minute);
+  const timing=resource.state===null?'Awaiting base status':resource.state==='on_scene'?'On scene · reported':awaitingArrival
+    ?`ETA ${arrival} minutes ${minute===arrival?'reached':'passed'} · awaiting status update`:arrival!==null&&arrival!==undefined
+      ?`Estimated arrival at ${arrival} minutes${remaining===null||remaining===undefined?'':` · ${remaining} minutes remaining`}`
+      :resource.due_at===null||resource.due_at===undefined?'No arrival scheduled':`Next phase expected at ${resource.due_at} minutes`;
+  const movement=resource.movement;
+  return <div className={movement?'movement-summary':'resource-timing'}>
+    <ArrivalStages state={resource.state}/>
+    <small className={`arrival-time${awaitingArrival?' overdue':''}`} title={resource.travel_time_basis}>{timing}</small>
+    {movement&&!compact&&<><small>{pretty(resource.state??'unknown')} · {(movement.distance_m/1000).toFixed(1)} kilometres · {movement.direction==='return'?'returning to staging':'outbound mission'}</small>
+      <small>Position observed at {movement.observed_at} minutes · received at {movement.received_at} minutes</small>
+      <small>{movement.legs.some(leg=>leg.mode==='walk')?'Includes an assumed walking access leg.':resource.kind==='aircraft'?'Illustrative direct flight; not an approved flight plan.':'Road geometry is source-derived; speed and availability are assumed.'}</small></>}
+    {movement&&compact&&<small className="timing-received">Position received at {movement.received_at} minutes · simulated</small>}
+  </div>;
 }
 
 function ArrivalStages({state}:{state:string|null}){
@@ -27,7 +35,7 @@ export default function IncidentInbox({events,minute}:{events:IncidentEvent[];mi
   const active=[...latest.values()].filter(event=>event.status==='open');
   const card=(event:IncidentEvent)=><article key={event.id} className={`incident-card ${event.priority==='urgent'&&event.status==='open'?'urgent':''}`}>
     <div><strong>{pretty(event.kind)}</strong><span>{event.status==='open'?'Open request':'Update / resolved'}</span></div>
-    <p>{event.text}</p><small>{event.source} · {pretty(event.channel.replace('synthetic_',''))} · cell {event.location.join(', ')}<br/>Observed {event.observed_at}m → received {event.received_at}m{event.received_at>minute-2?' · New':''}</small>
+    <p>{event.text}</p><small>{event.source} · {pretty(event.channel.replace('synthetic_',''))} · cell {event.location.join(', ')}<br/>Observed {event.observed_at} minutes → received {event.received_at} minutes{event.received_at>minute-2?' · New':''}</small>
   </article>;
   return <section className="incident-inbox" aria-label="Incoming incident updates">
     <div className="section-heading"><h2>Calls & crew updates</h2><span>{active.length} open</span></div>

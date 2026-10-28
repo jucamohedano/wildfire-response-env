@@ -1,0 +1,80 @@
+{
+  "acquisition_completed_at": "2026-10-27T12:21:44Z",
+  "crs": "EPSG:25830",
+  "source": {
+    "attribution": "© OpenStreetMap contributors",
+    "license": "ODbL-1.0",
+    "name": "OpenStreetMap coastal Málaga extract",
+    "url": "https://www.openstreetmap.org/copyright"
+  },
+  "towns": [
+    {
+      "lonlat": [
+        -5.1468484,
+        36.4268068
+      ],
+      "meaning": "OSM named settlement label point, not a population location, count or deployment",
+      "name": "Estepona",
+      "osm_node_id": 1470838281,
+      "place": "town",
+      "position": [
+        307544.2,
+        4033430.8
+      ],
+      "source_element_timestamp": "2026-04-29T11:45:03Z",
+      "source_url": "https://www.openstreetmap.org/node/1470838281"
+    },
+    {
+      "lonlat": [
+        -5.2728863,
+        36.4433477
+      ],
+      "meaning": "OSM named settlement label point, not a population location, count or deployment",
+      "name": "Casares",
+      "osm_node_id": 1470838195,
+      "place": "village",
+      "position": [
+        296287.0,
+        4035525.0
+      ],
+      "source_element_timestamp": "2026-04-29T11:45:03Z",
+      "source_url": "https://www.openstreetmap.org/node/1470838195"
+    },
+    {
+      "lonlat": [
+        -5.2489786,
+        36.3769979
+      ],
+      "meaning": "OSM named settlement label point, not a population location, count or deployment",
+      "name": "Manilva",
+      "osm_node_id": 1470838505,
+      "place": "village",
+      "position": [
+        298258.5,
+        4028113.3
+      ],
+      "source_element_timestamp": "2026-04-29T11:45:03Z",
+      "source_url": "https://www.openstreetmap.org/node/1470838505"
+    },
+    {
+      "acquisition_server_date": "Tue, 27 Oct 2026 12:30:40 GMT",
+      "lonlat": [
+        -4.88562,
+        36.508976
+      ],
+      "meaning": "OSM named settlement label point, not a population location, count or deployment",
+      "name": "Marbella",
+      "osm_node_id": 1081751552,
+      "place": "city",
+      "position": [
+        331143.3,
+        4042057.2
+      ],
+      "raw_sha256": "f7025f6ce526b137a24e9e5d3fe7f6173899caaf8f04e795aa51f478608c7383",
+      "request_url": "https://api.openstreetmap.org/api/0.6/node/1081751552.json",
+      "resolution": "OSM municipal relation 340756 admin_centre node, discovered through Nominatim. The geocoder municipality centroid was not used.",
+      "source_element_timestamp": "2026-04-29T12:26:54Z",
+      "source_url": "https://www.openstreetmap.org/node/1081751552"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "version": "coastal-mobility-assumptions-v1",
+  "role": "declared_synthetic_parameters_not_historical_operations",
+  "road_network_sha256": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16",
+  "crs": "EPSG:25830",
+  "ground_staging": {
+    "valverde": {"name": "Estepona exercise staging", "anchor": [307629.249, 4033428.189]},
+    "cabezudos": {"name": "Casares exercise staging", "anchor": [296199.169, 4035654.952]},
+    "placement_rule": "Nearest node in the largest mutually reachable directed road component; fictional staging, not a verified fire station"
+  },
+  "aircraft_staging": {
+    "name": "Malaga airport geographic reference; fictional exercise allocation",
+    "arp_lon_lat": [-4.4991666666666665, 36.675],
+    "position": [366040.059, 4059866.949],
+    "source": "ENAIRE AIP AD 2-LEMG, ARP 364030N 0042957W",
+    "source_url": "https://aip.enaire.es/aip/contenido_AMDT/LE_Amdt_A_2026_09_AD_2_LEMG_es.html",
+    "projection": "EPSG:4326 to EPSG:25830, always_xy; projected decimal precision is not a claim of positional accuracy",
+    "deployment_verified": false
+  },
+  "synthetic_parameters": {
+    "flight_speed_kph": 240,
+    "walking_speed_kph": 3,
+    "engine_max_access_gap_m": 150,
+    "crew_max_walking_gap_m": 1500,
+    "telemetry_delay_minutes": 1,
+    "daytime_case": "coastal-dev-000",
+    "night_cases": ["coastal-dev-001", "coastal-dev-002"]
+  },
+  "limitations": [
+    "Not validated emergency routing, truck suitability, live closures, traffic or turn restrictions",
+    "Straight walking gaps do not establish a traversable footpath",
+    "Direct flight legs do not establish airspace clearance, altitude safety or approved aviation procedures",
+    "Road geometry is from 2026; wildfire landscape grounding is from the September 2021 Sierra Bermeja study context",
+    "Coastal context does not extend the validated fire and terrain simulation domain"
+  ]
+}
