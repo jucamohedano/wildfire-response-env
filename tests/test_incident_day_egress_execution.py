@@ -33,9 +33,10 @@ def test_disk_resume_during_buffer_exit_preserves_the_complete_day(tmp_path):
     assert environment.minute == restored.minute == 1440
     assert environment._audit == restored._audit
     assert environment.trajectory() == restored.trajectory()
+    assert environment.outcomes() == restored.outcomes()
+    assert environment.checkpoint() == restored.checkpoint()
     assert any(record['emergency_withdrawals'] for record in environment._audit)
-    for current in (environment, restored):
-        verification = current.verify_episode()
-        assert verification['passed']
-        assert verification['exact_replay']
-        assert verification['independent_reward_agreement']
+    verification = restored.verify_episode()
+    assert verification['passed']
+    assert verification['exact_replay']
+    assert verification['independent_reward_agreement']
