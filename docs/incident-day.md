@@ -11,19 +11,21 @@ independent reward verification before a score is recorded.
 The passive policy is a useful initial completion check; identical passive scores
 do not establish that the benchmark is calibrated or discriminative.
 
-The final synthetic runs and pins are summarized in
-`results/incident-day-v2-20261028.json` and `.html`. In development case 001,
-the dispatcher exposed 150 people while the passive baseline exposed none. The
-dispatcher is not consistently better at population protection, and these six
-cases do not establish calibration or benchmark saturation.
+The initial synthetic runs are archived in
+`results/incident-day-v2-20261028.json` and `.html`; they are historical results,
+not the latest implementation assessment. Later dispatcher fixes and the additive
+shift scenarios are summarized in `results/estimated-fuel-shift-checks-20261028.json`
+and `.html`. All six shift days complete, replay exactly and agree with independent
+reward accounting. Fourteen late ground recoveries remain modeled access
+exceptions requiring review. These development cases establish neither physical
+calibration nor benchmark saturation.
 
-Parent-reported integration results include an installed Python 3.12 wheel
-completing and exactly verifying a full day with the same core hash, 128
-incident-day tests, 10 actual OpenEnv tests, 28 UI integration tests, 24 legacy
-OpenEnv tests, 27 geospatial tests, 126 UI tests and a UI build. Three pre-existing
-root global display/road failures were reported: missing cache, MAXVERTICES and
-provenance script SHA. The full HTTP dispatched-trajectory test was still running
-at handoff; those parent-reported checks were not rerun for this summary.
+The display-road regressions are fixed in merged PR #38. Its focused validation
+passes 109 Python and 126 frontend tests plus a production build. Incident-day
+tests include actual HTTP/OpenEnv, disk-checkpoint replay, finite resources,
+source-input gates and independent reward accounting. Docker execution remains
+unverified where Docker is unavailable. See PR #41 and issue #34 for current
+acceptance evidence and outstanding gates.
 
 ## Agent contract
 

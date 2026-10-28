@@ -10,6 +10,8 @@
   not invent measurements, routes, historical outcomes or calibration claims.
 - Treat simulated exposure as an exercise outcome, not a mortality count.
   Preserve independently verified replay and safety checks when changing behavior.
+- Reuse the packaged fire kernel and directed routing components. Do not create
+  a second simulator or load code, contacts or credentials from the old Hackspain checkout.
 - Python 3.12+: `python -m pip install -e envs/wildfire_response/core`.
   Run relevant tests with `python -m pytest`; see `docs/incident-day.md` and
   `data/benchmark_v1/README.md` for CPU acceptance and pinned inputs.

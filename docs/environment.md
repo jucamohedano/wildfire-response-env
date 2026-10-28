@@ -1,5 +1,8 @@
 # Wildfire Response Benchmark v1 — private candidate
 
+This card describes the frozen two-hour benchmark. For the separately versioned
+24-hour prototype, use the [incident-day guide](incident-day.md).
+
 Role: one operations-control-centre agent manages a source-grounded synthetic
 wildfire. It protects people and minimizes additional burned footprint while
 reports arrive, teams mobilize/travel, resources become unavailable and commands

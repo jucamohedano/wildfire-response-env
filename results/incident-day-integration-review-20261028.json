@@ -1,0 +1,213 @@
+{
+  "version": "incident-day-integration-review-v1",
+  "date": "2026-10-28",
+  "source_commit": "6ad45dae56d6db6722a4df32a2f95ba4bbba10c2",
+  "merged_dependency": {
+    "pr": 38,
+    "commit": "6f2f2b2b4c82028c6edb9e116a68b46b8bd016ae"
+  },
+  "implementation_sha256": "a7fe0c0aa1bcb0cdd16d2fe70f17adfcf598d64daff6a10b40f117c3cac24a02",
+  "input_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+  "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+  "validation": {
+    "incident_day_tests": 220,
+    "optional_tests_executed_separately": 11,
+    "completed_days": 6,
+    "simulated_minutes_per_day": 1440,
+    "all_exact_replay": true,
+    "all_independent_reward_agreement": true,
+    "contradictions": 0,
+    "blocking_findings": 0,
+    "suite_elapsed_seconds": 118.21046799999749,
+    "workers": 1,
+    "metrics_note": "Elapsed time includes the six-case consistency/replay audit. Peak RSS was not measured by this runner; do not borrow an earlier measurement."
+  },
+  "egress_review": {
+    "exception_count": 14,
+    "burning_origins_at_initial_failure": 0,
+    "method": "Replay each fixture case with a read-only probe around the private return planner. At the egress_unavailable minute, compare the origin cell with current burning cells, declared access exclusions, and the router protective fire/wind buffer. This classifies the first refusal only; it does not establish that any full escape route is safe.",
+    "cases": [
+      {
+        "case": "incident-day-shift-v1-000",
+        "minute": 1440,
+        "exceptions": [
+          {
+            "resource": "engine-0-shift-2",
+            "egress_unavailable_at": 600,
+            "recovered_at": 1182,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          },
+          {
+            "resource": "crew-0-shift-2",
+            "egress_unavailable_at": 600,
+            "recovered_at": 1183,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          },
+          {
+            "resource": "crew-1-shift-2",
+            "egress_unavailable_at": 600,
+            "recovered_at": 1183,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          }
+        ]
+      },
+      {
+        "case": "incident-day-shift-v1-001",
+        "minute": 1440,
+        "exceptions": [
+          {
+            "resource": "crew-0-shift-2",
+            "egress_unavailable_at": 661,
+            "recovered_at": 1020,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          },
+          {
+            "resource": "crew-1-shift-2",
+            "egress_unavailable_at": 661,
+            "recovered_at": 1020,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          }
+        ]
+      },
+      {
+        "case": "incident-day-shift-v1-002",
+        "minute": 1440,
+        "exceptions": [
+          {
+            "resource": "crew-0-shift-2",
+            "egress_unavailable_at": 661,
+            "recovered_at": 1379,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          },
+          {
+            "resource": "crew-1-shift-2",
+            "egress_unavailable_at": 661,
+            "recovered_at": 1379,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          }
+        ]
+      },
+      {
+        "case": "incident-day-shift-v1-003",
+        "minute": 1440,
+        "exceptions": []
+      },
+      {
+        "case": "incident-day-shift-v1-004",
+        "minute": 1440,
+        "exceptions": [
+          {
+            "resource": "crew-1",
+            "egress_unavailable_at": 240,
+            "recovered_at": 567,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          },
+          {
+            "resource": "crew-1-shift-2",
+            "egress_unavailable_at": 600,
+            "recovered_at": 1109,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          },
+          {
+            "resource": "engine-0-shift-2",
+            "egress_unavailable_at": 600,
+            "recovered_at": 1109,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          },
+          {
+            "resource": "crew-0-shift-2",
+            "egress_unavailable_at": 600,
+            "recovered_at": 1110,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          }
+        ]
+      },
+      {
+        "case": "incident-day-shift-v1-005",
+        "minute": 1440,
+        "exceptions": [
+          {
+            "resource": "crew-1-shift-2",
+            "egress_unavailable_at": 600,
+            "recovered_at": 1120,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          },
+          {
+            "resource": "engine-0-shift-2",
+            "egress_unavailable_at": 600,
+            "recovered_at": 1120,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          },
+          {
+            "resource": "crew-0-shift-2",
+            "egress_unavailable_at": 600,
+            "recovered_at": 1121,
+            "diagnosis": {
+              "cause": "origin_inside_protective_fire_wind_buffer",
+              "origin_is_burning": false
+            }
+          }
+        ]
+      }
+    ],
+    "operational_validation": false,
+    "review_status": "pending; no safety buffer was weakened"
+  },
+  "commands": [
+    "PYTHONPATH=envs/wildfire_response/core/src:. <core-runtime>/python -m pytest -q tests/test_incident_day*",
+    "PYTHONPATH=envs/wildfire_response/core/src:envs/wildfire_response/openenv:. <openenv-runtime>/python -m pytest -q tests/test_incident_day_adapters.py tests/test_incident_day_http_dispatch.py",
+    "python eval/check_incident_day_plausibility.py --output /tmp/NEW-DIRECTORY --wall-budget 600"
+  ],
+  "documentation": {
+    "readme": "README.md",
+    "agent_instructions": "AGENTS.md",
+    "references": "docs/",
+    "screenshot": "docs/assets/dashboard.jpg",
+    "screenshot_sha256": "77c812fb9d57f4e72f88e548f893e855b51e698e2051042335b72f3eaa077b7c"
+  },
+  "limitations": [
+    "Synthetic development fixture, not a held-out or historical benchmark.",
+    "Fuel estimates remain unverified and 27 land/water contexts unresolved.",
+    "Partial road coverage and physical/operational calibration remain unresolved.",
+    "No Docker execution, paid inference, GPU training or publication was performed."
+  ]
+}
