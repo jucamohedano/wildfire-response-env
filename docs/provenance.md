@@ -35,8 +35,6 @@ redistribution review before public release. Qwen model licensing does not licen
 this simulator. Public evidence source citations and source hashes remain with
 the corresponding data packs; synthetic labels are not real-world observations.
 
-Layout reference only: https://github.com/adithya-s-k/FineEnvs/tree/410fb3454a903646f814bb752513c56fed3eae78/07-simulation-environments/portsim-v1
-
-No PortSimEnv code, figures or Barcelona data were copied. Keep this repository
-private until the outstanding rights are resolved. No Hugging Face publication
-or claim of benchmark/model readiness is implied by repository creation.
+Keep this repository private until the outstanding rights are resolved. No
+Hugging Face publication or claim of benchmark/model readiness is implied by
+repository creation.

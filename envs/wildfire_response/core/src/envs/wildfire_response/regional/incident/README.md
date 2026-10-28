@@ -6,35 +6,6 @@ fire, population-protection, finite-resource and readback engines. Six new
 `topo-dev-*` development configurations. These are synthetic exercises on one
 Málaga source region, not new independent training/test incidents.
 
-## AirOps implementation findings
-
-Inspected through a delegated source review: AirOps plugin v0.5.0 at
-`b6b71d867661b410d06e1c06af7c46c1c8985501`. It bundles the core; FineEnvs commit
-`53541fa1d385a9361530f2a6506f45cb5186268b` separates core/adapter packages at
-version 0.4.2. Package releases differ from environment generations: v2 adds the
-crew desk, v3 adds the customer desk. No AirOps source code was copied.
-
-- [Crew shortage detection and message deduplication](https://github.com/earakely-scale/agentenv-airops-plugin/blob/b6b71d867661b410d06e1c06af7c46c1c8985501/src/agentenv_airops/programs/crewsim.py#L837):
-  crew availability produces structured hold/cancel requests; changed state
-  produces new messages. This motivates our locally detected support requests.
-- [Turn pages and outstanding requests](https://github.com/earakely-scale/agentenv-airops-plugin/blob/b6b71d867661b410d06e1c06af7c46c1c8985501/src/agentenv_airops/occ/pages.py#L159):
-  new messages and persistent requests are distinct. Our reads are deliberately
-  nondestructive so inspecting or replaying a frame never consumes messages.
-- [Scheduled advisories](https://github.com/earakely-scale/agentenv-airops-plugin/blob/b6b71d867661b410d06e1c06af7c46c1c8985501/src/agentenv_airops/occ/day.py#L92)
-  remain exogenous, distinct from state-triggered messages. A gateway trigger
-  labelled `action` does not mean an agent caused the weather.
-- [Dispatch event queue](https://github.com/earakely-scale/agentenv-airops-plugin/blob/b6b71d867661b410d06e1c06af7c46c1c8985501/src/agentenv_airops/programs/sim.py#L232)
-  models readiness/departure/arrival separately. We retain minute-by-minute
-  mobilization, travel, suppression, return and refill transitions.
-- [Acknowledgement versus execution test](https://github.com/earakely-scale/agentenv-airops-plugin/blob/b6b71d867661b410d06e1c06af7c46c1c8985501/tests/occ/test_occ3.py#L89)
-  reinforces keeping received/accepted orders distinct from physical effects.
-- [Replay digests](https://github.com/earakely-scale/agentenv-airops-plugin/blob/b6b71d867661b410d06e1c06af7c46c1c8985501/src/agentenv_airops/occ/replay.py#L23)
-  motivate recording every delivered update and checking the entire replay.
-
-AirOps uses desk turns and hourly watches. This environment retains two-minute
-commits and processes each intervening minute. The reference Space is a recorded
-episode viewer; a polished viewer does not itself establish simulation fidelity.
-
 ## Clock, detection and delivery
 
 The default horizon is 120 exercise minutes. Each commit, including an invalid

@@ -7,8 +7,8 @@ the new delivered-evidence population/area benchmark and is retained for history
 
 The canonical recipe is packaged once in
 [`core/.../regional/training`](../envs/wildfire_response/core/src/envs/wildfire_response/regional/training/README.md).
-`grpo.py` is the project-level entrypoint, analogous to the separate evaluation
-tools in PortSimEnv. Heavy training libraries are not core dependencies.
+`grpo.py` is the project-level entrypoint. Heavy training libraries are not core
+dependencies.
 
 Use an isolated Python 3.12 runtime with development headers and install the
 CUDA wheel plus the pinned requirements. From this repository root:

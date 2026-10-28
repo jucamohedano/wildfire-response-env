@@ -10,8 +10,8 @@ dataset upload and model publication are separate actions.
 - Keep provider credentials, private evaluator artifacts and raw operational
   records out of public uploads. A public-observation field is not itself a
   redistribution clearance.
-- External imagery is display context; no upstream AirOps/PortSim code or visual
-  assets were copied for this benchmark implementation.
+- External imagery is display context and requires a rights review before
+  redistribution.
 - Qwen's pinned model metadata was checked separately; model licensing does not
   resolve this repository's code or source-data rights.
 

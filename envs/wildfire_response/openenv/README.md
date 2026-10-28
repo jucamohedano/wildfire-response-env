@@ -20,8 +20,7 @@ compatibility module, not the canonical server for this project.
 Build the supplied container from repository root with
 `docker build -f envs/wildfire_response/openenv/Dockerfile .`.
 No container build or hosted Space deployment is claimed until explicitly tested.
-The root layout follows PortSimEnv, but there is no copied port viewer, MCP
-playground or AgentEnv/Harbor integration. No live communication account is needed.
+No live communication account is needed.
 
 ## Isolated execution checks
 

@@ -3,10 +3,10 @@
 Source: `Los_Panaderos` revision `ba9cf90a4f4834d76e30a3e97f87d420e4cabdee`.
 No source files, branches or runtime artifacts were removed from that checkout.
 
-This repository now follows the inspected PortSimEnv organization: separately
-installable CPU core and OpenEnv adapter, public task-pack exports, dataset tools,
+This repository has a separately installable CPU core and OpenEnv adapter,
+public task-pack exports, dataset tools,
 evaluation, source provenance and results. Training recipes are kept separately.
-It does not claim a hosted Space, port viewer or trained wildfire director.
+It does not claim a hosted Space or trained wildfire director.
 
 Validation in the extracted checkout:
 
