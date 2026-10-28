@@ -9,8 +9,9 @@ import subprocess
 import time
 
 from wildfire_core.expansion import ExpandedEnv, build_catalog, coverage, public_manifest
+from wildfire_core.scenario_quality import audit_catalog, make_context, summarize
 from envs.wildfire_response.regional.benchmark_v1.baselines import PublicDispatcher
-from envs.wildfire_response.regional.expansion.catalog import FAMILIES
+from envs.wildfire_response.regional.expansion.catalog import FAMILIES, get_task
 from envs.wildfire_response.regional.expansion.environment import implementation_digest
 from envs.wildfire_response.regional.prepared.data import load_inputs
 from envs.wildfire_response.regional.topographic.data import load_domain
@@ -19,6 +20,9 @@ from envs.wildfire_response.regional.topographic.data import load_domain
 def write_json(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + '\n')
+    if 'private' in path.parts:
+        path.chmod(0o600)
+        path.parent.chmod(0o700)
 
 
 def compile_dataset(output, prepared, domain, *, smoke=False, seconds=600):
@@ -29,6 +33,13 @@ def compile_dataset(output, prepared, domain, *, smoke=False, seconds=600):
         raise ValueError('Use a fresh output directory; never overwrite a frozen dataset')
     started = time.monotonic()
     catalog = build_catalog(prepared, domain)
+    context = make_context(prepared, domain)
+    quality = audit_catalog(catalog, lambda identifier: get_task(catalog, context['inputs'], identifier), context)
+    quality_summary = summarize(quality)
+    write_json(output / 'private/scenario-quality.json', quality)
+    write_json(output / 'public/scenario-quality-summary.json', quality_summary)
+    if not quality_summary['contract_passed']:
+        raise ValueError('Scenario-quality errors block compilation; see the private audit findings')
     write_json(output / 'private/catalog.json', catalog)
     write_json(output / 'public/manifest.json', public_manifest(catalog))
     write_json(output / 'coverage.json', coverage(catalog))
@@ -38,6 +49,8 @@ def compile_dataset(output, prepared, domain, *, smoke=False, seconds=600):
         catalog_sha256=catalog['sha256'], prepared_inputs_sha256=prepared['sha256'],
         topographic_inputs_sha256=domain['sha256'], parent_catalog_sha256=catalog['parent_catalog_sha256'],
         engine_and_expansion_sha256=implementation_digest(),
+        scenario_quality_rules_sha256=quality_summary['rules_sha256'],
+        scenario_quality_review_required=quality_summary['review_required'],
         source_revision=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
         compiler_files_sha256={str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
                                for path in [*sorted(source.glob('*.py')), Path(__file__).resolve()]},
