@@ -224,6 +224,14 @@ Ignoring the warning leaves an unresolved cohort. An unused centre, a warning
 alone, or an unrelated movement cannot satisfy this check. The pre-handover
 occupancy is initialization, not a historical journey or expert demonstration.
 
+The current six-case batch completes all 1,440-minute days with exact replay and
+independent reward agreement, with both targeted effects observed and no audit
+contradictions or blocking findings. Validation covers 255 distinct tests without
+skips (253 in the primary run, two checkpoint-boundary follow-ups). The test audit
+removed one redundant completed-episode replay while preserving all supported
+legacy and safety regressions. See `results/incident-day-coverage-20261028.html`
+and `.json` for evidence and remaining calibration gates.
+
 Run the current acceptance suite with
 `python eval/check_incident_day_plausibility.py --output /tmp/NEW-COVERAGE-RUN --wall-budget 600`.
 The `--cases` option still selects explicit earlier suites. Targeted partial
