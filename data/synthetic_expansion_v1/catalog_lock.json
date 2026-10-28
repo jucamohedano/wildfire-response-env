@@ -1,0 +1,17 @@
+{
+  "version": "wildfire-synthetic-expansion-catalog-v1",
+  "catalog_sha256": "80fef6516618f77e669aad4e2bc7f754002aac59181e6f0d6e7bfce222118de4",
+  "parent_catalog_sha256": "2b83e5e2457a37cdf22cf75c2eb66d6c186585cf8889089219a992963e61cb05",
+  "prepared_inputs_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
+  "topographic_inputs_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+  "source_groups": 1,
+  "configuration_groups": 960,
+  "split_groups": {
+    "train": 640,
+    "validation": 160,
+    "test": 160
+  },
+  "variants_per_group": 2,
+  "tasks": 1920,
+  "release_state": "coverage candidate; no held-out policy evaluation"
+}

@@ -1,0 +1,229 @@
+{
+  "catalogs": [
+    {
+      "catalog": "benchmark_v1",
+      "catalog_sha256": "2b83e5e2457a37cdf22cf75c2eb66d6c186585cf8889089219a992963e61cb05",
+      "catalog_version": "wildfire-benchmark-catalog-v1",
+      "configuration_groups_with_warnings": 0,
+      "contract_passed": true,
+      "empirically_validated": false,
+      "errors": 0,
+      "findings_by_code": {
+        "night_aircraft": 252,
+        "unmeasured_fuel_fallback": 1
+      },
+      "held_out_outcomes_inspected": false,
+      "interpretation": "Static logical validity only. Warnings are not automatically impossible scenarios; no claim of calibrated fire physics, optimality or real-world realism",
+      "layout_partition_checked": false,
+      "policy_rollouts": 0,
+      "review_required": true,
+      "rules_sha256": "92ce9b1bc2b8f5650d93f32c1fbe6bef0c1739120f1d3fa114d0fe2d5fad0afa",
+      "shared_input_findings": [
+        {
+          "code": "unmeasured_fuel_fallback",
+          "location": "context.fuel_valid_mask",
+          "message": "80 simulated cells use unmeasured synthetic scrub fallback",
+          "severity": "warning"
+        }
+      ],
+      "splits": {
+        "development": 12,
+        "test": 40,
+        "train": 160,
+        "validation": 40
+      },
+      "tasks_checked": 252,
+      "tasks_with_errors": 0,
+      "tasks_with_warnings": 0,
+      "version": "wildfire-scenario-quality-v1",
+      "warning_groups_by_code": {},
+      "warnings": 1
+    },
+    {
+      "catalog": "synthetic_expansion_v1",
+      "catalog_sha256": "80fef6516618f77e669aad4e2bc7f754002aac59181e6f0d6e7bfce222118de4",
+      "catalog_version": "wildfire-synthetic-expansion-catalog-v1",
+      "configuration_groups_with_warnings": 16,
+      "contract_passed": true,
+      "empirically_validated": false,
+      "errors": 0,
+      "findings_by_code": {
+        "night_aircraft": 1920,
+        "population_at_ignition": 4,
+        "preignition_wind_shift": 28,
+        "unmeasured_fuel_fallback": 1
+      },
+      "held_out_outcomes_inspected": false,
+      "interpretation": "Static logical validity only. Warnings are not automatically impossible scenarios; no claim of calibrated fire physics, optimality or real-world realism",
+      "layout_partition_checked": true,
+      "policy_rollouts": 0,
+      "review_required": true,
+      "rules_sha256": "92ce9b1bc2b8f5650d93f32c1fbe6bef0c1739120f1d3fa114d0fe2d5fad0afa",
+      "shared_input_findings": [
+        {
+          "code": "unmeasured_fuel_fallback",
+          "location": "context.fuel_valid_mask",
+          "message": "80 simulated cells use unmeasured synthetic scrub fallback",
+          "severity": "warning"
+        }
+      ],
+      "splits": {
+        "test": 320,
+        "train": 1280,
+        "validation": 320
+      },
+      "tasks_checked": 1920,
+      "tasks_with_errors": 0,
+      "tasks_with_warnings": 32,
+      "version": "wildfire-scenario-quality-v1",
+      "warning_groups_by_code": {
+        "population_at_ignition": 2,
+        "preignition_wind_shift": 14
+      },
+      "warnings": 33
+    },
+    {
+      "catalog": "topographic_stress_v1",
+      "catalog_sha256": "a38970528b7119d598bee4a51038f01e9e4f6ec7948a8c7e55b3ec1bf2743444",
+      "catalog_version": "wildfire-topographic-stress-catalog-v1",
+      "configuration_groups_with_warnings": 0,
+      "contract_passed": true,
+      "empirically_validated": false,
+      "errors": 0,
+      "findings_by_code": {
+        "night_aircraft": 240,
+        "unmeasured_fuel_fallback": 1
+      },
+      "held_out_outcomes_inspected": false,
+      "interpretation": "Static logical validity only. Warnings are not automatically impossible scenarios; no claim of calibrated fire physics, optimality or real-world realism",
+      "layout_partition_checked": false,
+      "policy_rollouts": 0,
+      "review_required": true,
+      "rules_sha256": "92ce9b1bc2b8f5650d93f32c1fbe6bef0c1739120f1d3fa114d0fe2d5fad0afa",
+      "shared_input_findings": [
+        {
+          "code": "unmeasured_fuel_fallback",
+          "location": "context.fuel_valid_mask",
+          "message": "80 simulated cells use unmeasured synthetic scrub fallback",
+          "severity": "warning"
+        }
+      ],
+      "splits": {
+        "test": 40,
+        "train": 160,
+        "validation": 40
+      },
+      "tasks_checked": 240,
+      "tasks_with_errors": 0,
+      "tasks_with_warnings": 0,
+      "version": "wildfire-scenario-quality-v1",
+      "warning_groups_by_code": {},
+      "warnings": 1
+    }
+  ],
+  "contract_passed": true,
+  "elapsed_seconds": 12.732,
+  "empirically_validated": false,
+  "errors": 0,
+  "held_out_outcomes_inspected": false,
+  "limitations": [
+    "Synthetic normalized wind, spread/suppression and smoke-dose effects lack empirical calibration",
+    "Off-map bases and assumed ground transit do not establish road/speed realism",
+    "Coastal weather is context, not observed fire-front weather or coupled physical forcing",
+    "No policy solvability/difficulty claims; static approval is not a realistic-release certification"
+  ],
+  "note": "Shared input warnings appear once per catalog; warning instances are not counts of distinct defective scenarios",
+  "peak_rss_mib": 35.22,
+  "policy_rollouts": 0,
+  "prepared_inputs_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
+  "review_required": true,
+  "rules": {
+    "catalog_integrity": {
+      "meaning": "Unique IDs/seeds/configurations, correct hashes/counts, no cross-split layouts",
+      "severity": "error"
+    },
+    "clock_alignment": {
+      "meaning": "Local daylight clock must agree with the pinned weather/incident clock",
+      "severity": "error"
+    },
+    "compile_failure": {
+      "meaning": "Every scheduled concrete variant must materialize",
+      "severity": "error"
+    },
+    "duplicate_lineage": {
+      "meaning": "Declared forwards retain original source, role, observation time and location",
+      "severity": "error"
+    },
+    "family": {
+      "meaning": "Declared family has the actual incident/report/failure conditions it promises",
+      "severity": "error"
+    },
+    "geography": {
+      "meaning": "Representable locations; ignitions on supported fuel outside censor guard",
+      "severity": "error"
+    },
+    "ground_arrival_outside_horizon": {
+      "meaning": "Even optimistic ground arrival is outside the episode",
+      "severity": "warning"
+    },
+    "input_assumptions": {
+      "meaning": "Population, inventory and timing defaults must be structurally coherent",
+      "severity": "error"
+    },
+    "night_aircraft": {
+      "meaning": "Night/daylight and wind gates still apply; readiness alone is not operability",
+      "severity": "info"
+    },
+    "parameters": {
+      "meaning": "Finite engine-supported winds and nonnegative delays; coherent protection parameters",
+      "severity": "error"
+    },
+    "population_at_ignition": {
+      "meaning": "A settlement/refuge starts burning before any decision can act",
+      "severity": "warning"
+    },
+    "preignition_wind_shift": {
+      "meaning": "A wind-shift exercise should test a change after ignition",
+      "severity": "warning"
+    },
+    "references": {
+      "meaning": "Known resources and unlocated report references",
+      "severity": "error"
+    },
+    "schema": {
+      "meaning": "Bounded structured scenario, lists, identities, seeds and explicit synthetic label",
+      "severity": "error"
+    },
+    "short_response_window": {
+      "meaning": "Late incidents may have no useful response period before cutoff",
+      "severity": "warning"
+    },
+    "timeline": {
+      "meaning": "Integer nonnegative clocks; observation <= receipt; scheduled inputs inside horizon",
+      "severity": "error"
+    },
+    "unmeasured_fuel_fallback": {
+      "meaning": "Unsupported fuel cells use an exercise fallback, not measured vegetation",
+      "severity": "warning"
+    }
+  },
+  "runner_sha256": "4843afdf7a813430ee8acf5faca20df0cfb815b3dde40e395aed40cb9ce6903f",
+  "scope": "All concrete variants in the three registered catalogs, canonical profile. Archived API development modes and action trajectories are not audited here.",
+  "source_revision": "03cb7fa4246527fde03a6c29c1648330cbae2e11",
+  "tasks_checked": 2412,
+  "tasks_with_warnings": 32,
+  "topographic_inputs_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+  "version": "wildfire-scenario-quality-v1",
+  "warnings": 35,
+  "workers": 1,
+  "review_notes": {
+    "wind_shift_variants": 28,
+    "wind_shift_configuration_groups": 14,
+    "shifts_at_ignition": 26,
+    "shifts_before_ignition": 2,
+    "refuge_ignition_variants": 4,
+    "refuge_ignition_configuration_groups": 2,
+    "shared_fallback_fuel_cells": 80,
+    "interpretation": "32 variants need case-level intent review, not an assertion of 32 impossible scenarios. Shared fuel warning is repeated in each catalog's count."
+  }
+}
