@@ -1,0 +1,205 @@
+{
+  "version": "real-map-ground-access-v1",
+  "code_commit": "30df7c7c7eacb667d14b1e8c0d6d7c0f86b72726",
+  "implementation_sha256": "f989bbbcb740fba3133d470c31319ff4f6c7dfd0f956175c02ffabc1a506f204",
+  "input_sha256": "50031b3029dcee0a1367ccdd8125d081d19d3b500b2dd373e30ef127d47a2c4d",
+  "network_sha256": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16",
+  "scope": "Six additive synthetic placements on cached real geography; not historical ignition or bases",
+  "sector_grid": [
+    16,
+    28
+  ],
+  "temporary_posts": [
+    "osm:n321315386",
+    "osm:n6119295366"
+  ],
+  "cases": [
+    {
+      "case": "incident-day-realmap-v1-000",
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "minutes": 1440,
+      "crew_cycles": [
+        {
+          "resource": "crew-0",
+          "departed_by": 10,
+          "first_work": 88,
+          "returned_by": 480,
+          "applied_work_ticks": 66
+        },
+        {
+          "resource": "crew-1",
+          "departed_by": 6,
+          "first_work": 81,
+          "returned_by": 480,
+          "applied_work_ticks": 94
+        }
+      ],
+      "findings": []
+    },
+    {
+      "case": "incident-day-realmap-v1-001",
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "minutes": 1440,
+      "crew_cycles": [
+        {
+          "resource": "crew-0",
+          "departed_by": 10,
+          "first_work": 87,
+          "returned_by": 480,
+          "applied_work_ticks": 73
+        },
+        {
+          "resource": "crew-1",
+          "departed_by": 6,
+          "first_work": 83,
+          "returned_by": 480,
+          "applied_work_ticks": 76
+        }
+      ],
+      "findings": []
+    },
+    {
+      "case": "incident-day-realmap-v1-002",
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "minutes": 1440,
+      "crew_cycles": [
+        {
+          "resource": "crew-0",
+          "departed_by": 7,
+          "first_work": 80,
+          "returned_by": 480,
+          "applied_work_ticks": 121
+        },
+        {
+          "resource": "crew-1",
+          "departed_by": 9,
+          "first_work": 86,
+          "returned_by": 480,
+          "applied_work_ticks": 117
+        }
+      ],
+      "findings": []
+    },
+    {
+      "case": "incident-day-realmap-v1-003",
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "minutes": 1440,
+      "crew_cycles": [
+        {
+          "resource": "crew-0",
+          "departed_by": 8,
+          "first_work": 84,
+          "returned_by": 480,
+          "applied_work_ticks": 78
+        },
+        {
+          "resource": "crew-1",
+          "departed_by": 8,
+          "first_work": 81,
+          "returned_by": 480,
+          "applied_work_ticks": 80
+        }
+      ],
+      "findings": []
+    },
+    {
+      "case": "incident-day-realmap-v1-004",
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "minutes": 1440,
+      "crew_cycles": [
+        {
+          "resource": "crew-0",
+          "departed_by": 6,
+          "first_work": 83,
+          "returned_by": 480,
+          "applied_work_ticks": 96
+        },
+        {
+          "resource": "crew-1",
+          "departed_by": 6,
+          "first_work": 80,
+          "returned_by": 263,
+          "applied_work_ticks": 67
+        }
+      ],
+      "findings": []
+    },
+    {
+      "case": "incident-day-realmap-v1-005",
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "minutes": 1440,
+      "crew_cycles": [
+        {
+          "resource": "crew-0",
+          "departed_by": 9,
+          "first_work": 81,
+          "returned_by": 480,
+          "applied_work_ticks": 90
+        },
+        {
+          "resource": "crew-1",
+          "departed_by": 8,
+          "first_work": 87,
+          "returned_by": 480,
+          "applied_work_ticks": 84
+        }
+      ],
+      "findings": []
+    }
+  ],
+  "tests": {
+    "passed": 283,
+    "skipped": 0,
+    "subtests": 37
+  },
+  "elapsed_seconds": 537.9026178140011,
+  "workers": 1,
+  "gates": {
+    "exercise_consistent": "not established",
+    "physically_validated": "no",
+    "contradiction_count": 0,
+    "blocking_count": 0,
+    "human_review": "pending",
+    "intended_constraint_coverage": {
+      "incident-day-realmap-v1-000": "work_observed_review_required",
+      "incident-day-realmap-v1-001": "constraint_evidence_review_required",
+      "incident-day-realmap-v1-002": "no_constraint_evidence_observed",
+      "incident-day-realmap-v1-003": "constraint_evidence_review_required",
+      "incident-day-realmap-v1-004": "constraint_evidence_review_required",
+      "incident-day-realmap-v1-005": "constraint_evidence_review_required"
+    },
+    "note": "Automated exercise consistency requires six verified completed days, no contradictions or blockers, stable implementation and demonstrated counterfactual mechanics. Human review is pending; neither counterfactuals nor temporal correlations prove causation or physical validity."
+  },
+  "limitations": [
+    "Source fuel estimates, land/water guards and opt-in remain unchanged.",
+    "Walking and temporary stocks are exercise assumptions.",
+    "Initial routes checked against retained barriers/restrictions; global turn restrictions and field vehicle suitability remain unvalidated.",
+    "Overall family-consistency gate remains not established: ground mission success does not establish all inherited family effects.",
+    "Earlier generic-midpoint cases/results remain unchanged; this is not a same-incident performance comparison."
+  ],
+  "runtime_improvements": "Exact-result origin spatial lookup and caches avoid repeated whole-graph scans; differential tests preserve route IDs and ordering."
+}
