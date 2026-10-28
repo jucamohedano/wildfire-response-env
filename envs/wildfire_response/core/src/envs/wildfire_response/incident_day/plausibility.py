@@ -245,7 +245,7 @@ def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), 
                 if prior is not None:
                     elapsed = minute - state_since[identifier]
                     minimum = {'resting': unit.get('rest_minutes', profile['rest_minutes']),
-                               'refilling': profile['aircraft_refill_minutes'] if unit['kind'] == 'aircraft' else profile['ground_refill_minutes'],
+                               'refilling': profile.get('air_refill_minutes', 15) if unit['kind'] == 'aircraft' else profile['ground_refill_minutes'],
                                'on_scene': profile['aircraft_setup_minutes'] if unit['kind'] == 'aircraft' else profile['ground_setup_minutes']}.get(prior['state'])
                     inherited = state_since[identifier] == 0 and prior['state'] == 'on_scene'
                     if minimum is not None and not inherited and prior['state'] == 'on_scene' and current['state'] != 'working':
