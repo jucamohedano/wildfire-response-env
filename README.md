@@ -1,103 +1,80 @@
 # Wildfire Response Environment
 
-A programmatic, turn-based environment for an **operations-control-centre agent**.
-The agent receives delayed calls, reports and sensor updates; investigates claims;
-coordinates fire crews across bases; and issues simulated population instructions.
-The simulator runs offline on CPU. No real dispatch, messaging or emergency
-system is connected.
+Run a simulated wildfire response from an operations control centre: read delayed
+reports, investigate uncertainty, coordinate crews and aircraft, and issue
+population-protection orders. The environment runs on CPU and is not connected
+to real dispatch or emergency systems.
 
-The repository follows [PortSimEnv v1](https://github.com/adithya-s-k/FineEnvs/tree/main/07-simulation-environments/portsim-v1)
-in separating data, simulator, adapters and evaluation. Its control-centre flow
-also draws on the [AirOps incident-mode review](envs/wildfire_response/core/src/envs/wildfire_response/regional/incident/README.md).
-This project has its own simulator, tasks and assets.
+![Coastal wildfire response dashboard](docs/assets/dashboard.jpg)
 
-## Environment
+*The coastal/benchmark dashboard; the incident-day prototype has a separate interface.*
 
-The current candidate is `wildfire_core.benchmark_v1.BenchmarkEnv`. On each
-two-minute turn, the agent sees delivered evidence and chooses operational tools
-through `BenchmarkModelPolicy`; the episode lasts up to 120 simulated minutes.
-The policy adapter exposes 13 named tools for triage, dispatch, protection,
-communication and evidence-history queries.
-Unknown or not-yet-delivered information stays unknown. The grader independently
-replays trajectories and recomputes outcomes.
+## The task
 
-An opt-in [coastal mobility development mode](MOBILITY.md) adds real road geometry,
-reported truck/crew movement and illustrative aircraft sorties. It has separate
-task IDs and replay pins; it does not replace or rescore benchmark v1.
+The **incident-day v2 prototype** begins at a large-fire handover and runs up to
+24 simulated hours. The agent sees delivered reports, known resource status,
+approaches and population information, rather than future events or private audit
+state. It can inspect reports and routes, check draft actions, commit resource and
+protection orders, request status, and wait for new information. Orders and status
+requests take a minute; waiting stops early for actionable events or deadlines.
 
-The separate [incident-day v2 prototype](INCIDENT_DAY.md) starts from a large-fire
-handover and runs 24 simulated hours with sparse decisions, delayed status
-requests, hazard-aware approaches and finite duty/refill cycles. Six CPU-only
-development scenarios are included. Its real-data approval gate remains closed;
-the runnable fixture is explicitly synthetic, not a new historical dataset.
+Its six development cases use a synthetic fixture. They are exercises, not
+historical incident replays or a held-out evaluation set. The separate, frozen
+**benchmark v1** runs up to 120 minutes in two-minute turns, with 80 train, 20
+validation and 20 test configuration groups and separate development probes.
+The coastal dashboard uses benchmark/coastal mobility mode; it does not show an
+incident-day run. See [incident-day](docs/incident-day.md),
+[benchmark](data/benchmark_v1/README.md) and [coastal mobility](docs/mobility.md).
 
-The catalog contains **120 configuration groups** on one Málaga study area:
-80 train, 20 validation and 20 test groups, with two variants each, plus 12
-development probes. Families include uncertain smoke, conflicting reports,
-wind changes, overlapping fires, delayed reinforcement, unavailable resources
-and failed protection delivery. These are synthetic exercises, not 120 historical
-wildfires.
+## Score and limits
 
-The terminal learning score is `0.8 × protected population fraction + 0.2 × unburned fraction`.
-Headline ranking puts zero-exposure completion first, then protected population,
-then additional burned area. Exposure is a synthetic
-exercise outcome, **not a death count**. The score does not certify the best
-firefighting decision or physical accuracy.
+At completion, the day reward is `0.8 × newly protected population fraction +
+0.2 × fraction of remaining burnable cells not newly burned`. Inherited exposure
+and burned area are excluded; abandoned runs score zero and censored runs cannot
+earn a successful day score. The frozen benchmark also uses an 80/20 population
+and unburned-area reward, with its own accounting and ranking rules. Replay and
+independent accounting verify a run, not the physical accuracy of its assumptions.
+Simulated exposure is not a death count.
 
-## Run
+The day fixture, weather, roster and operational parameters are synthetic. Real
+source-pack approval is blocked by 80 unknown fuel cells; estimated values do not
+resolve that gate. The road network is incomplete. No model has demonstrated a
+verified training improvement; the development dispatcher is not an optimal policy.
+See [fidelity](docs/fidelity.md) and [day data](data/incident_day_v2/README.md).
 
-Requires Python 3.12+, `uv`, and the locally prepared, checksum-pinned input
-bundles. Runtime inputs are not downloaded automatically; their preparation and
-provenance are described in [DATA_STORAGE.md](DATA_STORAGE.md). These ignored
-`.runtime` bundles are not part of a fresh clone; restore the pinned source pack
-before running the benchmark commands below.
+## Try it on CPU
+
+From a fresh clone, with Python 3.12 or newer, run the bundled synthetic fixture.
+This first step needs no prepared data, model, API key, GPU or extra packages:
 
 ```sh
-uv venv --python 3.12 .runtime/core-venv
-uv pip install --python .runtime/core-venv/bin/python -e envs/wildfire_response/core
+PYTHONPATH=envs/wildfire_response/core/src python3 - <<'PY'
+from wildfire_core.incident_day import IncidentDayEnv, IncidentDayTools, fixture_inputs
 
-export WILDFIRE_PREPARED_INPUTS=.runtime/malaga-prepared-inputs-v1/inputs.json
-export WILDFIRE_PREPARED_SHA256=ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108
-export WILDFIRE_TOPOGRAPHIC_INPUTS=.runtime/topographic-inputs-v1/inputs.json
-export WILDFIRE_TOPOGRAPHIC_SHA256=e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd
-
-PYTHONPATH=envs/wildfire_response/core/src .runtime/core-venv/bin/python -m eval.run_benchmark \
-  --prepared-inputs "$WILDFIRE_PREPARED_INPUTS" --prepared-sha256 "$WILDFIRE_PREPARED_SHA256" \
-  --topographic-inputs "$WILDFIRE_TOPOGRAPHIC_INPUTS" --topographic-sha256 "$WILDFIRE_TOPOGRAPHIC_SHA256" \
-  --split development --limit 1 --output .runtime/benchmark-smoke
+inputs, network = fixture_inputs()
+env = IncidentDayEnv(inputs, network, expected_inputs_sha256=inputs['sha256'],
+                     expected_network_sha256=network['sha256'])
+observation, info = env.reset('incident-day-dev-000')
+tools = IncidentDayTools(env)
+print('Horizon:', observation['clock']['horizon_minutes'], 'minutes')
+result = tools.execute('advance_time', {'max_minutes': 10})
+print('Minute:', result['observation']['minute'], 'reward:', result['reward'])
+PY
 ```
 
-For a direct Python API example, a scenario inventory, UI, OpenEnv client/server,
-and training recipe, see [benchmark commands](data/benchmark_v1/README.md),
-[UI guide](ui/README.md), [OpenEnv adapter](envs/wildfire_response/openenv/README.md)
-and [training recipe](train/BENCHMARK.md). The optional [AgentEnv/HF adapter](envs/wildfire_response/core/src/envs/wildfire_response/agentenv/README.md)
-exports split-specific bundles and Parquet; it does not upload them.
+For a full CPU acceptance run and optional client, see the
+[day guide](docs/incident-day.md). The older benchmark requires separately
+prepared, checksum-pinned inputs; follow [data storage](docs/data-storage.md)
+and the [benchmark commands](data/benchmark_v1/README.md).
 
-## Data and limits
+## Repository
 
-Terrain, fuel and station-weather context are source-grounded and documented in
-[`data/malaga_2021/provenance.json`](data/malaga_2021/provenance.json).
-Calls, report wording, ignition timing, fleet availability, delays, fire effects
-and counterfactual decisions are synthetic. The benchmark covers one landscape
-and a night response; it does not establish performance across Spain or real
-incidents. See the [dataset card](DATASET_CARD.md) and [fidelity notes](FIDELITY.md).
+- `envs/wildfire_response/core/` — simulator, tools and verification.
+- `envs/wildfire_response/openenv/` — optional client/server adapter.
+- `data/` and `docs/` — fixtures, manifests, source notes and reference cards.
+- `eval/`, `results/` and `train/` — evaluation, reports and gated training work.
+- `ui/` — local coastal/benchmark control-centre dashboard; see the [UI guide](ui/README.md).
 
-CPU references completed 428 verified episodes; their report is
-[here](results/benchmark-validation-20261026.html). Luna completed three
-development probes, but the multiple-fire run still left fire active and burned
-more area than the dispatcher reference. There is no trained policy whose
-improvement has been verified.
-
-```text
-envs/wildfire_response/core/     Simulator, observations and grader
-envs/wildfire_response/openenv/  Optional OpenEnv adapter
-envs/wildfire_response/tasks/    Versioned task metadata
-data/                            Provenance, manifests and source notes
-eval/                            Runners, replay and reports
-train/                           Gated SFT and GRPO recipe
-ui/                              Local 2D control-centre interface
-```
-
-The repository is a private development candidate. The license and asset rights
-are still under review; see [LICENSE_STATUS.md](LICENSE_STATUS.md) before sharing
-or publishing it.
+Read the [environment card](docs/environment.md), [dataset card](docs/dataset-card.md),
+[provenance](docs/provenance.md) and [license status](docs/license-status.md)
+before reuse or distribution. Code and asset rights remain under review.

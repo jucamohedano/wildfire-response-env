@@ -1,6 +1,6 @@
 # Wildfire benchmark v1 catalog — private candidate
 
-An opt-in [synthetic coverage expansion](data/synthetic_expansion_v1/README.md)
+An opt-in [synthetic coverage expansion](../data/synthetic_expansion_v1/README.md)
 adds 960 configuration groups / 1,920 tasks. It does not replace this frozen v1
 catalog or add historical incidents. Its validation/test outcomes are not used
 by the initial CPU smoke run.
@@ -21,7 +21,7 @@ where the deterministic catalog order supplies the zero-based group index and
 `variant` is 0 or 1. The original benchmark v1 has its own unchanged seed scheme.
 Seeds, compiler version and pinned input hashes jointly identify a dataset;
 a seed alone does not. Metadata is recorded in
-[`source_context.json`](data/synthetic_expansion_v1/source_context.json).
+[`source_context.json`](../data/synthetic_expansion_v1/source_context.json).
 
 The environment is a general operations-control-centre interface, with randomized
 synthetic scenarios. **Its current dataset is still grounded in one regional
@@ -32,10 +32,10 @@ here; this information belongs in the dataset/environment card.
 
 The current horizon remains 120 simulated minutes. A separately versioned
 six-hour pilot, followed conditionally by a twelve-hour night-to-day test, is
-proposed in the [long-session strategy](docs/long-sessions.html); it is not enabled
+proposed in the [long-session strategy](long-sessions.html); it is not enabled
 by this documentation update.
 
-Versioned [scenario-quality rules](data/scenario_quality_v1/README.md) now audit
+Versioned [scenario-quality rules](../data/scenario_quality_v1/README.md) now audit
 every concrete case in the expansion, benchmark and topographic-stress catalogs.
 Hard contradictions block new expansion exports; plausibility warnings require
 review. Static consistency and exact replay do not certify real-world realism.
@@ -71,4 +71,4 @@ version and a fresh untouched final test set.
 The catalog covers one Málaga landscape and night response. It establishes
 configuration hold-outs, not region, country or operational generalization.
 There is no claim of empirical suppression/medical calibration or optimal action
-labels. Distribution remains subject to `LICENSE_STATUS.md`.
+labels. Distribution remains subject to `license-status.md`.

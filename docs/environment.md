@@ -46,7 +46,7 @@ prepared-data pipeline; they are not silently downloaded. Public trajectory
 records and private evaluator minute records are stored separately. Exact replay
 and independent accounting are both required.
 
-See `data/benchmark_v1/README.md`, `FIDELITY.md`, `DATA_STORAGE.md` and
+See `data/benchmark_v1/README.md`, `fidelity.md`, `data-storage.md` and
 `train/BENCHMARK.md` for manifests, commands, assumptions and gated learning.
 The reference evaluation report is produced by `python -m eval.run_benchmark`.
 GPU training, public hosting and operational use are not implied by this card.

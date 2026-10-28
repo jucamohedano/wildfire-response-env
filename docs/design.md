@@ -40,7 +40,7 @@ or historical incident dynamics. Warning routes can increase simulated exposure.
 ## What carries over from PortSimEnv
 
 Organization: `data/`, `envs/<environment>/core/`, `openenv/`, `tasks/`, `tools/`,
-`eval/`, `results/`, `DESIGN.md` and `project.yaml`. `train/` adds our measured
+`eval/`, `results/`, `design.md` and `project.yaml`. `train/` adds our measured
 Qwen3 recipe. We use separate source and hosted-artifact lifecycles.
 
 We do not copy its code, datasets or viewer, and do not claim its proven optimum,
