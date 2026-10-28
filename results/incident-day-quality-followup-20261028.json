@@ -1,0 +1,461 @@
+{
+  "changes": [
+    "Shortest publicly offered evacuation routes with reported capacity, including blocked reservations",
+    "No duplicate or stale-condition evacuations; timely response to new closures",
+    "Current resident threat is separate from irreversible cumulative exposure",
+    "Portable pinned display sources replace the missing ignored cache; original source pins and assets archived"
+  ],
+  "core_sha256": "03e4fc4d2957e37a168f53183399347b27e0adc107d857dee18c44df772e48d5",
+  "display_roads": {
+    "archived_prior_revision": "data/ui_v2/archive/20261027/manifest.json",
+    "original_raw_cache_restored": false,
+    "portable_source_bytes": 1133663,
+    "prior_geometry_preserved": true,
+    "provenance": "data/ui_v2/display_roads_provenance.json",
+    "source_revision": "20261028",
+    "three_prior_failures_resolved": true
+  },
+  "fixture_suites": {
+    "dispatcher": {
+      "audit_coverage": {
+        "cases_with_applied_suppression": 6,
+        "cases_with_blocked_entry": 6,
+        "cases_with_fire_growth": 6,
+        "cases_with_new_exposure": 0,
+        "cases_with_refill_entry": 6,
+        "cases_with_resource_audit": 6,
+        "cases_with_rest_entry": 6
+      },
+      "cases": [
+        {
+          "case_id": "incident-day-dev-000",
+          "elapsed_seconds": 8.619385821000378,
+          "minute": 1440,
+          "peak_rss_bytes": 54992896,
+          "phase": "measurement",
+          "score": 0.9961961961961963,
+          "simulation_seconds": 4.340348479000113,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 4.279037342000265
+        },
+        {
+          "case_id": "incident-day-dev-000",
+          "elapsed_seconds": 8.594504930000312,
+          "minute": 1440,
+          "peak_rss_bytes": 65064960,
+          "phase": "batch",
+          "score": 0.9961961961961963,
+          "simulation_seconds": 4.198417672000232,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 4.39608725800008
+        },
+        {
+          "case_id": "incident-day-dev-001",
+          "elapsed_seconds": 8.11830512800043,
+          "minute": 1440,
+          "peak_rss_bytes": 66174976,
+          "phase": "batch",
+          "score": 0.994994994994995,
+          "simulation_seconds": 4.0783119120001174,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 4.039993216000312
+        },
+        {
+          "case_id": "incident-day-dev-002",
+          "elapsed_seconds": 7.5773453319998225,
+          "minute": 1440,
+          "peak_rss_bytes": 67223552,
+          "phase": "batch",
+          "score": 0.9961961961961963,
+          "simulation_seconds": 3.7895805459997973,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 3.787764786000025
+        },
+        {
+          "case_id": "incident-day-dev-003",
+          "elapsed_seconds": 7.9050018699995235,
+          "minute": 1440,
+          "peak_rss_bytes": 68354048,
+          "phase": "batch",
+          "score": 0.9951951951951953,
+          "simulation_seconds": 3.855870493999646,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 4.0491313759998775
+        },
+        {
+          "case_id": "incident-day-dev-004",
+          "elapsed_seconds": 8.305281976000515,
+          "minute": 1440,
+          "peak_rss_bytes": 68354048,
+          "phase": "batch",
+          "score": 0.9941941941941943,
+          "simulation_seconds": 4.114824952000163,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 4.190457024000352
+        },
+        {
+          "case_id": "incident-day-dev-005",
+          "elapsed_seconds": 9.040518565000184,
+          "minute": 1440,
+          "peak_rss_bytes": 68440064,
+          "phase": "batch",
+          "score": 0.9963963963963964,
+          "simulation_seconds": 4.516354159000002,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 4.524164406000182
+        }
+      ],
+      "coverage_checks": {
+        "fire_growth": true,
+        "passive_population_exposure": null,
+        "resource_audit_complete": true
+      },
+      "data_scope": "synthetic_fixture_only",
+      "elapsed_seconds": 58.66176086800033,
+      "implementation_sha256": "03e4fc4d2957e37a168f53183399347b27e0adc107d857dee18c44df772e48d5",
+      "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+      "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+      "peak_rss_bytes": 68440064,
+      "policy": "dispatcher",
+      "real_source_pack": "BLOCKED",
+      "status": "complete",
+      "version": "incident-day-cpu-acceptance-v1",
+      "workers": 1
+    },
+    "passive": {
+      "audit_coverage": {
+        "cases_with_applied_suppression": 1,
+        "cases_with_blocked_entry": 0,
+        "cases_with_fire_growth": 6,
+        "cases_with_new_exposure": 1,
+        "cases_with_refill_entry": 6,
+        "cases_with_resource_audit": 6,
+        "cases_with_rest_entry": 0
+      },
+      "cases": [
+        {
+          "case_id": "incident-day-dev-000",
+          "elapsed_seconds": 4.813735716999872,
+          "minute": 1440,
+          "peak_rss_bytes": 50204672,
+          "phase": "measurement",
+          "score": 0.9957957957957959,
+          "simulation_seconds": 2.3676818509998157,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 2.4460538660000566
+        },
+        {
+          "case_id": "incident-day-dev-000",
+          "elapsed_seconds": 4.752156187999844,
+          "minute": 1440,
+          "peak_rss_bytes": 56430592,
+          "phase": "batch",
+          "score": 0.9957957957957959,
+          "simulation_seconds": 2.363053717999719,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 2.3891024700001253
+        },
+        {
+          "case_id": "incident-day-dev-001",
+          "elapsed_seconds": 5.205397049000112,
+          "minute": 1440,
+          "peak_rss_bytes": 56455168,
+          "phase": "batch",
+          "score": 0.993993993993994,
+          "simulation_seconds": 2.58687193500009,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 2.618525114000022
+        },
+        {
+          "case_id": "incident-day-dev-002",
+          "elapsed_seconds": 4.723450295000021,
+          "minute": 1440,
+          "peak_rss_bytes": 63406080,
+          "phase": "batch",
+          "score": 0.9953953953953955,
+          "simulation_seconds": 2.3043442509997476,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 2.419106044000273
+        },
+        {
+          "case_id": "incident-day-dev-003",
+          "elapsed_seconds": 4.843432791999476,
+          "minute": 1440,
+          "peak_rss_bytes": 63406080,
+          "phase": "batch",
+          "score": 0.9935935935935937,
+          "simulation_seconds": 2.408227094999802,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 2.435205696999674
+        },
+        {
+          "case_id": "incident-day-dev-004",
+          "elapsed_seconds": 4.834867495000253,
+          "minute": 1440,
+          "peak_rss_bytes": 63406080,
+          "phase": "batch",
+          "score": 0.6501358501358501,
+          "simulation_seconds": 2.3839990900000885,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 2.450868405000165
+        },
+        {
+          "case_id": "incident-day-dev-005",
+          "elapsed_seconds": 4.900011095000082,
+          "minute": 1440,
+          "peak_rss_bytes": 63406080,
+          "phase": "batch",
+          "score": 0.9945945945945946,
+          "simulation_seconds": 2.434233820999907,
+          "status": "complete",
+          "verification": "passed",
+          "verification_seconds": 2.4657772740001747
+        }
+      ],
+      "coverage_checks": {
+        "fire_growth": true,
+        "passive_population_exposure": true,
+        "resource_audit_complete": true
+      },
+      "data_scope": "synthetic_fixture_only",
+      "elapsed_seconds": 34.51622395499999,
+      "implementation_sha256": "03e4fc4d2957e37a168f53183399347b27e0adc107d857dee18c44df772e48d5",
+      "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+      "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+      "peak_rss_bytes": 63406080,
+      "policy": "passive",
+      "real_source_pack": "BLOCKED",
+      "status": "complete",
+      "version": "incident-day-cpu-acceptance-v1",
+      "workers": 1
+    }
+  },
+  "fuel": {
+    "known_fuel_cells_added": 0,
+    "land_cover_is_fuel_measurement": false,
+    "land_cover_probe": {
+      "ambiguous_boundary_or_overlap": 0,
+      "incomplete": 0,
+      "no_containing_feature": 7,
+      "no_feature_returned": 20,
+      "point_inside": 53
+    },
+    "ledger": "data/incident_day_v2/fuel_review/unknown_cells.json",
+    "sensitivity": {
+      "assumption_classes": [
+        1,
+        4,
+        8
+      ],
+      "core_sha256": "03e4fc4d2957e37a168f53183399347b27e0adc107d857dee18c44df772e48d5",
+      "domain_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+      "elapsed_seconds": 19.958,
+      "label": "UNAPPROVED sensitivity only; not benchmark, training, or historical replay",
+      "network_sha256": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16",
+      "policy": "passive",
+      "prepared_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
+      "results": [
+        {
+          "additional_burned_hectares": 350.0,
+          "approval_status": "unapproved_source_pack",
+          "boundary_censored": false,
+          "completed_minutes": 1440,
+          "graded": false,
+          "inherited_burned_hectares": 625.0,
+          "input_sha256": "10f2681f35282f1b41df60f2ffa31d09503afd9268f265020cef2e6b001b08ef",
+          "new_exposed_population": 0,
+          "status": "complete_ungraded",
+          "synthetic_fuel_class": 1,
+          "unknown_source_cells": 80,
+          "verification": "passed"
+        },
+        {
+          "additional_burned_hectares": 350.0,
+          "approval_status": "unapproved_source_pack",
+          "boundary_censored": false,
+          "completed_minutes": 1440,
+          "graded": false,
+          "inherited_burned_hectares": 625.0,
+          "input_sha256": "455d9fccf94be5ecb911252c79cc0c1761956a17e43f8baaccbac79a3d9d3f2a",
+          "new_exposed_population": 0,
+          "status": "complete_ungraded",
+          "synthetic_fuel_class": 4,
+          "unknown_source_cells": 80,
+          "verification": "passed"
+        },
+        {
+          "additional_burned_hectares": 350.0,
+          "approval_status": "unapproved_source_pack",
+          "boundary_censored": false,
+          "completed_minutes": 1440,
+          "graded": false,
+          "inherited_burned_hectares": 625.0,
+          "input_sha256": "92baab6867f6ac7b0988b881a48e828fcf744390017a3a5495d3099599cd5859",
+          "new_exposed_population": 0,
+          "status": "complete_ungraded",
+          "synthetic_fuel_class": 8,
+          "unknown_source_cells": 80,
+          "verification": "passed"
+        }
+      ],
+      "scenario": "incident-day-dev-000",
+      "source_pack_approval": "blocked",
+      "status": "complete_unapproved_sensitivity",
+      "verification_requested": true,
+      "version": "incident-day-fuel-sensitivity-v1",
+      "wall_budget_seconds": 120.0,
+      "workers": 1
+    },
+    "source_pack_approval": "blocked",
+    "unknown_cells": {
+      "masked": 78,
+      "outside": 2,
+      "unknown": 80,
+      "valid": 0
+    }
+  },
+  "generated_at_utc": "2026-10-28T11:55:07.796922+00:00",
+  "limitations": [
+    "Six development scenarios, not held-out validation or model training",
+    "Operational numerical parameters and fire physics remain exercise assumptions",
+    "One quiet real-geography sensitivity case does not establish robustness to all fuel uncertainty",
+    "Road overlay is not a vehicle-passability dataset; actual routing coverage remains partial",
+    "Timing was measured alongside other tests, not as isolated throughput",
+    "No paid inference, GPU training, live messaging or Hub publication was performed"
+  ],
+  "paired_development": [
+    {
+      "additional_burned_hectares": 750.0,
+      "case": "incident-day-dev-001",
+      "exact_replay": true,
+      "implementation_sha256": "03e4fc4d2957e37a168f53183399347b27e0adc107d857dee18c44df772e48d5",
+      "independent_reward_agreement": true,
+      "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+      "minute": 1440,
+      "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+      "new_exposed_population": 0,
+      "policy": "passive",
+      "protection_orders": [],
+      "scenario_sha256": "e90ea2fe8054ec37d270153b9787db3ca75b14fe9add87ec20ba4139c88c307f",
+      "seed": 2844001,
+      "status": "completed",
+      "unresolved_evacuations": 0
+    },
+    {
+      "additional_burned_hectares": 625.0,
+      "case": "incident-day-dev-001",
+      "exact_replay": true,
+      "implementation_sha256": "03e4fc4d2957e37a168f53183399347b27e0adc107d857dee18c44df772e48d5",
+      "independent_reward_agreement": true,
+      "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+      "minute": 1440,
+      "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+      "new_exposed_population": 0,
+      "policy": "dispatcher",
+      "protection_orders": [
+        [
+          191,
+          [
+            {
+              "action": "evacuate",
+              "approach_id": "e88238a336d642f111bf",
+              "destination_id": "destination-1",
+              "group_id": "population-1"
+            }
+          ]
+        ]
+      ],
+      "scenario_sha256": "e90ea2fe8054ec37d270153b9787db3ca75b14fe9add87ec20ba4139c88c307f",
+      "seed": 2844001,
+      "status": "completed",
+      "unresolved_evacuations": 0
+    },
+    {
+      "additional_burned_hectares": 875.0,
+      "case": "incident-day-dev-004",
+      "exact_replay": true,
+      "implementation_sha256": "03e4fc4d2957e37a168f53183399347b27e0adc107d857dee18c44df772e48d5",
+      "independent_reward_agreement": true,
+      "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+      "minute": 1440,
+      "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+      "new_exposed_population": 150,
+      "policy": "passive",
+      "protection_orders": [],
+      "scenario_sha256": "8705405c19cb8ac62e68f6a9a9bcb1efaab7bc7d6dc760b02b88995cb5d365bf",
+      "seed": 2844004,
+      "status": "completed",
+      "unresolved_evacuations": 0
+    },
+    {
+      "additional_burned_hectares": 725.0,
+      "case": "incident-day-dev-004",
+      "exact_replay": true,
+      "implementation_sha256": "03e4fc4d2957e37a168f53183399347b27e0adc107d857dee18c44df772e48d5",
+      "independent_reward_agreement": true,
+      "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+      "minute": 1440,
+      "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+      "new_exposed_population": 0,
+      "policy": "dispatcher",
+      "protection_orders": [
+        [
+          4,
+          [
+            {
+              "action": "evacuate",
+              "approach_id": "5ab99b8c4e57354c7535",
+              "destination_id": "destination-1",
+              "group_id": "population-1"
+            }
+          ]
+        ]
+      ],
+      "scenario_sha256": "8705405c19cb8ac62e68f6a9a9bcb1efaab7bc7d6dc760b02b88995cb5d365bf",
+      "seed": 2844004,
+      "status": "completed",
+      "unresolved_evacuations": 0
+    }
+  ],
+  "reproduce": [
+    "python eval/prepare_display_roads_v2.py",
+    "python eval/run_incident_day.py --policy dispatcher --output /tmp/NEW --wall-budget 600",
+    "python eval/check_incident_day_calibration.py --output /tmp/NEW-PAIRED --wall-budget 120"
+  ],
+  "scope": "Development exercises; not historical reconstruction or real-world validation",
+  "tests": {
+    "display_snapshot_and_geospatial": {
+      "passed": 52,
+      "runtime": "Python3.14/pyproj3.8.0/rasterio1.5.0",
+      "skipped": 0,
+      "subtests": 55
+    },
+    "earlier_full_root": {
+      "optional_skips": 77,
+      "passed": 547,
+      "scope": "Broad run before the final current-condition and policy refinements; final changed paths tested above",
+      "subtests": 654
+    },
+    "final_incident_day": {
+      "passed": 177,
+      "runtime": "Python3.12/OpenEnv0.7.0/FastAPI",
+      "skipped": 0,
+      "subtests": 37
+    }
+  },
+  "verified_code_commit": "3ec971532723a1fabefac810e16e5fa7ab9473f2",
+  "version": "incident-day-quality-followup-v1"
+}
