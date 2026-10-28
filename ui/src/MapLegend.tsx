@@ -1,38 +1,29 @@
 import {fireCells} from './mapModel';
-import {mapColors} from './mapSymbols';
+import MapGlyph from './MapGlyph';
+import type {GlyphKind} from './mapGlyphs';
 import type {Observation,World} from './types';
-
-type SymbolKind='fire'|'heat'|'stale'|'burned'|'claim'|'population'|'refuge'|'unit'|'arrival'|'exposed';
-
-function Symbol({kind}:{kind:SymbolKind}){
-  const circle=['claim','population','refuge','unit','exposed'].includes(kind);
-  const color=kind==='refuge'?mapColors.population:kind==='arrival'?mapColors.arrival:mapColors[kind==='heat'?'fire':kind==='stale'?'staleLine':kind];
-  return <svg className="map-key-symbol" viewBox="0 0 40 32" aria-hidden="true" focusable="false">
-    {kind==='heat'?<g><path d="M9 6h8v20H9z" fill="#ff6519"/><path d="M17 6h7v20h-7z" fill="#ffae19"/><path d="M24 6h7v20h-7z" fill="#ffeb19"/><rect x="9" y="6" width="22" height="20" fill="none" stroke={mapColors.front} strokeWidth="2"/></g>:kind==='arrival'?<circle cx="20" cy="16" r="10" fill="rgba(248,191,91,.2)" stroke={color} strokeWidth="2.5" strokeDasharray="3 3"/>:circle?<circle cx="20" cy="16" r={kind==='claim'?10:kind==='refuge'?4:7} fill={kind==='claim'?mapColors.claimFill:color} stroke={kind==='claim'?color:'#fff'} strokeWidth="2" strokeDasharray={kind==='claim'?'4 3':undefined}/>:<rect x="9" y="6" width="22" height="20" rx="1" fill={kind==='stale'?mapColors.staleFill:color} stroke={kind==='fire'?mapColors.front:kind==='stale'?mapColors.staleLine:color} strokeWidth="2" strokeDasharray={kind==='stale'?'4 3':undefined}/>}
-  </svg>;
-}
 
 export default function MapLegend({observation,world}:{observation:Pick<Observation,'minute'|'sensor_memory'>;world:World|null}){
   const cells=fireCells(observation,world),recent=cells.filter(cell=>cell.kind==='fire').length,older=cells.filter(cell=>cell.kind===(world?'burned':'stale')).length;
-  const items:{kind:SymbolKind;title:string;description:string}[]=[
+  const items:{kind:GlyphKind;title:string;description:string}[]=[
     ...(world?[
-      {kind:'heat' as const,title:'Simulated burning area',description:'Evaluator only. Red = lower heat; yellow = higher heat.'},
-      {kind:'burned' as const,title:'Burned ground',description:'Evaluator only. Burned cells with no active heat.'},
+      {kind:'fire' as const,title:'Simulated heat',description:'Evaluator-only simulated fire intensity. Not public sensor evidence.'},
+      {kind:'stale' as const,title:'Burned ground',description:'Evaluator-only burned fraction per 500 metre simulation cell.'},
     ]:[
-      {kind:'fire' as const,title:'Fire seen recently',description:'Orange cells: reported burning within the last 4 simulation minutes.'},
-      {kind:'stale' as const,title:'Older fire sighting',description:'Dashed grey cells: more than 4 minutes old. Conditions may have changed.'},
+      {kind:'fire' as const,title:'Fire sighting',description:'A 500 metre cell was observed burning within the last 4 simulation minutes. This is not a measured fire perimeter or a live temperature.'},
+      {kind:'stale' as const,title:'Old sighting',description:'This fire observation is more than 4 simulation minutes old. Conditions may have changed.'},
     ]),
-    {kind:'claim',title:'Unverified report',description:'Dashed amber circle: a reported location without recent sensor confirmation.'},
-    {kind:'population',title:'People',description:'Blue dot: group location. The number beside it is the number of people.'},
-    {kind:'refuge',title:'Evacuation destination',description:'Small blue dot labelled Refuge: the group’s designated destination.'},
-    {kind:'exposed',title:'People exposed to fire',description:'Red dot: fire exposure is reported for this group.'},
-    {kind:'unit',title:'Responder on scene',description:'Green dot: a response unit has arrived at its assigned location.'},
-    {kind:'arrival',title:'En-route target',description:'Dashed amber ring marks the assigned target and estimated arrival, not the vehicle’s current location.'},
+    {kind:'claim',title:'Unconfirmed call',description:'A caller or message reported this location. The claim has not been confirmed by current sensor evidence.'},
+    {kind:'arrival',title:'Mission target',description:'An assigned destination, not the current GPS position of a vehicle. Arrival requires a delivered status update.'},
+    {kind:'population',title:'People',description:'Synthetic exercise population at its recorded scenario position, not a verified historical town. Number = people.'},
+    {kind:'refuge',title:'Refuge',description:'The exercise group’s assigned evacuation destination.'},
+    {kind:'unit',title:'Crew on scene',description:'A response unit is reported on scene at its assigned location. Multiple units can share a marker.'},
+    {kind:'exposed',title:'Exposed people',description:'Reported cumulative fire exposure, not a mortality estimate. Arrival at a refuge does not erase earlier exposure.'},
   ];
-  return <section className="map-key" aria-label="Map legend">
-    <div className="map-key-heading"><h2>Map key</h2><span>{observation.minute} simulation min{world?' · evaluator view':''}</span></div>
-    <p className="map-key-status" role="status">{world?`${recent} burning ${recent===1?'cell':'cells'} · ${older} burned ${older===1?'cell':'cells'} without active heat.`:recent?`${recent} recently observed burning ${recent===1?'cell':'cells'} · ${older} older ${older===1?'sighting':'sightings'}.`:older?`Only older fire sightings are available (${older} ${older===1?'cell':'cells'}). Request an updated observation.`:'No burning cells in the available sensor reports. Unobserved areas may still contain fire.'}</p>
-    <ul>{items.map(item=><li key={item.kind}><Symbol kind={item.kind}/><div><strong>{item.title}</strong><p>{item.description}</p></div></li>)}</ul>
-    <p className="map-key-note">Fire shapes follow 500 m grid cells, not an exact fire perimeter. Results near the study-area edge may be incomplete.</p>
+  const status=world?`${recent} burning ${recent===1?'cell':'cells'} · ${older} burned ${older===1?'cell':'cells'} without active heat. Evaluator view.`:recent?`${recent} recently observed burning ${recent===1?'cell':'cells'} · ${older} older ${older===1?'sighting':'sightings'}.`:older?`Only older fire sightings are available (${older}). Request an updated observation.`:'No burning cells in the available sensor reports. Unobserved areas may still contain fire.';
+  return <section className="map-key tactical-key" aria-label="Map legend">
+    <p className="map-key-status" role="status">{status}</p>
+    <ul>{items.map(item=><li className="legend-item" key={item.kind}><button type="button" aria-describedby={`key-${item.kind}`} onClick={event=>event.currentTarget.focus()}><MapGlyph kind={item.kind}/><span>{item.title}</span></button><span className="legend-tooltip" role="tooltip" id={`key-${item.kind}`}>{item.description}</span></li>)}</ul>
+    <details className="map-symbol-details"><summary>Map key and display assumptions</summary><p>The simulator remains 500 m grid-based. Symbols and decorative flames are deliberately enlarged; they do not infer sub-cell spread or an exact perimeter. Effects use only fresh delivered fire sightings. Smoke illustrates the direction of known model wind, not measured smoke or a dispersion forecast. No smoke is drawn for unknown or calm wind. Motion follows playback and respects reduced-motion settings. Terrain shading exaggerates lighting, never height or slope physics; its edges fade to avoid a rectangular map patch. Results near the study-area edge may be incomplete. Hover or focus a symbol for its explanation; tap one on touch screens.</p></details>
   </section>;
 }

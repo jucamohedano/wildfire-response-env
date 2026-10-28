@@ -26,7 +26,7 @@ export interface Observation {
   incident_events?:IncidentEvent[];active_incidents?:IncidentEvent[];
   clock?:{minute:number;horizon_minutes:number;decision_minutes:number;unit:string;basis:string};
 }
-export interface Frame {observation:Observation;action:Action|null;reward:number;total_reward:number;terminated:boolean;truncated:boolean}
+export interface Frame {observation:Observation;action:Action|null;reward:number;total_reward:number;terminated:boolean;truncated:boolean;action_error?:string|null}
 export interface Envelope extends Omit<Frame,'action'> {episode_id:string;last_action?:Action|null;info:{error?:string|null;[key:string]:unknown}}
 export interface Config {cases:{id:string;mode:'development'|'stress'|'reactive'|'benchmark'}[];ticks_per_action:number;max_decisions:number;evaluation_available:boolean}
 export interface MapMetadata {extent:[number,number,number,number];crs:string;image_url:string;source_label:string}

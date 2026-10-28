@@ -11,6 +11,8 @@ Pure helpers: crop_samples(samples, grid) selects the pinned 25 m lattice with
 one sample of halo; terrain_rgb(elevations, *, cell_size_metres, halo=1) returns
 (width, height, row-major RGB bytes); encode_png(width, height, rgb) encodes those
 pixels. All matrices are north-first. No heights are repaired or interpolated.
+terrain_relief uses the same validated stencil for transparent, edge-feathered
+RGBA lighting; render_terrain(relief=True) encodes that display-only layer.
 """
 import hashlib
 import math
@@ -102,7 +104,18 @@ def crop_samples(samples, grid):
 
 
 def terrain_rgb(elevations, *, cell_size_metres, halo=1):
-    """Return (width, height, RGB bytes), without changing any input.
+    """Return deterministic north-first RGB terrain without modifying heights."""
+    return _terrain_pixels(elevations, cell_size_metres=cell_size_metres, halo=halo)
+
+
+def terrain_relief(elevations, *, cell_size_metres, halo=1):
+    """Transparent feathered hillshade; exaggeration changes lighting, not heights."""
+    return _terrain_pixels(elevations, cell_size_metres=cell_size_metres, halo=halo,
+                           relief=True)
+
+
+def _terrain_pixels(elevations, *, cell_size_metres, halo=1, relief=False):
+    """Return (width, height, RGB or relief RGBA bytes), without input changes.
 
     Heights and spacing are metres; all samples, including the halo, must be
     positive finite numbers. halo=1 removes a complete Horn stencil border.
@@ -141,12 +154,25 @@ def terrain_rgb(elevations, *, cell_size_metres, halo=1):
                                 / spacing)
             if not math.isfinite(column_gradient) or not math.isfinite(row_gradient):
                 raise ValueError('Nonfinite terrain gradient')
+            if relief:
+                column_gradient *= 2.5
+                row_gradient *= 2.5
             normal_length = math.hypot(column_gradient, row_gradient, 1)
             if not math.isfinite(normal_length):
                 raise ValueError('Nonfinite terrain normal')
             light = max(0, 0.5 * (column_gradient / normal_length)
                         + 0.5 * (row_gradient / normal_length)
                         + math.sqrt(0.5) / normal_length)
+            if relief:
+                horizontal = min(column - halo, width - halo - 1 - column)
+                vertical = min(row_index - halo, height - halo - 1 - row_index)
+                feather = min(1, horizontal / max(1, output_width * 0.08),
+                              vertical / max(1, output_height * 0.08))
+                shade = light - math.sqrt(0.5)
+                colour = 255 if shade > 0 else 0
+                alpha = round(min(105, abs(shade) * 165) * feather)
+                pixels.extend((colour, colour, colour, alpha))
+                continue
             brightness = 0.72 + 0.28 * light
             tint = min(1, centre[column] / 2000)
             pixels.extend(round((low + (high - low) * tint) * brightness)
@@ -154,22 +180,23 @@ def terrain_rgb(elevations, *, cell_size_metres, halo=1):
     return output_width, output_height, bytes(pixels)
 
 
-def encode_png(width, height, rgb):
-    """Encode bounded row-major RGB bytes as deterministic 8-bit RGB PNG."""
+def encode_png(width, height, rgb, *, channels=3):
+    """Encode bounded row-major RGB/RGBA bytes as deterministic 8-bit PNG."""
     if (type(width) is not int or type(height) is not int or width <= 0 or height <= 0
             or width * height > MAX_SAMPLES or type(rgb) is not bytes
-            or len(rgb) != width * height * 3):
-        raise ValueError('Expected bounded dimensions and exactly three bytes per pixel')
+            or type(channels) is not int or channels not in (3, 4)
+            or len(rgb) != width * height * channels):
+        raise ValueError('Expected bounded dimensions and exactly RGB or RGBA bytes')
 
     def chunk(kind, payload):
         return (struct.pack('>I', len(payload)) + kind + payload
                 + struct.pack('>I', zlib.crc32(kind + payload) & 0xffffffff))
 
-    stride = width * 3
+    stride = width * channels
     scanlines = b''.join(b'\x00' + rgb[start:start + stride]
                          for start in range(0, len(rgb), stride))
     return (b'\x89PNG\r\n\x1a\n'
-            + chunk(b'IHDR', struct.pack('>IIBBBBB', width, height, 8, 2, 0, 0, 0))
+            + chunk(b'IHDR', struct.pack('>IIBBBBB', width, height, 8, 6 if channels == 4 else 2, 0, 0, 0))
             + chunk(b'IDAT', zlib.compress(scanlines, 9)) + chunk(b'IEND', b''))
 
 
@@ -184,7 +211,7 @@ def _read_source():
         return None
 
 
-def render_terrain(prepared, domain, *, source_reader=None):
+def render_terrain(prepared, domain, *, source_reader=None, relief=False):
     """Return {png: bytes, extent: [W,S,E,N], crs, source_label} for display.
 
     The optional source_reader() -> bytes | None bypasses filesystem discovery,
@@ -212,8 +239,9 @@ def render_terrain(prepared, domain, *, source_reader=None):
         raise ValueError('Domain contains unsupported heights; no fill')
     _positive_heights(elevations)
     data = (source_reader or _read_source)()
+    renderer = terrain_relief if relief else terrain_rgb
     if data is None:
-        pixels = terrain_rgb(elevations, cell_size_metres=500, halo=0)
+        pixels = renderer(elevations, cell_size_metres=500, halo=0)
         label = 'Coarse 500 m domain-render fallback (raw ASC absent; display only)'
     else:
         if (type(data) is not bytes or not 0 < len(data) <= compiler.MAX_ASCII_BYTES
@@ -223,6 +251,7 @@ def render_terrain(prepared, domain, *, source_reader=None):
                 or parent_transform != (500, 0, 297000, 0, -500, 4054500)):
             raise ValueError('Raw terrain requires the pinned prepared parent grid')
         samples = crop_samples(compiler.read_ascii(data), domain['grid'])
-        pixels = terrain_rgb(samples, cell_size_metres=25)
+        pixels = renderer(samples, cell_size_metres=25)
         label = 'IGN MDT05, 25 m sampled ASC; pinned SHA-256 ' + compiler.INPUT_PINS[compiler.TERRAIN_ASCII]
-    return dict(png=encode_png(*pixels), extent=extent, crs=CRS, source_label=label)
+    return dict(png=encode_png(*pixels, channels=4 if relief else 3), extent=extent,
+                crs=CRS, source_label=label)
