@@ -1,0 +1,186 @@
+{
+  "calibration": "Not established; these are synthetic development exercises, not validated operational performance.",
+  "generated_at_utc": "2026-10-28T10:21:55.187850+00:00",
+  "historical_replay": false,
+  "limitations": [
+    "One synthetic fixture, six development cases; no external or historical validation.",
+    "In incident-day-dev-001 the dispatcher exposed 150 people while the passive policy exposed none; the reference policy does not consistently improve protection.",
+    "Resource state transitions are minute snapshots; stock increases do not establish cause.",
+    "Scenario behavior and road/footpath coverage require separate validation.",
+    "No GPU or model inference was used."
+  ],
+  "pins": {
+    "core_implementation_sha256": "d5a410c3ce86e955b61c899cc25ddf4a11fabd5c3cc7fa18b2e01e1d2896980a",
+    "fixture_source_pins": {
+      "domain_sha256": "ac98ccc1a685dcf12849ad74b7b2c00efb9fa0191c2da657f3b3e3e54573f98f",
+      "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+      "prepared_sha256": "7957eb0030020d5b47edf4b1867019986e5bb752ecef424a9f9429c06eaad15f"
+    },
+    "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+    "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+    "profile_file_sha256": "cca9535deddacc1453c40ac63f00c25d110861bc35efa70059663863d527d096",
+    "runner_file_sha256": "09ae95532f513e2d0daf95dd266cb2f09bbf54f3a10b2906887b926def2bd531"
+  },
+  "real_source_pack": "BLOCKED: 80 unknown fuel cells",
+  "integration_status": {
+    "source": "Executed in dedicated runtimes, separately from the CPU acceptance runner",
+    "installed_wheel": "Python 3.12 installed wheel: full 1440-minute episode exactly verified with the same core hash",
+    "reported_passing_tests": {
+      "pure_incident_day": 128,
+      "actual_openenv": 10,
+      "ui_integration": 28,
+      "legacy_openenv": 24,
+      "geospatial": 27,
+      "ui_tests": 126
+    },
+    "ui_build": "reported passed",
+    "root_global_tests": "Three pre-existing display/road failures reported: missing cache, MAXVERTICES, and provenance script SHA.",
+    "full_http_dispatched_trajectory_test": "passed: dispatched 1440-minute HTTP run matches local observations, actions, route queries, rewards and exported trajectory"
+  },
+  "scope": "synthetic development fixture only",
+  "suites": [
+    {
+      "artifact_sizes": {
+        "audit_gzip": {
+          "bytes": 123253,
+          "files": 7
+        },
+        "phenomena_gzip": {
+          "bytes": 1358,
+          "files": 7
+        },
+        "report_html_bytes": 1020,
+        "report_json_bytes": 2781,
+        "trajectory_gzip": {
+          "bytes": 25797,
+          "files": 7
+        }
+      },
+      "batch": {
+        "additional_burned_cells": 168,
+        "all_full_days": true,
+        "cases": 6,
+        "decisions_max": 40,
+        "decisions_min": 39,
+        "exact_replay_and_independent_reward": true,
+        "new_exposed_population": 150,
+        "observed_cases": {
+          "cases_with_applied_suppression": 1,
+          "cases_with_blocked_entry": 0,
+          "cases_with_fire_growth": 6,
+          "cases_with_new_exposure": 1,
+          "cases_with_refill_entry": 6,
+          "cases_with_resource_audit": 6,
+          "cases_with_rest_entry": 0
+        },
+        "resource_event_totals": {
+          "applied_suppression": 102,
+          "entered_blocked": 0,
+          "entered_refilling": 6,
+          "entered_resting": 0,
+          "entered_working": 7,
+          "fuel_increases": 0,
+          "state_changes": 68,
+          "water_increases": 6,
+          "working_resource_snapshots": 204
+        },
+        "score_max": 0.9957957957957959,
+        "score_mean": 0.9372515372515373,
+        "score_min": 0.6501358501358501
+      },
+      "coverage_checks": {
+        "fire_growth": true,
+        "passive_population_exposure": true,
+        "resource_audit_complete": true
+      },
+      "elapsed_seconds": 34.496424198994646,
+      "measured_full_day": {
+        "simulated_minutes": 1440,
+        "simulation_seconds": 2.3552391159755643,
+        "verification_seconds": 2.339308083988726
+      },
+      "peak_rss_bytes": 63193088,
+      "policy": "passive",
+      "source_report": ".runtime/incident-day-acceptance-final-passive/report.json",
+      "source_report_sha256": "de7e59b3a34f66c47e2435c6b3c13dbeb646440bf63bf011ddbcf7199b1def13",
+      "status": "complete"
+    },
+    {
+      "artifact_sizes": {
+        "audit_gzip": {
+          "bytes": 219709,
+          "files": 7
+        },
+        "phenomena_gzip": {
+          "bytes": 1450,
+          "files": 7
+        },
+        "report_html_bytes": 1021,
+        "report_json_bytes": 2776,
+        "trajectory_gzip": {
+          "bytes": 126466,
+          "files": 7
+        }
+      },
+      "batch": {
+        "additional_burned_cells": 134,
+        "all_full_days": true,
+        "cases": 6,
+        "decisions_max": 405,
+        "decisions_min": 238,
+        "exact_replay_and_independent_reward": true,
+        "new_exposed_population": 150,
+        "observed_cases": {
+          "cases_with_applied_suppression": 6,
+          "cases_with_blocked_entry": 6,
+          "cases_with_fire_growth": 6,
+          "cases_with_new_exposure": 1,
+          "cases_with_refill_entry": 6,
+          "cases_with_resource_audit": 6,
+          "cases_with_rest_entry": 6
+        },
+        "resource_event_totals": {
+          "applied_suppression": 1456,
+          "entered_blocked": 18,
+          "entered_refilling": 129,
+          "entered_resting": 6,
+          "entered_working": 55,
+          "fuel_increases": 89,
+          "state_changes": 979,
+          "water_increases": 127,
+          "working_resource_snapshots": 2687
+        },
+        "score_max": 0.9963963963963964,
+        "score_mean": 0.9383860050526718,
+        "score_min": 0.6521378521378521
+      },
+      "coverage_checks": {
+        "fire_growth": true,
+        "passive_population_exposure": null,
+        "resource_audit_complete": true
+      },
+      "elapsed_seconds": 59.78062712200335,
+      "measured_full_day": {
+        "simulated_minutes": 1440,
+        "simulation_seconds": 4.0552325769967865,
+        "verification_seconds": 4.072090522997314
+      },
+      "peak_rss_bytes": 65286144,
+      "policy": "dispatcher",
+      "source_report": ".runtime/incident-day-acceptance-final-dispatcher/report.json",
+      "source_report_sha256": "c66300e3f250e2c4eb41f12426dcb372596464d1bf7dc84cd2c2098e36ef0b22",
+      "status": "complete"
+    }
+  ],
+  "system": {
+    "cpu_model": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "memory": "process peak RSS, not per-case allocation",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "python": "3.12.9",
+    "timing": "wall time includes measured day, six cases, replay and independent reward verification",
+    "workers": 1,
+    "cpu_time_seconds": null,
+    "cpu_time_note": "CPU model and worker count recorded; process CPU time was not captured."
+  },
+  "version": "incident-day-v2-acceptance-summary-20261028"
+}

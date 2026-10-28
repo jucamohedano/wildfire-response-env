@@ -11,6 +11,20 @@ independent reward verification before a score is recorded.
 The passive policy is a useful initial completion check; identical passive scores
 do not establish that the benchmark is calibrated or discriminative.
 
+The final synthetic runs and pins are summarized in
+`results/incident-day-v2-20261028.json` and `.html`. In development case 001,
+the dispatcher exposed 150 people while the passive baseline exposed none. The
+dispatcher is not consistently better at population protection, and these six
+cases do not establish calibration or benchmark saturation.
+
+Parent-reported integration results include an installed Python 3.12 wheel
+completing and exactly verifying a full day with the same core hash, 128
+incident-day tests, 10 actual OpenEnv tests, 28 UI integration tests, 24 legacy
+OpenEnv tests, 27 geospatial tests, 126 UI tests and a UI build. Three pre-existing
+root global display/road failures were reported: missing cache, MAXVERTICES and
+provenance script SHA. The full HTTP dispatched-trajectory test was still running
+at handoff; those parent-reported checks were not rerun for this summary.
+
 ## Agent contract
 
 `wildfire_core.incident_day.IncidentDayEnv` exposes `reset(id, seed)` and
