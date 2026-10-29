@@ -1,0 +1,83 @@
+{
+  "version": "incident-day-container-check-v1",
+  "status": "passed",
+  "source_revision": "787dcdc81dd0739cd4cd9d73cc801004c0fbebd6",
+  "implementation_sha256": "5fbd442f80d292bea2117dd0604ecda0ad1a180799abe2f46efde1b1f00b8367",
+  "cases": [
+    {
+      "case": "incident-day-coverage-v1-002",
+      "completed_minutes": 1440,
+      "decisions": 421,
+      "exact_http_parity": true,
+      "verification": {
+        "passed": true,
+        "outcomes": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9973973973973974,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 325.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        },
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "qualification": "Remote public steps/reward match the independently verified local episode; remote private state is not exposed"
+    },
+    {
+      "case": "incident-day-coverage-v1-004",
+      "completed_minutes": 1440,
+      "decisions": 640,
+      "exact_http_parity": true,
+      "verification": {
+        "passed": true,
+        "outcomes": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9981981981981982,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 225.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        },
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "qualification": "Remote public steps/reward match the independently verified local episode; remote private state is not exposed"
+    }
+  ],
+  "scope": "Synthetic fixture, actual installed Linux image, external Python client; no publication or model inference",
+  "base_image": "python@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159",
+  "image_id": "sha256:512243fc14bf95bf86053ace3a80f191c6508883c31bd5e94777c6064510fdb4",
+  "image_bytes": 523144466,
+  "runtime_user": "65532:65532",
+  "container_state": {
+    "Status": "running",
+    "Running": true,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 2407,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-29T00:29:32.763349746Z",
+    "FinishedAt": "0001-01-01T00:00:00Z"
+  },
+  "container_removed": true,
+  "elapsed_seconds": 252.17718158899999,
+  "ci_url": "https://github.com/jucamohedano/wildfire-response-env/actions/runs/40794259877"
+}

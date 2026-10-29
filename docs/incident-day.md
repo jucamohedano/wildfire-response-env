@@ -114,7 +114,7 @@ builds a digest-pinned base revision and checks the installed image through an
 external Python client. Both coverage variants complete a day with exact public
 step/reward parity against independently verified local episodes. The bounded
 GitHub job runs as a non-root user with a read-only filesystem and resource limits,
-then removes the test container. See `results/incident-day-container-20261028.json`
+then removes the test container. See `results/incident-day-container-20261029.json`
 for the actual image identity and CI link. This verifies the synthetic fixture,
 not real-source approval, other platforms, the legacy adapter or publication.
 
