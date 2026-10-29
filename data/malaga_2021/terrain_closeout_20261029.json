@@ -1,0 +1,86 @@
+{
+  "version": "terrain-closeout-20261029-v1",
+  "review_date": "2026-10-29",
+  "reviewed_revision": "b2c407a0bb7c6655ea16f350f89ef2aeb0ada93d",
+  "recommendation": {
+    "issue": 8,
+    "status": "keep_open",
+    "reason": "Product-level metadata and conservative engineering checks do not establish native NoData semantics or identify the exact source edition for the retained WCS response, both explicitly requested by issue 8. Close only after producer evidence identifies the source tiles/editions and their native mask or nil encoding and WCS propagation, or the issue owner explicitly revises that scope. Field accuracy and local mark offsets are separate follow-up work for issue 42."
+  },
+  "official_sources": [
+    {
+      "url": "https://www.idee.es/csw-codsi-idee/srv/api/records/spaignMDT05",
+      "reviewed": "2026-10-29",
+      "finding": "MDT05 series is first-coverage lidar, 5 m nominal grid; creation date is series metadata, not a local acquisition date. Lineage states water surfaces are interpolated and edited to constant elevations and have low reliability."
+    },
+    {
+      "url": "https://pnoa.ign.es/web/portal/pnoa-lidar/productos-a-descarga",
+      "reviewed": "2026-10-29",
+      "finding": "MDT05 first coverage, orthometric heights and ETRS89 UTM for mainland Spain; product-level, not proof of the exact realization or contributing tiles behind the cached response."
+    },
+    {
+      "url": "https://pnoa.ign.es/pnoa-lidar/modelo-digital-del-terreno",
+      "reviewed": "2026-10-29",
+      "finding": "Producer describes interpolation of gaps and editing of water and sea elevations as part of production; positive values do not prove direct observation."
+    },
+    {
+      "url": "https://www.ign.es/web/resources/acercaDe/libDigPub/Guia_de_Produccion_Cartografica.pdf",
+      "reviewed": "2026-10-29",
+      "finding": "An illustrative IGN MDT05 ASCII example shows NODATA_VALUE -999; an example is not a specification for this retained WCS response or its source COGs."
+    },
+    {
+      "url": "https://www.idee.es/resources/presentaciones/JIIDE17/Apresentacoes_JIIDE2017_WCS_Inspire_modelos_digitales_terreno_IGN_Carolina_Soteres.pdf",
+      "finding": "Previously pinned producer presentation, page 10, documents MDT05 ASCII heights in metres; page 19 describes WCS products."
+    }
+  ],
+  "retained_evidence": {
+    "persistent_root": "/home/juancm/hackspain/wildfire-response-env/.runtime",
+    "mdt05_ascii": {
+      "path": "malaga-terrain-validation-v2/acquisition/mdt05-sampled25m-halo.asc",
+      "sha256": "1b2e4f470bf456b0189cf22e60dddcf09af413617eb9b76f5a2c1650be70e917",
+      "hash_verified": true,
+      "header": "Five header lines, no NODATA_VALUE; no source nil declaration can be inferred."
+    },
+    "mdt05_tiff": {
+      "path": "malaga-terrain-validation-v2/acquisition/mdt05-sampled25m-halo.tif",
+      "sha256": "8b2e91a5f486358a75a00af8820e65e5b899ecf6a0f909fa39484906eeef65a7",
+      "hash_verified": true
+    },
+    "mdt05_description": {
+      "path": "malaga-terrain-validation-v2/acquisition/mdt05-description.xml",
+      "sha256": "a92a29c071dcdb991fea98a89dd1105d1fd85bc81702b01f787ebffb4b40de04",
+      "hash_verified": true,
+      "finding": "Cached WCS 1.0 description has an altitude range name but no nil value or extract-specific edition."
+    },
+    "mdt25_candidate": {
+      "path": "malaga-clean-elevation-v1/acquisition/ign-mdt25-halo.tif",
+      "sha256": "3a41db0c46f8b3b03c9a2e3def3feee6b7994d4ba335d3670658803335493e73",
+      "hash_verified": true,
+      "role": "Earlier separate candidate; no transfer of MDT05 metadata to its band."
+    },
+    "tracked_records": [
+      "data/malaga_2021/clean_elevation_v1.json",
+      "data/malaga_2021/terrain_metadata_validation_v2.json",
+      "data/malaga_2021/terrain_control_validation_v1.json",
+      "data/malaga_2021/topographic_runtime_v1.json",
+      "data/malaga_2021/provenance.json"
+    ]
+  },
+  "engineering": {
+    "status": "restricted_experiment_accepted_not_source_void_certification",
+    "sampling": "WCS nearest-neighbour request, 25 m returned samples from nominal 5 m MDT05; not native 5 m analysis. Existing encoding comparison covers 670800 cells, max 0.5 m difference between float ASCII and integer TIFF; common provider, not independent accuracy.",
+    "support": "Compiler requires finite positive samples for every 20x20 block and one-sample halo, leaves unsupported cells null, and selects a complete 37x36 crop. Runtime validates all 1332 cells and fails on unsupported/missing heights; edge contact is censored. No local filling or terrain repair. This rule rejects nonpositive sentinels, but cannot prove no positive sentinel, producer-interpolated areas, or native validity.",
+    "slope": "Experimental slope is explicitly enabled or disabled in separately versioned runtime; legacy modes remain flat. Component/replay checks are recorded in SIMULATION_ACCEPTANCE.md, not field calibration."
+  },
+  "open_producer_questions": [
+    "Identify the contributing native COG tiles, product revisions and local acquisition dates/period for the retained 2026-10-25 WCS extract; a live service or series date alone is insufficient.",
+    "Obtain producer documentation or tile-specific native mask/NoData encoding and how WCS nearest-neighbour output handles missing samples, including whether any positive sentinel can pass the current restriction.",
+    "Identify extract-specific vertical realization and any mixed-tile transformations if an exact datum claim or cross-source combination is required; product-level orthometric description is established."
+  ],
+  "separate_issue_42_candidates": [
+    "Independent ground-referenced accuracy and control mark offsets, including Reales pillar-base and outside-crop REDNAP limitations.",
+    "Assess any producer-interpolated/water areas relevant to the supported crop and implications for intended operational use.",
+    "Physical slope/fire calibration and domain review; do not infer field reliability from replay or encoding agreement."
+  ],
+  "actions": "Read-only metadata research and hash verification; no new rasters, paid inference, GPU, issue updates or core edits. Existing run reports were inspected, not rerun."
+}

@@ -1,0 +1,28 @@
+# Terrain metadata closeout assessment — 29 October 2026
+
+**Recommendation: keep issue #8 open for the remaining producer metadata.** The restricted synthetic experiment has an engineering acceptance, but the issue explicitly asks to check acquisition epoch and native NoData. The retained WCS response and available producer descriptions do not establish either for the specific source tiles behind that response. Independent field accuracy and exact survey-mark offsets are a separate follow-up suitable for #42; they are not prerequisites invented for this metadata task.
+
+## What the producer documents
+
+- [IGN MDT05 series metadata](https://www.idee.es/csw-codsi-idee/srv/api/records/spaignMDT05) describes a first-coverage, nominal 5 m LiDAR-derived product. Its creation date is a series metadata date, not the local flight date or proof of a particular live WCS edition.
+- [PNOA product information](https://pnoa.ign.es/web/portal/pnoa-lidar/productos-a-descarga) describes first-coverage MDT05 with orthometric heights and ETRS89 UTM on the mainland. The [pinned IGN presentation](https://www.idee.es/resources/presentaciones/JIIDE17/Apresentacoes_JIIDE2017_WCS_Inspire_modelos_digitales_terreno_IGN_Carolina_Soteres.pdf), page 10, documents MDT05 ASCII values in metres. These establish product-level meaning, not the exact vertical realization of the specific WCS mosaic.
+- [IGN's production description](https://pnoa.ign.es/pnoa-lidar/modelo-digital-del-terreno) says data gaps may be interpolated and water and sea surfaces edited to constant heights. The series metadata also warns of low reliability over water. These are producer operations, not local repairs by this project. A positive number is not proof of a direct measurement.
+- An illustrative MDT05 ASCII header in the [IGN cartographic production guide](https://www.ign.es/web/resources/acercaDe/libDigPub/Guia_de_Produccion_Cartografica.pdf) shows `NODATA_VALUE -999`. It is an example, not a declaration for this extract or its native COGs; do not import it as the source's sentinel.
+
+The cached WCS `DescribeCoverage` names the 5 m altitude range but provides no native nil value or extract-specific edition. The retained returned ASCII has five header lines and no `NODATA_VALUE`. Neither absence proves the source has no voids or identifies how native masks propagate through WCS. The corresponding cached TIFF and the earlier, separate MDT25 candidate do not justify transferring a different product's metadata.
+
+## Engineering acceptance and its boundary
+
+The pinned MDT05 request used nearest-neighbour resampling at 25 m; nominal source resolution is 5 m. Existing validation compared 670,800 ASCII float and integer TIFF samples, with maximum difference 0.5 m, and analytic gradient tests; this checks encoding consistency from the same provider, not field accuracy. The four retained source hashes were freshly checked against the existing records; details and exact persistent-cache paths are in [the machine-readable assessment](../data/malaga_2021/terrain_closeout_20261029.json).
+
+The compiler requires positive finite samples throughout each 20×20 block and its one-sample halo, keeps unsupported cells null, and selects a fully supported 37×36 rectangle. Runtime validation requires support and finite positive heights for all 1,332 cells; the two-cell boundary guard censors contact. No local gap filling, unknown-to-flat substitution or survey offset correction is introduced. This is a conservative **analysis restriction**, not a producer NoData declaration: it rejects nonpositive sentinels but cannot rule out positive sentinels or identify previously interpolated producer cells.
+
+The separately versioned experimental runtime allows an explicit slope-on or slope-off choice. Legacy modes remain flat. The existing [simulation acceptance](../data/malaga_2021/SIMULATION_ACCEPTANCE.md) records component checks, repeated rollouts and replay, not an empirical wildfire or terrain-accuracy certification. Earlier provenance entries that say all runtime slope is disabled are historical snapshots, not the current experiment's state.
+
+## Remaining evidence
+
+For #8, obtain producer documentation or extract-specific provenance identifying (1) the contributing source tiles and their acquisition dates or bounded periods and editions, and (2) their native validity masks or NoData values and how the WCS nearest-neighbour response propagates them, including whether a positive sentinel could pass the present filter. Product-level orthometric reference is documented; exact extract realization or mosaicking transformations remain necessary if a precise vertical datum or cross-source consistency is claimed. These are concrete metadata gaps, not demands for millimetre-level survey control. An issue owner may instead explicitly narrow #8 to the documented restricted engineering scope, while preserving these unknowns.
+
+For #42, consider independent ground-referenced accuracy, mark-to-ground offsets and domain review, potential producer-interpolated or water cells in the crop, and physical slope/fire calibration. The existing Reales and REDNAP comparisons are diagnostics, not correction factors or proof of bare-ground accuracy; REDNAP is outside the active crop.
+
+This assessment reviewed cached evidence and small first-party documentation only. It did not acquire another raster, rerun simulation, perform paid inference, change core code, or contact the producer. Official web pages may change; the previously captured byte hashes and source URLs remain the reproducible evidence for the actual extract.
