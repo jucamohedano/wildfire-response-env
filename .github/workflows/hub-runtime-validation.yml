@@ -6,8 +6,17 @@ on:
       - '.github/workflows/hub-runtime-validation.yml'
       - 'eval/hub_runtime.py'
       - 'eval/build_spain_hub_dataset.py'
+      - 'eval/validate_incident_day_runtime.py'
+      - 'eval/incident_day_action_checks.py'
+      - 'eval/incident_day_movement_checks.py'
+      - 'eval/incident_day_policies.py'
       - 'tests/test_hub_runtime.py'
       - 'tests/test_build_spain_hub_dataset.py'
+      - 'tests/test_incident_day_runtime_matrix.py'
+      - 'tests/test_incident_day_action_checks.py'
+      - 'tests/test_incident_day_movement_checks.py'
+      - 'tests/test_incident_day_validation_policies.py'
+      - 'data/incident_day_v2/plausibility/action-bounds-v1.json'
       - 'data/hub_runtime_v1/**'
       - 'envs/wildfire_response/core/**'
   workflow_dispatch:
@@ -37,4 +46,7 @@ jobs:
       - name: Install CPU-only test dependencies
         run: python -m pip install --disable-pip-version-check -e envs/wildfire_response/core pytest==9.2.0 pyarrow==26.0.0
       - name: Verify package, source-pinning and replay guards offline
-        run: python -m pytest tests/test_hub_runtime.py tests/test_build_spain_hub_dataset.py -q
+        run: >-
+          python -m pytest tests/test_hub_runtime.py tests/test_build_spain_hub_dataset.py
+          tests/test_incident_day_runtime_matrix.py tests/test_incident_day_action_checks.py
+          tests/test_incident_day_movement_checks.py tests/test_incident_day_validation_policies.py -q
