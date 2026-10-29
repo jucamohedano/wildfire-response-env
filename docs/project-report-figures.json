@@ -345,6 +345,13 @@
     "blocking_contradictions": 0,
     "regression_tests": 408,
     "subtests": 67,
-    "dependency_skips": 0
+    "dependency_skips": 0,
+    "validator_sha256": "6a731cf8784eb42d9c475e3ddf8a0312d662c5ba1cb16b189b5179e197f37b8e"
+  },
+  "hub_release": {
+    "dataset_repo": "jucamohedano/wildfire-response-spain",
+    "tag": "v0.3.0",
+    "revision": "d7e1e1c82eb249e35315bd19d1e0fea730fc0da7",
+    "private": true
   }
 }
