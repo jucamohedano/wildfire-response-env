@@ -1,5 +1,8 @@
 # Incident-day v2 data and quality gate
 
+Prepared inputs and active development tasks can be [downloaded from Hugging Face](../../docs/hub-runtime.md)
+without rebuilding map data. The release keeps all source-estimate and lifecycle guards.
+
 This is an ordinary one-minute, 1,440-minute synthetic exercise profile, not a
 historical reconstruction or an operational rulebook. The finite roster,
 capacities, landloaded fixed-wing allocation, communication delays and 240-minute

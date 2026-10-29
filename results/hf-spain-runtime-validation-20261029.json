@@ -1,0 +1,51 @@
+{
+  "version": "wildfire-hub-runtime-validation-v1",
+  "dataset_repo": "jucamohedano/wildfire-response-spain",
+  "revision": "c84690243840c6339bf82a3b41e0cea279e49a70",
+  "private": true,
+  "manifest_sha256": "2ab25ba1732df1ca48b89ecd7840e15a6cf47d243f19e0955b4c0bda7653a2ea",
+  "engine_implementation_sha256": "af4adc0b2fb92282246411dbac83c1eeac23eb3b4730200c0b34dc288b59323a",
+  "fresh_download_verified": true,
+  "standard_named_configs": {
+    "status": "passed",
+    "revision": "c84690243840c6339bf82a3b41e0cea279e49a70",
+    "counts": {
+      "tasks": 12,
+      "landscapes": 2,
+      "station_weather": 384,
+      "incident_claims": 7,
+      "municipal_population": 7
+    }
+  },
+  "fixture_episode": {
+    "case_id": "incident-day-egress-v1-000",
+    "commands": 40,
+    "elapsed_seconds": 5.306,
+    "policy": "passive",
+    "score": 0.9913913913913914,
+    "status": "complete",
+    "verification": "passed"
+  },
+  "realmap_episode": {
+    "case_id": "incident-day-realmap-v2-000",
+    "commands": 644,
+    "elapsed_seconds": 29.104,
+    "policy": "dispatcher",
+    "score": 0.9961744452945678,
+    "status": "complete",
+    "verification": "passed"
+  },
+  "tests": {
+    "loader": 20,
+    "builder_privacy_and_source_pins": 4
+  },
+  "readme_consent": {
+    "hub_card": true,
+    "project_readmes": true
+  },
+  "independent_review": "Historical-evidence self-signed hash weakness fixed with immutable root pins; reviewed again with no remaining defect in that fix.",
+  "retained_source_pack_approval": "unapproved; explicit opt-in still required",
+  "no_paid_inference_gpu_training_or_public_visibility_change": true,
+  "runtime_payload_bytes": 2989815,
+  "runtime_payload_files": 16
+}

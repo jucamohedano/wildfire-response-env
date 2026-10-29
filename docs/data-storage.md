@@ -1,9 +1,15 @@
 # Data storage and reproducibility
 
-We currently use local files, not a database or remote object store. Source code,
-small audit/provenance JSON and catalog locks are versioned in Git. Original
-downloads, compiled input bundles, full trajectories, scoring evidence and model
-checkpoints stay in ignored local storage. Nothing is uploaded automatically.
+Prepared runtime inputs and selected tables are distributed through the private
+[Wildfire Response Spain dataset](https://huggingface.co/datasets/jucamohedano/wildfire-response-spain).
+Use the [download guide](hub-runtime.md) and immutable release lock; episodes load
+local downloaded files and make no live map/weather requests.
+
+Source code, small provenance JSON and release locks remain in Git. Original
+provider downloads, full private trajectories, evaluator audits and checkpoints
+remain in ignored local storage. The Hub release excludes those private artifacts
+and raw source HTML/reports/imagery; uploads and visibility changes are explicit,
+never automatic. The original incident-specific Hub evidence snapshot is retained.
 
 ## Layers
 
@@ -133,8 +139,8 @@ Archive size:7,268,047bytes; SHA256:
 `48b4cddc7876c26b3a163f0548b670ab87e320a2f777c2070336a9372d4a6ef1`.
 No CloudRift requests were made; Codex usage is not cost-metered by this harness.
 
-Active development is on `codex/wildfire-ops-control-center` in the standalone
-environment repository. Changes are pushed there; raw data is not committed.
+Current contributor setup uses `main` in the standalone environment repository;
+feature branches carry reviewed changes. raw data is not committed.
 Local ignored backups and Git bundles are preserved under
 `/home/juancm/hackspain/wildfire-response-env/.runtime/`; the temporary working
 checkout is not the only retained copy. Backups are local, not off-machine disaster

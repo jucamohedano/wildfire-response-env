@@ -6,6 +6,9 @@ repository root unless stated otherwise.
 [Visual project report](project-report.html): current design, agent tools,
 verification evidence and remaining work.
 
+[Download prepared runtime data](hub-runtime.md): pinned Hugging Face release,
+verification, episode commands and table loading.
+
 The former root reference files were moved here:
 
 - `DATASET_CARD.md` → [dataset-card.md](dataset-card.md)

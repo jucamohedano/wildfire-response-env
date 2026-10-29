@@ -79,6 +79,19 @@ For a full CPU acceptance run and optional client, see the
 prepared, checksum-pinned inputs; follow [data storage](docs/data-storage.md)
 and the [benchmark commands](data/benchmark_v1/README.md).
 
+Prepared inputs are now downloadable from the private
+[Wildfire Response Spain dataset](https://huggingface.co/datasets/jucamohedano/wildfire-response-spain):
+
+```sh
+hf download jucamohedano/wildfire-response-spain --type dataset --revision v0.2.0 \
+  --local-dir .runtime/wildfire-response-spain
+python -m eval.hub_runtime --data-dir .runtime/wildfire-response-spain --verify-only
+python -m eval.hub_runtime --data-dir .runtime/wildfire-response-spain --runtime fixture
+```
+
+See the [download guide](docs/hub-runtime.md) for the immutable revision, real-map
+opt-in and dataset tables. No GIS regeneration, model key or GPU is required.
+
 ## Repository
 
 - `envs/wildfire_response/core/` — simulator, tools and verification.
