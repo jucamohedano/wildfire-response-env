@@ -95,11 +95,12 @@ def public_feedback(rec):
         return {'records':len(result)} if rec.get('tool')=='get_reports' and isinstance(result,list) else {}
     name=rec.get('tool')
     if name=='get_situation':
-        fields=('id','status','observed_at','received_at')
+        fields=('id','count','status','observed_at','received_at')
         groups=[{k:g.get(k) for k in fields} for g in result.get('districts',[]) if isinstance(g,dict)]
         orders=[{k:o.get(k) for k in ('group_id','state','observed_at','received_at')} for o in result.get('protection_orders',[]) if isinstance(o,dict)]
         offers=[{k:o.get(k) for k in ('id','resource_id','expires_at')} for o in result.get('offers',[]) if isinstance(o,dict)]
-        return {'groups':groups,'orders':orders,'offer_count':len(offers),'recent_offers':offers[-6:]}
+        destinations=[{k:d.get(k) for k in ('id','name','status')} for d in result.get('destinations',[]) if isinstance(d,dict)]
+        return {'groups':groups,'destinations':destinations,'orders':orders,'offer_count':len(offers),'recent_offers':offers[-6:]}
     if name in ('route_options','evacuation_options'):
         return {'status':result.get('status'),'option_ids':[o.get('id') for o in result.get('options',[]) if isinstance(o,dict)]}
     if name=='check_action':return {'valid':result.get('valid')}
@@ -185,6 +186,8 @@ def make_report(run_dir, baseline_path):
                 details += '<p class="note">' + qualifier + esc(json.dumps(selected, sort_keys=True)) + '</p>'
         if row:
             details += '<p>History trimming operations: ' + esc(fmt(row.get('pruned_history_pairs'))) + '; the latest call/result pair was retained.</p>'
+        if any(recorded_error(record) == "'resource_id'" for record in records):
+            details += '<p class="note">A rejected cross-kind approach produced a terse internal-field error. The environment feedback issue is tracked in <a href="https://github.com/jucamohedano/wildfire-response-env/issues/57">#57</a>.</p>'
         details += public_timeline(records)
         for policy in ('passive', 'dispatcher'):
             b = baseline_rows.get((case, policy))
