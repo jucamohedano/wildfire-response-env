@@ -88,6 +88,27 @@ def error_breakdown(records):
     return dict(counts)
 
 
+def public_feedback(rec):
+    """Compact allowlist of what the policy actually received, not evaluator state."""
+    result=rec.get('result')
+    if not isinstance(result,dict):
+        return {'records':len(result)} if rec.get('tool')=='get_reports' and isinstance(result,list) else {}
+    name=rec.get('tool')
+    if name=='get_situation':
+        fields=('id','status','observed_at','received_at')
+        groups=[{k:g.get(k) for k in fields} for g in result.get('districts',[]) if isinstance(g,dict)]
+        orders=[{k:o.get(k) for k in ('group_id','state','observed_at','received_at')} for o in result.get('protection_orders',[]) if isinstance(o,dict)]
+        offers=[{k:o.get(k) for k in ('id','resource_id','expires_at')} for o in result.get('offers',[]) if isinstance(o,dict)]
+        return {'groups':groups,'orders':orders,'offer_count':len(offers),'recent_offers':offers[-6:]}
+    if name in ('route_options','evacuation_options'):
+        return {'status':result.get('status'),'option_ids':[o.get('id') for o in result.get('options',[]) if isinstance(o,dict)]}
+    if name=='check_action':return {'valid':result.get('valid')}
+    if name in ('advance_time','commit_orders','request_status'):
+        obs=result.get('observation') or {};info=result.get('info') or {}
+        return {'next_minute':obs.get('minute'),'wake_reason':info.get('wake_reason')}
+    return {}
+
+
 def public_timeline(records, baseline=False):
     # Only selected public call fields and validator messages; never raw replies/results.
     groups=[]
@@ -103,15 +124,17 @@ def public_timeline(records, baseline=False):
             else:continue
         text=json.dumps(args,ensure_ascii=False,sort_keys=True,default=str)
         error=str(recorded_error(rec) or '')
-        key=(rec.get('minute'),name,text,error)
+        feedback=json.dumps(public_feedback(rec),ensure_ascii=False,sort_keys=True)
+        key=(rec.get('minute'),name,text,error,feedback)
         if groups and groups[-1][0]==key:groups[-1][1]+=1
         else:groups.append([key,1])
     rows=[]
-    for (minute,name,text,error),count in groups:
+    for (minute,name,text,error,feedback),count in groups:
         text=text[:300]+('…' if len(text)>300 else '')
         repeated=f' <strong>×{count} repeated</strong>' if count>1 else ''
-        feedback='<br><small>Rejected: '+esc(error[:240])+'</small>' if error else ''
-        rows.append(f'<li><b>Minute {esc(fmt(minute))}</b> · {esc(name)}{repeated} <code>{esc(text)}</code>{feedback}</li>')
+        detail='<br><small>Rejected: '+esc(error[:240])+'</small>' if error else ''
+        if feedback!='{}':detail+='<br><small>Received: '+esc(feedback[:600])+('…' if len(feedback)>600 else '')+'</small>'
+        rows.append(f'<li><b>Minute {esc(fmt(minute))}</b> · {esc(name)}{repeated} <code>{esc(text)}</code>{detail}</li>')
     omitted=max(0,len(records)-100)
     return '<details><summary>Public action timeline (up to100 records; identical consecutive calls grouped)</summary><ol>'+''.join(rows)+'</ol>'+ (f'<p>{omitted} further entries omitted.</p>' if omitted else '')+'</details>'
 
@@ -155,10 +178,11 @@ def make_report(run_dir, baseline_path):
         replay = row.get('request_replay') or {} if row else {}
         if replay:
             details += '<p>Independent recorded-request replay: ' + esc(fmt(replay.get('passed'))) + '; final trace match: ' + esc(fmt(replay.get('trajectory_match'))) + '. This verifies the recorded prefix, not full-horizon eligibility.</p>'
-            if not eligible and replay.get('passed') is True:
+            if replay.get('passed') is True:
                 diagnostics = replay.get('diagnostics') or {}
                 selected = {key: diagnostics.get(key) for key in ('active_fire_cells','additional_burned_hectares','new_exposed_population','unresolved_evacuations','population_by_status','resource_by_kind_and_state','suppression_work_events','resources_with_applied_work','received_reports','mission_operations_submitted')}
-                details += '<p class="note">Partial diagnostics at the stopping clock only; not comparable with full-day reference outcomes: ' + esc(json.dumps(selected, sort_keys=True)) + '</p>'
+                qualifier = 'Evaluator-only effects at day end; the model may not have received every update: ' if eligible else 'Evaluator-only diagnostics at the stopping clock; the model may not have received these updates yet. Not comparable with full-day reference outcomes: '
+                details += '<p class="note">' + qualifier + esc(json.dumps(selected, sort_keys=True)) + '</p>'
         details += public_timeline(records)
         for policy in ('passive', 'dispatcher'):
             b = baseline_rows.get((case, policy))

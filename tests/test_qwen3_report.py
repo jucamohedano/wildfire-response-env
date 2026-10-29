@@ -62,3 +62,13 @@ def test_completed_grade_requires_independent_request_replay():
     assert verified(row) is False
     row['request_replay']['score_eligible']=True
     assert verified(row) is True
+
+
+def test_feedback_distinguishes_delayed_population_state_and_completed_order():
+    from eval.render_qwen3_day_report import public_feedback
+    value=public_feedback({'tool':'get_situation','result':{'districts':[{'id':'p0','status':'unwarned','observed_at':0,'received_at':0}],
+        'protection_orders':[{'group_id':'p0','state':'completed','observed_at':6,'received_at':10}],
+        'offers':[],'private_audit':'DO_NOT_EXPOSE'}})
+    assert value['groups'][0]['status']=='unwarned'
+    assert value['orders'][0]['state']=='completed' and value['orders'][0]['received_at']==10
+    assert 'private_audit' not in value
