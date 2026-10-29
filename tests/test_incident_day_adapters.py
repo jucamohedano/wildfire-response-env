@@ -13,7 +13,7 @@ from urllib.request import Request, urlopen
 try:
     from fastapi.testclient import TestClient
     from pydantic import ValidationError
-    from wildfire_core.incident_day import CASE_IDS, fixture_inputs
+    from wildfire_core.incident_day import CASE_IDS, COVERAGE_CASE_IDS, fixture_inputs
     from wildfire_openenv.incident_day import IncidentDayAction, IncidentDayEnvironment, ReportQuery
     from wildfire_openenv.incident_day_client import IncidentDayClient
     from eval.incident_day_server import create_app
@@ -25,9 +25,9 @@ except ModuleNotFoundError as error:
 
 
 def make_environment():
-    inputs, network = fixture_inputs(24)
+    inputs, network = fixture_inputs()
     return IncidentDayEnvironment(inputs, network, expected_inputs_sha256=inputs['sha256'],
-                                  expected_network_sha256=network['sha256'])
+                                  expected_network_sha256=network['sha256'], allow_archived_scenarios=True)
 
 
 @unittest.skipUnless(AVAILABLE, 'Optional FastAPI/Pydantic dependencies and core required')
@@ -60,7 +60,7 @@ class IncidentDayAdapterTests(unittest.TestCase):
 
     def test_manifest_and_client_reject_nonlocal_urls(self):
         manifest = json.loads((Path(__file__).resolve().parents[1] / 'envs/wildfire_response/openenv/incident_day_manifest.json').read_text())
-        self.assertEqual(manifest['scenario_ids'], list(CASE_IDS))
+        self.assertEqual(manifest['active_fixture_scenario_ids'], list(COVERAGE_CASE_IDS))
         self.assertEqual(manifest['transport'], 'loopback-http-json')
         for url in ('https://127.0.0.1:8005', 'http://example.com', 'http://localhost.evil',
                     'http://localhost:8005/path', 'http://user@localhost'):
@@ -218,8 +218,8 @@ import sys, uvicorn
 from wildfire_core.incident_day import fixture_inputs
 from wildfire_openenv.incident_day import IncidentDayEnvironment
 from eval.incident_day_server import create_app
-inputs, network = fixture_inputs(24)
-environment = IncidentDayEnvironment(inputs, network, expected_inputs_sha256=inputs['sha256'], expected_network_sha256=network['sha256'])
+inputs, network = fixture_inputs()
+environment = IncidentDayEnvironment(inputs, network, expected_inputs_sha256=inputs['sha256'], expected_network_sha256=network['sha256'], allow_archived_scenarios=True)
 uvicorn.run(create_app(environment), host='127.0.0.1', port=int(sys.argv[1]), log_level='error')
 '''
         with socket.socket() as listener:
@@ -257,7 +257,7 @@ uvicorn.run(create_app(environment), host='127.0.0.1', port=int(sys.argv[1]), lo
             typed = make_environment()
             core = make_environment().core
             typed_initial = typed.reset()
-            core_initial, _info = core.reset()
+            core_initial, _info = core.reset(COVERAGE_CASE_IDS[0])
             self.assertEqual(typed_initial.data, core_initial)
             self.assertEqual(result['data'], core_initial)
             for _ in range(500):

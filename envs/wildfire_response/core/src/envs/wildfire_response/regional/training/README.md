@@ -1,5 +1,10 @@
 # Single-GPU Qwen3 training pilot
 
+**Archived pilot.** The packaged CLI and `train/grpo.py` share an archival guard.
+Add `--allow-archived-catalog` for deliberate historical execution; spending and
+publication still require separate authorization. This is not a current
+incident-day training corpus.
+
 This optional package adds a native TRL `environment_factory` interface around the
 existing regional environment. It does not replace the frozen benchmark, modify
 its outcome weights, contact HappyRobot, or publish models/data. Dependencies stay
@@ -88,7 +93,7 @@ python -m unittest envs.wildfire_response.tests.test_regional_training
 OMP_NUM_THREADS=4 TOKENIZERS_PARALLELISM=false \
 HF_HUB_DISABLE_TELEMETRY=1 DO_NOT_TRACK=1 \
 timeout --signal=INT --kill-after=30s 900s \
-  .venv-training/bin/python -m envs.wildfire_response.regional.training.pilot \
+  .venv-training/bin/python -m envs.wildfire_response.regional.training.pilot --allow-archived-catalog \
   --output .runtime/qwen3-pilot --steps 2 --completion-tokens 1536 --tool-iterations 8
 ```
 

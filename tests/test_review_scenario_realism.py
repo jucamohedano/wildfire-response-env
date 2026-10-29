@@ -28,7 +28,7 @@ def test_structural_screen_flags_impossible_input_without_rejecting_difficult_cl
 def test_partition_covers_catalog_once():
     from eval.review_scenario_realism import case_groups
     from envs.wildfire_response.incident_day.scenarios import ALL_CASE_IDS
-    ids = [case for unused, group in case_groups() for case in group]
+    ids = [case for unused, group in case_groups(include_archived=True) for case in group]
     assert len(ids) == len(set(ids)) == len(ALL_CASE_IDS) == 32
     assert set(ids) == set(ALL_CASE_IDS)
 
@@ -50,3 +50,11 @@ def test_finite_work_budget_and_ordered_duty_window_can_cross_day_end():
         invalid = copy.deepcopy(scenario)
         invalid['resources'][0][field] = value
         assert 'invalid_resource_lifecycle' in screen(invalid)
+
+
+def test_active_partition_excludes_superseded_and_ineffective_cases():
+    from eval.review_scenario_realism import case_groups
+    from wildfire_core.catalog_lifecycle import ACTIVE_FIXTURE_CASE_IDS, ACTIVE_REAL_MAP_CASE_IDS
+    ids = [case for unused, group in case_groups() for case in group]
+    assert len(ids) == 12
+    assert set(ids) == set(ACTIVE_FIXTURE_CASE_IDS + ACTIVE_REAL_MAP_CASE_IDS)

@@ -6,12 +6,13 @@ import math
 from pathlib import Path
 
 from wildfire_core.incident_day import IncidentDayEnv, fixture_inputs
+from wildfire_core.catalog_lifecycle import ACTIVE_FIXTURE_CASE_IDS, ACTIVE_REAL_MAP_CASE_IDS
 from envs.wildfire_response.incident_day.scenarios import (ALL_CASE_IDS, CASE_IDS, CALIBRATED_CASE_IDS,
     EGRESS_CASE_IDS, COVERAGE_VARIANT_IDS, REAL_MAP_CASE_IDS, REAL_MAP_V2_CASE_IDS)
 from envs.wildfire_response.incident_day.real_map_scenarios import PACK_PIN, NETWORK_PIN
 from envs.wildfire_response.incident_day.plausibility import static_case
 
-VERSION = 'incident-day-static-realism-screen-v2'
+VERSION = 'incident-day-static-realism-screen-v3'
 
 
 def screen(scenario):
@@ -59,22 +60,26 @@ def screen(scenario):
     return sorted(codes)
 
 
-def case_groups():
+def case_groups(*, include_archived=False):
     groups = [('fixture', CASE_IDS), ('shift', CALIBRATED_CASE_IDS), ('egress', EGRESS_CASE_IDS),
               ('coverage_variants', COVERAGE_VARIANT_IDS), ('realmap_v1', REAL_MAP_CASE_IDS),
               ('realmap_v2', REAL_MAP_V2_CASE_IDS)]
     identifiers = [identifier for _, values in groups for identifier in values]
     if len(identifiers) != len(set(identifiers)) or set(identifiers) != set(ALL_CASE_IDS):
         raise ValueError('Incident-day catalog partition differs from ALL_CASE_IDS')
+    if not include_archived:
+        active = set(ACTIVE_FIXTURE_CASE_IDS + ACTIVE_REAL_MAP_CASE_IDS)
+        groups = [(label, tuple(case for case in values if case in active)) for label, values in groups]
+        groups = [(label, values) for label, values in groups if values]
     return groups
 
 
-def run(real_inputs, network):
+def run(real_inputs, network, *, include_archived=False):
     fixture, roads = fixture_inputs()
     real = json.loads(Path(real_inputs).read_text())
     net = json.loads(Path(network).read_text())
     contexts = [(label, real if label.startswith('realmap_') else fixture,
-                 net if label.startswith('realmap_') else roads, ids) for label, ids in case_groups()]
+                 net if label.startswith('realmap_') else roads, ids) for label, ids in case_groups(include_archived=include_archived)]
     bounds = json.loads(Path('data/incident_day_v2/plausibility/bounds-v1.json').read_text())
     groups = {}
     for label, inputs, document, ids in contexts:
@@ -104,7 +109,7 @@ def run(real_inputs, network):
                     unsupported[finding['code']] += 1
         groups[label] = dict(cases=len(ids), compiled=len(ids)-compile_failures, compilation_failures=compile_failures,
                              contradictions=dict(contradictions), review_candidates=dict(candidates), unsupported=dict(unsupported))
-    return dict(version=VERSION, bounds_version=bounds['version'], case_groups=groups,
+    return dict(version=VERSION, includes_archived_scenarios=include_archived, bounds_version=bounds['version'], case_groups=groups,
                 policy_rollouts=0, held_out_outcomes_inspected=False,
                 limitations=['Initial static checks do not verify future event effects, travel permissions, field accuracy or physical calibration.',
                              'No authoritative land mask supplied; source-known fuel does not establish land or road access.',
@@ -115,8 +120,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--real-inputs', required=True)
     parser.add_argument('--network', required=True)
+    parser.add_argument('--include-archived-scenarios', action='store_true')
     args = parser.parse_args()
-    print(json.dumps(run(args.real_inputs, args.network), sort_keys=True))
+    print(json.dumps(run(args.real_inputs, args.network, include_archived=args.include_archived_scenarios), sort_keys=True))
 
 
 if __name__ == '__main__':

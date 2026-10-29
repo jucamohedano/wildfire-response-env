@@ -508,7 +508,7 @@ class ReadinessTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             config = Path(directory) / 'config.json'
             config.write_text('{}')
-            arguments = ['--config', str(config), '--output', str(Path(directory) / 'output')]
+            arguments = ['--config', str(config), '--output', str(Path(directory) / 'output'), '--allow-archived-catalog']
             with patch.object(training, 'make_factory', return_value=FixtureCore), patch.object(
                     training, 'train', return_value={'status': 'not_executed'}) as train, redirect_stdout(io.StringIO()):
                 training.main(['sft', *arguments])

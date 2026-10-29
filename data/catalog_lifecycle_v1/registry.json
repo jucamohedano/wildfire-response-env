@@ -1,0 +1,93 @@
+{
+  "catalogs": [
+    {
+      "case_ids": [
+        "incident-day-egress-v1-000",
+        "incident-day-egress-v1-001",
+        "incident-day-coverage-v1-002",
+        "incident-day-egress-v1-003",
+        "incident-day-coverage-v1-004",
+        "incident-day-egress-v1-005"
+      ],
+      "horizon_minutes": 1440,
+      "id": "incident_day_fixture",
+      "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+      "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+      "status": "active_development"
+    },
+    {
+      "case_ids": [
+        "incident-day-realmap-v2-000",
+        "incident-day-realmap-v2-001",
+        "incident-day-realmap-v2-002",
+        "incident-day-realmap-v2-003",
+        "incident-day-realmap-v2-004",
+        "incident-day-realmap-v2-005"
+      ],
+      "horizon_minutes": 1440,
+      "id": "incident_day_realmap_v2",
+      "inputs_sha256": "50031b3029dcee0a1367ccdd8125d081d19d3b500b2dd373e30ef127d47a2c4d",
+      "network_sha256": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16",
+      "status": "active_development"
+    },
+    {
+      "case_ids": [
+        "incident-day-dev-000",
+        "incident-day-dev-001",
+        "incident-day-dev-002",
+        "incident-day-dev-003",
+        "incident-day-dev-004",
+        "incident-day-dev-005",
+        "incident-day-shift-v1-000",
+        "incident-day-shift-v1-001",
+        "incident-day-shift-v1-002",
+        "incident-day-shift-v1-003",
+        "incident-day-shift-v1-004",
+        "incident-day-shift-v1-005",
+        "incident-day-egress-v1-002",
+        "incident-day-egress-v1-004",
+        "incident-day-realmap-v1-000",
+        "incident-day-realmap-v1-001",
+        "incident-day-realmap-v1-002",
+        "incident-day-realmap-v1-003",
+        "incident-day-realmap-v1-004",
+        "incident-day-realmap-v1-005"
+      ],
+      "id": "incident_day_legacy",
+      "reason": "Superseded development probes, including ineffective original handover assignments; replay only",
+      "status": "archived"
+    },
+    {
+      "id": "benchmark_v1",
+      "reason": "Night-only two-hour reference; no active aircraft-response coverage",
+      "retained_in_place": true,
+      "rewrite_existing_ids": false,
+      "status": "archived"
+    },
+    {
+      "id": "synthetic_expansion_v1",
+      "reason": "Night-only two-hour reference; no active aircraft-response coverage",
+      "retained_in_place": true,
+      "rewrite_existing_ids": false,
+      "status": "archived"
+    },
+    {
+      "id": "topographic_stress_v1",
+      "reason": "Night-only two-hour reference; no active aircraft-response coverage",
+      "retained_in_place": true,
+      "rewrite_existing_ids": false,
+      "status": "archived"
+    },
+    {
+      "id": "ops_v1",
+      "reason": "Superseded preliminary ops interface; retained for explicit historical research",
+      "retained_in_place": true,
+      "rewrite_existing_ids": false,
+      "status": "archived"
+    }
+  ],
+  "policy": "Only corrected input-pinned 24-hour development suites are active. Archives retain their original scope, source rights, seeds, scores and replay pins. No active train/validation/test corpus is claimed.",
+  "sha256": "c46f9b3e8cdebed050022e6b7eb966d09ae89049b689f360b41d28ab2a345d04",
+  "training_corpus_available": false,
+  "version": "wildfire-catalog-lifecycle-v1"
+}

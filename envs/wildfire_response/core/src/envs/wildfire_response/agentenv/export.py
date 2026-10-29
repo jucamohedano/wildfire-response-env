@@ -124,6 +124,9 @@ def _write_bundle(bundle_root: Path, split: str, identifiers: list[str], prepare
     )
     public_manifest = {
         "format_version": FORMAT_VERSION,
+            "catalog_status": "archived",
+            "archival_use_acknowledged": True,
+            "active_incident_day_training_corpus": False,
         "split": split,
         "catalog_sha256": lock["catalog_sha256"],
         "task_ids": identifiers,
@@ -293,7 +296,9 @@ def _trace_exports(roots: list[Path], task_splits: dict[str, str], prepared: dic
 
 
 def export_dataset(prepared_inputs: str | Path, topographic_inputs: str | Path, output: str | Path,
-                   trajectory_roots: list[str | Path] | None = None) -> dict:
+                   trajectory_roots: list[str | Path] | None = None, *, allow_archived_catalog: bool = False) -> dict:
+    from wildfire_core.catalog_lifecycle import require_archived_opt_in
+    require_archived_opt_in("benchmark_v1", allow_archived=allow_archived_catalog)
     repo = _repo_root()
     out = Path(output).resolve()
     if out.exists():
@@ -349,7 +354,8 @@ def export_dataset(prepared_inputs: str | Path, topographic_inputs: str | Path, 
         for split, name in bundle_names.items():
             card_text = dataset_card(
                 card_text, name=name, split=split, repo=None,
-                description=("Source-grounded synthetic wildfire-control tasks for a programmatic simulator. "
+                description=("ARCHIVED night-response reference; not the active incident-day training corpus. "
+                             "Source-grounded synthetic wildfire-control tasks for a programmatic simulator. "
                              "The four split bundles are runnable AgentEnv tasks; model trajectories, when present, "
                              "are development-only and not training labels."),
                 license=None,
@@ -377,6 +383,9 @@ def export_dataset(prepared_inputs: str | Path, topographic_inputs: str | Path, 
         files["README.md"] = str(card_obj).encode("utf-8")
         output_manifest = {
             "format_version": FORMAT_VERSION,
+            "catalog_status": "archived",
+            "archival_use_acknowledged": True,
+            "active_incident_day_training_corpus": False,
             "agentenv_framework": "0.9.1358",
             "agentenv_protocol": "0.1.373",
             "agentenv_hf": "0.3.0",
@@ -409,9 +418,11 @@ def main() -> None:
     parser.add_argument("--topographic-inputs", required=True)
     parser.add_argument("--trajectory-root", action="append", default=[])
     parser.add_argument("--output", required=True)
+    parser.add_argument("--allow-archived-catalog", action="store_true",
+                        help="Explicitly export the frozen night-response archive; not current day-mode training data")
     args = parser.parse_args()
     print(json.dumps(export_dataset(args.prepared_inputs, args.topographic_inputs, args.output,
-                                    args.trajectory_root), sort_keys=True))
+                                    args.trajectory_root, allow_archived_catalog=args.allow_archived_catalog), sort_keys=True))
 
 
 if __name__ == "__main__":

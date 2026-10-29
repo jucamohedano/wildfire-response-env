@@ -1,4 +1,4 @@
-"""Policy-free quality audit over all registered source-grounded synthetic catalogs."""
+"""Explicit archival quality audit; active day exercises use review_scenario_realism."""
 import argparse
 import hashlib
 import html
@@ -55,7 +55,7 @@ def audit_all(output, prepared, domain, *, catalogs=CATALOGS):
         write_json(output / 'private' / name / 'findings.json', report, private=True)
         summaries.append(dict(catalog=name, **summarize(report)))
     root = Path(__file__).resolve().parents[1]
-    result = dict(version=VERSION, catalogs=summaries, tasks_checked=sum(row['tasks_checked'] for row in summaries),
+    result = dict(version=VERSION, catalog_status='archived', catalogs=summaries, tasks_checked=sum(row['tasks_checked'] for row in summaries),
         errors=sum(row['errors'] for row in summaries), warnings=sum(row['warnings'] for row in summaries),
         tasks_with_warnings=sum(row['tasks_with_warnings'] for row in summaries),
         note='Shared input warnings appear once per catalog; warning instances are not counts of distinct defective scenarios',
@@ -92,7 +92,10 @@ def main():
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--catalog', choices=(*CATALOGS, 'all'), default='all')
     parser.add_argument('--fail-on-warnings', action='store_true')
+    parser.add_argument('--allow-archived-catalog', action='store_true', help='Acknowledge that this is a historical night-response catalog audit')
     args = parser.parse_args()
+    if not args.allow_archived_catalog:
+        parser.error('These catalogs are archived; use --allow-archived-catalog for historical auditing or eval.review_scenario_realism for active exercises')
     prepared = load_inputs(args.prepared_inputs, expected_sha256=args.prepared_sha256)
     domain = load_domain(args.topographic_inputs, prepared, args.topographic_sha256)
     result = audit_all(args.output, prepared, domain,

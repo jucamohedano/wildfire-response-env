@@ -18,17 +18,16 @@ state. It can inspect reports and routes, check draft actions, commit resource a
 protection orders, request status, and wait for new information. Orders and status
 requests take a minute; waiting stops early for actionable events or deadlines.
 
-Its twenty fixture development cases span six families, including separately versioned
-finite-shift, withdrawal, crew-access and relocation exercises. They use a
-synthetic fixture, not
-historical incident replays or a held-out evaluation set. The original six
-`incident-day-dev-*` cases retain ineffective inherited ground assignments for
-regression; use the explicit egress/coverage IDs below for fixture exercises. The separate, frozen
-**benchmark v1** runs up to 120 minutes in two-minute turns, with 80 train, 20
-validation and 20 test configuration groups and separate development probes.
-The coastal dashboard uses benchmark/coastal mobility mode; it does not show an
-incident-day run. See [incident-day](docs/incident-day.md),
-[benchmark](data/benchmark_v1/README.md) and [coastal mobility](docs/mobility.md).
+The active catalog selects six corrected fixture exercises or six source-map v2
+exercises from the input/network hashes. Reset, task discovery and the viewer use
+these choices automatically. Unknown packs have no implicit active default.
+All active cases are development probes, not a held-out training dataset.
+
+The older night-response catalogs and twenty superseded day cases are archived.
+They remain available for explicit replay and research; their seeds, scores and
+historical results are preserved. See the [catalog lifecycle](data/catalog_lifecycle_v1/README.md).
+The coastal dashboard displays the archived benchmark interface; the separate
+[incident-day viewer](docs/incident-day.md) exercises the current day API.
 
 ## Score and limits
 
@@ -86,6 +85,6 @@ and the [benchmark commands](data/benchmark_v1/README.md).
 - `eval/`, `results/` and `train/` — evaluation, reports and gated training work.
 - `ui/` — local coastal/benchmark control-centre dashboard; see the [UI guide](ui/README.md).
 
-Read the [environment card](docs/environment.md), [dataset card](docs/dataset-card.md),
+Read the [archival environment card](docs/environment.md), [dataset card](docs/dataset-card.md),
 [provenance](docs/provenance.md) and [license status](docs/license-status.md)
 before reuse or distribution. Code and asset rights remain under review.

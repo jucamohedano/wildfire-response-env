@@ -1132,6 +1132,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument('command', choices=('inspect', 'dry-run', 'export-demo', 'import-trajectory', 'verify-demo', 'freeze-bank', 'sft', 'validate', 'grpo'))
     parser.add_argument('--config', required=True, help='JSON with pinned local BenchmarkEnv constructor arguments')
+    parser.add_argument('--allow-archived-catalog', action='store_true',
+                        help='Explicitly use the retired night-response training recipe; independent spending gates still apply')
     parser.add_argument('--task-id')
     parser.add_argument('--demonstrations', nargs='*', default=[])
     parser.add_argument('--validation-report')
@@ -1149,6 +1151,12 @@ def main(argv=None):
     parser.add_argument('--trajectory')
     parser.add_argument('--trajectory-sha256')
     args = parser.parse_args(argv)
+    if args.command in ('export-demo', 'import-trajectory', 'freeze-bank', 'sft', 'grpo', 'validate'):
+        from wildfire_core.catalog_lifecycle import require_archived_opt_in
+        try:
+            require_archived_opt_in('benchmark_v1', allow_archived=args.allow_archived_catalog)
+        except ValueError as error:
+            parser.error(str(error))
     factory = make_factory(json.loads(Path(args.config).read_text()))
     demonstrations = [json.loads(Path(path).read_text()) for path in args.demonstrations]
     if args.command == 'inspect':

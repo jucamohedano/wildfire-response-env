@@ -67,7 +67,7 @@ The audit compiles inputs only: **zero policy rollouts and no held-out outcomes*
 
 ```bash
 export PYTHONPATH=envs/wildfire_response/core/src
-python -m eval.validate_scenarios \
+python -m eval.validate_scenarios --allow-archived-catalog \
   --prepared-inputs .runtime/malaga-prepared-inputs-v1/inputs.json \
   --prepared-sha256 ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108 \
   --topographic-inputs .runtime/topographic-inputs-v1/inputs.json \

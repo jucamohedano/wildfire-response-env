@@ -17,7 +17,7 @@ def incident():
     inputs, network = fixture_inputs(24)
     env = IncidentDayEnv(inputs, network, expected_inputs_sha256=inputs['sha256'],
                          expected_network_sha256=network['sha256'])
-    env.reset()
+    env.reset('incident-day-dev-000')
     return env
 
 
