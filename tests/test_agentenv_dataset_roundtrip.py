@@ -42,6 +42,24 @@ class DatasetRoundtripTests(unittest.TestCase):
             checker.compare_transitions(self.trace, rows)
 
 class FrameworkLinkTests(unittest.TestCase):
+    def test_failure_report_shows_stage_and_static_error_only(self):
+        spec = importlib.util.spec_from_file_location('native_fixture_failure', ROOT / 'eval/check_agentenv_native_fixture.py')
+        native = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(native)
+        try:
+            native.verify_loaded_trace({'task': 'x'}, 'incorrect')
+        except native.ValidationError as exc:
+            report = native.failure_report(exc, {'stage': 'extension_load'})
+        self.assertEqual(report['stage'], 'extension_load')
+        self.assertEqual(report['error'], 'loaded trace hash differs from framework-recorded trace')
+        self.assertIsInstance(report['checker_line'], int)
+        try:
+            raise ValueError('sensitive external content')
+        except ValueError as exc:
+            report = native.failure_report(exc, {'stage': 'host_replay'})
+        self.assertNotIn('sensitive external content', json.dumps(report))
+        self.assertEqual(report['stage'], 'host_replay')
+
     def test_real_framework_store_matches_plugin_publisher(self):
         import os
         import subprocess
