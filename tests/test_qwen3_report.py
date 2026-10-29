@@ -30,3 +30,12 @@ def test_partial_run_never_earns_a_score_or_leaks_raw_replies(tmp_path):
     assert '98765.4321' not in output and 'Unscored' in output
     assert 'PRIVATE_RESPONSE' not in output and 'PRIVATE_AUDIT' not in output
     assert 'Queued; not yet attempted' in output
+
+
+def test_report_uses_recorded_bounds(tmp_path):
+    import json
+    from eval.render_qwen3_day_report import make_report
+    (tmp_path/'summary.json').write_text(json.dumps({'context_tokens':32768,'max_new_tokens':768,'case_wall_seconds':900,'global_wall_seconds':7200,'max_model_calls':1200}))
+    b=tmp_path/'b.json';b.write_text('{}')
+    output=make_report(tmp_path,b)
+    assert 'context 32768 tokens' in output and 'context 12,000 tokens' not in output
