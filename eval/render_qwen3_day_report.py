@@ -88,6 +88,20 @@ def error_breakdown(records):
     return dict(counts)
 
 
+def has_stale_completed_evacuation(record):
+    """Identify conflicting public views for the same population group."""
+    result = record.get('result')
+    if record.get('tool') != 'get_situation' or not isinstance(result, dict):
+        return False
+    completed = {order.get('group_id') for order in result.get('protection_orders', [])
+                 if isinstance(order, dict) and order.get('group_id') is not None
+                 and order.get('state') == 'completed' and order.get('action') == 'evacuate'
+                 and order.get('received_at') is not None}
+    return any(group.get('id') in completed and group.get('status') == 'unwarned'
+               and group.get('observed_at') is None
+               for group in result.get('districts', []) if isinstance(group, dict))
+
+
 def public_feedback(rec):
     """Compact allowlist of what the policy actually received, not evaluator state."""
     result=rec.get('result')
@@ -188,6 +202,8 @@ def make_report(run_dir, baseline_path):
             details += '<p>History trimming operations: ' + esc(fmt(row.get('pruned_history_pairs'))) + '; the latest call/result pair was retained.</p>'
         if any(recorded_error(record) == "'resource_id'" for record in records):
             details += '<p class="note">A rejected cross-kind approach produced a terse internal-field error. The environment feedback issue is tracked in <a href="https://github.com/jucamohedano/wildfire-response-env/issues/57">#57</a>.</p>'
+        if any(has_stale_completed_evacuation(record) for record in records):
+            details += '<p class="note">A delivered evacuation-completion report coexisted with an untimestamped unwarned population view. See environment feedback issue <a href="https://github.com/jucamohedano/wildfire-response-env/issues/59">#59</a>; this does not establish why the model repeated its order.</p>'
         details += public_timeline(records)
         for policy in ('passive', 'dispatcher'):
             b = baseline_rows.get((case, policy))

@@ -72,3 +72,17 @@ def test_feedback_distinguishes_delayed_population_state_and_completed_order():
     assert value['groups'][0]['status']=='unwarned'
     assert value['orders'][0]['state']=='completed' and value['orders'][0]['received_at']==10
     assert 'private_audit' not in value
+
+
+def test_stale_evacuation_warning_matches_the_same_group_and_delivered_order():
+    from eval.render_qwen3_day_report import has_stale_completed_evacuation
+    row = {'tool': 'get_situation', 'result': {
+        'districts': [{'id': 'p0', 'status': 'unwarned'}],
+        'protection_orders': [{'group_id': 'p0', 'action': 'evacuate',
+                               'state': 'completed', 'received_at': 10}]}}
+    assert has_stale_completed_evacuation(row)
+    row['result']['protection_orders'][0]['group_id'] = 'p1'
+    assert not has_stale_completed_evacuation(row)
+    row['result']['protection_orders'][0]['group_id'] = 'p0'
+    row['result']['protection_orders'][0]['received_at'] = None
+    assert not has_stale_completed_evacuation(row)
