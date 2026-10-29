@@ -98,7 +98,7 @@ its canonical counterpart exactly. Compressed canonical trajectories occupy
 landscape. Both forms are retained. `provenance.json` records artifact/code hashes,
 source context, measured results, exploratory controls and unresolved gates.
 
-See `../../DATA_STORAGE.md` for artifact layout and separation rules. Catalog
+See [data storage](../../docs/data-storage.md) for artifact layout and separation rules. Catalog
 configuration, verification and private scoring evidence must not enter actor
 observations or retrieval banks. The frozen split is not yet a training release;
 broader calibration, package/adapter validation and redistribution rights remain.

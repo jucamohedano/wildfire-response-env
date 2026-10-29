@@ -1,0 +1,355 @@
+{
+  "code_commit": "fb872ce67f0db2fb5a10001905c78b55e4fe4be6",
+  "core_sha256": "a7fe0c0aa1bcb0cdd16d2fe70f17adfcf598d64daff6a10b40f117c3cac24a02",
+  "created_at_utc": "2026-10-28T13:39:38.796812+00:00",
+  "estimated_real_map_smoke": {
+    "case": "incident-day-shift-v1-000",
+    "completed_minutes": 1440,
+    "contradictions": 0,
+    "role": "One explicitly unapproved assumption-based case, not a full real-map benchmark suite",
+    "source_pack_approval": "unapproved_source_pack",
+    "verification": {
+      "exact_replay": true,
+      "independent_reward_agreement": true,
+      "passed": true
+    }
+  },
+  "fuel": {
+    "confidence": "low; vote share is not calibrated correctness probability",
+    "confirmed_open_water_centres": 0,
+    "contexts": {
+      "unresolved": 27,
+      "urban_mixed": 3,
+      "vegetation": 50
+    },
+    "estimate_document_sha256": "dfbe5fb8844954c15b31f1dd24f4167bc5460a14848c3a8a78df998821c44285",
+    "estimated_cells": 80,
+    "historical_source_approval": false,
+    "interpolation": "At most eight compatible known neighbours; inverse-distance categorical voting, never averaging class numbers",
+    "source_known_cells_changed": 0,
+    "spatial_holdout": {
+      "accuracy": 0.6,
+      "correct": 24,
+      "role": "exploratory known-cell diagnostic, not validated accuracy for missing cells",
+      "sample_count": 40
+    },
+    "unknown_land_water_guard": "No initialization or fire progression near unresolved cells; incomplete ungraded run, never a firebreak",
+    "urban": "Built/mixed terrain with explicitly assumed nonzero garden fuel, not borrowed forest"
+  },
+  "human_review": {
+    "late_egress_exceptions": 14,
+    "note": "Documented unavailable modeled egress and continuous assistance permit late recovery; not proof of real-world impossibility or safety",
+    "pending": true
+  },
+  "new_maps_downloaded": false,
+  "new_scenarios": {
+    "cases": [
+      {
+        "case": "incident-day-shift-v1-000",
+        "completed_minutes": 1440,
+        "first_applied_work": {
+          "crew-0": 195,
+          "crew-0-shift-2": 527,
+          "crew-0-shift-3": 1054,
+          "crew-1": 193,
+          "crew-1-shift-2": 527,
+          "crew-1-shift-3": 1059,
+          "engine-0": 1,
+          "engine-0-shift-2": 514,
+          "engine-0-shift-3": 1053,
+          "engine-1": 194,
+          "engine-1-shift-2": 518,
+          "engine-1-shift-3": 1080,
+          "plane-0": 147,
+          "plane-1": 507
+        },
+        "late_egress_exceptions": 3,
+        "new_exposed_population": 0,
+        "verification": {
+          "exact_replay": true,
+          "independent_reward_agreement": true,
+          "passed": true
+        },
+        "water_spent_without_effect": {
+          "crew-0": 0,
+          "crew-0-shift-2": 0,
+          "crew-0-shift-3": 0,
+          "crew-1": 0,
+          "crew-1-shift-2": 0,
+          "crew-1-shift-3": 0,
+          "engine-0": 0,
+          "engine-0-shift-2": 0,
+          "engine-0-shift-3": 0,
+          "engine-1": 0,
+          "engine-1-shift-2": 0,
+          "engine-1-shift-3": 0,
+          "plane-0": 0,
+          "plane-1": 0
+        }
+      },
+      {
+        "case": "incident-day-shift-v1-001",
+        "completed_minutes": 1440,
+        "first_applied_work": {
+          "crew-0": 1,
+          "crew-0-shift-2": 530,
+          "crew-0-shift-3": 1099,
+          "crew-1": 277,
+          "crew-1-shift-2": 533,
+          "crew-1-shift-3": 1108,
+          "engine-0": 1,
+          "engine-0-shift-2": 517,
+          "engine-0-shift-3": 1066,
+          "engine-1": 171,
+          "engine-1-shift-2": 521,
+          "engine-1-shift-3": 1065,
+          "plane-0": 143,
+          "plane-1": 509
+        },
+        "late_egress_exceptions": 2,
+        "new_exposed_population": 0,
+        "verification": {
+          "exact_replay": true,
+          "independent_reward_agreement": true,
+          "passed": true
+        },
+        "water_spent_without_effect": {
+          "crew-0": 0,
+          "crew-0-shift-2": 0,
+          "crew-0-shift-3": 0,
+          "crew-1": 0,
+          "crew-1-shift-2": 0,
+          "crew-1-shift-3": 0,
+          "engine-0": 0,
+          "engine-0-shift-2": 0,
+          "engine-0-shift-3": 0,
+          "engine-1": 0,
+          "engine-1-shift-2": 0,
+          "engine-1-shift-3": 0,
+          "plane-0": 0,
+          "plane-1": 0
+        }
+      },
+      {
+        "case": "incident-day-shift-v1-002",
+        "completed_minutes": 1440,
+        "first_applied_work": {
+          "crew-0": 178,
+          "crew-0-shift-2": 536,
+          "crew-0-shift-3": 1055,
+          "crew-1": 177,
+          "crew-1-shift-2": 534,
+          "crew-1-shift-3": 1059,
+          "engine-0": 1,
+          "plane-0": 145,
+          "plane-1": 506
+        },
+        "late_egress_exceptions": 2,
+        "new_exposed_population": 0,
+        "verification": {
+          "exact_replay": true,
+          "independent_reward_agreement": true,
+          "passed": true
+        },
+        "water_spent_without_effect": {
+          "crew-0": 0,
+          "crew-0-shift-2": 0,
+          "crew-0-shift-3": 0,
+          "crew-1": 0,
+          "crew-1-shift-2": 0,
+          "crew-1-shift-3": 0,
+          "engine-0": 0,
+          "engine-0-shift-2": 0,
+          "engine-0-shift-3": 0,
+          "engine-1": 0,
+          "engine-1-shift-2": 0,
+          "engine-1-shift-3": 0,
+          "plane-0": 0,
+          "plane-1": 0
+        }
+      },
+      {
+        "case": "incident-day-shift-v1-003",
+        "completed_minutes": 1440,
+        "first_applied_work": {
+          "crew-0": 191,
+          "crew-0-shift-2": 544,
+          "crew-1": 189,
+          "crew-1-shift-2": 550,
+          "engine-0": 1,
+          "engine-0-shift-2": 514,
+          "engine-0-shift-3": 1003,
+          "engine-1": 190,
+          "engine-1-shift-2": 518,
+          "engine-1-shift-3": 997,
+          "plane-0": 143,
+          "plane-1": 509
+        },
+        "late_egress_exceptions": 0,
+        "new_exposed_population": 0,
+        "verification": {
+          "exact_replay": true,
+          "independent_reward_agreement": true,
+          "passed": true
+        },
+        "water_spent_without_effect": {
+          "crew-0": 0,
+          "crew-0-shift-2": 0,
+          "crew-0-shift-3": 0,
+          "crew-1": 0,
+          "crew-1-shift-2": 0,
+          "crew-1-shift-3": 0,
+          "engine-0": 0,
+          "engine-0-shift-2": 0,
+          "engine-0-shift-3": 0,
+          "engine-1": 0,
+          "engine-1-shift-2": 0,
+          "engine-1-shift-3": 0,
+          "plane-0": 0,
+          "plane-1": 0
+        }
+      },
+      {
+        "case": "incident-day-shift-v1-004",
+        "completed_minutes": 1440,
+        "first_applied_work": {
+          "crew-0": 196,
+          "crew-0-shift-2": 522,
+          "crew-0-shift-3": 1078,
+          "crew-1": 194,
+          "crew-1-shift-2": 527,
+          "crew-1-shift-3": 1077,
+          "engine-0": 1,
+          "engine-0-shift-2": 515,
+          "engine-0-shift-3": 1146,
+          "engine-1": 194,
+          "engine-1-shift-2": 517,
+          "engine-1-shift-3": 1148,
+          "plane-0": 147,
+          "plane-1": 510
+        },
+        "late_egress_exceptions": 4,
+        "new_exposed_population": 0,
+        "verification": {
+          "exact_replay": true,
+          "independent_reward_agreement": true,
+          "passed": true
+        },
+        "water_spent_without_effect": {
+          "crew-0": 0,
+          "crew-0-shift-2": 0,
+          "crew-0-shift-3": 0,
+          "crew-1": 0,
+          "crew-1-shift-2": 0,
+          "crew-1-shift-3": 0,
+          "engine-0": 0,
+          "engine-0-shift-2": 0,
+          "engine-0-shift-3": 0,
+          "engine-1": 0,
+          "engine-1-shift-2": 0,
+          "engine-1-shift-3": 0,
+          "plane-0": 0,
+          "plane-1": 0
+        }
+      },
+      {
+        "case": "incident-day-shift-v1-005",
+        "completed_minutes": 1440,
+        "first_applied_work": {
+          "crew-0": 198,
+          "crew-0-shift-2": 525,
+          "crew-0-shift-3": 1021,
+          "crew-1": 197,
+          "crew-1-shift-2": 529,
+          "crew-1-shift-3": 1101,
+          "engine-0": 1,
+          "engine-0-shift-2": 516,
+          "engine-0-shift-3": 1021,
+          "engine-1": 396,
+          "engine-1-shift-2": 518,
+          "engine-1-shift-3": 1021,
+          "plane-0": 147,
+          "plane-1": 508
+        },
+        "late_egress_exceptions": 3,
+        "new_exposed_population": 0,
+        "verification": {
+          "exact_replay": true,
+          "independent_reward_agreement": true,
+          "passed": true
+        },
+        "water_spent_without_effect": {
+          "crew-0": 0,
+          "crew-0-shift-2": 0,
+          "crew-0-shift-3": 0,
+          "crew-1": 0,
+          "crew-1-shift-2": 0,
+          "crew-1-shift-3": 0,
+          "engine-0": 0,
+          "engine-0-shift-2": 0,
+          "engine-0-shift-3": 0,
+          "engine-1": 0,
+          "engine-1-shift-2": 0,
+          "engine-1-shift-3": 0,
+          "plane-0": 0,
+          "plane-1": 0
+        }
+      }
+    ],
+    "daylight_gated_aircraft_slots": 2,
+    "disk_checkpoint": "Multi-resource sorted JSON/gzip checkpoint matches uninterrupted physics and public ordering",
+    "gates": {
+      "blocking_count": 0,
+      "contradiction_count": 0,
+      "exercise_consistent": "passed",
+      "human_review": "pending",
+      "intended_constraint_coverage": {
+        "incident-day-shift-v1-000": "work_observed_review_required",
+        "incident-day-shift-v1-001": "constraint_evidence_review_required",
+        "incident-day-shift-v1-002": "no_constraint_evidence_observed",
+        "incident-day-shift-v1-003": "no_constraint_evidence_observed",
+        "incident-day-shift-v1-004": "no_constraint_evidence_observed",
+        "incident-day-shift-v1-005": "constraint_evidence_review_required"
+      },
+      "note": "Automated exercise consistency requires six verified completed days, no contradictions or blockers, stable implementation and demonstrated counterfactual mechanics. Human review is pending; neither counterfactuals nor temporal correlations prove causation or physical validity.",
+      "physically_validated": "no"
+    },
+    "ground_shift_waves": [
+      [
+        0,
+        480
+      ],
+      [
+        480,
+        960
+      ],
+      [
+        960,
+        1440
+      ]
+    ],
+    "ids": [
+      "incident-day-shift-v1-000",
+      "incident-day-shift-v1-001",
+      "incident-day-shift-v1-002",
+      "incident-day-shift-v1-003",
+      "incident-day-shift-v1-004",
+      "incident-day-shift-v1-005"
+    ],
+    "initial_assignment": "Useful safe staging with legal return, or disclosed mapped failed-access recovery; no invented road",
+    "no_effect_work": "Does not spend water or work; requests repositioning or aircraft recovery",
+    "roster_slots": 14
+  },
+  "paid_inference_or_gpu_training": false,
+  "physical_calibration": false,
+  "scope": "Estimated exercise inputs and development scenarios, not a historical reconstruction or real-world safety certification",
+  "tests": {
+    "incident_day": {
+      "passed": 220,
+      "skipped": 0,
+      "subtests": 37
+    },
+    "preserved_two_hour_identity_test": "passed"
+  },
+  "version": "estimated-fuel-and-shift-validation-v1"
+}

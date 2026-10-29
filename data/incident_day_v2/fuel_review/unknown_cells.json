@@ -1,0 +1,2099 @@
+{
+  "version": "incident-day-fuel-evidence-v1",
+  "approval_status": "blocked",
+  "prepared_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
+  "domain_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+  "grid_crs": "EPSG:25830",
+  "native_crs": "EPSG:3035",
+  "wgs84_crs": "EPSG:4326",
+  "coordinate_convention": "cell centres; longitude then latitude; zero-based rows and columns",
+  "counts": {
+    "unknown": 80,
+    "masked": 78,
+    "outside": 2,
+    "valid": 0
+  },
+  "cells": [
+    {
+      "row": 0,
+      "column": 0,
+      "parent_row": 0,
+      "parent_column": 0,
+      "grid_xy": [
+        297250.0,
+        4054250.0
+      ],
+      "longitude": -5.267069141,
+      "latitude": 36.6122284853,
+      "native_xy": [
+        2953321.610572,
+        1641436.225213
+      ],
+      "native_pixel": [
+        0,
+        12
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 0,
+      "column": 13,
+      "parent_row": 0,
+      "parent_column": 13,
+      "grid_xy": [
+        303750.0,
+        4054250.0
+      ],
+      "longitude": -5.1944378268,
+      "latitude": 36.6135888081,
+      "native_xy": [
+        2959758.527963,
+        1640291.032493
+      ],
+      "native_pixel": [
+        4,
+        38
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 0,
+      "column": 14,
+      "parent_row": 0,
+      "parent_column": 14,
+      "grid_xy": [
+        304250.0,
+        4054250.0
+      ],
+      "longitude": -5.1888506021,
+      "latitude": 36.6136916164,
+      "native_xy": [
+        2960253.704564,
+        1640202.993555
+      ],
+      "native_pixel": [
+        5,
+        40
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 0,
+      "column": 15,
+      "parent_row": 0,
+      "parent_column": 15,
+      "grid_xy": [
+        304750.0,
+        4054250.0
+      ],
+      "longitude": -5.1832633491,
+      "latitude": 36.613794163,
+      "native_xy": [
+        2960748.885306,
+        1640114.962168
+      ],
+      "native_pixel": [
+        5,
+        41
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 0,
+      "column": 36,
+      "parent_row": 0,
+      "parent_column": 36,
+      "grid_xy": [
+        315250.0,
+        4054250.0
+      ],
+      "longitude": -5.0659246283,
+      "latitude": 36.6158871764,
+      "native_xy": [
+        2971148.630373,
+        1638268.047768
+      ],
+      "native_pixel": null,
+      "native_status": "outside",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 1,
+      "column": 0,
+      "parent_row": 1,
+      "parent_column": 0,
+      "grid_xy": [
+        297250.0,
+        4053750.0
+      ],
+      "longitude": -5.2669372475,
+      "latitude": 36.6077245119,
+      "native_xy": [
+        2953246.158905,
+        1640944.838186
+      ],
+      "native_pixel": [
+        2,
+        11
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 1,
+      "column": 4,
+      "parent_row": 1,
+      "parent_column": 4,
+      "grid_xy": [
+        299250.0,
+        4053750.0
+      ],
+      "longitude": -5.2445909684,
+      "latitude": 36.608147714,
+      "native_xy": [
+        2955226.684945,
+        1640592.335428
+      ],
+      "native_pixel": [
+        3,
+        19
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 1,
+      "column": 18,
+      "parent_row": 1,
+      "parent_column": 18,
+      "grid_xy": [
+        306250.0,
+        4053750.0
+      ],
+      "longitude": -5.166375367,
+      "latitude": 36.6095959534,
+      "native_xy": [
+        2962159.050978,
+        1639359.526517
+      ],
+      "native_pixel": [
+        8,
+        47
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 1,
+      "column": 36,
+      "parent_row": 1,
+      "parent_column": 36,
+      "grid_xy": [
+        315250.0,
+        4053750.0
+      ],
+      "longitude": -5.0658044157,
+      "latitude": 36.6113826059,
+      "native_xy": [
+        2971073.279448,
+        1637776.662019
+      ],
+      "native_pixel": null,
+      "native_status": "outside",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 2,
+      "column": 0,
+      "parent_row": 2,
+      "parent_column": 0,
+      "grid_xy": [
+        297250.0,
+        4053250.0
+      ],
+      "longitude": -5.2668053833,
+      "latitude": 36.6032205346,
+      "native_xy": [
+        2953170.711497,
+        1640453.453165
+      ],
+      "native_pixel": [
+        4,
+        11
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 2,
+      "column": 1,
+      "parent_row": 2,
+      "parent_column": 1,
+      "grid_xy": [
+        297750.0,
+        4053250.0
+      ],
+      "longitude": -5.2612191816,
+      "latitude": 36.6033267102,
+      "native_xy": [
+        2953665.839516,
+        1640365.316155
+      ],
+      "native_pixel": [
+        4,
+        13
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 2,
+      "column": 26,
+      "parent_row": 2,
+      "parent_column": 26,
+      "grid_xy": [
+        310250.0,
+        4053250.0
+      ],
+      "longitude": -5.1215548306,
+      "latitude": 36.6058960764,
+      "native_xy": [
+        2966045.391971,
+        1638164.34443
+      ],
+      "native_pixel": [
+        13,
+        63
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 3,
+      "column": 0,
+      "parent_row": 3,
+      "parent_column": 0,
+      "grid_xy": [
+        297250.0,
+        4052750.0
+      ],
+      "longitude": -5.2666735484,
+      "latitude": 36.5987165535,
+      "native_xy": [
+        2953095.268349,
+        1639962.070162
+      ],
+      "native_pixel": [
+        6,
+        11
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 3,
+      "column": 2,
+      "parent_row": 3,
+      "parent_column": 2,
+      "grid_xy": [
+        298250.0,
+        4052750.0
+      ],
+      "longitude": -5.2555017642,
+      "latitude": 36.5989286086,
+      "native_xy": [
+        2954085.534168,
+        1639785.803687
+      ],
+      "native_pixel": [
+        6,
+        15
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 3,
+      "column": 13,
+      "parent_row": 3,
+      "parent_column": 13,
+      "grid_xy": [
+        303750.0,
+        4052750.0
+      ],
+      "longitude": -5.1940548829,
+      "latitude": 36.6000762103,
+      "native_xy": [
+        2959532.294746,
+        1638816.877775
+      ],
+      "native_pixel": [
+        10,
+        37
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 3,
+      "column": 14,
+      "parent_row": 3,
+      "parent_column": 14,
+      "grid_xy": [
+        304250.0,
+        4052750.0
+      ],
+      "longitude": -5.1884686313,
+      "latitude": 36.6001789683,
+      "native_xy": [
+        2960027.479741,
+        1638728.838915
+      ],
+      "native_pixel": [
+        11,
+        39
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 3,
+      "column": 15,
+      "parent_row": 3,
+      "parent_column": 15,
+      "grid_xy": [
+        304750.0,
+        4052750.0
+      ],
+      "longitude": -5.1828823514,
+      "latitude": 36.6002814647,
+      "native_xy": [
+        2960522.66888,
+        1638640.807609
+      ],
+      "native_pixel": [
+        11,
+        41
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 3,
+      "column": 22,
+      "parent_row": 3,
+      "parent_column": 22,
+      "grid_xy": [
+        308250.0,
+        4052750.0
+      ],
+      "longitude": -5.1437776067,
+      "latitude": 36.6009916145,
+      "native_xy": [
+        2963989.108454,
+        1638024.800056
+      ],
+      "native_pixel": [
+        13,
+        54
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 3,
+      "column": 26,
+      "parent_row": 3,
+      "parent_column": 26,
+      "grid_xy": [
+        310250.0,
+        4052750.0
+      ],
+      "longitude": -5.1214314274,
+      "latitude": 36.6013916587,
+      "native_xy": [
+        2965970.021574,
+        1637672.962053
+      ],
+      "native_pixel": [
+        15,
+        62
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 4,
+      "column": 0,
+      "parent_row": 4,
+      "parent_column": 0,
+      "grid_xy": [
+        297250.0,
+        4052250.0
+      ],
+      "longitude": -5.2665417428,
+      "latitude": 36.5942125686,
+      "native_xy": [
+        2953019.82946,
+        1639470.689178
+      ],
+      "native_pixel": [
+        8,
+        11
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 4,
+      "column": 22,
+      "parent_row": 4,
+      "parent_column": 22,
+      "grid_xy": [
+        308250.0,
+        4052250.0
+      ],
+      "longitude": -5.1436529336,
+      "latitude": 36.5964872582,
+      "native_xy": [
+        2963913.731137,
+        1637533.41948
+      ],
+      "native_pixel": [
+        15,
+        54
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 4,
+      "column": 23,
+      "parent_row": 4,
+      "parent_column": 23,
+      "grid_xy": [
+        308750.0,
+        4052250.0
+      ],
+      "longitude": -5.1380667545,
+      "latitude": 36.5965876453,
+      "native_xy": [
+        2964408.956057,
+        1637445.448683
+      ],
+      "native_pixel": [
+        16,
+        56
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 4,
+      "column": 24,
+      "parent_row": 4,
+      "parent_column": 24,
+      "grid_xy": [
+        309250.0,
+        4052250.0
+      ],
+      "longitude": -5.1324805477,
+      "latitude": 36.5966877709,
+      "native_xy": [
+        2964904.185092,
+        1637357.485457
+      ],
+      "native_pixel": [
+        16,
+        58
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 4,
+      "column": 25,
+      "parent_row": 4,
+      "parent_column": 25,
+      "grid_xy": [
+        309750.0,
+        4052250.0
+      ],
+      "longitude": -5.1268943133,
+      "latitude": 36.5967876348,
+      "native_xy": [
+        2965399.418232,
+        1637269.529782
+      ],
+      "native_pixel": [
+        16,
+        60
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 5,
+      "column": 0,
+      "parent_row": 5,
+      "parent_column": 0,
+      "grid_xy": [
+        297250.0,
+        4051750.0
+      ],
+      "longitude": -5.2664099665,
+      "latitude": 36.5897085798,
+      "native_xy": [
+        2952944.394827,
+        1638979.310203
+      ],
+      "native_pixel": [
+        10,
+        10
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 5,
+      "column": 1,
+      "parent_row": 5,
+      "parent_column": 1,
+      "grid_xy": [
+        297750.0,
+        4051750.0
+      ],
+      "longitude": -5.2608247371,
+      "latitude": 36.5898147035,
+      "native_xy": [
+        2953439.531242,
+        1638891.173182
+      ],
+      "native_pixel": [
+        10,
+        12
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 5,
+      "column": 25,
+      "parent_row": 5,
+      "parent_column": 25,
+      "grid_xy": [
+        309750.0,
+        4051750.0
+      ],
+      "longitude": -5.1267706406,
+      "latitude": 36.5922832257,
+      "native_xy": [
+        2965324.053599,
+        1636778.151366
+      ],
+      "native_pixel": [
+        18,
+        60
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 6,
+      "column": 2,
+      "parent_row": 6,
+      "parent_column": 2,
+      "grid_xy": [
+        298250.0,
+        4051250.0
+      ],
+      "longitude": -5.2551083795,
+      "latitude": 36.5854165385,
+      "native_xy": [
+        2953859.247068,
+        1638311.666744
+      ],
+      "native_pixel": [
+        12,
+        14
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 6,
+      "column": 25,
+      "parent_row": 6,
+      "parent_column": 25,
+      "grid_xy": [
+        309750.0,
+        4051250.0
+      ],
+      "longitude": -5.1266469954,
+      "latitude": 36.5877788129,
+      "native_xy": [
+        2965248.693246,
+        1636286.774973
+      ],
+      "native_pixel": [
+        20,
+        59
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 7,
+      "column": 11,
+      "parent_row": 7,
+      "parent_column": 11,
+      "grid_xy": [
+        302750.0,
+        4050750.0
+      ],
+      "longitude": -5.204714513,
+      "latitude": 36.5818531942,
+      "native_xy": [
+        2958240.330308,
+        1637027.466593
+      ],
+      "native_pixel": [
+        17,
+        31
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 8,
+      "column": 11,
+      "parent_row": 8,
+      "parent_column": 11,
+      "grid_xy": [
+        302750.0,
+        4050250.0
+      ],
+      "longitude": -5.2045863871,
+      "latitude": 36.5773490058,
+      "native_xy": [
+        2958164.939267,
+        1636536.093736
+      ],
+      "native_pixel": [
+        19,
+        31
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 9,
+      "column": 6,
+      "parent_row": 9,
+      "parent_column": 6,
+      "grid_xy": [
+        300250.0,
+        4049750.0
+      ],
+      "longitude": -5.2323791149,
+      "latitude": 36.5723249937,
+      "native_xy": [
+        2955613.647345,
+        1636485.10565
+      ],
+      "native_pixel": [
+        20,
+        21
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 9,
+      "column": 9,
+      "parent_row": 9,
+      "parent_column": 9,
+      "grid_xy": [
+        301750.0,
+        4049750.0
+      ],
+      "longitude": -5.2156267057,
+      "latitude": 36.5726376696,
+      "native_xy": [
+        2957099.177938,
+        1636220.853307
+      ],
+      "native_pixel": [
+        21,
+        27
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 10,
+      "column": 5,
+      "parent_row": 10,
+      "parent_column": 5,
+      "grid_xy": [
+        299750.0,
+        4049250.0
+      ],
+      "longitude": -5.2378331823,
+      "latitude": 36.5677161518,
+      "native_xy": [
+        2955043.079504,
+        1636081.83601
+      ],
+      "native_pixel": [
+        21,
+        19
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 10,
+      "column": 6,
+      "parent_row": 10,
+      "parent_column": 6,
+      "grid_xy": [
+        300250.0,
+        4049250.0
+      ],
+      "longitude": -5.2322494271,
+      "latitude": 36.5678208826,
+      "native_xy": [
+        2955538.250833,
+        1635993.736772
+      ],
+      "native_pixel": [
+        22,
+        21
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 11,
+      "column": 13,
+      "parent_row": 11,
+      "parent_column": 13,
+      "grid_xy": [
+        303750.0,
+        4048750.0
+      ],
+      "longitude": -5.1930349456,
+      "latitude": 36.5640424494,
+      "native_xy": [
+        2958929.194132,
+        1634885.887247
+      ],
+      "native_pixel": [
+        26,
+        34
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 12,
+      "column": 13,
+      "parent_row": 12,
+      "parent_column": 13,
+      "grid_xy": [
+        303750.0,
+        4048250.0
+      ],
+      "longitude": -5.1929075808,
+      "latitude": 36.5595382123,
+      "native_xy": [
+        2958853.825783,
+        1634394.522526
+      ],
+      "native_pixel": [
+        28,
+        34
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 14,
+      "column": 1,
+      "parent_row": 14,
+      "parent_column": 1,
+      "grid_xy": [
+        297750.0,
+        4047250.0
+      ],
+      "longitude": -5.2596429794,
+      "latitude": 36.5492784772,
+      "native_xy": [
+        2952760.836569,
+        1634468.853292
+      ],
+      "native_pixel": [
+        28,
+        10
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 14,
+      "column": 7,
+      "parent_row": 14,
+      "parent_column": 7,
+      "grid_xy": [
+        300750.0,
+        4047250.0
+      ],
+      "longitude": -5.2261484744,
+      "latitude": 36.5499088015,
+      "native_xy": [
+        2955731.894146,
+        1633940.189843
+      ],
+      "native_pixel": [
+        30,
+        21
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 14,
+      "column": 8,
+      "parent_row": 14,
+      "parent_column": 8,
+      "grid_xy": [
+        301250.0,
+        4047250.0
+      ],
+      "longitude": -5.220565956,
+      "latitude": 36.5500129418,
+      "native_xy": [
+        2956227.085034,
+        1633852.105784
+      ],
+      "native_pixel": [
+        30,
+        23
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 15,
+      "column": 6,
+      "parent_row": 15,
+      "parent_column": 6,
+      "grid_xy": [
+        300250.0,
+        4046750.0
+      ],
+      "longitude": -5.2316014203,
+      "latitude": 36.5453002701,
+      "native_xy": [
+        2955161.332249,
+        1633536.922726
+      ],
+      "native_pixel": [
+        31,
+        19
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 15,
+      "column": 7,
+      "parent_row": 15,
+      "parent_column": 7,
+      "grid_xy": [
+        300750.0,
+        4046750.0
+      ],
+      "longitude": -5.226019254,
+      "latitude": 36.5454046544,
+      "native_xy": [
+        2955656.521769,
+        1633448.831094
+      ],
+      "native_pixel": [
+        32,
+        21
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 16,
+      "column": 6,
+      "parent_row": 16,
+      "parent_column": 6,
+      "grid_xy": [
+        300250.0,
+        4046250.0
+      ],
+      "longitude": -5.2314719052,
+      "latitude": 36.5407961362,
+      "native_xy": [
+        2955085.96134,
+        1633045.565988
+      ],
+      "native_pixel": [
+        33,
+        19
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 23,
+      "column": 34,
+      "parent_row": 23,
+      "parent_column": 34,
+      "grid_xy": [
+        314250.0,
+        4042750.0
+      ],
+      "longitude": -5.0743272234,
+      "latitude": 36.512087473,
+      "native_xy": [
+        2968425.985605,
+        1627142.435103
+      ],
+      "native_pixel": [
+        57,
+        72
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 23,
+      "column": 35,
+      "parent_row": 23,
+      "parent_column": 35,
+      "grid_xy": [
+        314750.0,
+        4042750.0
+      ],
+      "longitude": -5.0687468667,
+      "latitude": 36.5121844195,
+      "native_xy": [
+        2968921.313032,
+        1627054.556486
+      ],
+      "native_pixel": [
+        57,
+        74
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 24,
+      "column": 34,
+      "parent_row": 24,
+      "parent_column": 34,
+      "grid_xy": [
+        314250.0,
+        4042250.0
+      ],
+      "longitude": -5.0742069776,
+      "latitude": 36.5075828478,
+      "native_xy": [
+        2968350.72772,
+        1626651.095637
+      ],
+      "native_pixel": [
+        59,
+        72
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 27,
+      "column": 36,
+      "parent_row": 27,
+      "parent_column": 36,
+      "grid_xy": [
+        315250.0,
+        4040750.0
+      ],
+      "longitude": -5.0626882427,
+      "latitude": 36.4942624555,
+      "native_xy": [
+        2969115.661344,
+        1625001.340384
+      ],
+      "native_pixel": [
+        65,
+        75
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 28,
+      "column": 27,
+      "parent_row": 28,
+      "parent_column": 27,
+      "grid_xy": [
+        310750.0,
+        4040250.0
+      ],
+      "longitude": -5.1127767096,
+      "latitude": 36.4888789417,
+      "native_xy": [
+        2964582.462551,
+        1625301.119428
+      ],
+      "native_pixel": [
+        64,
+        57
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 31,
+      "column": 25,
+      "parent_row": 31,
+      "parent_column": 25,
+      "grid_xy": [
+        309750.0,
+        4038750.0
+      ],
+      "longitude": -5.1235647734,
+      "latitude": 36.4751672672,
+      "native_xy": [
+        2963366.076262,
+        1624003.022135
+      ],
+      "native_pixel": [
+        69,
+        52
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 31,
+      "column": 26,
+      "parent_row": 31,
+      "parent_column": 26,
+      "grid_xy": [
+        310250.0,
+        4038750.0
+      ],
+      "longitude": -5.1179872406,
+      "latitude": 36.4752664312,
+      "native_xy": [
+        2963861.38949,
+        1623915.075405
+      ],
+      "native_pixel": [
+        70,
+        54
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 32,
+      "column": 18,
+      "parent_row": 32,
+      "parent_column": 18,
+      "grid_xy": [
+        306250.0,
+        4038250.0
+      ],
+      "longitude": -5.1624815453,
+      "latitude": 36.4699614307,
+      "native_xy": [
+        2959823.730144,
+        1624127.538735
+      ],
+      "native_pixel": [
+        69,
+        38
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 32,
+      "column": 21,
+      "parent_row": 32,
+      "parent_column": 21,
+      "grid_xy": [
+        307750.0,
+        4038250.0
+      ],
+      "longitude": -5.1457504084,
+      "latitude": 36.4702635612,
+      "native_xy": [
+        2961309.604183,
+        1623863.561398
+      ],
+      "native_pixel": [
+        70,
+        44
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 32,
+      "column": 25,
+      "parent_row": 32,
+      "parent_column": 25,
+      "grid_xy": [
+        309750.0,
+        4038250.0
+      ],
+      "longitude": -5.1234418401,
+      "latitude": 36.4706627564,
+      "native_xy": [
+        2963290.827276,
+        1623511.698393
+      ],
+      "native_pixel": [
+        71,
+        52
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 32,
+      "column": 26,
+      "parent_row": 32,
+      "parent_column": 26,
+      "grid_xy": [
+        310250.0,
+        4038250.0
+      ],
+      "longitude": -5.1178646296,
+      "latitude": 36.4707619042,
+      "native_xy": [
+        2963786.143329,
+        1623423.751713
+      ],
+      "native_pixel": [
+        72,
+        54
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 32,
+      "column": 27,
+      "parent_row": 32,
+      "parent_column": 27,
+      "grid_xy": [
+        310750.0,
+        4038250.0
+      ],
+      "longitude": -5.1122873919,
+      "latitude": 36.4708607916,
+      "native_xy": [
+        2964281.463485,
+        1623335.812665
+      ],
+      "native_pixel": [
+        72,
+        56
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 32,
+      "column": 28,
+      "parent_row": 32,
+      "parent_column": 28,
+      "grid_xy": [
+        311250.0,
+        4038250.0
+      ],
+      "longitude": -5.106710127,
+      "latitude": 36.4709594186,
+      "native_xy": [
+        2964776.787746,
+        1623247.881249
+      ],
+      "native_pixel": [
+        73,
+        58
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 32,
+      "column": 35,
+      "parent_row": 32,
+      "parent_column": 35,
+      "grid_xy": [
+        314750.0,
+        4038250.0
+      ],
+      "longitude": -5.0676685185,
+      "latitude": 36.4716425157,
+      "native_xy": [
+        2968244.172053,
+        1622632.575056
+      ],
+      "native_pixel": [
+        75,
+        71
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 33,
+      "column": 25,
+      "parent_row": 33,
+      "parent_column": 25,
+      "grid_xy": [
+        309750.0,
+        4037750.0
+      ],
+      "longitude": -5.1233189342,
+      "latitude": 36.4661582418,
+      "native_xy": [
+        2963215.582565,
+        1623020.376684
+      ],
+      "native_pixel": [
+        73,
+        51
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 33,
+      "column": 27,
+      "parent_row": 33,
+      "parent_column": 27,
+      "grid_xy": [
+        310750.0,
+        4037750.0
+      ],
+      "longitude": -5.1121651304,
+      "latitude": 36.4663562447,
+      "native_xy": [
+        2964206.224434,
+        1622844.491064
+      ],
+      "native_pixel": [
+        74,
+        55
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 33,
+      "column": 28,
+      "parent_row": 33,
+      "parent_column": 28,
+      "grid_xy": [
+        311250.0,
+        4037750.0
+      ],
+      "longitude": -5.1065881878,
+      "latitude": 36.4664548555,
+      "native_xy": [
+        2964701.551515,
+        1622756.559695
+      ],
+      "native_pixel": [
+        74,
+        57
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 33,
+      "column": 29,
+      "parent_row": 33,
+      "parent_column": 29,
+      "grid_xy": [
+        311750.0,
+        4037750.0
+      ],
+      "longitude": -5.101011218,
+      "latitude": 36.466553206,
+      "native_xy": [
+        2965196.882705,
+        1622668.635964
+      ],
+      "native_pixel": [
+        75,
+        59
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 33,
+      "column": 35,
+      "parent_row": 33,
+      "parent_column": 35,
+      "grid_xy": [
+        314750.0,
+        4037750.0
+      ],
+      "longitude": -5.0675488351,
+      "latitude": 36.4671378409,
+      "native_xy": [
+        2968168.955624,
+        1622141.25394
+      ],
+      "native_pixel": [
+        77,
+        71
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 33,
+      "column": 36,
+      "parent_row": 33,
+      "parent_column": 36,
+      "grid_xy": [
+        315250.0,
+        4037750.0
+      ],
+      "longitude": -5.0619716778,
+      "latitude": 36.4672343687,
+      "native_xy": [
+        2968664.315383,
+        1622053.383669
+      ],
+      "native_pixel": [
+        77,
+        73
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 34,
+      "column": 22,
+      "parent_row": 34,
+      "parent_column": 22,
+      "grid_xy": [
+        308250.0,
+        4037250.0
+      ],
+      "longitude": -5.1399255899,
+      "latitude": 36.4613548154,
+      "native_xy": [
+        2961654.401694,
+        1622792.942558
+      ],
+      "native_pixel": [
+        74,
+        45
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 34,
+      "column": 23,
+      "parent_row": 34,
+      "parent_column": 23,
+      "grid_xy": [
+        308750.0,
+        4037250.0
+      ],
+      "longitude": -5.1343491058,
+      "latitude": 36.4614547117,
+      "native_xy": [
+        2962149.711066,
+        1622704.973072
+      ],
+      "native_pixel": [
+        75,
+        47
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 34,
+      "column": 27,
+      "parent_row": 34,
+      "parent_column": 27,
+      "grid_xy": [
+        310750.0,
+        4037250.0
+      ],
+      "longitude": -5.112042896,
+      "latitude": 36.461851694,
+      "native_xy": [
+        2964130.989674,
+        1622353.171494
+      ],
+      "native_pixel": [
+        76,
+        55
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 34,
+      "column": 28,
+      "parent_row": 34,
+      "parent_column": 28,
+      "grid_xy": [
+        311250.0,
+        4037250.0
+      ],
+      "longitude": -5.1064662755,
+      "latitude": 36.4619502887,
+      "native_xy": [
+        2964626.319589,
+        1622265.240179
+      ],
+      "native_pixel": [
+        76,
+        57
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 34,
+      "column": 29,
+      "parent_row": 34,
+      "parent_column": 29,
+      "grid_xy": [
+        311750.0,
+        4037250.0
+      ],
+      "longitude": -5.100889628,
+      "latitude": 36.4620486231,
+      "native_xy": [
+        2965121.653596,
+        1622177.316505
+      ],
+      "native_pixel": [
+        77,
+        59
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 34,
+      "column": 34,
+      "parent_row": 34,
+      "parent_column": 34,
+      "grid_xy": [
+        314250.0,
+        4037250.0
+      ],
+      "longitude": -5.0730059867,
+      "latitude": 36.4625363901,
+      "native_xy": [
+        2967598.384979,
+        1621737.812709
+      ],
+      "native_pixel": [
+        79,
+        69
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 34,
+      "column": 36,
+      "parent_row": 34,
+      "parent_column": 36,
+      "grid_xy": [
+        315250.0,
+        4037250.0
+      ],
+      "longitude": -5.0618523431,
+      "latitude": 36.4627296745,
+      "native_xy": [
+        2968589.106088,
+        1621562.064672
+      ],
+      "native_pixel": [
+        79,
+        73
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 35,
+      "column": 17,
+      "parent_row": 35,
+      "parent_column": 17,
+      "grid_xy": [
+        305750.0,
+        4036750.0
+      ],
+      "longitude": -5.1676821684,
+      "latitude": 36.4563470383,
+      "native_xy": [
+        2959102.657992,
+        1622741.586492
+      ],
+      "native_pixel": [
+        75,
+        35
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 35,
+      "column": 24,
+      "parent_row": 35,
+      "parent_column": 24,
+      "grid_xy": [
+        309250.0,
+        4036750.0
+      ],
+      "longitude": -5.1286494209,
+      "latitude": 36.4570498419,
+      "native_xy": [
+        2962569.785588,
+        1622125.693548
+      ],
+      "native_pixel": [
+        77,
+        49
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 35,
+      "column": 25,
+      "parent_row": 35,
+      "parent_column": 25,
+      "grid_xy": [
+        309750.0,
+        4036750.0
+      ],
+      "longitude": -5.1230732041,
+      "latitude": 36.4571492014,
+      "native_xy": [
+        2963065.106018,
+        1622037.739383
+      ],
+      "native_pixel": [
+        77,
+        51
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 35,
+      "column": 27,
+      "parent_row": 35,
+      "parent_column": 27,
+      "grid_xy": [
+        310750.0,
+        4036750.0
+      ],
+      "longitude": -5.1119206888,
+      "latitude": 36.4573471395,
+      "native_xy": [
+        2964055.759195,
+        1621861.853958
+      ],
+      "native_pixel": [
+        78,
+        55
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 35,
+      "column": 28,
+      "parent_row": 35,
+      "parent_column": 28,
+      "grid_xy": [
+        311250.0,
+        4036750.0
+      ],
+      "longitude": -5.1063443904,
+      "latitude": 36.4574457181,
+      "native_xy": [
+        2964551.091939,
+        1621773.922698
+      ],
+      "native_pixel": [
+        78,
+        57
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 35,
+      "column": 29,
+      "parent_row": 35,
+      "parent_column": 29,
+      "grid_xy": [
+        311750.0,
+        4036750.0
+      ],
+      "longitude": -5.100768065,
+      "latitude": 36.4575440365,
+      "native_xy": [
+        2965046.428776,
+        1621685.999089
+      ],
+      "native_pixel": [
+        79,
+        59
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 35,
+      "column": 33,
+      "parent_row": 35,
+      "parent_column": 33,
+      "grid_xy": [
+        313750.0,
+        4036750.0
+      ],
+      "longitude": -5.0784624939,
+      "latitude": 36.4579347069,
+      "native_xy": [
+        2967027.817046,
+        1621334.381018
+      ],
+      "native_pixel": [
+        80,
+        67
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 35,
+      "column": 34,
+      "parent_row": 35,
+      "parent_column": 34,
+      "grid_xy": [
+        314250.0,
+        4036750.0
+      ],
+      "longitude": -5.0728860342,
+      "latitude": 36.4580317237,
+      "native_xy": [
+        2967523.174316,
+        1621246.495599
+      ],
+      "native_pixel": [
+        81,
+        69
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 35,
+      "column": 35,
+      "parent_row": 35,
+      "parent_column": 35,
+      "grid_xy": [
+        314750.0,
+        4036750.0
+      ],
+      "longitude": -5.0673095479,
+      "latitude": 36.4581284803,
+      "native_xy": [
+        2968018.535661,
+        1621158.617836
+      ],
+      "native_pixel": [
+        81,
+        71
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    },
+    {
+      "row": 35,
+      "column": 36,
+      "parent_row": 35,
+      "parent_column": 36,
+      "grid_xy": [
+        315250.0,
+        4036750.0
+      ],
+      "longitude": -5.061733035,
+      "latitude": 36.4582249765,
+      "native_xy": [
+        2968513.901078,
+        1621070.747707
+      ],
+      "native_pixel": [
+        81,
+        73
+      ],
+      "native_status": "masked",
+      "native_value": null,
+      "source_known": false,
+      "source_class": null,
+      "evidence_status": "unresolved",
+      "replacement_evidence": null
+    }
+  ],
+  "raster_sha256": {
+    "native": "4cc9b17c7f738af14d1f12302b4e8c9f958608023c600d8668864954d95cd308",
+    "classes": "035f7a3ac07db866dc34b4c55778891055d4b03a790268dda77362c1e1ed400c",
+    "valid": "44368e111a336e03211f754774fcb1b65396803aab0d85f772da7a8a7a8fef77",
+    "coverage": "ff67e5d38a9f3765fd1fa1b77e82a1b27d8fda11da308ecb7ec3d62d5e903dd9"
+  },
+  "sampling": "native nearest pixel at stored WGS84 grid centre; masked and outside remain unknown"
+}

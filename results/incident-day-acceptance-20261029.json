@@ -1,0 +1,410 @@
+{
+  "version": "incident-day-merge-acceptance-v1",
+  "implementation_sha256": "5fbd442f80d292bea2117dd0604ecda0ad1a180799abe2f46efde1b1f00b8367",
+  "input_sha256": "50031b3029dcee0a1367ccdd8125d081d19d3b500b2dd373e30ef127d47a2c4d",
+  "network_sha256": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16",
+  "status": "complete",
+  "gates": {
+    "exercise_consistent": "passed",
+    "physically_validated": "no",
+    "contradiction_count": 0,
+    "blocking_count": 0,
+    "human_review": "pending",
+    "intended_constraint_coverage": {
+      "incident-day-realmap-v2-000": "work_observed_review_required",
+      "incident-day-realmap-v2-001": "constraint_evidence_review_required",
+      "incident-day-realmap-v2-002": "constraint_evidence_review_required",
+      "incident-day-realmap-v2-003": "constraint_evidence_review_required",
+      "incident-day-realmap-v2-004": "constraint_evidence_review_required",
+      "incident-day-realmap-v2-005": "constraint_evidence_review_required"
+    },
+    "note": "Automated exercise consistency requires six verified completed days, no contradictions or blockers, stable implementation and demonstrated counterfactual mechanics. Human review is pending; neither counterfactuals nor temporal correlations prove causation or physical validity."
+  },
+  "cases": [
+    {
+      "case": "incident-day-realmap-v2-000",
+      "minutes": 1440,
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "findings": [],
+      "effects": []
+    },
+    {
+      "case": "incident-day-realmap-v2-001",
+      "minutes": 1440,
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "findings": [],
+      "effects": [
+        {
+          "event": {
+            "minute": 15,
+            "kind": "wind",
+            "wind": [
+              0.0,
+              2.0
+            ]
+          },
+          "status": "constraint_evidence_observed",
+          "evidence": {
+            "method": "Same-state wind comparison, delayed report, actual stop or return and alternate arrival",
+            "event_minute": 15,
+            "warning_received_at": 18,
+            "resource_access": [
+              {
+                "resource_id": "crew-0",
+                "state": "travel",
+                "position": [
+                  304668.85068953387,
+                  4039243.875523738
+                ],
+                "active_destination": [
+                  305250.0,
+                  4039250.0
+                ],
+                "active_approach_grid": [
+                  16,
+                  30
+                ],
+                "active_segment_before_safe": true,
+                "active_segment_after_safe": false,
+                "position_before_safe": true,
+                "position_after_safe": false,
+                "before_approaches": [
+                  [
+                    16,
+                    30
+                  ]
+                ],
+                "after_approaches": [
+                  [
+                    16,
+                    31
+                  ]
+                ]
+              },
+              {
+                "resource_id": "crew-1",
+                "state": "travel",
+                "position": [
+                  304849.20388137584,
+                  4039250.0
+                ],
+                "active_destination": [
+                  305250.0,
+                  4039250.0
+                ],
+                "active_approach_grid": [
+                  16,
+                  30
+                ],
+                "active_segment_before_safe": true,
+                "active_segment_after_safe": false,
+                "position_before_safe": true,
+                "position_after_safe": false,
+                "before_approaches": [
+                  [
+                    16,
+                    30
+                  ]
+                ],
+                "after_approaches": [
+                  [
+                    16,
+                    31
+                  ]
+                ]
+              },
+              {
+                "resource_id": "engine-0",
+                "state": "on_scene",
+                "position": [
+                  304654.6,
+                  4039242.8
+                ],
+                "active_destination": [
+                  304654.6,
+                  4039242.8
+                ],
+                "active_approach_grid": [
+                  15,
+                  30
+                ],
+                "active_segment_before_safe": true,
+                "active_segment_after_safe": false,
+                "position_before_safe": true,
+                "position_after_safe": false,
+                "before_approaches": [
+                  [
+                    15,
+                    30
+                  ],
+                  [
+                    15,
+                    31
+                  ],
+                  [
+                    16,
+                    32
+                  ]
+                ],
+                "after_approaches": [
+                  [
+                    15,
+                    31
+                  ],
+                  [
+                    16,
+                    32
+                  ]
+                ]
+              },
+              {
+                "resource_id": "engine-1",
+                "state": "on_scene",
+                "position": [
+                  304654.6,
+                  4039242.8
+                ],
+                "active_destination": [
+                  304654.6,
+                  4039242.8
+                ],
+                "active_approach_grid": [
+                  15,
+                  30
+                ],
+                "active_segment_before_safe": true,
+                "active_segment_after_safe": false,
+                "position_before_safe": true,
+                "position_after_safe": false,
+                "before_approaches": [
+                  [
+                    15,
+                    30
+                  ],
+                  [
+                    15,
+                    31
+                  ],
+                  [
+                    16,
+                    32
+                  ]
+                ],
+                "after_approaches": [
+                  [
+                    15,
+                    31
+                  ],
+                  [
+                    16,
+                    32
+                  ]
+                ]
+              }
+            ],
+            "affected_actions": [
+              {
+                "resource_id": "crew-0",
+                "stopped_or_returned_at": 15,
+                "alternate_reached_at": null,
+                "redispatch": null
+              },
+              {
+                "resource_id": "crew-1",
+                "stopped_or_returned_at": 15,
+                "alternate_reached_at": null,
+                "redispatch": null
+              },
+              {
+                "resource_id": "engine-0",
+                "stopped_or_returned_at": 15,
+                "alternate_reached_at": 171,
+                "redispatch": {
+                  "offer_id": "offer-10",
+                  "approach_id": "77dfd6aff5e03087e341",
+                  "authorized_at": 166,
+                  "dispatched_at": 167,
+                  "target": [
+                    16,
+                    32
+                  ],
+                  "travel_at": 168,
+                  "alternate_reached_at": 171
+                }
+              },
+              {
+                "resource_id": "engine-1",
+                "stopped_or_returned_at": 15,
+                "alternate_reached_at": 171,
+                "redispatch": {
+                  "offer_id": "offer-11",
+                  "approach_id": "808020a76bb0dec8eb64",
+                  "authorized_at": 166,
+                  "dispatched_at": 167,
+                  "target": [
+                    16,
+                    32
+                  ],
+                  "travel_at": 168,
+                  "alternate_reached_at": 171
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "incident-day-realmap-v2-002",
+      "minutes": 1440,
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "findings": [],
+      "effects": [
+        {
+          "event": {
+            "minute": 90,
+            "kind": "access_restriction",
+            "resource_kind": "engine"
+          },
+          "status": "constraint_evidence_observed",
+          "evidence": {
+            "method": "Same-state before/after route permissions plus delivered-query refusals and actual crew work",
+            "event_minute": 90,
+            "restriction_received_at": 92,
+            "resource_access": [
+              {
+                "resource_id": "engine-0",
+                "state": "available",
+                "options_before": 1,
+                "options_after": 0,
+                "before_status": "reachable",
+                "after_status": "blocked"
+              },
+              {
+                "resource_id": "engine-1",
+                "state": "available",
+                "options_before": 1,
+                "options_after": 0,
+                "before_status": "reachable",
+                "after_status": "blocked"
+              }
+            ],
+            "crew_work_count": 399,
+            "first_crew_work": {
+              "resource_id": "crew-0",
+              "minute": 92
+            },
+            "forbidden_work": [],
+            "public_refusal_count": 255
+          }
+        }
+      ]
+    },
+    {
+      "case": "incident-day-realmap-v2-003",
+      "minutes": 1440,
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "findings": [],
+      "effects": []
+    },
+    {
+      "case": "incident-day-realmap-v2-004",
+      "minutes": 1440,
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "findings": [],
+      "effects": [
+        {
+          "event": {
+            "minute": 480,
+            "kind": "destination_closed",
+            "destination_id": "destination-0"
+          },
+          "status": "constraint_evidence_observed",
+          "evidence": {
+            "method": "Occupied-centre closure, delivered warning, new routed order and actual arrival elsewhere",
+            "event_minute": 480,
+            "warning_received_at": 482,
+            "affected_occupants": [
+              {
+                "group_id": "population-0",
+                "count": 200,
+                "previous_status": "arrived"
+              },
+              {
+                "group_id": "population-1",
+                "count": 150,
+                "previous_status": "arrived"
+              }
+            ],
+            "completed_relocations": [
+              {
+                "group_id": "population-0",
+                "count": 200,
+                "order_id": "order-2",
+                "destination_id": "destination-1",
+                "issued_at": 483,
+                "completed_at": 490
+              },
+              {
+                "group_id": "population-1",
+                "count": 150,
+                "order_id": "order-3",
+                "destination_id": "destination-1",
+                "issued_at": 484,
+                "completed_at": 491
+              }
+            ],
+            "unresolved_occupants": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "incident-day-realmap-v2-005",
+      "minutes": 1440,
+      "verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      },
+      "findings": [],
+      "effects": []
+    }
+  ],
+  "tests": {
+    "passed": 300,
+    "skipped": 0,
+    "subtests": 37
+  },
+  "elapsed_seconds": 182.95612454700313,
+  "scope": "Private experimental implementation acceptance; source/operational validation remains separate",
+  "limits": [
+    "All v1 IDs and scores preserved; six additive v2 variants.",
+    "All v2 ground-road missions are restricted to source-screened corridors. This does not certify field accessibility or encode global turns on legacy profiles.",
+    "Quiet probe is bounded by simulation steps, not host speed.",
+    "Wind proof matches the active route to immediate stop and a new same-unit changed-target authorization after the delivered warning.",
+    "Ground setup safety is checked immediately in v2.",
+    "Unknown land/fuel guards and source approval remain unchanged."
+  ],
+  "owner_decisions_issue": 42
+}

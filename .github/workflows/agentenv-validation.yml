@@ -1,0 +1,78 @@
+name: AgentEnv no-model fixture
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/agentenv-validation.yml'
+      - 'eval/*agentenv*.py'
+      - 'tests/test_agentenv_dataset_roundtrip.py'
+      - 'tests/test_agentenv_fixture.py'
+      - 'envs/wildfire_response/core/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agentenv-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fixture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      HF_HOME: /tmp/agentenv-ci-hf
+      XDG_STATE_HOME: /tmp/agentenv-ci-state
+      XDG_CACHE_HOME: /tmp/agentenv-ci-cache
+      HF_HUB_OFFLINE: '1'
+      HF_DATASETS_OFFLINE: '1'
+      PYTHONPATH: envs/wildfire_response/core/src
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install optional CPU dependencies
+        run: python -m pip install --disable-pip-version-check -e 'envs/wildfire_response/core[agentenv-hf]' 'agentenv-framework-protocol[agent]==0.1.373'
+      - name: Check the no-model driver in-process
+        run: timeout 60s python -m unittest discover -s tests -p test_agentenv_fixture.py -q
+      - name: Check native run lookup and trace comparison
+        run: timeout 60s python -m unittest discover -s tests -p test_agentenv_dataset_roundtrip.py -q
+      - name: Create synthetic development-only task
+        run: python eval/prepare_agentenv_fixture.py --output /tmp/wildfire-agentenv-ci-bundle
+      - name: Run actual AgentEnv task without a model
+        run: timeout 360s agent-env run /tmp/wildfire-agentenv-ci-bundle
+      - name: Publish native run to a local directory only
+        run: timeout 60s agent-env hf publish /tmp/wildfire-agentenv-ci-bundle --name wildfire-ci --split development --out /tmp/wildfire-agentenv-ci-dataset
+      - name: Load native Parquet and check recorded run
+        run: timeout 60s python eval/check_agentenv_native_fixture.py --dataset-dir /tmp/wildfire-agentenv-ci-dataset --bundle-dir /tmp/wildfire-agentenv-ci-bundle --debug /tmp/agentenv-public-fixture-debug.json --report /tmp/agentenv-native-report.json
+      - name: Preserve fixture check evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: agentenv-native-fixture-report
+          path: /tmp/agentenv-native-report.json
+          retention-days: 1
+          if-no-files-found: warn
+      - name: Preserve native synthetic Parquet on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: agentenv-native-synthetic-tables
+          path: |
+            /tmp/wildfire-agentenv-ci-dataset/tasks/wildfire-ci.parquet
+            /tmp/wildfire-agentenv-ci-dataset/episodes/wildfire-ci.parquet
+            /tmp/wildfire-agentenv-ci-dataset/README.md
+          retention-days: 1
+          if-no-files-found: warn
+      - name: Preserve public synthetic fixture for replay debugging
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: agentenv-public-synthetic-fixture-debug
+          path: /tmp/agentenv-public-fixture-debug.json
+          retention-days: 1
+          if-no-files-found: warn

@@ -4,8 +4,8 @@ This records the earlier training-calibration stage. The subsequent
 [frozen held-out audit](HELDOUT.md) and [director adapter](director/README.md)
 advance its next gates without changing its recorded inputs or rewards.
 
-This alpha borrows the task-contract, programmatic-grading and weak-policy audit
-approach discussed for PortSimEnv. It does **not** claim a proven optimum,
+This alpha audits task contracts, programmatic grading and weak policies.
+It does **not** claim a proven optimum,
 historical incident reconstruction, validated emergency procedures or publication
 readiness. No model-provider requests or training jobs were used for this audit.
 

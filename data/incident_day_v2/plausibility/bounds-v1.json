@@ -1,0 +1,12 @@
+{
+  "version": "incident-day-exercise-plausibility-bounds-v1",
+  "status": "assumptions_for_screening_not_law_or_physical_calibration",
+  "ground_work_reach_cells": 3,
+  "maximum_screening_fire_front_kph": 5,
+  "fire_front_basis": "A deliberately declared screening threshold, not a measured physical limit. A 500 m cell per minute is 30 km/h. Coarse cell activation does not establish a measured front speed.",
+  "ground_speed_basis": "Maximum declared road edge speed; straight-line minute displacement is only a necessary lower-bound check, not route reconstruction.",
+  "air_speed_basis": "Profile flight speed; recovery does not require a new drop clearance.",
+  "timing_basis": "Scenario profile setup, refill and rest durations; inherited on-scene setup is unobserved.",
+  "land_basis": "Apply supplied authoritative estimated land/sea mask only; fixture has no sea evidence.",
+  "exercise_not_law": "No universal minimum fire area, aircraft legal minima, labour law, or validated nighttime rules are inferred."
+}

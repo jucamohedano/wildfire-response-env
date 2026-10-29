@@ -1,0 +1,65 @@
+{
+  "assumption_classes": [
+    1,
+    4,
+    8
+  ],
+  "core_sha256": "03e4fc4d2957e37a168f53183399347b27e0adc107d857dee18c44df772e48d5",
+  "domain_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+  "elapsed_seconds": 19.958,
+  "label": "UNAPPROVED sensitivity only; not benchmark, training, or historical replay",
+  "network_sha256": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16",
+  "policy": "passive",
+  "prepared_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
+  "results": [
+    {
+      "additional_burned_hectares": 350.0,
+      "approval_status": "unapproved_source_pack",
+      "boundary_censored": false,
+      "completed_minutes": 1440,
+      "graded": false,
+      "inherited_burned_hectares": 625.0,
+      "input_sha256": "10f2681f35282f1b41df60f2ffa31d09503afd9268f265020cef2e6b001b08ef",
+      "new_exposed_population": 0,
+      "status": "complete_ungraded",
+      "synthetic_fuel_class": 1,
+      "unknown_source_cells": 80,
+      "verification": "passed"
+    },
+    {
+      "additional_burned_hectares": 350.0,
+      "approval_status": "unapproved_source_pack",
+      "boundary_censored": false,
+      "completed_minutes": 1440,
+      "graded": false,
+      "inherited_burned_hectares": 625.0,
+      "input_sha256": "455d9fccf94be5ecb911252c79cc0c1761956a17e43f8baaccbac79a3d9d3f2a",
+      "new_exposed_population": 0,
+      "status": "complete_ungraded",
+      "synthetic_fuel_class": 4,
+      "unknown_source_cells": 80,
+      "verification": "passed"
+    },
+    {
+      "additional_burned_hectares": 350.0,
+      "approval_status": "unapproved_source_pack",
+      "boundary_censored": false,
+      "completed_minutes": 1440,
+      "graded": false,
+      "inherited_burned_hectares": 625.0,
+      "input_sha256": "92baab6867f6ac7b0988b881a48e828fcf744390017a3a5495d3099599cd5859",
+      "new_exposed_population": 0,
+      "status": "complete_ungraded",
+      "synthetic_fuel_class": 8,
+      "unknown_source_cells": 80,
+      "verification": "passed"
+    }
+  ],
+  "scenario": "incident-day-dev-000",
+  "source_pack_approval": "blocked",
+  "status": "complete_unapproved_sensitivity",
+  "verification_requested": true,
+  "version": "incident-day-fuel-sensitivity-v1",
+  "wall_budget_seconds": 120.0,
+  "workers": 1
+}

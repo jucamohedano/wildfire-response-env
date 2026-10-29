@@ -1,0 +1,17 @@
+{
+  "version": "wildfire-incident-day-shift-v1",
+  "status": "synthetic_exercise_assumptions_not_law_or_physical_calibration",
+  "horizon_minutes": 1440,
+  "ground_waves": [[0, 480], [480, 960], [960, 1440]],
+  "ground_slots_per_wave": "one engine and one crew at each of two existing bases",
+  "aircraft_waves": [[0, 480], [480, 960]],
+  "aircraft_operation": "Existing daylight, wind, clearance, fuel and recovery rules still apply; no third aircraft wave.",
+  "require_sortie_within_shift": true,
+  "require_return_within_shift": true,
+  "staffing": "Finite predeclared resource slots; no implied replacement.",
+  "duty": "Eight-hour elapsed exercise shift including flight and driving; not a legal or certified duty rule. The shift profile requires dispatch return reserve and pre-deadline recovery.",
+  "retained_values": "Existing setup, refill, work, rest, flight, fire spread and burn coefficients remain unchanged.",
+  "staging": "On-scene staging must be reachable and safe under the exercise router, have a route back to base, and be within three cells of eligible burning cells. If unavailable, an explicitly synthetic mapped failed-access recovery is inherited instead; no suppression access is invented. Not tactical safety certification.",
+  "minimum_fire_area_rule": null,
+  "physical_validation": false
+}

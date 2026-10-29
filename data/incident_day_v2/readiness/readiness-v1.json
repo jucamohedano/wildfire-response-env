@@ -1,0 +1,298 @@
+{
+  "approval_matrix": {
+    "estimated_experiment": "opt_in_only_with_unknown_land_guard",
+    "historical_source": "blocked",
+    "identity": "verified",
+    "physical_operational_validation": "not_established"
+  },
+  "candidate_crop": {
+    "category_counts": {
+      "cultivation": 3,
+      "shrub": 6,
+      "woodland": 2
+    },
+    "cells": 520,
+    "complete_study_and_heights": true,
+    "current_large_fire_dimensions_supported": false,
+    "estimated_cells": 11,
+    "height": 20,
+    "left": 0,
+    "note": "Rectangular candidate only; no pack or scenario has been compiled or approved.",
+    "source_known_cells": 509,
+    "top": 16,
+    "unresolved_land_water_cells": 0,
+    "width": 26
+  },
+  "graph": {
+    "candidate": {
+      "directed_arcs_with_endpoints_in_rectangle": 200,
+      "nodes_in_rectangle": 108
+    },
+    "full_grid": {
+      "directed_arcs_with_endpoints_in_rectangle": 848,
+      "nodes_in_rectangle": 409
+    },
+    "limitations": "Endpoint counts do not verify edge geometry within the rectangle, connectedness, engine clearance or historical road access."
+  },
+  "implementation_sha256": "0b8b16c349364f59976af31e545126a40226f3644953362d8ebe6a94df030088",
+  "integrity": {
+    "complete_study_and_heights": true,
+    "default_loader_rejects": true,
+    "estimated_cells": 80,
+    "grid_height": 36,
+    "grid_width": 37,
+    "identity_verified": true,
+    "known_fuel_cells": 1252,
+    "land_kind_counts": {
+      "unresolved": 27,
+      "urban_mixed": 3,
+      "vegetation": 50
+    },
+    "regenerated_from_pinned_sources": true,
+    "source_mask_unchanged": true,
+    "unknown_fuel_cells": 80,
+    "unknown_land_guard": "verified_for_unresolved_and_empty_fire",
+    "unresolved_land_guard_cells": 27
+  },
+  "measured_run": {
+    "allow_unapproved_data": true,
+    "cases": [
+      {
+        "applied_ground_work": 0,
+        "boundary_censored": false,
+        "case": "incident-day-egress-v1-000",
+        "complete": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true,
+        "intended_constraint_coverage": "work_observed_review_required",
+        "minutes_observed": 1440,
+        "status": "completed",
+        "unresolved_evacuations": 0
+      },
+      {
+        "applied_ground_work": 0,
+        "boundary_censored": false,
+        "case": "incident-day-egress-v1-001",
+        "complete": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true,
+        "intended_constraint_coverage": "no_constraint_evidence_observed",
+        "minutes_observed": 1440,
+        "status": "completed",
+        "unresolved_evacuations": 0
+      },
+      {
+        "applied_ground_work": 0,
+        "boundary_censored": false,
+        "case": "incident-day-coverage-v1-002",
+        "complete": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true,
+        "intended_constraint_coverage": "no_constraint_evidence_observed",
+        "minutes_observed": 1440,
+        "status": "completed",
+        "unresolved_evacuations": 0
+      },
+      {
+        "applied_ground_work": 0,
+        "boundary_censored": false,
+        "case": "incident-day-egress-v1-003",
+        "complete": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true,
+        "intended_constraint_coverage": "no_constraint_evidence_observed",
+        "minutes_observed": 1440,
+        "status": "completed",
+        "unresolved_evacuations": 0
+      },
+      {
+        "applied_ground_work": 0,
+        "boundary_censored": false,
+        "case": "incident-day-coverage-v1-004",
+        "complete": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true,
+        "intended_constraint_coverage": "no_constraint_evidence_observed",
+        "minutes_observed": 1440,
+        "status": "completed",
+        "unresolved_evacuations": 1
+      },
+      {
+        "applied_ground_work": 0,
+        "boundary_censored": false,
+        "case": "incident-day-egress-v1-005",
+        "complete": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true,
+        "intended_constraint_coverage": "constraint_evidence_review_required",
+        "minutes_observed": 1440,
+        "status": "completed",
+        "unresolved_evacuations": 0
+      }
+    ],
+    "completed_without_reported_boundary_censoring": 6,
+    "gates": {
+      "blocking_count": 0,
+      "contradiction_count": 0,
+      "exercise_consistent": "not established",
+      "human_review": "pending",
+      "physically_validated": "no"
+    },
+    "implementation_matches_current_audit": true,
+    "implementation_sha256": "0b8b16c349364f59976af31e545126a40226f3644953362d8ebe6a94df030088",
+    "implementation_unchanged": true,
+    "input_approval_status": "unapproved_source_pack",
+    "input_sha256": "50031b3029dcee0a1367ccdd8125d081d19d3b500b2dd373e30ef127d47a2c4d",
+    "land_mask_supplied": false,
+    "limitations": "Reported episode evidence, not source approval, physical calibration or operational validation.",
+    "network_sha256": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16",
+    "policy": "dispatcher",
+    "report_sha256": "78c7f32824a03025400f5cdceb2c3eb8ce88373813169039ad48b507a3aa12d5",
+    "static_counterfactual_statuses": {
+      "demonstrated": 3,
+      "not_demonstrated": 3
+    },
+    "static_initial_route_statuses": {
+      "unmapped": 16
+    },
+    "static_legal_inherited_recoveries": 1,
+    "static_useful_safe_inherited_assignments": 0,
+    "status": "complete",
+    "workers": 1
+  },
+  "remaining_actions": [
+    "Keep unresolved land/water guard and explicit unapproved-data opt-in.",
+    "Validate a compatible >=24 by 24 domain and real mapped road access before claiming readiness.",
+    "Run scoped episodes and independent replay separately; assess boundary censoring and access.",
+    "Review source provenance, experimental scope and physical/operational evidence independently."
+  ],
+  "routes": {
+    "cases": [
+      {
+        "case": "incident-day-egress-v1-000",
+        "handover_staging": {
+          "synthetic_failed_access_recovery": 1
+        },
+        "initial_routes": {
+          "current_crew_approach_unmapped": 2,
+          "current_crew_bases_checked": 2,
+          "current_engine_approach_unmapped": 2,
+          "current_engine_bases_checked": 2,
+          "source_known_walking_crew_approach_unmapped": 2,
+          "source_known_walking_crew_bases_checked": 2,
+          "source_known_walking_engine_approach_unmapped": 2,
+          "source_known_walking_engine_bases_checked": 2
+        },
+        "reset": "succeeded"
+      },
+      {
+        "case": "incident-day-egress-v1-001",
+        "handover_staging": {
+          "synthetic_failed_access_recovery": 2
+        },
+        "initial_routes": {
+          "current_crew_approach_unmapped": 2,
+          "current_crew_bases_checked": 2,
+          "current_engine_approach_unmapped": 2,
+          "current_engine_bases_checked": 2,
+          "source_known_walking_crew_approach_unmapped": 2,
+          "source_known_walking_crew_bases_checked": 2,
+          "source_known_walking_engine_approach_unmapped": 2,
+          "source_known_walking_engine_bases_checked": 2
+        },
+        "reset": "succeeded"
+      },
+      {
+        "case": "incident-day-egress-v1-002",
+        "handover_staging": {
+          "synthetic_failed_access_recovery": 1
+        },
+        "initial_routes": {
+          "current_crew_approach_unmapped": 2,
+          "current_crew_bases_checked": 2,
+          "current_engine_approach_unmapped": 2,
+          "current_engine_bases_checked": 2,
+          "source_known_walking_crew_approach_unmapped": 2,
+          "source_known_walking_crew_bases_checked": 2,
+          "source_known_walking_engine_approach_unmapped": 2,
+          "source_known_walking_engine_bases_checked": 2
+        },
+        "reset": "succeeded"
+      },
+      {
+        "case": "incident-day-egress-v1-003",
+        "handover_staging": {
+          "synthetic_failed_access_recovery": 1
+        },
+        "initial_routes": {
+          "current_crew_approach_unmapped": 2,
+          "current_crew_bases_checked": 2,
+          "current_engine_approach_unmapped": 2,
+          "current_engine_bases_checked": 2,
+          "source_known_walking_crew_approach_unmapped": 2,
+          "source_known_walking_crew_bases_checked": 2,
+          "source_known_walking_engine_approach_unmapped": 2,
+          "source_known_walking_engine_bases_checked": 2
+        },
+        "reset": "succeeded"
+      },
+      {
+        "case": "incident-day-egress-v1-004",
+        "handover_staging": {
+          "synthetic_failed_access_recovery": 1
+        },
+        "initial_routes": {
+          "current_crew_approach_unmapped": 2,
+          "current_crew_bases_checked": 2,
+          "current_engine_approach_unmapped": 2,
+          "current_engine_bases_checked": 2,
+          "source_known_walking_crew_approach_unmapped": 2,
+          "source_known_walking_crew_bases_checked": 2,
+          "source_known_walking_engine_approach_unmapped": 2,
+          "source_known_walking_engine_bases_checked": 2
+        },
+        "reset": "succeeded"
+      },
+      {
+        "case": "incident-day-egress-v1-005",
+        "handover_staging": {
+          "synthetic_failed_access_recovery": 1
+        },
+        "initial_routes": {
+          "current_crew_approach_unmapped": 2,
+          "current_crew_bases_checked": 2,
+          "current_engine_approach_unmapped": 2,
+          "current_engine_bases_checked": 2,
+          "source_known_walking_crew_approach_unmapped": 2,
+          "source_known_walking_crew_bases_checked": 2,
+          "source_known_walking_engine_approach_unmapped": 2,
+          "source_known_walking_engine_bases_checked": 2
+        },
+        "reset": "succeeded"
+      }
+    ],
+    "limits": "Approaches are bounded router results. Source-known walking is conservative; mapped roads retain their existing access assumptions. No dynamic, shift-time, turn-restriction or operational validation is established.",
+    "scope": "Initial egress-case handover; declared first-wave bases regardless of availability; no episode run.",
+    "totals": {
+      "current_crew_approach_unmapped": 12,
+      "current_crew_bases_checked": 12,
+      "current_engine_approach_unmapped": 12,
+      "current_engine_bases_checked": 12,
+      "handover_synthetic_failed_access_recovery": 7,
+      "reset_succeeded": 6,
+      "source_known_walking_crew_approach_unmapped": 12,
+      "source_known_walking_crew_bases_checked": 12,
+      "source_known_walking_engine_approach_unmapped": 12,
+      "source_known_walking_engine_bases_checked": 12
+    }
+  },
+  "scope": "Offline pinned input validation and initial-handover route probes; no episode or safety validation.",
+  "source_pins": {
+    "domain": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+    "estimates": "dfbe5fb8844954c15b31f1dd24f4167bc5460a14848c3a8a78df998821c44285",
+    "network": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16",
+    "pack": "50031b3029dcee0a1367ccdd8125d081d19d3b500b2dd373e30ef127d47a2c4d",
+    "prepared": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108"
+  },
+  "version": "incident-day-data-readiness-v1"
+}

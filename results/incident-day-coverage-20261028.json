@@ -1,0 +1,293 @@
+{
+  "version": "incident-day-scenario-coverage-v1",
+  "date": "2026-10-28",
+  "code_commit": "8022508b921d327b4ac13299e86f32ec34772bb8",
+  "implementation_sha256": "5ea576bafbd3180e2976cb346d4b91e8cd42624c126e9c06629290b105634f84",
+  "input_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+  "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+  "data_role": "Synthetic development fixture; not historical or held-out wildfire evidence",
+  "variants": [
+    "incident-day-coverage-v1-002",
+    "incident-day-coverage-v1-004"
+  ],
+  "preserved": "All previous eighteen scenario identities and historical scores remain unchanged. Two additive variants form part of the current six-family acceptance suite.",
+  "tests": {
+    "primary_passed": 253,
+    "boundary_followup_passed": 2,
+    "unique_passed": 255,
+    "skipped": 0,
+    "subtests_passed": 37,
+    "collection": "255 tests collected; two new boundary tests ran separately after the primary suite was collected.",
+    "commands": [
+      "PYTHONPATH=envs/wildfire_response/core/src:envs/wildfire_response/openenv:. <openenv-runtime>/python -m pytest -q tests/test_incident_day* tests/test_extraction.py",
+      "PYTHONPATH=envs/wildfire_response/core/src:. <runtime>/python -m pytest -q tests/test_incident_day_scenario_coverage_v2.py::test_checkpoint_crosses_the_actual_restriction_or_closure_boundary"
+    ]
+  },
+  "test_cleanup": {
+    "removed": "One duplicate full replay of an already-matched completed episode in the checkpoint test",
+    "retained": "All legacy-contract and safety regressions. Outcomes and full checkpoint equality are now checked before verifying the restored episode.",
+    "candidate_before_passed": true,
+    "candidate_after_passed": true,
+    "related_tests_passed": 76,
+    "note": "No test cases were deleted merely for being old. One expensive repeated operation was removed."
+  },
+  "reference_cleanup": "Incidental example-project references removed from active documentation and assets; actual source-data citations and numerical historical evaluation evidence preserved.",
+  "suite": {
+    "status": "complete",
+    "workers": 1,
+    "elapsed_seconds": 277.3555864660011,
+    "peak_process_rss_mib": 81.94921875,
+    "timing_note": "Includes six full days, consistency checks and exact replay. Regression tests ran concurrently; this is not a controlled speed comparison.",
+    "contradiction_count": 0,
+    "blocking_count": 0,
+    "cases": [
+      {
+        "case": "incident-day-egress-v1-000",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "effects": [],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9981981981981982,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 225.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        }
+      },
+      {
+        "case": "incident-day-egress-v1-001",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "effects": [],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9947947947947948,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 650.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        }
+      },
+      {
+        "case": "incident-day-coverage-v1-002",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "effects": [
+          {
+            "kind": "access_restriction",
+            "status": "constraint_evidence_observed",
+            "evidence": {
+              "method": "Same-state before/after route permissions plus delivered-query refusals and actual crew work",
+              "event_minute": 90,
+              "restriction_received_at": 92,
+              "resource_access": [
+                {
+                  "resource_id": "engine-0",
+                  "state": "available",
+                  "options_before": 3,
+                  "options_after": 0,
+                  "before_status": "reachable",
+                  "after_status": "blocked"
+                },
+                {
+                  "resource_id": "engine-1",
+                  "state": "available",
+                  "options_before": 3,
+                  "options_after": 0,
+                  "before_status": "reachable",
+                  "after_status": "blocked"
+                }
+              ],
+              "crew_work_count": 523,
+              "first_crew_work": {
+                "resource_id": "crew-1",
+                "minute": 177
+              },
+              "forbidden_work": [],
+              "public_refusal_count": 233,
+              "first_public_refusal": {
+                "resource_id": "engine-0",
+                "minute": 92,
+                "status": "blocked"
+              }
+            }
+          }
+        ],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9973973973973974,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 325.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        }
+      },
+      {
+        "case": "incident-day-egress-v1-003",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "effects": [],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9963963963963964,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 450.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        }
+      },
+      {
+        "case": "incident-day-coverage-v1-004",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "effects": [
+          {
+            "kind": "destination_closed",
+            "status": "constraint_evidence_observed",
+            "evidence": {
+              "method": "Occupied-centre closure, delivered warning, new routed order and actual arrival elsewhere",
+              "event_minute": 480,
+              "warning_received_at": 482,
+              "affected_occupants": [
+                {
+                  "group_id": "population-1",
+                  "count": 150,
+                  "previous_status": "arrived"
+                }
+              ],
+              "completed_relocations": [
+                {
+                  "group_id": "population-1",
+                  "count": 150,
+                  "order_id": "order-1",
+                  "destination_id": "destination-0",
+                  "issued_at": 483,
+                  "completed_at": 508
+                }
+              ],
+              "unresolved_occupants": []
+            }
+          }
+        ],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9981981981981982,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 225.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        }
+      },
+      {
+        "case": "incident-day-egress-v1-005",
+        "completed_minutes": 1440,
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        },
+        "findings": [],
+        "effects": [],
+        "outcome": {
+          "reward_version": "wildfire-incident-day-outcomes-v2",
+          "graded_score": 0.9983983983983984,
+          "protected_population_fraction": 1.0,
+          "additional_burned_hectares": 200.0,
+          "inherited_burned_hectares": 625.0,
+          "inherited_exposed_population": 0,
+          "new_exposed_population": 0,
+          "unresolved_evacuations": 0,
+          "safe_success": true,
+          "score_eligible": true,
+          "boundary_censored": false,
+          "invalid_abandonment": false,
+          "completed_minutes": 1440
+        }
+      }
+    ]
+  },
+  "controls": {
+    "ignored_destination_warning": "A tested passive continuation leaves 150 occupants blocked at the closed centre and one unresolved evacuation cohort.",
+    "rejected_false_positives": [
+      "Unoccupied closure plus unrelated later movement",
+      "Orders before a delivered warning",
+      "Route refusals before the restriction was received"
+    ]
+  },
+  "privacy": "Same-state access comparisons stay in private audit records. Public query summaries contain only the status and option count actually returned to the actor.",
+  "remaining": [
+    "Physical/operational calibration and independent domain review.",
+    "Real-source fuel and land/water approval; complete vehicle/passability evidence.",
+    "Held-out difficulty and policy discrimination; these are development scenarios.",
+    "Docker execution in a capable runtime."
+  ],
+  "tracking": {
+    "pull_request": 41,
+    "pull_request_status": "draft",
+    "issue": 34,
+    "issue_status": "open",
+    "reward_issue": 27,
+    "reward_issue_status": "open"
+  }
+}

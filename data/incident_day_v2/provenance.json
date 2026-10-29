@@ -1,0 +1,99 @@
+{
+  "version": "wildfire-incident-day-provenance-v2",
+  "historical_context": {
+    "name": "Sierra Bermeja, Malaga, Spain",
+    "incident_start_date": "2021-09-08",
+    "registry": "data/malaga_2021/provenance.json",
+    "role": "Geographic and incident context only; no claim of reconstructing historical dispatch"
+  },
+  "runnable_data": {
+    "kind": "fully_synthetic_development_fixture",
+    "builder": "envs.wildfire_response.incident_day.scenarios.fixture_inputs",
+    "default_grid_cells": [
+      32,
+      32
+    ],
+    "cell_metres": 500,
+    "terrain_and_roads": "Synthetic complete elevations, fuel and directed road lattice; not a measured location",
+    "warm_start_minutes": 60,
+    "development_seeds": [
+      2844000,
+      2844001,
+      2844002,
+      2844003,
+      2844004,
+      2844005
+    ],
+    "start_utc": "2021-09-09T04:00:00Z",
+    "horizon_minutes": 1440,
+    "demonstrations": false,
+    "historical_replay": false
+  },
+  "real_source_pack": {
+    "approval": "blocked",
+    "prepared_inputs_sha256": "ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108",
+    "topographic_inputs_sha256": "e1fdba3d88b4b75db7048d84ab24cdd40c387d6240b9bec2528f0f71a68666fd",
+    "cropped_grid_cells": [
+      37,
+      36
+    ],
+    "unknown_fuel_cells": 80,
+    "source_masked_pixels": 78,
+    "outside_source_coverage": 2,
+    "road_coverage": "Partial coastal graph; real temporal passability is not verified",
+    "gate": "Unknown fuel cannot be silently converted to nonburnable terrain or approved by a synthetic replacement"
+  },
+  "synthetic_components": [
+    "Fire initialization and spread parameters",
+    "Weather schedule and randomized communications delays",
+    "Firefighter roster, water stocks, fuel endurance and duty windows",
+    "Safe-staging hazard buffers and walking assumptions",
+    "Population cohorts, named destinations and capacity",
+    "Calls, observations, handover history and reinforcement requests"
+  ],
+  "operational_parameters": "data/incident_day_v2/profile.json",
+  "estimated_exercise_inputs": {
+    "document": "data/incident_day_v2/fuel_estimation/estimates.json",
+    "canonical_sha256": "dfbe5fb8844954c15b31f1dd24f4167bc5460a14848c3a8a78df998821c44285",
+    "method": "Land-cover-constrained inverse-distance categorical voting, never arithmetic averaging of class IDs",
+    "estimated_cells": 80,
+    "known_source_cells_changed": 0,
+    "urban_mixed_centres": 3,
+    "unresolved_land_water_centres": 27,
+    "water_centres_confirmed_by_retained_evidence": 0,
+    "runtime_guard": "No initial ignition or fire progression at unresolved land/water context; censor instead of inventing a barrier",
+    "historical_source_approval": false,
+    "shift_exercise_profile": "data/incident_day_v2/plausibility/shift-profile-v1.json"
+  },
+  "fuel_evidence_review": {
+    "ledger": "data/incident_day_v2/fuel_review/unknown_cells.json",
+    "ledger_file_sha256": "f9f437c68cf165ddff1920b783d13ecff7fb5abfed0e21f3f71df44024108146",
+    "known_fuel_cells_added": 0,
+    "approval_changed": false,
+    "independent_land_cover_probe": "data/incident_day_v2/fuel_review/siose2020_wfs_probe.json",
+    "land_cover_is_not_fuel": true,
+    "sensitivity_runner": "eval/check_incident_day_fuel_sensitivity.py"
+  },
+  "legacy_variant_review": {
+    "reviewed": 32,
+    "preignition_weather_cases_retained_as_legacy": 28,
+    "unsafe_refuge_cases_requiring_redesign": 4,
+    "old_scenarios_changed": 0,
+    "imported_into_day_mode": 0,
+    "private_report_sha256": "9f7df7e0f715b226206581ab7ce4f403f3ec9b4b8b9d89e667c10d2472494aae",
+    "expert_validation": false
+  },
+  "publication": "Not included; source licensing and operational fidelity remain separate gates",
+  "readiness_review_20261028": {
+    "report": "data/incident_day_v2/readiness/readiness-v1.json",
+    "report_file_sha256": "d3c4c2fa7c19cdb52049dd192381c658317c9d745ed3354194c0cd34371f0dbe",
+    "operational_evidence": "data/incident_day_v2/calibration/operational-evidence-v1.json",
+    "container_report": "results/incident-day-container-20261028.json",
+    "container_ci_run": "https://github.com/jucamohedano/wildfire-response-env/actions/runs/40752171786",
+    "weather_clock": "All 384 normalized source timestamps and eight midnight rollovers verified against retained provider/chart/manual bytes; interval semantics, receipt and fire-front representativeness remain unverified.",
+    "estimated_source_experiment": "Six current-core 1440-minute cases complete and replay with unchanged source masks and explicit unapproved-data opt-in. No ground suppression occurs; family coverage is not established.",
+    "source_approval_changed": false,
+    "physical_calibration_established": false,
+    "no_new_heavy_map_acquisition": true
+  }
+}

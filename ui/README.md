@@ -26,7 +26,7 @@ PYTHONPATH=envs/wildfire_response/core/src .runtime/ui-venv/bin/python -m eval.u
 ```
 
 Open `http://127.0.0.1:8767/`. Restore the pinned ignored input bundles first;
-their provenance and durable local backups are documented in `DATA_STORAGE.md`.
+their provenance and durable local backups are documented in [data storage](../docs/data-storage.md).
 The UI's Python dependencies are isolated: it does not require OpenEnv, Gradio,
 Torch, rasterio, a JavaScript CDN, or a hosted mapping SDK. For frontend iteration,
 run `npm run dev` in `ui/`; Vite proxies `/api` to the local Python server.

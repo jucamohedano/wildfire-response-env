@@ -10,7 +10,7 @@ Historical anchor: **Sierra Bermeja, Málaga, 8 September 2021**.
 Random-number design seed: **`20261026`**; case seeds:
 `82000000 + 2 * zero_based_catalog_group_index + variant` (variant 0 or 1).
 These are different meanings of “seed”; see [source context](source_context.json)
-and the [dataset card](../../DATASET_CARD.md). Randomized cases still use one
+and the [dataset card](../../docs/dataset-card.md). Randomized cases still use one
 regional landscape, not a geographically diverse incident dataset.
 
 The sampler independently draws ignition offsets/times, five wind vectors,

@@ -1,0 +1,196 @@
+{
+  "version": "incident-day-operational-evidence-v1",
+  "reviewed_on": "2026-10-28",
+  "scope": "Retrospective evidence and consistency checks only; no profile calibration or historical replay approval",
+  "sources": [
+    {
+      "id": "ifapa_daily_station",
+      "publisher": "Junta de Andalucía / IFAPA RIA",
+      "url": "https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaws/datosdiarios/29/4/2021-09-08/2021-09-15/false",
+      "acquired_on": "2026-10-25",
+      "period": "2021-09-08 through 2021-09-15; provider calendar dates",
+      "unit": "m/s",
+      "support": "Estepona daily mean wind ranges 0.525 to 2.325 m/s across eight days, as recorded in the retained station audit; station altitude 185 m.",
+      "limits": "Daily aggregation times, direction convention, sensor exposure and mountain representativeness are unverified. Current export does not establish historical receipt. Not gust or engine wind index.",
+      "sidecar": "data/malaga_2021/station_weather_search_v1.json",
+      "raw_path": ".runtime/malaga-station-weather/ria-29-4-daily-20210908-15.json",
+      "raw_sha256": "4f309506f97c4d87910486212c147015d6ad3d64d920f067b519598710945817"
+    },
+    {
+      "id": "siar_subdaily_station",
+      "publisher": "MAPA SiAR",
+      "url": "https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio",
+      "acquired_on": null,
+      "period": "requested 2021-09-08 through 2021-09-15",
+      "unit": "half-hour source labels; wind in m/s",
+      "support": "Earlier acquisition recorded 384 rows and eight initially ambiguous 24:00 labels; subsequent normalization resolves all eight using the official chart/parser and UTC manual, yielding 384 unique half-hour timestamps with no gaps.",
+      "limits": "Interval start/end semantics, station representativeness, wind direction and historical receipt remain unverified; station wind is not gust or engine wind index.",
+      "sidecar": "data/malaga_2021/halfhour_weather_v1.json",
+      "raw_path": ".runtime/malaga-station-weather/siar-halfhourly-20210908-15.json",
+      "raw_sha256": "e26464f9bcb7fac929f3e2d411df0ed7c41d976f2b51b50e2d52f66f91f28223",
+      "acquisition_date_note": "Date not recorded in retained acquisition sidecar.",
+      "normalization_sidecar": "data/malaga_2021/weather_normalization_v1.json"
+    },
+    {
+      "id": "egif_audit",
+      "publisher": "MITECO / CCINIF",
+      "url": "https://www.miteco.gob.es/es/biodiversidad/temas/incendios-forestales/estadisticas-datos.html",
+      "period": "2021, selected records",
+      "unit": "incidents with fields present",
+      "support": "Of 18 retrospectively selected large incidents, 17 have ground arrival fields and 16 air arrival fields; this is field presence, not elapsed-time validation.",
+      "limits": "Retrospective final-area selection, timezones and historical receipt unresolved; presence is not correctness, and missing is not zero. Raw archive redistribution not cleared.",
+      "sidecar": "data/operational/source_audit_v1.json",
+      "audit_reviewed_on": "2026-10-24"
+    },
+    {
+      "id": "miteco_landload",
+      "publisher": "MITECO",
+      "url": "https://www.miteco.gob.es/en/biodiversidad/temas/incendios-forestales/extincion/act.html",
+      "reviewed_on": "2026-10-28",
+      "period": "current published type description; publication date not stated",
+      "unit": "litres; km/h; hours",
+      "support": "Land-loading aircraft tank capacity minimum 2000 L, unloaded cruise 250 km/h, endurance up to 3 h; examples include AT-802 and Thrush S2R-T660.",
+      "limits": "General type information, not actual aircraft allocation, loaded mission speed, aircraft-specific limit, or measured operating time."
+    },
+    {
+      "id": "miteco_at802_2020",
+      "publisher": "MITECO",
+      "url": "https://www.miteco.gob.es/content/dam/miteco/es/prensa/200618presentacioncampanaincendiosforestales_tcm30-509908.pdf",
+      "reviewed_on": "2026-10-28",
+      "period": "2020 Spanish campaign",
+      "unit": "litres",
+      "support": "2020 campaign describes land-loading Air Tractor AT-802 with 3100 L tank capacity.",
+      "limits": "A 2020 campaign example, not evidence of 2021 incident assignment or the type represented by the synthetic fixture."
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "aircraft_wind",
+      "profile_key": "aircraft_max_wind",
+      "value": 2.8,
+      "unit": "dimensionless model wind magnitude",
+      "evidence_ids": [
+        "ifapa_daily_station",
+        "siar_subdaily_station"
+      ],
+      "status": "unvalidated",
+      "gap": "No validated mapping from station m/s or gusts to the model index; no aircraft-specific operational limit evidence."
+    },
+    {
+      "id": "flight_speed",
+      "profile_key": "flight_speed_kph",
+      "value": 240,
+      "unit": "km/h",
+      "evidence_ids": [
+        "miteco_landload"
+      ],
+      "status": "unvalidated",
+      "gap": "240 km/h is close to the published 250 km/h unloaded cruise reference for land-loading types; no matched type, loaded mission speed or incident assignment. Not a validated range or upper/lower bound."
+    },
+    {
+      "id": "engine_water",
+      "profile_key": "engine_litres_per_minute",
+      "value": 500,
+      "unit": "litres/minute",
+      "evidence_ids": [],
+      "status": "unvalidated",
+      "gap": "No matched engine, pumping conditions or source-specific consumption evidence."
+    },
+    {
+      "id": "aircraft_refill_runtime",
+      "profile_key": "air_refill_minutes",
+      "value": 6,
+      "unit": "minutes",
+      "evidence_ids": [],
+      "status": "unvalidated",
+      "gap": "No matched land-load turnaround observations. Runtime and the corrected screen both consume air_refill_minutes; its duration remains an exercise assumption."
+    },
+    {
+      "id": "work",
+      "profile_key": "work_minutes",
+      "value": 240,
+      "unit": "minutes",
+      "evidence_ids": [],
+      "status": "unvalidated",
+      "gap": "Exercise default; no matched duty policy or observed shift logs."
+    },
+    {
+      "id": "rest",
+      "profile_key": "rest_minutes",
+      "value": 60,
+      "unit": "minutes",
+      "evidence_ids": [],
+      "status": "unvalidated",
+      "gap": "Exercise default; no matched rest policy or observed shift logs."
+    },
+    {
+      "id": "ground_setup",
+      "profile_key": "ground_setup_minutes",
+      "value": 5,
+      "unit": "minutes",
+      "evidence_ids": [
+        "egif_audit"
+      ],
+      "status": "unvalidated",
+      "gap": "Arrival field presence does not measure arrival-to-setup time."
+    },
+    {
+      "id": "aircraft_setup",
+      "profile_key": "aircraft_setup_minutes",
+      "value": 2,
+      "unit": "minutes",
+      "evidence_ids": [
+        "egif_audit"
+      ],
+      "status": "unvalidated",
+      "gap": "Arrival field presence does not measure aircraft setup or drop latency."
+    }
+  ],
+  "additional_unvalidated": [
+    "ground refill",
+    "resource roster, availability, capacity and fuel endurance",
+    "communication delays",
+    "road passability and travel",
+    "fire spread and suppression",
+    "solar window and recovery",
+    "population, destination capacity, exposure and shelter",
+    "fuel classification and moisture"
+  ],
+  "readiness": {
+    "physical_calibration": false,
+    "real_source_pack_approved": false,
+    "expert_approval": false,
+    "actor_input_eligible": false,
+    "weather_source_clock_normalization": "resolved_in_sidecar_not_runtime_or_replay_approval"
+  },
+  "aircraft_capacity_comparison": {
+    "fixture_litres": 3100,
+    "evidence_ids": [
+      "miteco_at802_2020"
+    ],
+    "status": "type_context_only_not_calibrated",
+    "limitation": "Fixture is generic land-loaded; matching value does not identify its model or prove historical allocation."
+  },
+  "egif_bounded_probe": {
+    "archive_sha256": "316e34acf653079efd6ea895f0991681468af6c9bc84897030a9bbde220d60e0",
+    "selection": "first 100 Pif records in XML source order; not representative",
+    "unit": "minutes from recorded detection to recorded first arrival",
+    "ground": {
+      "nonnegative_count": 100,
+      "minimum": 0,
+      "median": 29.5,
+      "maximum": 139,
+      "missing_or_invalid": 0,
+      "negative": 0
+    },
+    "air": {
+      "nonnegative_count": 24,
+      "minimum": 5,
+      "median": 33,
+      "maximum": 160,
+      "missing_or_invalid": 76,
+      "negative": 0
+    },
+    "limits": "Source timestamps lack verified timezone, quality and availability; missing is not no aircraft. Detection-to-arrival is not dispatch-to-arrival, setup or duty. No tuning or generalization."
+  }
+}

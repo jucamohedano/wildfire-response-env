@@ -1,0 +1,16 @@
+*
+!envs
+!envs/wildfire_response
+!envs/wildfire_response/core
+!envs/wildfire_response/core/**
+!envs/wildfire_response/openenv
+!envs/wildfire_response/openenv/**
+!eval
+!eval/incident_day_server.py
+**/__pycache__
+**/*.pyc
+**/*.egg-info
+**/.env
+**/.env.*
+**/.venv
+**/.venv/**
