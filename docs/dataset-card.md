@@ -31,11 +31,13 @@ validation, nor does renaming it add that coverage. No trained model is released
 here; this information belongs in the dataset/environment card.
 
 The frozen catalog retains its 120-minute horizon. A separate
-[24-hour incident-day prototype](incident-day.md) now has twenty synthetic
-development configurations across six families. They are not additions to the
-held-out dataset and are not historical incidents. Its current acceptance suite
-contains two additive access/relocation variants, preserving earlier scenario
-identities and results. The [earlier long-session proposal](long-sessions.html)
+[24-hour incident-day prototype](incident-day.md) has twenty synthetic fixture
+configurations and twelve related source-map configurations across six families.
+These are development probes, not additions to the held-out training dataset or
+independent historical incidents. The six source-map v2 cases are the current
+real-map acceptance suite; older identities and results remain available. The
+original six fixture cases have known ineffective inherited ground assignments
+and remain regression probes, not representative handover demonstrations. The [earlier long-session proposal](long-sessions.html)
 is retained as historical planning context.
 
 Versioned [scenario-quality rules](../data/scenario_quality_v1/README.md) now audit
@@ -71,7 +73,11 @@ Validation/test policy outcomes must not be fed back into training data, search
 heuristics, templates or profile tuning. New tuning requires a new experiment
 version and a fresh untouched final test set.
 
-The catalog covers one Málaga landscape and night response. It establishes
+The registered two-hour catalogs cover one Málaga landscape and night response.
+All 2,412 registered entries have no daylight window, so randomized aircraft
+readiness does not provide active aircraft-response training coverage. The
+24-hour development exercises cross daylight boundaries but do not supply a
+held-out training catalog for that capability. The frozen catalogs establish
 configuration hold-outs, not region, country or operational generalization.
 There is no claim of empirical suppression/medical calibration or optimal action
 labels. Distribution remains subject to `license-status.md`.
