@@ -48,7 +48,7 @@ jobs:
       - name: Publish native run to a local directory only
         run: timeout 60s agent-env hf publish /tmp/wildfire-agentenv-ci-bundle --name wildfire-ci --split development --out /tmp/wildfire-agentenv-ci-dataset
       - name: Load native Parquet and check recorded run
-        run: timeout 60s python eval/check_agentenv_native_fixture.py --dataset-dir /tmp/wildfire-agentenv-ci-dataset --bundle-dir /tmp/wildfire-agentenv-ci-bundle --report /tmp/agentenv-native-report.json
+        run: timeout 60s python eval/check_agentenv_native_fixture.py --dataset-dir /tmp/wildfire-agentenv-ci-dataset --bundle-dir /tmp/wildfire-agentenv-ci-bundle --debug /tmp/agentenv-public-fixture-debug.json --report /tmp/agentenv-native-report.json
       - name: Preserve fixture check evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -66,5 +66,13 @@ jobs:
             /tmp/wildfire-agentenv-ci-dataset/tasks/wildfire-ci.parquet
             /tmp/wildfire-agentenv-ci-dataset/episodes/wildfire-ci.parquet
             /tmp/wildfire-agentenv-ci-dataset/README.md
+          retention-days: 1
+          if-no-files-found: warn
+      - name: Preserve public synthetic fixture for replay debugging
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: agentenv-public-synthetic-fixture-debug
+          path: /tmp/agentenv-public-fixture-debug.json
           retention-days: 1
           if-no-files-found: warn

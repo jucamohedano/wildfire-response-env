@@ -10,7 +10,7 @@ try:
     import httpx
     from mcp.client.streamable_http import streamable_http_client
     from envs.wildfire_response.agentenv.server import WildfireMCPEnvironment
-    from envs.wildfire_response.regional.benchmark_v1 import BenchmarkEnv
+    from envs.wildfire_response.regional.benchmark_v1 import BenchmarkEnv, verify_benchmark_trajectory
     from envs.wildfire_response.regional.benchmark_v1.catalog import build_catalog, task_ids
     from envs.wildfire_response.tests.test_topographic_development import fixture_domain, fixture_inputs
 except ImportError:
@@ -48,6 +48,25 @@ class AgentEnvFixtureTests(unittest.TestCase):
         self.assertEqual(result['end_minute'], 120)
         self.assertTrue(result['terminated'])
         self.assertFalse(result['truncated'])
+        self.assertEqual(driver.canonical_hash(result['trajectory']), result['source_trajectory_sha256'])
+        header = {key: value for key, value in result['trajectory'].items() if key != 'transitions'}
+        self.assertEqual(driver.canonical_hash(header), result['source_header_sha256'])
+        native_spec = importlib.util.spec_from_file_location('native_header', ROOT / 'eval/check_agentenv_native_fixture.py')
+        native = importlib.util.module_from_spec(native_spec)
+        native_spec.loader.exec_module(native)
+        comparison = native.header_diagnostics(result['trajectory'], prepared, domain, catalog)
+        self.assertEqual(comparison['source_header_sha256'], result['source_header_sha256'])
+        self.assertEqual(comparison['differing_header_fields'], [])
+        changed = dict(result['trajectory'])
+        changed['implementation_sha256'] = '0' * 64
+        comparison = native.header_diagnostics(changed, prepared, domain, catalog)
+        self.assertEqual(comparison['differing_header_fields'], ['implementation_sha256'])
+        try:
+            verify_benchmark_trajectory(changed, prepared, domain, catalog=catalog)
+        except ValueError as exc:
+            self.assertEqual(native.safe_verifier_error(exc), 'Benchmark header or implementation pins differ')
+        else:
+            self.fail('changed implementation fingerprint must fail replay')
         import os
         import subprocess
         import sys
@@ -70,8 +89,7 @@ task = runs.tasks(bundle)[0]
 with namespace_routing():
     store = get_task_instance_store()
     instance = store.create_instance(task.id, 1, 3)
-    verification = {'wildfire_reward': {'score': result['verification']['reward'],
-                    'results': [{'result': True, 'score': result['verification']['reward']}]}}
+    verification = {'wildfire_reward': {'score': result['verification']['reward']}}
     store._doc_store.update('task_instances', Filter.of(instance_id=instance.instance_id),
         UpdateSpec(set={'status':'completed', 'context': {'metadata': {'script_results': {'drive':result},
                         'verifications': verification}}, 'completed_steps': [
@@ -86,7 +104,12 @@ for name, content in built.files.items():
                                    description='Synthetic fixture test', license=None))
 sys.path.insert(0, str(repo / 'eval'))
 from check_agentenv_native_fixture import export_and_check
-report = export_and_check(out, bundle_path)
+report = export_and_check(out, bundle_path, debug_path=root / 'debug.json')
+debug = json.loads((root / 'debug.json').read_text())
+assert debug['public_trajectory'] == result['trajectory']
+assert debug['driver_trace_sha256'] == debug['framework_trace_sha256']
+assert debug['host_expected_header']['task_id'] == result['task_id']
+assert 'critical_file_sha256' not in debug
 assert report['status'] == 'passed' and report['decisions'] == 60
 assert report['native_reward'] == result['verification']['reward']
 assert report['independent_replay_after_dataset_load']

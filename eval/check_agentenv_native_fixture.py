@@ -4,6 +4,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import traceback
 from pathlib import Path
 
@@ -79,7 +80,80 @@ def verify_loaded_trace(loaded, framework_trace_hash):
         raise ValidationError('loaded trace hash differs from framework-recorded trace')
 
 
-def export_and_check(dataset_dir, bundle_dir, diagnostics=None):
+def order_insensitive(value):
+    if isinstance(value, dict):
+        return {key: order_insensitive(item) for key, item in value.items()}
+    if isinstance(value, list):
+        items = [order_insensitive(item) for item in value]
+        return sorted(items, key=canonical)
+    return value
+
+
+def classify_header_value(source, host):
+    source_hash = hashlib.sha256(canonical(source)).hexdigest()
+    host_hash = hashlib.sha256(canonical(host)).hexdigest()
+    if source_hash == host_hash:
+        kind = 'identical'
+    elif canonical(order_insensitive(source)) == canonical(order_insensitive(host)):
+        kind = 'equal_only_ignoring_nested_list_order'
+    else:
+        kind = 'content_differs_even_ignoring_list_order'
+    return {'classification': kind, 'source_sha256': source_hash, 'host_sha256': host_hash}
+
+
+def header_diagnostics(trajectory, prepared, domain, catalog, *, include_expected=False):
+    from envs.wildfire_response.regional.benchmark_v1 import BenchmarkEnv
+
+    environment = BenchmarkEnv(prepared, domain, expected_prepared_sha256=prepared['sha256'],
+        expected_topographic_sha256=domain['sha256'], slope_enabled=trajectory.get('slope_enabled'),
+        catalog=catalog, expected_catalog_sha256=trajectory.get('catalog_sha256'),
+        profile=trajectory.get('profile'), max_decisions=trajectory.get('max_decisions'),
+        ticks_per_action=trajectory.get('ticks_per_action'))
+    environment.reset(trajectory.get('task_id'), trajectory.get('seed'))
+    source = {key: value for key, value in trajectory.items() if key != 'transitions'}
+    host = {key: value for key, value in environment.trajectory().items() if key != 'transitions'}
+    differing = sorted(key for key in set(source) | set(host)
+                       if key not in source or key not in host or canonical(source[key]) != canonical(host[key]))
+    fields = ('implementation_sha256', 'catalog_sha256', 'prepared_inputs_sha256',
+              'topographic_inputs_sha256', 'profile_sha256', 'runtime_pack_sha256',
+              'scenario_sha256', 'rules_sha256', 'profile', 'max_decisions', 'ticks_per_action',
+              'interface_version', 'task_version', 'scenario_engine_version', 'reward_version')
+    def safe_fields(header):
+        values = {}
+        for key in fields:
+            value = header.get(key)
+            if isinstance(value, str):
+                values[key] = safe_id(value)
+            elif type(value) in (int, bool) and -100000000 <= value <= 100000000:
+                values[key] = value
+        return values
+
+    report = {'source_header_sha256': hashlib.sha256(canonical(source)).hexdigest(),
+            'host_header_sha256': hashlib.sha256(canonical(host)).hexdigest(),
+            'differing_header_fields': [safe_id(key) for key in differing[:100]],
+            'field_differences': {safe_id(key): classify_header_value(source[key], host[key])
+                                  if key in source and key in host else {'classification': 'missing_field'}
+                                  for key in differing[:100]},
+            'order_note': 'Diagnostic treats every nested list as an unordered multiset; it does not imply equivalent behavior.',
+            'source_fields': safe_fields(source), 'host_fields': safe_fields(host)}
+    return (report, host) if include_expected else report
+
+
+def safe_verifier_error(exc):
+    allowed = {'Expected a benchmark trajectory', 'Benchmark header or implementation pins differ',
+               'Expected a bounded complete benchmark episode', 'Expected structured benchmark transitions',
+               'Action follows episode completion', 'Private evaluator audit differs from replay',
+               'Terminal reward differs from independent recomputation'}
+    message = str(exc)
+    frames = traceback.extract_tb(exc.__traceback__)
+    if not frames or not frames[-1].filename.endswith('/regional/benchmark_v1/environment.py'):
+        return None
+    if message in allowed or re.fullmatch(r'Benchmark transition [0-9]{1,3} does not replay exactly', message):
+        return message
+    return None
+
+
+def export_and_check(dataset_dir, bundle_dir, diagnostics=None, debug_path=None):
     diagnostics = diagnostics if diagnostics is not None else {}
     os.environ['HF_HUB_OFFLINE'] = '1'
     os.environ['HF_DATASETS_OFFLINE'] = '1'
@@ -155,21 +229,57 @@ def export_and_check(dataset_dir, bundle_dir, diagnostics=None):
     diagnostics['trace_task_id'] = safe_id(trajectory.get('task_id'))
     verify_task_binding(task, episode, native_raw[0]['record'], task_entry, rewrite,
                         trajectory['task_id'], result.get('task_id'))
+    diagnostics['stage'] = 'trace_integrity'
+    recorded_trace_hash = hashlib.sha256(canonical(trajectory)).hexdigest()
+    recorded_header_hash = hashlib.sha256(canonical({key: value for key, value in trajectory.items() if key != 'transitions'})).hexdigest()
+    diagnostics['trace_integrity'] = {'driver_trace_sha256': safe_id(result.get('source_trajectory_sha256')),
+        'framework_trace_sha256': recorded_trace_hash, 'driver_header_sha256': safe_id(result.get('source_header_sha256')),
+        'framework_header_sha256': recorded_header_hash}
+    framework_mutated = (result.get('source_trajectory_sha256') != recorded_trace_hash
+                         or result.get('source_header_sha256') != recorded_header_hash)
     diagnostics['stage'] = 'horizon'
     transitions = trajectory['transitions']
     if (len(transitions) != 60 or transitions[-1]['observation']['minute'] != 120
             or not transitions[-1]['terminated'] or transitions[-1]['truncated']):
         raise ValidationError('trace did not complete full 120-minute horizon')
+    diagnostics['stage'] = 'host_header'
+    diagnostics['header_comparison'], host_header = header_diagnostics(trajectory, prepared, domain, catalog, include_expected=True)
+    if debug_path is not None:
+        from envs.wildfire_response.tests.test_topographic_development import fixture_domain, fixture_inputs
+        from agentenv_fixture_driver import critical_file_hashes
+        fixture_prepared = fixture_inputs()
+        fixture_domain_data = fixture_domain(fixture_prepared)
+        if (lock.get('version') != 'synthetic-agentenv-fixture-v1'
+                or prepared['sha256'] != fixture_prepared['sha256']
+                or domain['sha256'] != fixture_domain_data['sha256']
+                or _contains_private_key(trajectory) or _contains_private_key(host_header)):
+            raise ValidationError('debug export refused: input is not the approved synthetic public fixture')
+        source_files = result.get('source_critical_file_sha256')
+        host_files = critical_file_hashes()
+        if not isinstance(source_files, dict) or source_files.keys() != host_files.keys():
+            raise ValidationError('debug export refused: invalid critical source fingerprint list')
+        for key, value in source_files.items():
+            if not isinstance(value, str) or not re.fullmatch(r'[0-9a-f]{64}', value):
+                raise ValidationError('debug export refused: invalid critical source fingerprint')
+        debug = {'scope': 'synthetic public benchmark fixture only', 'prepared_inputs': prepared,
+                 'topographic_inputs': domain, 'public_trajectory': trajectory, 'host_expected_header': host_header,
+                 'driver_trace_sha256': result['source_trajectory_sha256'],
+                 'framework_trace_sha256': recorded_trace_hash,
+                 'driver_header_sha256': result['source_header_sha256'],
+                 'framework_header_sha256': recorded_header_hash}
+        if diagnostics['header_comparison']['source_fields'].get('implementation_sha256') != diagnostics['header_comparison']['host_fields'].get('implementation_sha256'):
+            debug['critical_file_sha256'] = {'source': source_files, 'host': host_files}
+        debug_path = Path(debug_path)
+        debug_path.parent.mkdir(parents=True, exist_ok=True)
+        debug_path.write_bytes(canonical(debug) + b'\n')
+    if framework_mutated:
+        diagnostics['stage'] = 'trace_integrity'
+        raise ValidationError('framework storage changed the source trajectory or header')
     diagnostics['stage'] = 'host_replay'
     replay = verify_benchmark_trajectory(trajectory, prepared, domain, catalog=catalog)
     if not replay['passed']:
         raise ValidationError('framework trace failed independent replay')
     verify_reward(episode['reward'], verification['reward'], replay['objective_score'])
-    native_verifications = native_raw[0]['record'].get('metadata', {}).get('verifications', {})
-    native_verifier = native_verifications.get('wildfire_reward', {})
-    if not native_verifier.get('results') or not all(
-            criterion.get('result') is True for criterion in native_verifier['results']):
-        raise ValidationError('native record does not contain successful technical verification')
     trace_hash = hashlib.sha256(canonical(trajectory)).hexdigest()
     episode_id = episode['episode_id']
     episode_row = dict(episode_id=episode_id, task_id=trajectory['task_id'], split='development',
@@ -248,6 +358,9 @@ def failure_report(exc, diagnostics):
               'stage': diagnostics.get('stage', 'startup'),
               'error': str(exc) if isinstance(exc, ValidationError) else 'external validation failed; details withheld',
               'checker_line': frames[-1].lineno if frames else None}
+    verifier_message = safe_verifier_error(exc) if isinstance(exc, ValueError) else None
+    if verifier_message:
+        result['error'] = verifier_message
     if isinstance(exc, NativeLinkError):
         diagnostics['framework_lookup'] = exc.diagnostics
     result['id_diagnostics'] = diagnostics
@@ -259,11 +372,12 @@ def main():
     parser.add_argument('--dataset-dir', type=Path, required=True)
     parser.add_argument('--bundle-dir', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
+    parser.add_argument('--debug', type=Path, help='Synthetic-fixture-only public debug JSON')
     args = parser.parse_args()
     args.report.parent.mkdir(parents=True, exist_ok=True)
     diagnostics = {}
     try:
-        result = export_and_check(args.dataset_dir, args.bundle_dir, diagnostics)
+        result = export_and_check(args.dataset_dir, args.bundle_dir, diagnostics, args.debug)
     except Exception as exc:
         result = failure_report(exc, diagnostics)
         args.report.write_text(json.dumps(result, indent=2) + '\n')

@@ -42,6 +42,17 @@ class DatasetRoundtripTests(unittest.TestCase):
             checker.compare_transitions(self.trace, rows)
 
 class FrameworkLinkTests(unittest.TestCase):
+    def test_header_diagnostics_distinguish_list_order_and_content(self):
+        spec = importlib.util.spec_from_file_location('native_header_order', ROOT / 'eval/check_agentenv_native_fixture.py')
+        native = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(native)
+        a = {'groups': [{'id': 'a'}, {'id': 'b'}]}
+        b = {'groups': [{'id': 'b'}, {'id': 'a'}]}
+        c = {'groups': [{'id': 'b'}, {'id': 'c'}]}
+        self.assertEqual(native.classify_header_value(a, a)['classification'], 'identical')
+        self.assertEqual(native.classify_header_value(a, b)['classification'], 'equal_only_ignoring_nested_list_order')
+        self.assertEqual(native.classify_header_value(a, c)['classification'], 'content_differs_even_ignoring_list_order')
+
     def test_failure_report_shows_stage_and_static_error_only(self):
         spec = importlib.util.spec_from_file_location('native_fixture_failure', ROOT / 'eval/check_agentenv_native_fixture.py')
         native = importlib.util.module_from_spec(spec)

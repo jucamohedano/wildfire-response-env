@@ -1,8 +1,31 @@
 """No-model driver for a disposable AgentEnv fixture, executed by run_code."""
 import asyncio
+import ast
+import inspect
+from pathlib import Path
+import hashlib
 import json
 from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
+
+
+def canonical_hash(value):
+    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
+    return hashlib.sha256(payload).hexdigest()
+
+
+def critical_file_hashes():
+    from envs.wildfire_response.regional.benchmark_v1 import environment
+
+    tree = ast.parse(inspect.getsource(environment.implementation_digest))
+    assignment = next(node for node in ast.walk(tree) if isinstance(node, ast.Assign)
+                      and any(isinstance(target, ast.Name) and target.id == 'modules' for target in node.targets))
+    modules = ast.literal_eval(assignment.value)
+    source = Path(environment.__file__).resolve().parents[4]
+    regional = source / 'envs/wildfire_response/regional'
+    paths = sorted([*(regional / directory / (name + '.py') for directory, names in modules.items() for name in names),
+                    *(source / 'simulator').rglob('*.py'), source / 'wildfire_core/benchmark_v1.py'])
+    return {str(path.relative_to(source)): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
 
 
 async def _run(input_data):
@@ -24,6 +47,8 @@ async def _run(input_data):
             if not completed:
                 raise RuntimeError('fixture did not complete within 60 decisions')
             trajectory = await call('get_trajectory')
+            trace_hash = canonical_hash(trajectory)
+            header_hash = canonical_hash({key: value for key, value in trajectory.items() if key != 'transitions'})
             verification = await call('verify_episode')
             transitions = trajectory.get('transitions') or []
             if (len(transitions) != 60 or transitions[-1]['observation']['minute'] != 120
@@ -34,7 +59,9 @@ async def _run(input_data):
             return {'task_id': input_data['args']['task_id'], 'decisions': len(trajectory['transitions']),
                     'terminated': result['terminated'], 'truncated': result['truncated'],
                     'replay_passed': True, 'end_minute': 120, 'model_used': False,
-                    'trajectory': trajectory, 'verification': verification}
+                    'trajectory': trajectory, 'verification': verification,
+                    'source_trajectory_sha256': trace_hash, 'source_header_sha256': header_hash,
+                    'source_critical_file_sha256': critical_file_hashes()}
 
 
 def run(input_data):
