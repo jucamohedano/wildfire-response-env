@@ -1,6 +1,7 @@
 """Local FP16 Qwen3-8B tool-policy evaluation; no provider API or private prompts."""
 import argparse, json, time, re, os, hashlib, random
 from pathlib import Path
+from eval.qwen3_history import trim_once
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from eval.hub_runtime import make_environment
@@ -32,8 +33,7 @@ def run(args):
    while True:
     encoded=tokenizer.apply_chat_template(messages,tools=tools(),tokenize=True,add_generation_prompt=True,enable_thinking=False,return_tensors='pt',return_dict=True)
     if encoded['input_ids'].shape[-1]<=args.context:break
-    if len(messages)<=3:raise RuntimeError('Current public situation exceeds context budget')
-    messages=[messages[0],{'role':'user','content':json.dumps(env.get_situation(),separators=(',',':'))}]+messages[4:];pruned+=1
+    messages=trim_once(messages);pruned+=1
    encoded={k:v.to('cuda') for k,v in encoded.items()};n=encoded['input_ids'].shape[-1];t=time.monotonic()
    with torch.inference_mode():generated=model.generate(**encoded,max_new_tokens=768,do_sample=False,pad_token_id=tokenizer.eos_token_id)
    response=tokenizer.decode(generated[0,n:],skip_special_tokens=True);elapsed=time.monotonic()-t

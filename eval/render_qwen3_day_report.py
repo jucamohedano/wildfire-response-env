@@ -105,7 +105,7 @@ def make_report(run_dir, baseline_path):
         summary_path = run_dir / 'summary.json'
     model = read_json(summary_path)
     baseline = read_json(baseline_path)
-    pilot = 'run-v1' in (run_dir.name + ' ' + str(model.get('run_id', '')) + ' ' + str(model.get('run', ''))).lower()
+    pilot = any(name in (run_dir.name + ' ' + str(model.get('run_id', '')) + ' ' + str(model.get('run', ''))).lower() for name in ('run-v1','run-v2'))
     model_rows = {r.get('case'): r for r in model.get('cases', []) if isinstance(r, dict) and isinstance(r.get('case'), str)}
     baseline_rows = {(r.get('case'), r.get('policy')): r for r in baseline.get('cases', []) if isinstance(r, dict)}
     pins_match = matching(model, baseline)
@@ -119,7 +119,7 @@ def make_report(run_dir, baseline_path):
         outcome = (row.get('outcomes') or v.get('outcomes') or {}) if row else {}
         eligible = bool(row and verified(row) and not pilot)
         if row:
-            status = ('Unscored: run-v1 pilot used incorrect tool roles' if pilot else ('Verified and eligible' if eligible else 'Unscored: incomplete, censored, abandoned, or verification/eligibility not established'))
+            status = ('Unscored: excluded harness pilot' if pilot else ('Verified and eligible' if eligible else 'Unscored: incomplete, censored, abandoned, or verification/eligibility not established'))
         else:
             status = ('Running; partial request records available' if records else 'Queued; not yet attempted') if model.get('status') == 'running' else 'Not present in terminal model summary'
         counts = Counter(r['tool'] for r in records if isinstance(r.get('tool'), str))
@@ -155,6 +155,8 @@ def make_report(run_dir, baseline_path):
     missing_pins = [k for k in PINS if not pin_value(model,k)]
     pin_note = 'All required pins match.' if pins_match else 'Matching not established. Missing model pins: ' + (', '.join(missing_pins) or 'none; at least one pin differs') + '.'
     page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qwen3-8B incident-day evaluation</title><style>body{{font:16px/1.55 system-ui,sans-serif;color:#172b31;background:#f2f5f3;margin:0}}main{{max-width:1100px;margin:auto;padding:2rem}}header,section{{background:white;padding:1.4rem 1.8rem;margin:1rem 0;border-radius:12px;box-shadow:0 2px 12px #18382b18}}h1,h2{{line-height:1.2}}h2{{font-size:1.2rem}}.status{{color:#285b46;font-weight:700}}code{{overflow-wrap:anywhere;font-size:.88em}}details{{border-top:1px solid #d7e2dc;padding:.6rem 0}}summary{{cursor:pointer;font-weight:600}}li{{margin:.35rem 0}}.note{{background:#fff3d5;padding:1rem;border-radius:8px}}</style></head><body><main><header><h1>Qwen3-8B · incident-day evaluation</h1><p>Verified, eligible model cases: <strong>{completed} / 6</strong> · Run status: {esc(model.get('status','summary missing or unreadable'))}</p><p>Qwen/Qwen3-8B revision b968826d9c46dd6066d109eabc6255188de91218 · FP16 Tesla V100 32 GB · thinking disabled · greedy decoding · context 12,000 tokens · maximum 768 new tokens.</p><p>Main run bounds: 900 seconds per case, 7,200 seconds overall and 1,200 calls per case. A limit or interrupted run is not a completed result. GPU peak is allocated memory as reported by the runner, and may be cumulative across cases.</p><p>Run-v1 was a stopped pilot with incorrect tool roles and is not an independent trial or comparison. Run-v2 uses native assistant tool calls and tool-role responses.</p><p class="note">These six cases are development exercises, not independent real incidents. Field and reward calibration remain open; this is not a safety certification. Protected fraction and burned area are simulated outcomes.</p><p>Baseline matching: {esc(pin_note)} Comparison requires identical case ID and all five manifest, engine, lifecycle, input and network pins.</p></header>{''.join(sections)}</main></body></html>'''
+    note='<p class="note">Protocol audit: run-v1 used ordinary-user tool feedback; run-v2 context trimming discarded the latest tool response. Both pilots are excluded from model conclusions. The main run-v3 preserves native tool roles and the latest tool-call/result pair. Recorded error totals are recomputed from actual draft and commit feedback, excluding null error fields.</p>'
+    page=page.replace('</header>',note+'</header>',1)
     return page
 
 def main():
