@@ -83,7 +83,7 @@ Prepared inputs are now downloadable from the private
 [Wildfire Response Spain dataset](https://huggingface.co/datasets/jucamohedano/wildfire-response-spain):
 
 ```sh
-hf download jucamohedano/wildfire-response-spain --type dataset --revision v0.2.0 \
+hf download jucamohedano/wildfire-response-spain --type dataset --revision v0.3.0 \
   --local-dir .runtime/wildfire-response-spain
 python -m eval.hub_runtime --data-dir .runtime/wildfire-response-spain --verify-only
 python -m eval.hub_runtime --data-dir .runtime/wildfire-response-spain --runtime fixture

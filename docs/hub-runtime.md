@@ -15,7 +15,7 @@ The bounded episode CLI is tested on Linux and uses POSIX timers.
 ```bash
 python -m pip install -e envs/wildfire_response/core
 hf download jucamohedano/wildfire-response-spain --type dataset \
-  --revision c84690243840c6339bf82a3b41e0cea279e49a70 \
+  --revision d7e1e1c82eb249e35315bd19d1e0fea730fc0da7 \
   --local-dir .runtime/wildfire-response-spain
 python -m eval.hub_runtime --data-dir .runtime/wildfire-response-spain --verify-only
 python -m eval.hub_runtime --data-dir .runtime/wildfire-response-spain \
@@ -24,7 +24,7 @@ python -m eval.hub_runtime --data-dir .runtime/wildfire-response-spain \
   --runtime es-ma-2021 --allow-unapproved-data --policy dispatcher --wall-seconds 300
 ```
 
-The immutable revision above is also tagged `v0.2.0`; its lock is
+The immutable revision above is also tagged `v0.3.0`; its lock is
 `data/hub_runtime_v1/release.json`. The verifier checks the schema, payload hashes,
 canonical runtime pins, engine implementation and lifecycle identities. It
 rejects stale/incompatible code rather than silently changing a scenario.
@@ -41,6 +41,8 @@ policies, not model evaluations or expert demonstrations. A model uses the same
 
 ## Dataset configurations
 
+`validation_cells` has 48 operation-wide quality-control rows (12 configurations × four scripted policies). They are not actor input or training labels. The old `v0.2.0` revision remains unchanged; its lock is retained at `data/hub_runtime_v1/releases/v0.2.0.json`.
+
 `tasks` has 12 development rows; `landscapes` has two runtime records (one
 synthetic fixture and one source-map context). `station_weather` has 384 normalized
 source-clock records; `incident_claims` and `municipal_population` each have seven
@@ -52,7 +54,7 @@ Install the optional table reader with `python -m pip install datasets==5.1.0`.
 
 ```python
 from datasets import load_dataset
-revision = "c84690243840c6339bf82a3b41e0cea279e49a70"
+revision = "d7e1e1c82eb249e35315bd19d1e0fea730fc0da7"
 tasks = load_dataset("jucamohedano/wildfire-response-spain", "tasks",
                      split="development", revision=revision, token=True)
 ```
@@ -65,3 +67,5 @@ release is private and is not public redistribution clearance. Physical/source
 calibration and issue #42's decisions remain separate. The original
 `wildfire-response-spain-sierra-bermeja-2021` dataset is retained as an unchanged
 historical snapshot.
+
+Release checks, fresh-download results and the preserved old revision are recorded in [the verification record](../results/hub-runtime-release-20261029.json). Existing Hub visibility must be checked explicitly before and after an upload; an upload creation flag is not proof that an existing repository is private.
