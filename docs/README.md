@@ -3,8 +3,10 @@
 Commands and repository paths in the reference documents are relative to the
 repository root unless stated otherwise.
 
-[Visual project report](project-report.html): current design, agent tools,
-verification evidence and remaining work.
+[Visual project report (PDF)](project-report.pdf): current design, agent tools,
+verification evidence and remaining work. Its editable source is
+[project-report.html](project-report.html). Rebuild the PDF with
+`node eval/export_project_report_pdf.cjs` (Chrome required; use `--chrome` for an alternate executable).
 
 [Runtime validation plan](runtime-validation-plan.md): full active-case coverage,
 contextual timing checks and CPU acceptance before expanding the training data.
