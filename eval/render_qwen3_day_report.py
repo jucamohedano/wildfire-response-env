@@ -183,6 +183,8 @@ def make_report(run_dir, baseline_path):
                 selected = {key: diagnostics.get(key) for key in ('active_fire_cells','additional_burned_hectares','new_exposed_population','unresolved_evacuations','population_by_status','resource_by_kind_and_state','suppression_work_events','resources_with_applied_work','received_reports','mission_operations_submitted')}
                 qualifier = 'Evaluator-only effects at day end; the model may not have received every update: ' if eligible else 'Evaluator-only diagnostics at the stopping clock; the model may not have received these updates yet. Not comparable with full-day reference outcomes: '
                 details += '<p class="note">' + qualifier + esc(json.dumps(selected, sort_keys=True)) + '</p>'
+        if row:
+            details += '<p>History trimming operations: ' + esc(fmt(row.get('pruned_history_pairs'))) + '; the latest call/result pair was retained.</p>'
         details += public_timeline(records)
         for policy in ('passive', 'dispatcher'):
             b = baseline_rows.get((case, policy))
