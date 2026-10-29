@@ -48,16 +48,17 @@ class AgentEnvFixtureTests(unittest.TestCase):
         self.assertEqual(result['end_minute'], 120)
         self.assertTrue(result['terminated'])
         self.assertFalse(result['truncated'])
-        self.assertEqual(driver.canonical_hash(result['trajectory']), result['source_trajectory_sha256'])
-        header = {key: value for key, value in result['trajectory'].items() if key != 'transitions'}
+        trajectory = json.loads(result['trajectory_json'])
+        self.assertEqual(driver.canonical_hash(trajectory), result['source_trajectory_sha256'])
+        header = {key: value for key, value in trajectory.items() if key != 'transitions'}
         self.assertEqual(driver.canonical_hash(header), result['source_header_sha256'])
         native_spec = importlib.util.spec_from_file_location('native_header', ROOT / 'eval/check_agentenv_native_fixture.py')
         native = importlib.util.module_from_spec(native_spec)
         native_spec.loader.exec_module(native)
-        comparison = native.header_diagnostics(result['trajectory'], prepared, domain, catalog)
+        comparison = native.header_diagnostics(trajectory, prepared, domain, catalog)
         self.assertEqual(comparison['source_header_sha256'], result['source_header_sha256'])
         self.assertEqual(comparison['differing_header_fields'], [])
-        changed = dict(result['trajectory'])
+        changed = dict(trajectory)
         changed['implementation_sha256'] = '0' * 64
         comparison = native.header_diagnostics(changed, prepared, domain, catalog)
         self.assertEqual(comparison['differing_header_fields'], ['implementation_sha256'])
@@ -78,6 +79,8 @@ from agentenv_hf.card import card
 from agent_env.store.routing import namespace_routing
 from agent_env.store.document_store import Filter, UpdateSpec
 from agent_env.task.store import get_task_instance_store
+from agent_env.task_step.context import TaskStepContext
+from agent_env.task_step.context_ops import build_context_update_ops
 root = Path(sys.argv[1])
 repo = Path(sys.argv[2])
 bundle_path = root / 'bundle'
@@ -90,9 +93,11 @@ with namespace_routing():
     store = get_task_instance_store()
     instance = store.create_instance(task.id, 1, 3)
     verification = {'wildfire_reward': {'score': result['verification']['reward']}}
+    post = TaskStepContext(metadata={'script_results': {'drive': result}, 'verifications': verification})
+    ops = build_context_update_ops(TaskStepContext(), post)
+    store._doc_store.update('task_instances', Filter.of(instance_id=instance.instance_id), ops.to_update_spec())
     store._doc_store.update('task_instances', Filter.of(instance_id=instance.instance_id),
-        UpdateSpec(set={'status':'completed', 'context': {'metadata': {'script_results': {'drive':result},
-                        'verifications': verification}}, 'completed_steps': [
+        UpdateSpec(set={'status':'completed', 'completed_steps': [
                         {'step_id':step, 'status':'success'} for step in ('deploy','drive','verify')]}))
     built = dataset.build(bundle, name='wildfire-ci', split='development', which='latest')
 out = root / 'dataset'
@@ -106,7 +111,7 @@ sys.path.insert(0, str(repo / 'eval'))
 from check_agentenv_native_fixture import export_and_check
 report = export_and_check(out, bundle_path, debug_path=root / 'debug.json')
 debug = json.loads((root / 'debug.json').read_text())
-assert debug['public_trajectory'] == result['trajectory']
+assert debug['public_trajectory'] == json.loads(result['trajectory_json'])
 assert debug['driver_trace_sha256'] == debug['framework_trace_sha256']
 assert debug['host_expected_header']['task_id'] == result['task_id']
 assert 'critical_file_sha256' not in debug

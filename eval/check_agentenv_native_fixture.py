@@ -210,9 +210,16 @@ def export_and_check(dataset_dir, bundle_dir, diagnostics=None, debug_path=None)
                        rewritten_framework_task_id=safe_id(rewrite(task_entry.id)),
                        bundle_task_name=safe_id(task_entry.name))
     diagnostics['stage'] = 'trace_privacy'
-    trajectory, verification = result.get('trajectory'), result.get('verification')
-    if not isinstance(trajectory, dict) or not isinstance(verification, dict) or verification.get('passed') is not True:
+    trajectory_json, verification = result.get('trajectory_json'), result.get('verification')
+    if (not isinstance(trajectory_json, str) or not isinstance(verification, dict)
+            or verification.get('passed') is not True):
         raise ValidationError('framework record lacks verified public trajectory')
+    try:
+        trajectory = json.loads(trajectory_json)
+    except json.JSONDecodeError as exc:
+        raise ValidationError('framework trajectory JSON is invalid') from exc
+    if not isinstance(trajectory, dict) or canonical(trajectory).decode() != trajectory_json:
+        raise ValidationError('framework trajectory is not canonical JSON')
     if _contains_private_key(trajectory):
         raise ValidationError('framework trajectory contains private or future scenario fields')
     diagnostics['stage'] = 'catalog_lock'

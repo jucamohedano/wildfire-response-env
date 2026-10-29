@@ -42,6 +42,18 @@ class DatasetRoundtripTests(unittest.TestCase):
             checker.compare_transitions(self.trace, rows)
 
 class FrameworkLinkTests(unittest.TestCase):
+    def test_framework_context_diff_keeps_serialized_trace_scalar(self):
+        from agent_env.task_step.context import TaskStepContext
+        from agent_env.task_step.context_ops import build_context_update_ops
+        trace_json = json.dumps({'empty': [], 'transform': [0, 0, -500], 'rows': [[1, 1], [1, 1]]},
+                                sort_keys=True, separators=(',', ':'))
+        post = TaskStepContext(metadata={'script_results': {'drive': {'trajectory_json': trace_json}}})
+        ops = build_context_update_ops(TaskStepContext(), post)
+        path = 'context.metadata.script_results.drive.trajectory_json'
+        self.assertEqual(ops.sets[path], trace_json)
+        self.assertFalse(any(key.startswith(path) for key in ops.add_to_sets))
+        self.assertEqual(json.loads(ops.sets[path]), json.loads(trace_json))
+
     def test_header_diagnostics_distinguish_list_order_and_content(self):
         spec = importlib.util.spec_from_file_location('native_header_order', ROOT / 'eval/check_agentenv_native_fixture.py')
         native = importlib.util.module_from_spec(spec)

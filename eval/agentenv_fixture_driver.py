@@ -9,9 +9,12 @@ from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 
 
+def canonical_json(value):
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False)
+
+
 def canonical_hash(value):
-    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
-    return hashlib.sha256(payload).hexdigest()
+    return hashlib.sha256(canonical_json(value).encode()).hexdigest()
 
 
 def critical_file_hashes():
@@ -59,7 +62,7 @@ async def _run(input_data):
             return {'task_id': input_data['args']['task_id'], 'decisions': len(trajectory['transitions']),
                     'terminated': result['terminated'], 'truncated': result['truncated'],
                     'replay_passed': True, 'end_minute': 120, 'model_used': False,
-                    'trajectory': trajectory, 'verification': verification,
+                    'trajectory_json': canonical_json(trajectory), 'verification': verification,
                     'source_trajectory_sha256': trace_hash, 'source_header_sha256': header_hash,
                     'source_critical_file_sha256': critical_file_hashes()}
 
