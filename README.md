@@ -5,6 +5,8 @@ reports, investigate uncertainty, coordinate crews and aircraft, and issue
 population-protection orders. The environment runs on CPU and is not connected
 to real dispatch or emergency systems.
 
+[Read the visual project report](docs/project-report.html).
+
 ![Coastal wildfire response dashboard](docs/assets/dashboard.jpg)
 
 *The coastal/benchmark dashboard; the incident-day prototype has a separate interface.*

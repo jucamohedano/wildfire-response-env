@@ -3,6 +3,9 @@
 Commands and repository paths in the reference documents are relative to the
 repository root unless stated otherwise.
 
+[Visual project report](project-report.html): current design, agent tools,
+verification evidence and remaining work.
+
 The former root reference files were moved here:
 
 - `DATASET_CARD.md` → [dataset-card.md](dataset-card.md)
