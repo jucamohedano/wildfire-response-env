@@ -68,5 +68,21 @@
     "pack_sha256": "50031b3029dcee0a1367ccdd8125d081d19d3b500b2dd373e30ef127d47a2c4d",
     "network_sha256": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16",
     "allow_unapproved_data": true
-  }
+  },
+  "real_map_v2_scenario_ids": [
+    "incident-day-realmap-v2-000",
+    "incident-day-realmap-v2-001",
+    "incident-day-realmap-v2-002",
+    "incident-day-realmap-v2-003",
+    "incident-day-realmap-v2-004",
+    "incident-day-realmap-v2-005"
+  ],
+  "real_map_acceptance_scenario_ids": [
+    "incident-day-realmap-v2-000",
+    "incident-day-realmap-v2-001",
+    "incident-day-realmap-v2-002",
+    "incident-day-realmap-v2-003",
+    "incident-day-realmap-v2-004",
+    "incident-day-realmap-v2-005"
+  ]
 }
