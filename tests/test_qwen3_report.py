@@ -42,6 +42,8 @@ def test_report_uses_recorded_bounds(tmp_path):
     b=tmp_path/'b.json';b.write_text('{}')
     output=make_report(tmp_path,b)
     assert 'context 32768 tokens' in output and 'context 12,000 tokens' not in output
+    assert 'python -m eval.run_qwen3_day' in output
+    assert '0217aef' in output and '--case-seconds 900' in output
 
 
 def test_pre_dispatch_contract_error_is_not_an_engine_commit():
