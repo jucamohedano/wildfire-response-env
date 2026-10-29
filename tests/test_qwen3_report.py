@@ -30,6 +30,9 @@ def test_partial_run_never_earns_a_score_or_leaks_raw_replies(tmp_path):
     assert '98765.4321' not in output and 'Unscored' in output
     assert 'PRIVATE_RESPONSE' not in output and 'PRIVATE_AUDIT' not in output
     assert 'Queued; not yet attempted' in output
+    assert '1 of 6 bounded cases have stopped' in output
+    assert 'stopping point is minute 10 of 1440' in output
+    assert 'cannot be ranked against completed baselines' in output
 
 
 def test_report_uses_recorded_bounds(tmp_path):
