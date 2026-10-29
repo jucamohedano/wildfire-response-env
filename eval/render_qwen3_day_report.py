@@ -117,6 +117,32 @@ def replay_outcome_summary(diagnostics):
     return '; '.join(parts)
 
 
+def rejected_reused_authorizations(records):
+    """Count rejections of offer IDs accepted by an earlier committed action."""
+    accepted = set()
+    repeated = 0
+    for record in records:
+        if record.get('tool') != 'commit_orders' or record.get('executed') is False:
+            continue
+        result = record.get('result')
+        if not isinstance(result, dict):
+            continue
+        info = result.get('info')
+        arguments = record.get('arguments') or {}
+        action = arguments.get('action') if isinstance(arguments, dict) else None
+        if not isinstance(action, dict):
+            continue
+        offers = action.get('authorizations') or []
+        if not isinstance(offers, list):
+            continue
+        offer_ids = {offer for offer in offers if isinstance(offer, str)}
+        if isinstance(info, dict) and 'error' in info and info['error'] is None:
+            accepted.update(offer_ids)
+        elif recorded_error(record) == 'Authorize a live offered allocation' and offer_ids & accepted:
+            repeated += 1
+    return repeated
+
+
 def public_feedback(rec):
     """Compact allowlist of what the policy actually received, not evaluator state."""
     result=rec.get('result')
@@ -228,6 +254,9 @@ def make_report(run_dir, baseline_path):
             details += '<p class="note">A rejected cross-kind approach produced a terse internal-field error. The environment feedback issue is tracked in <a href="https://github.com/jucamohedano/wildfire-response-env/issues/57">#57</a>.</p>'
         if any(has_stale_completed_evacuation(record) for record in records):
             details += '<p class="note">A delivered evacuation-completion report coexisted with an untimestamped unwarned population view. See environment feedback issue <a href="https://github.com/jucamohedano/wildfire-response-env/issues/59">#59</a>; this does not establish why the model repeated its order.</p>'
+        reused = rejected_reused_authorizations(records)
+        if reused:
+            details += f'<p class="note">{reused} committed order(s) attempted to authorize an offer already accepted in an earlier order and were rejected. See the public action timeline for the recorded sequence.</p>'
         details += public_timeline(records)
         for policy in ('passive', 'dispatcher'):
             b = baseline_rows.get((case, policy))

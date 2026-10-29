@@ -101,3 +101,14 @@ def test_replay_outcome_summary_is_partial_and_uses_recorded_counts():
     assert '1 resource(s) had performed suppression work' in text
     assert '25 fire cells remained active' in text
     assert replay_outcome_summary({}) == ''
+
+
+def test_reused_offer_only_counts_prior_accepted_commits():
+    from eval.render_qwen3_day_report import rejected_reused_authorizations
+    def row(offer, error):
+        return {'tool':'commit_orders', 'arguments':{'action':{'authorizations':[offer]}},
+                'result':{'info':{'error':error}}}
+    rejected = 'Authorize a live offered allocation'
+    assert rejected_reused_authorizations([row('a', rejected)]) == 0
+    assert rejected_reused_authorizations([row('a', None), row('b', rejected)]) == 0
+    assert rejected_reused_authorizations([row('a', None), row('a', rejected)]) == 1
