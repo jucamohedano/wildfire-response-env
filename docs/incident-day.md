@@ -50,8 +50,12 @@ resource readiness and flight conditions are rechecked when it executes.
 The six IDs `incident-day-dev-000` through `005` cover quiet handover, wind/access
 loss, crew-only approaches, aircraft operating windows, a threatened evacuation
 destination and regional shortages. They are development probes, not a held-out
-training/evaluation catalog. Aged fire, existing assignments and delayed
-handover notices initialize the day; that prehistory is not a demonstration.
+training/evaluation catalog. The original six `incident-day-dev-*` IDs preserve
+preliminary inherited assignments outside useful ground-work reach. They remain
+regression probes, not representative handover or demonstration data. Choose an
+explicit egress/coverage ID for fixture acceptance; a reset with no ID preserves
+the legacy `incident-day-dev-000` default. Aged fire, existing assignments and
+delayed handover notices initialize the day; prehistory is not a demonstration.
 
 Reward is zero until completion, then `0.8 × newly protected population fraction
 + 0.2 × fraction of remaining burnable cells not newly burned`. Inherited burned
@@ -114,7 +118,7 @@ builds a digest-pinned base revision and checks the installed image through an
 external Python client. Both coverage variants complete a day with exact public
 step/reward parity against independently verified local episodes. The bounded
 GitHub job runs as a non-root user with a read-only filesystem and resource limits,
-then removes the test container. See `results/incident-day-container-20261028.json`
+then removes the test container. See `results/incident-day-container-20261029.json`
 for the actual image identity and CI link. This verifies the synthetic fixture,
 not real-source approval, other platforms, the legacy adapter or publication.
 

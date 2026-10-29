@@ -101,9 +101,12 @@ The CPU-only audit took 12.732 seconds and peaked at 35.22 MiB RSS. No scenario,
 seed, split, reward or existing replay identity was changed.
 
 See the [HTML report](../../results/scenario-quality-20261027.html) and
-[machine-readable audit](../../results/scenario-quality-20261027.json). All
-plausibility warnings remain unresolved until explicitly reviewed or addressed
-in a new dataset version; static acceptance is not a realistic-release approval.
+[machine-readable audit](../../results/scenario-quality-20261027.json). The later [structural disposition](../incident_day_v2/README.md#structural-review-disposition)
+materialized all 32 flagged variants: 28 remain frozen pre-ignition weather
+exercises rather than post-ignition adaptation evidence; four require destination
+redesign before use in day-mode training. The warnings remain visible in the old
+locked catalogs. This is a structural review, not expert operational approval or
+a realistic-release certification.
 
 ## Acting on findings
 

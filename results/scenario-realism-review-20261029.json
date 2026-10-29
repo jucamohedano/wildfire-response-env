@@ -1,0 +1,257 @@
+{
+  "version": "scenario-realism-review-20261029-v1",
+  "revision": "da7b1a89aa2c2a36e5eecc54ef13c6531dad6916",
+  "source_anchor": {
+    "location": "Sierra Bermeja, Malaga, Spain",
+    "local_start_date": "2021-09-08",
+    "source": "https://mapping.emergency.copernicus.eu/activations/EMSR545/",
+    "interpretation": "source landscape and incident context, not historical operation labels"
+  },
+  "registered_quality": {
+    "rules_version": "wildfire-scenario-quality-v1",
+    "rules_sha256": "92ce9b1bc2b8f5650d93f32c1fbe6bef0c1739120f1d3fa114d0fe2d5fad0afa",
+    "entries_checked": 2412,
+    "hard_errors": 0,
+    "warning_instances": 35,
+    "catalogs": [
+      {
+        "catalog": "benchmark_v1",
+        "catalog_version": "wildfire-benchmark-catalog-v1",
+        "catalog_sha256": "2b83e5e2457a37cdf22cf75c2eb66d6c186585cf8889089219a992963e61cb05",
+        "tasks_checked": 252,
+        "splits": {
+          "development": 12,
+          "test": 40,
+          "train": 160,
+          "validation": 40
+        },
+        "errors": 0,
+        "warnings": 1,
+        "tasks_with_warnings": 0,
+        "configuration_groups_with_warnings": 0,
+        "findings_by_code": {
+          "night_aircraft": 252,
+          "unmeasured_fuel_fallback": 1
+        },
+        "warning_groups_by_code": {}
+      },
+      {
+        "catalog": "synthetic_expansion_v1",
+        "catalog_version": "wildfire-synthetic-expansion-catalog-v1",
+        "catalog_sha256": "80fef6516618f77e669aad4e2bc7f754002aac59181e6f0d6e7bfce222118de4",
+        "tasks_checked": 1920,
+        "splits": {
+          "test": 320,
+          "train": 1280,
+          "validation": 320
+        },
+        "errors": 0,
+        "warnings": 33,
+        "tasks_with_warnings": 32,
+        "configuration_groups_with_warnings": 16,
+        "findings_by_code": {
+          "night_aircraft": 1920,
+          "population_at_ignition": 4,
+          "preignition_wind_shift": 28,
+          "unmeasured_fuel_fallback": 1
+        },
+        "warning_groups_by_code": {
+          "population_at_ignition": 2,
+          "preignition_wind_shift": 14
+        }
+      },
+      {
+        "catalog": "topographic_stress_v1",
+        "catalog_version": "wildfire-topographic-stress-catalog-v1",
+        "catalog_sha256": "a38970528b7119d598bee4a51038f01e9e4f6ec7948a8c7e55b3ec1bf2743444",
+        "tasks_checked": 240,
+        "splits": {
+          "test": 40,
+          "train": 160,
+          "validation": 40
+        },
+        "errors": 0,
+        "warnings": 1,
+        "tasks_with_warnings": 0,
+        "configuration_groups_with_warnings": 0,
+        "findings_by_code": {
+          "night_aircraft": 240,
+          "unmeasured_fuel_fallback": 1
+        },
+        "warning_groups_by_code": {}
+      }
+    ],
+    "interpretation": "Registry entries across related catalogs, not a count of distinct independent incidents. Three shared-input warning instances concern the same 80 unmeasured fuel cells."
+  },
+  "ops": {
+    "generator_version": "wildfire-control-generator-v1",
+    "groups": 120,
+    "variants": 360,
+    "variants_per_group": 3,
+    "split_groups": {
+      "train": 80,
+      "validation": 20,
+      "test": 20
+    },
+    "structural_audit": "passed",
+    "lock_sha256": "208c663c51fdbb1d8ed2d4677089c442467906bcd4b75f3bcc40b84807cc65a4",
+    "scope": "Structural checks; no policy outcomes."
+  },
+  "incident_day": {
+    "screen_version": "incident-day-static-realism-screen-v2",
+    "bounds_version": "incident-day-exercise-plausibility-bounds-v1",
+    "case_groups": {
+      "coverage_variants": {
+        "cases": 2,
+        "compilation_failures": 0,
+        "compiled": 2,
+        "contradictions": {},
+        "review_candidates": {},
+        "unsupported": {
+          "land_mask_missing": 2,
+          "synthetic_physics": 2
+        }
+      },
+      "egress": {
+        "cases": 6,
+        "compilation_failures": 0,
+        "compiled": 6,
+        "contradictions": {},
+        "review_candidates": {},
+        "unsupported": {
+          "land_mask_missing": 6,
+          "synthetic_physics": 6
+        }
+      },
+      "fixture": {
+        "cases": 6,
+        "compilation_failures": 0,
+        "compiled": 6,
+        "contradictions": {},
+        "review_candidates": {
+          "initial_assignment_out_of_reach": 6
+        },
+        "unsupported": {
+          "land_mask_missing": 6,
+          "synthetic_physics": 6
+        }
+      },
+      "realmap_v1": {
+        "cases": 6,
+        "compilation_failures": 0,
+        "compiled": 6,
+        "contradictions": {},
+        "review_candidates": {},
+        "unsupported": {
+          "land_mask_missing": 6,
+          "synthetic_physics": 6
+        }
+      },
+      "realmap_v2": {
+        "cases": 6,
+        "compilation_failures": 0,
+        "compiled": 6,
+        "contradictions": {},
+        "review_candidates": {},
+        "unsupported": {
+          "land_mask_missing": 6,
+          "synthetic_physics": 6
+        }
+      },
+      "shift": {
+        "cases": 6,
+        "compilation_failures": 0,
+        "compiled": 6,
+        "contradictions": {},
+        "review_candidates": {},
+        "unsupported": {
+          "land_mask_missing": 6,
+          "synthetic_physics": 6
+        }
+      }
+    },
+    "catalog_ids_checked": 32,
+    "fixture_derived_cases": 20,
+    "source_map_cases": 12,
+    "scope": "Every ALL_CASE_IDS once with appropriate input; initial static screen and synthetic warm-up; no later policy or per-minute outcomes reviewed."
+  },
+  "review_findings": [
+    {
+      "category": "legacy_model_level_reach_inconsistency",
+      "finding": "All six base fixture cases initialize an on-scene ground assignment targeting the incident from a staging point outside the declared three-cell useful-work reach. This is a model-level reach inconsistency, not proof of unreachable runtime or physical hazard.",
+      "follow_up": "Retain base cases as preliminary regression probes and exclude them from representative handover or training claims. Existing shift and egress constructors require useful staging and a return route or disclose recovery fallback; use supported shift, coverage and current real-map variants within their declared scope. All 32 are development cases."
+    },
+    {
+      "category": "structural_warnings_with_existing_disposition",
+      "finding": "28 expansion variants in 14 groups have wind shift at or before ignition; four variants in two groups have population/refuge burning at ignition. These are not automatically infeasible.",
+      "existing_disposition": {
+        "source": "data/incident_day_v2/README.md",
+        "review_script": "eval/review_incident_day_variants.py",
+        "reviewed_variants": 32,
+        "retain_frozen_preignition_weather": 28,
+        "destination_relocation_redesign_before_day_training": 4,
+        "private_curation_sha256": "9f7df7e0f715b226206581ab7ce4f403f3ec9b4b8b9d89e667c10d2472494aae",
+        "expert_approved": false,
+        "old_cases_promoted_to_day_training": false,
+        "held_out_policy_outcomes_inspected": false,
+        "current_day_catalog_screen": "Separate 32-case audit"
+      }
+    },
+    {
+      "category": "coverage_limitation",
+      "finding": "All 252 benchmark, 1920 expansion and 240 stress entries have no modeled daylight minute within the response horizon under the night_aircraft rule. They cannot test usable aircraft response regardless of readiness; expansion adds no daytime aircraft coverage.",
+      "basis": "wildfire-scenario-quality-v1 night_aircraft rule; findings_by_code equals task count for each catalog",
+      "follow_up": "Track a preregistered future-version daytime aircraft coverage design under #18/#34; do not alter or regenerate frozen catalogs. Incident-day full-day cases have daylight windows but are development probes, not held-out training coverage."
+    },
+    {
+      "category": "unsupported_or_unvalidated",
+      "finding": "One landscape; 80 shared source-unknown fuel cells use explicit exercise fallback; travel, communications, population, safety, suppression and fire rates are uncalibrated. Source-map land/water uncertainty, road permissions and native elevation void/edition metadata remain open."
+    },
+    {
+      "category": "supported_plausibility",
+      "finding": "Source-grounded terrain/weather context and producer documentation support provenance, and model-level structural checks support reproducibility; neither establishes operational accuracy."
+    }
+  ],
+  "evidence": [
+    {
+      "title": "IGN MDT product information",
+      "url": "https://pnoa.ign.es/web/portal/pnoa-lidar/productos-a-descarga"
+    },
+    {
+      "title": "IGN terrain production process",
+      "url": "https://pnoa.ign.es/pnoa-lidar/modelo-digital-del-terreno"
+    },
+    {
+      "title": "MITECO aircraft class specifications",
+      "url": "https://www.miteco.gob.es/en/biodiversidad/temas/incendios-forestales/extincion/act.html"
+    },
+    {
+      "title": "Scenario quality rule descriptions",
+      "path": "data/scenario_quality_v1/README.md"
+    },
+    {
+      "title": "Operational evidence ledger",
+      "path": "data/incident_day_v2/calibration/operational-evidence.md"
+    },
+    {
+      "title": "Full-day prototype acceptance, separate from realism",
+      "path": "results/incident-day-acceptance-20261029.json"
+    }
+  ],
+  "validation": {
+    "quality_cpu_elapsed_seconds": 12.925,
+    "quality_peak_rss_mib": 34.49,
+    "policy_rollouts": 0,
+    "held_out_policy_outcomes_inspected": false,
+    "source_downloads": 0,
+    "paid_model_gpu": false,
+    "focused_tests": "17 passed, 18 subtests passed",
+    "frozen_catalogs_modified": false
+  },
+  "limitations": [
+    "Static checks cannot establish every runtime event, route, message, capacity outcome or scenario solvability.",
+    "No authoritative land/water mask was supplied to the incident-day static reach screen.",
+    "Uncalibrated assumptions are not treated as hard contradictions solely because synthetic.",
+    "No per-case evaluator findings or curation tables included."
+  ]
+}

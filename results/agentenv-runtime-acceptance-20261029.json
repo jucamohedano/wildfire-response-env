@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "scope": "synthetic no-model AgentEnv framework full-horizon fixture",
+  "episode_id": "wildfire-ci/bench-dev-71f777cb5ff8c9f2-ywvehtvr",
+  "task_id": "bench-dev-71f777cb5ff8c9f2",
+  "decisions": 60,
+  "end_minute": 120,
+  "native_episode_count": 1,
+  "native_chat_trajectories": 0,
+  "model": null,
+  "native_reward": 0.5427068798969625,
+  "replayed_reward": 0.5427068798969625,
+  "trajectory_sha256_canonical_json": "447e3d0b806f2a9357ccac80d1dfe2914cc86bb19a95c2ba8f734d857772226f",
+  "independent_replay_after_dataset_load": true,
+  "native_files_unchanged": true,
+  "schemas": {
+    "native_tasks": "{'task': Value('string'), 'task_id': Value('string'), 'evals': List(Value('string')), 'prompt': Value('string'), 'envs': List(Value('string')), 'agents': List(Value('string')), 'verifiers': List(Value('string')), 'num_steps': Value('int64'), 'steps': Json(decode=True)}",
+    "native_episodes": "{'episode_id': Value('string'), 'task': Value('string'), 'task_version': Value('int64'), 'run_group': Value('string'), 'status': Value('string'), 'created_utc': Value('string'), 'completed_utc': Value('string'), 'model': Value('string'), 'agent': Value('string'), 'reward': Value('float64'), 'scores': Json(decode=True), 'prompt': Value('string'), 'response': Value('string'), 'messages': List({'role': Value('string'), 'content': Value('string'), 'tool_calls': List(Json(decode=True)), 'tool_call_id': Value('string'), 'name': Value('string')}), 'tool_calls': Value('int64'), 'trajectory_format': Value('string'), 'failed_step': Value('string'), 'error_type': Value('string'), 'error': Value('string'), 'verifications': Json(decode=True), 'structured_output': Json(decode=True)}",
+    "simulator_episodes": "{'episode_id': Value('string'), 'task_id': Value('string'), 'split': Value('string'), 'run_id': Value('string'), 'model': Value('string'), 'trajectory_sha256': Value('string'), 'decisions': Value('int64'), 'end_minute': Value('int64'), 'terminated': Value('bool'), 'truncated': Value('bool'), 'reward_version': Value('string'), 'final_reward': Value('float64'), 'replay_verified': Value('bool'), 'training_eligible': Value('bool')}",
+    "simulator_transitions": "{'episode_id': Value('string'), 'task_id': Value('string'), 'split': Value('string'), 'step': Value('int64'), 'minute': Value('int64'), 'next_minute': Value('int64'), 'observation': Json(decode=True), 'action': Json(decode=True), 'next_observation': Json(decode=True), 'reward': Value('float64'), 'action_valid': Value('bool'), 'terminated': Value('bool'), 'truncated': Value('bool')}"
+  },
+  "ci_url": "https://github.com/jucamohedano/wildfire-response-env/actions/runs/40794260407",
+  "tested_git_commit": "14d4280b35b36e647b7d14564602b30014c7aaf9",
+  "merged_pr": 41
+}

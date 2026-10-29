@@ -1,30 +1,62 @@
 # AgentEnv runtime and local dataset validation
 
-Issue #30 remains **open**: a complete native AgentEnv framework task and native full-trace Parquet replay have not yet been demonstrated. A bounded workflow is prepared in `.github/workflows/agentenv-validation.yml` but has not been run. No model, API credentials, Hub upload or private dataset was used.
+## Verified integration
 
-## Local checks, 2026-10-29
+The no-model fixture runs the actual pinned AgentEnv framework against a
+Docker-deployed MCP server backed by `BenchmarkEnv`. It completes 60 decisions
+and 120 simulated minutes, then publishes locally with `agent-env hf publish
+--out`. The checker loads native task/episode Parquet and a simulator extension
+with `datasets.load_dataset`, links them to the same completed framework
+instance, and independently replays the exact public trajectory and reward.
 
-Python 3.12.9 with the pinned AgentEnv framework 0.9.1358, protocol 0.1.373, HF plugin 0.3.0, datasets 5.1.0 and pyarrow 26.0.0 was installed into a temporary venv using network-enabled package installation. The frozen prepared and topographic inputs matched the checked-in hashes and the 12-task development catalog. A deterministic passive development episode `bench-dev-71f777cb5ff8c9f2` completed 60 decisions and independently replayed with score 0.542406353976602; creation plus replay took 5.95 seconds. The existing in-process MCP parity test separately replayed all 60 actions successfully. These are synthetic simulator observations; they are not an AgentEnv framework task run.
+[Actual CI run 40794260407](https://github.com/jucamohedano/wildfire-response-env/actions/runs/40794260407)
+passes on commit `14d4280b35b36e647b7d14564602b30014c7aaf9`; #30 is closed.
+The native and independently replayed rewards both equal `0.5427068798969625`.
+[The retained result](../results/agentenv-runtime-acceptance-20261029.json) records
+the canonical trace hash and loaded schemas. No model, API key, GPU, Hub upload
+or real source pack is involved.
 
-The existing exporter produced local Parquet containing 12 development task rows, one supplemental episode and 60 supplemental transition rows, with no native AgentEnv episode rows. `eval/check_agentenv_dataset_roundtrip.py` loaded the task, supplemental episode and transition configurations using `datasets.load_dataset`, compared every observation, action, reward and terminal flag with the raw trace, and independently replayed it; the loader and replay took 3.998 seconds. It reports a partial failure because **datasets 5.1.0 cannot load the empty native episode Parquet**: `DatasetGenerationError`, caused by `ArrowInvalid: BatchSize must be greater than 0, got 0`. The checker exits nonzero in that case rather than marking the whole export passed. The three successfully loaded schemas are recorded in the local `/tmp/agentenv-local-check/roundtrip.json`, not uploaded.
+The optional runtime is pinned independently of the dependency-free core:
+AgentEnv framework 0.9.1358, protocol 0.1.373 and HF plugin 0.3.0. The validated
+loader versions are datasets 5.1.0 and pyarrow 26.0.0 on Python 3.12. See
+`.github/workflows/agentenv-validation.yml` for the bounded, reproducible run.
 
-The actual plugin command `agent-env hf publish /tmp/agentenv-local-check/fixture --name wildfire-ci --split development --out /tmp/agentenv-local-check/native-empty` also executed locally and reported one task and zero runs. This is proof of local plugin export only, not a native run or a successful native episode load.
+## Data and replay boundary
 
-`tests/test_agentenv_dataset_roundtrip.py` passed seven focused comparison, reward, hash and framework-link tests, including a local framework-store lookup using the plugin publisher’s selection and namespace routing. A separate real in-process MCP test, `tests/test_agentenv_fixture.py`, drove the actual `BenchmarkEnv` through its MCP adapter for 60 decisions and 120 simulated minutes and independently replayed it in 3.758 seconds. This exercises the driver and adapter; it does not exercise AgentEnv deployment or Docker.
+The disposable `synthetic-agentenv-fixture-v1` has separate prepared, topographic
+and catalog hashes. Its identifier can match a frozen task identifier; the input
+and catalog hashes identify the synthetic configuration. This proves integration,
+not reconstruction of historical wildfire data or physical accuracy.
 
-## Prepared Docker CI fixture
+The no-model driver stores its public trace as one canonical JSON string. This
+is necessary because the pinned framework's context diff uses set semantics for
+nested structured lists, which otherwise removes empty lists and deduplicates
+repeated values. Source/header hashes, privacy checks and the unchanged exact
+replay reject mutation. Tests exercise the actual context-diff operations.
 
-The CI fixture is named `synthetic-agentenv-fixture-v1`; its prepared, domain and catalog hashes differ from the frozen real-input hashes. It uses the actual `BenchmarkEnv` and enforces 60 decisions, a 120-minute terminated horizon and independent replay. Its task ID can match the identifier generated for the frozen catalog; the input and catalog hashes, not the ID alone, identify this synthetic configuration.
+The pinned HF plugin exports prompt responses as native chat trajectories but
+omits run-code results. No model means the native chat trajectory is empty. The
+checker therefore links a separately named simulator extension to the native
+episode ID: episode/transition Parquet plus canonical raw JSONL from that exact
+framework run. It does not fabricate model conversations. Native tables remain
+byte-identical. Native, MCP-verifier and independently replayed rewards must
+agree; replay success is not a reward of one. Development-only records remain
+`training_eligible=false`.
 
-The pinned framework's `run_code` step can target a deployed environment directly, without deploying or prompting an agent. The workflow generates a disposable fixture from the tracked synthetic test builders, builds and deploys its MCP environment via the real AgentEnv framework, drives it through `run_code`, invokes its replay verifier, executes the plugin's local-only `agent-env hf publish --out`, and loads the resulting nonempty native task/episode Parquet, adds the simulator extension from that same recorded run, and independently replays the loaded trace. It has a ten-minute job limit and bounded command timeouts. Only a compact synthetic result report is uploaded as a short-lived GitHub Actions artifact. No ignored prepared/domain pack, private catalog or real raw trajectory is copied to GitHub, and no new credentials or secrets are required.
+The workflow uploads a compact synthetic result report with one-day retention.
+On failure it can also retain guarded synthetic tables and a public fixture
+diagnostic. It excludes private evaluator audits, credentials and ignored real
+source packs. Source-code and geographic-data rights remain separate publication
+gates in #42.
 
-The pinned framework's local sandbox can execute host subprocesses, but the generated MCP-server environment deploy step resolves a Docker image and the framework's dry-run explicitly rejects this host because Docker is absent. A host subprocess or the in-process MCP test is not represented as a successful framework deployment. The workflow is intended for a Docker-capable runner; its success, elapsed time and native schema are pending an actual CI run.
+## Reproduce
 
-The pinned HF plugin's record allowlist excludes `run_code` script results and exports native trajectories only from prompt responses. The driver now returns its public trajectory and verifier result into the framework's `script_results`. After local native publication, the checker locates the same completed framework instance using the published episode ID, adds simulator episode and transition Parquet plus raw JSONL with that foreign key and a canonical trace hash, and independently replays the exact loaded trace. The native episode reward must match the simulator's independently replayed graded score; replay success is a separate boolean. The native tables and raw record are hash-checked unchanged and native chat trajectories remain empty. The entire native-to-extension workflow is **pending CI execution**; no actual framework run or successful extension roundtrip is claimed yet. The framework may impose payload limits; no such limit has yet been observed for this fixture. Source-code and geographic data redistribution rights remain separate gates.
+Use the commands in the CI workflow on a Docker-capable Linux host. Core-only
+and in-process MCP checks are useful local checks but do not replace the actual
+framework deployment. This development wiring task is intentionally passive;
+it is not evidence of model quality or learning improvement.
 
-## Supplemental trace check
-
-For a local export containing a replayable development trace:
+For a separate local export containing a replayable development trace:
 
 ```sh
 PYTHONPATH=envs/wildfire_response/core/src python eval/check_agentenv_dataset_roundtrip.py \
@@ -35,10 +67,8 @@ PYTHONPATH=envs/wildfire_response/core/src python eval/check_agentenv_dataset_ro
   --report /tmp/agentenv-supplemental-roundtrip.json
 ```
 
-The checker uses offline mode, verifies the prepared/domain/catalog pins, restricts selected records to development and `training_eligible=false`, compares all transitions, and invokes the benchmark's independent replay and reward verification. It reports the actual loaded schemas and any native loader failure. It does not fetch or publish a Hub dataset.
-
-The first native CI execution and local publication succeeded, but the checker queried outside the CLI’s namespace-routing context and found no candidates. The checker now enables the same namespace routing and `latest` selector used by the publisher; the fixed CI path has not yet been rerun.
-
-The fourth native CI run reached host replay but failed there; its verifier exception was withheld, so the root cause is not established. The driver now records canonical hashes of its source trace and header. The checker compares these with framework-stored bytes, compares the host-reconstructed header field-by-field without exposing observation contents, and reports a small allowlist of frozen verifier errors. The frozen replay contract is unchanged. A local synthetic MCP/store/export reproduction passes, but does not substitute for the Docker CI result.
-
-CI run 40793417347 identified the host-replay failure as framework context mutation, not a source fingerprint or hash-seed difference. The source and host headers had matching fingerprints, but the persisted structured trace had empty lists omitted and repeated list values deduplicated. AgentEnv context diffing applies set semantics to nested lists. The no-model driver now returns the exact canonical public trajectory as one JSON string scalar; the checker parses it, checks canonical bytes and both source hashes, then runs the unchanged exact replay. The local full-horizon test now writes through the actual framework context-diff operations and independently reloads and replays the resulting trace. The corrected actual Docker CI run is still pending.
+This checker verifies pins, development-only eligibility, every transition and
+independent replay. It reports actual loaded schemas and fails if native table
+loading fails. Earlier local exports with no framework execution produced empty
+native episode tables that datasets 5.1.0 could not load; those are not completed
+native integration results. No checker command fetches or publishes a Hub dataset.
