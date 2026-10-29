@@ -30,7 +30,8 @@ except ModuleNotFoundError as error:
         episode_id: str | None = None
         step_count: int = 0
 
-from wildfire_core.incident_day import ALL_CASE_IDS, CASE_IDS, REAL_MAP_CASE_IDS, REAL_MAP_V2_CASE_IDS, IncidentDayEnv
+from wildfire_core.incident_day import ALL_CASE_IDS, REAL_MAP_CASE_IDS, REAL_MAP_V2_CASE_IDS, IncidentDayEnv
+from wildfire_core.catalog_lifecycle import active_day_case_ids, select_day_case_id
 
 
 Identifier = Annotated[str, Field(strict=True, min_length=1, max_length=128, pattern=r'^[A-Za-z0-9_.:-]+$')]
@@ -122,18 +123,20 @@ class IncidentDayEnvironment(Environment):
     SUPPORTS_CONCURRENT_SESSIONS = False
 
     def __init__(self, inputs, network, *, expected_inputs_sha256, expected_network_sha256,
-                 allow_unapproved_data=False):
+                 allow_unapproved_data=False, allow_archived_scenarios=False):
         super().__init__()
         self.core = IncidentDayEnv(inputs, network, expected_inputs_sha256=expected_inputs_sha256,
             expected_network_sha256=expected_network_sha256, allow_unapproved_data=allow_unapproved_data)
+        if type(allow_archived_scenarios) is not bool:
+            raise TypeError('allow_archived_scenarios must be a boolean')
+        self.allow_archived_scenarios = allow_archived_scenarios
         self._state = IncidentDayState()
         self._frames = []
 
-    def reset(self, seed=None, episode_id=None, task_id=CASE_IDS[0], **kwargs):
+    def reset(self, seed=None, episode_id=None, task_id=None, **kwargs):
         if kwargs:
             raise ValueError('Unknown reset options')
-        if task_id not in ALL_CASE_IDS:
-            raise ValueError('Unknown incident-day scenario')
+        task_id = self._select_case(task_id)
         if seed is not None and (type(seed) is not int or not 0 <= seed <= 2**63 - 1):
             raise ValueError('seed must be a bounded nonnegative integer')
         if episode_id is not None:
@@ -198,17 +201,32 @@ class IncidentDayEnvironment(Environment):
         self._require_reset()
         return copy.deepcopy(self._frames)
 
+    def _select_case(self, task_id):
+        inputs_hash, network_hash = self.core.inputs['sha256'], self.core.network.sha256
+        return select_day_case_id(task_id, inputs_hash, network_hash,
+                                  allow_archived=self.allow_archived_scenarios)
+
     def list_splits(self):
         return ['development']
 
     def list_tasks(self, split):
         if split != 'development':
             raise ValueError('Unknown split')
-        from envs.wildfire_response.incident_day.real_map_scenarios import PACK_PIN, NETWORK_PIN
-
-        supported = (self.core.inputs['sha256'] == PACK_PIN and self.core.network.sha256 == NETWORK_PIN)
-        return [dict(id=identifier, split=split) for identifier in ALL_CASE_IDS
-                if supported or identifier not in REAL_MAP_CASE_IDS + REAL_MAP_V2_CASE_IDS]
+        inputs_hash, network_hash = self.core.inputs['sha256'], self.core.network.sha256
+        try:
+            identifiers = active_day_case_ids(inputs_hash, network_hash)
+        except ValueError:
+            identifiers = ()
+        if self.allow_archived_scenarios:
+            supported = []
+            for identifier in ALL_CASE_IDS:
+                try:
+                    self._select_case(identifier)
+                except ValueError:
+                    continue
+                supported.append(identifier)
+            identifiers = supported
+        return [dict(id=identifier, split=split) for identifier in identifiers]
 
 
 def _identifier(value):

@@ -8,7 +8,7 @@ from .incident_day_client import IncidentDayClient
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--base-url', default='http://127.0.0.1:8005')
-    parser.add_argument('--scenario-id', default='incident-day-dev-000')
+    parser.add_argument('--scenario-id')
     parser.add_argument('--max-steps', type=int, default=1440)
     args = parser.parse_args(argv)
     if not 1 <= args.max_steps <= 1440:

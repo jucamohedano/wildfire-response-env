@@ -1,5 +1,10 @@
 # Topographic stress catalog v1
 
+**Archived night-response reference.** Retained in place for explicit historical
+replay and research; excluded from the active incident-day learning path. Use
+[the lifecycle registry](../catalog_lifecycle_v1/README.md) for current suites.
+Original IDs, seeds, source pins and scores remain unchanged.
+
 This is a separate Python API and CPU evaluation mode. It reuses the complete
 height surface and existing fire, fuel, weather-context, communication, resource
 and population-protection mechanics without rewriting the six development cases

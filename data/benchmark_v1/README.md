@@ -1,5 +1,10 @@
 # Wildfire benchmark v1
 
+**Archived night-response reference.** Retained in place for explicit historical
+replay and research; excluded from the active incident-day learning path. Use
+[the lifecycle registry](../catalog_lifecycle_v1/README.md) for current suites.
+Original IDs, seeds, source pins and scores remain unchanged.
+
 The benchmark has 120 synthetic configuration groups on one prepared Málaga
 landscape: 80 train, 20 validation and 20 test. Two seeds/wording variants stay
 together in each group. Twelve development probes are separate. Families cover

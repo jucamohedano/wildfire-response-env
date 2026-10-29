@@ -1,0 +1,205 @@
+{
+  "version": "wildfire-realism-remediation-v1",
+  "lifecycle_sha256": "c46f9b3e8cdebed050022e6b7eb966d09ae89049b689f360b41d28ab2a345d04",
+  "implementation_sha256": "af4adc0b2fb92282246411dbac83c1eeac23eb3b4730200c0b34dc288b59323a",
+  "input_sha256": "50031b3029dcee0a1367ccdd8125d081d19d3b500b2dd373e30ef127d47a2c4d",
+  "network_sha256": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16",
+  "active_scope": {
+    "fixture_development": 6,
+    "source_map_development": 6,
+    "training_corpus_available": false
+  },
+  "retired_scope": {
+    "catalogs": [
+      "benchmark_v1",
+      "synthetic_expansion_v1",
+      "topographic_stress_v1",
+      "ops_v1"
+    ],
+    "superseded_day_configurations": 20,
+    "physical_deletion": false,
+    "reason_for_retention": "Original file paths and code are required for historical replay and attribution; retired from active discovery and new recommended learning/export paths."
+  },
+  "dispositions": [
+    {
+      "finding": "No daytime aircraft coverage in older two-hour catalogs",
+      "remedy": "Retire night-only catalogs rather than silently changing their clock/IDs; active source-map day cases have observed aircraft cycles."
+    },
+    {
+      "finding": "Six preliminary handovers initialize ineffective ground assignments",
+      "remedy": "Exclude from active discovery and default reset; preserve explicit-ID archival core replay and corrected active variants."
+    },
+    {
+      "finding": "28 pre-ignition wind variants and four destination-redesign variants",
+      "remedy": "Retain old dispositions only in archived catalogs; never promote them to day training labels."
+    },
+    {
+      "finding": "Accidental use through old exports/training entrypoints",
+      "remedy": "Require archival opt-in on legacy AgentEnv exports and both root/packaged learning CLIs before data/model execution; acknowledgment grants no spending or publication rights."
+    }
+  ],
+  "static_active_screen": {
+    "bounds_version": "incident-day-exercise-plausibility-bounds-v1",
+    "case_groups": {
+      "coverage_variants": {
+        "cases": 2,
+        "compilation_failures": 0,
+        "compiled": 2,
+        "contradictions": {},
+        "review_candidates": {},
+        "unsupported": {
+          "land_mask_missing": 2,
+          "synthetic_physics": 2
+        }
+      },
+      "egress": {
+        "cases": 4,
+        "compilation_failures": 0,
+        "compiled": 4,
+        "contradictions": {},
+        "review_candidates": {},
+        "unsupported": {
+          "land_mask_missing": 4,
+          "synthetic_physics": 4
+        }
+      },
+      "realmap_v2": {
+        "cases": 6,
+        "compilation_failures": 0,
+        "compiled": 6,
+        "contradictions": {},
+        "review_candidates": {},
+        "unsupported": {
+          "land_mask_missing": 6,
+          "synthetic_physics": 6
+        }
+      }
+    },
+    "held_out_outcomes_inspected": false,
+    "includes_archived_scenarios": false,
+    "limitations": [
+      "Initial static checks do not verify future event effects, travel permissions, field accuracy or physical calibration.",
+      "No authoritative land mask supplied; source-known fuel does not establish land or road access.",
+      "On-scene initialization is a synthetic handover and does not establish an observed prior mission."
+    ],
+    "policy_rollouts": 0,
+    "version": "incident-day-static-realism-screen-v3"
+  },
+  "day_batch": {
+    "cases": 6,
+    "minutes_each": 1440,
+    "workers": 1,
+    "elapsed_seconds": 175.05358490500657,
+    "peak_rss_mib": 151.64,
+    "memory_scope": "GNU time process high-water RSS, not summed simultaneous memory",
+    "gates": {
+      "exercise_consistent": "passed",
+      "physically_validated": "no",
+      "contradiction_count": 0,
+      "blocking_count": 0,
+      "human_review": "pending",
+      "intended_constraint_coverage": {
+        "incident-day-realmap-v2-000": "work_observed_review_required",
+        "incident-day-realmap-v2-001": "constraint_evidence_review_required",
+        "incident-day-realmap-v2-002": "constraint_evidence_review_required",
+        "incident-day-realmap-v2-003": "constraint_evidence_review_required",
+        "incident-day-realmap-v2-004": "constraint_evidence_review_required",
+        "incident-day-realmap-v2-005": "constraint_evidence_review_required"
+      },
+      "note": "Automated exercise consistency requires six verified completed days, no contradictions or blockers, stable implementation and demonstrated counterfactual mechanics. Human review is pending; neither counterfactuals nor temporal correlations prove causation or physical validity."
+    },
+    "cases_summary": [
+      {
+        "id": "incident-day-realmap-v2-000",
+        "status": "completed",
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        }
+      },
+      {
+        "id": "incident-day-realmap-v2-001",
+        "status": "completed",
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        }
+      },
+      {
+        "id": "incident-day-realmap-v2-002",
+        "status": "completed",
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        }
+      },
+      {
+        "id": "incident-day-realmap-v2-003",
+        "status": "completed",
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        }
+      },
+      {
+        "id": "incident-day-realmap-v2-004",
+        "status": "completed",
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        }
+      },
+      {
+        "id": "incident-day-realmap-v2-005",
+        "status": "completed",
+        "verification": {
+          "passed": true,
+          "exact_replay": true,
+          "independent_reward_agreement": true
+        }
+      }
+    ]
+  },
+  "aircraft": {
+    "status": "passed",
+    "development_cases": true,
+    "totals": {
+      "mobilizations": 87,
+      "drops": 87,
+      "completed_cycles": 87,
+      "cases_with_drops": 6,
+      "cases_with_completed_cycles": 6,
+      "cases_inspected": 6
+    },
+    "findings": {},
+    "limitations": [
+      "Uses recorded replay-verification results, not a new replay.",
+      "Minute audit omits clearance; authorization and accepted dispatch are corroborating evidence, not a direct clearance record.",
+      "Exercise solar and wind gates are modeled assumptions, not real flight authorization.",
+      "A case without drops is not necessarily unsafe or a failure."
+    ]
+  },
+  "validation": {
+    "regression_tests": 353,
+    "regression_subtests": 101,
+    "final_lifecycle_adapter_aircraft_screen_tests": 34,
+    "dedicated_agentenv_export_guard_tests": 1,
+    "counts_overlap_do_not_sum": true,
+    "independent_review": "One executable legacy-pilot bypass found, fixed and independently rechecked; no remaining actionable finding in reviewed scope",
+    "frozen_benchmark_implementation_sha256": "bf56a9a5e56e283e64e4a75db141bb824045dc7d24424a7395e93c5325ab4473",
+    "frozen_ids_seeds_scores_changed": false,
+    "final_http_adapter_aircraft_tests": 27,
+    "final_http_adapter_subtests": 28
+  },
+  "limitations": [
+    "Active configurations are related development probes, not a held-out training corpus or independent real incidents.",
+    "Aircraft checks use simulated solar/wind/closure gates and recorded replay verification; the minute audit does not directly record clearance.",
+    "Estimated fuel and land/water uncertainty, source/terrain metadata and physical/operational calibration are unresolved; existing source and censor guards remain.",
+    "Population-first 80/20 scores and historical outcomes are unchanged. No paid/model/GPU run, large regeneration or publication occurred."
+  ]
+}

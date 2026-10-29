@@ -1,6 +1,11 @@
 # Training recipes
 
-For the current benchmark use [BENCHMARK.md](BENCHMARK.md) and `benchmark.py`.
+**No active incident-day training corpus is released yet.**
+The recipes below are archived night-response/pilot recipes. Data-producing and
+model commands require `--allow-archived-catalog` in addition to the existing
+budget, validation and GPU guards. See the [lifecycle registry](../data/catalog_lifecycle_v1/README.md).
+
+For historical benchmark research use [BENCHMARK.md](BENCHMARK.md) and `benchmark.py`.
 It separates CPU demonstration/retrieval preparation from explicitly authorized
 SFT, actual adapter validation and GRPO. The legacy recipe below does not operate
 the new delivered-evidence population/area benchmark and is retained for history.
@@ -23,7 +28,7 @@ uv pip install --python .venv-training/bin/python \
 uv pip install --python .venv-training/bin/python -e envs/wildfire_response/core
 OMP_NUM_THREADS=4 TOKENIZERS_PARALLELISM=false \
   timeout --signal=INT --kill-after=30s 900s \
-  .venv-training/bin/python train/grpo.py --output .runtime/grpo-pilot \
+  .venv-training/bin/python train/grpo.py --allow-archived-catalog --output .runtime/grpo-pilot \
   --steps 2 --completion-tokens 1536 --tool-iterations 8
 ```
 

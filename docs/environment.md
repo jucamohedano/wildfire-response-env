@@ -1,5 +1,10 @@
 # Wildfire Response Benchmark v1 — private candidate
 
+**Historical night-response environment card.** For current 24-hour development
+exercises and exact-pin task selection, use the [incident-day guide](incident-day.md)
+and [lifecycle registry](../data/catalog_lifecycle_v1/README.md). The older catalog
+is retained for explicit archival comparisons, not the default learning path.
+
 This card describes the frozen two-hour benchmark. For the separately versioned
 24-hour prototype, use the [incident-day guide](incident-day.md).
 

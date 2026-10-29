@@ -1,5 +1,9 @@
 # Opt-in benchmark training
 
+Archived recipe: add `--allow-archived-catalog` to data-producing and model
+commands. This is a night-response reference, not current incident-day training.
+See [lifecycle policy](../data/catalog_lifecycle_v1/README.md).
+
 `train/benchmark.py` is separate from the legacy `train/grpo.py` recipe. Its CPU
 commands never load a model, make provider requests, download weights, rent
 hardware, or establish model readiness. Catalog discovery is public IDs/counts
@@ -28,13 +32,13 @@ The default catalog is compiled from those pinned inputs. A local `catalog` and
 cannot override the 60 decisions, two minutes per decision, or 120-minute horizon.
 
 ```sh
-python train/benchmark.py inspect --config /path/benchmark-config.json
-python train/benchmark.py dry-run --config /path/benchmark-config.json --task-id TRAIN_ID
-python train/benchmark.py export-demo --config /path/benchmark-config.json \
+python train/benchmark.py inspect --allow-archived-catalog --config /path/benchmark-config.json
+python train/benchmark.py dry-run --allow-archived-catalog --config /path/benchmark-config.json --task-id TRAIN_ID
+python train/benchmark.py export-demo --allow-archived-catalog --config /path/benchmark-config.json \
   --task-id TRAIN_ID --policy cooperative --output /path/fresh-demo.json
-python train/benchmark.py verify-demo --config /path/benchmark-config.json \
+python train/benchmark.py verify-demo --allow-archived-catalog --config /path/benchmark-config.json \
   --demonstrations /path/fresh-demo.json
-python train/benchmark.py freeze-bank --config /path/benchmark-config.json \
+python train/benchmark.py freeze-bank --allow-archived-catalog --config /path/benchmark-config.json \
   --demonstrations /path/fresh-demo.json --output /path/fresh-bank.json
 ```
 
@@ -170,16 +174,16 @@ the operator must supply the actual agreed spending limit when compute is paid.
 
 ```sh
 timeout --signal=KILL 1800s python train/benchmark.py sft \
-  --config /path/benchmark-config.json --enable-gpu \
+  --allow-archived-catalog --config /path/benchmark-config.json --enable-gpu \
   --agreed-budget-seconds 1800 --wall-seconds 1800 --agreed-budget-eur 0 \
   --demonstrations /path/verified-train-demo.json --output /path/fresh-sft-run
 timeout --signal=KILL 1800s python train/benchmark.py validate \
-  --config /path/benchmark-config.json --enable-gpu \
+  --allow-archived-catalog --config /path/benchmark-config.json --enable-gpu \
   --agreed-budget-seconds 1800 --wall-seconds 1800 --agreed-budget-eur 0 \
   --demonstrations /path/verified-train-demo.json \
   --sft-adapter /path/fresh-sft-run --output /path/fresh-readiness-run
 timeout --signal=KILL 1800s python train/benchmark.py grpo \
-  --config /path/benchmark-config.json --enable-gpu \
+  --allow-archived-catalog --config /path/benchmark-config.json --enable-gpu \
   --agreed-budget-seconds 1800 --wall-seconds 1800 --agreed-budget-eur 0 \
   --validation-report /path/fresh-readiness-run/validation.json --validation-sha256 REPORT_SHA256 \
   --demonstrations /path/verified-train-demo.json \

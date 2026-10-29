@@ -45,7 +45,10 @@ class IncidentDayEnv:
         self.artifact_dir = Path(artifact_dir) if artifact_dir else None
         self._scenario = None
 
-    def reset(self, scenario_id=CASE_IDS[0], seed=None):
+    def reset(self, scenario_id=None, seed=None):
+        if scenario_id is None:
+            from wildfire_core.catalog_lifecycle import default_day_case_id
+            scenario_id = default_day_case_id(self.inputs['sha256'], self.network.sha256)
         self._scenario = build_scenario(self.inputs, self.network, scenario_id, seed)
         self._configure_router()
         self.minute = self.decision = self.invalid_streak = 0

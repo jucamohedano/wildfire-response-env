@@ -55,7 +55,7 @@ def test_unknown_land_guard_censors_instead_of_blocking_fire_or_grading_success(
     inputs, network = fixture_inputs()
     environment = IncidentDayEnv(inputs, network, expected_inputs_sha256=inputs['sha256'],
                                  expected_network_sha256=network['sha256'])
-    environment.reset()
+    environment.reset('incident-day-dev-000')
     environment._uncertain_land = {(19, 16)}
     observation, reward, terminated, truncated, info = environment.advance_time(60)
     assert truncated and not terminated and reward == 0

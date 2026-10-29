@@ -36,7 +36,7 @@ class IncidentDayClient:
         with self._opener.open(request, timeout=self.timeout) as response:
             return json.load(response)
 
-    def reset(self, scenario_id='incident-day-dev-000', seed=None):
+    def reset(self, scenario_id=None, seed=None):
         return self._request('/reset', {'scenario_id': scenario_id, 'seed': seed})
 
     def step(self, action):
@@ -56,6 +56,9 @@ class IncidentDayClient:
 
     def get_reports(self, ids=None, after_cursor=0, limit=20):
         return self._request('/reports', {'ids': ids, 'after_cursor': after_cursor, 'limit': limit})
+
+    def list_tasks(self):
+        return self._request('/tasks')
 
     def get_state(self):
         return self._request('/state')

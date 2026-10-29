@@ -1,5 +1,10 @@
 # Wildfire benchmark v1 catalog — private candidate
 
+**Archival dataset card.** The frozen two-hour catalogs are retired from active
+use. Corrected 24-hour development suites are selected by exact input pins; no
+current incident-day train/validation/test corpus is claimed. See the
+[lifecycle registry](../data/catalog_lifecycle_v1/README.md).
+
 An opt-in [synthetic coverage expansion](../data/synthetic_expansion_v1/README.md)
 adds 960 configuration groups / 1,920 tasks. It does not replace this frozen v1
 catalog or add historical incidents. Its validation/test outcomes are not used

@@ -1,5 +1,10 @@
 # Synthetic coverage expansion v1
 
+**Archived night-response reference.** Retained in place for explicit historical
+replay and research; excluded from the active incident-day learning path. Use
+[the lifecycle registry](../catalog_lifecycle_v1/README.md) for current suites.
+Original IDs, seeds, source pins and scores remain unchanged.
+
 Opt-in expansion: **960 physical configuration groups / 1,920 seeded tasks**,
 up from the frozen benchmark's 120 groups / 240 primary tasks. Its 12 development
 probes are unchanged. Eight families each contribute 80 training, 20 validation

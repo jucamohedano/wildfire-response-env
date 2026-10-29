@@ -53,8 +53,9 @@ destination and regional shortages. They are development probes, not a held-out
 training/evaluation catalog. The original six `incident-day-dev-*` IDs preserve
 preliminary inherited assignments outside useful ground-work reach. They remain
 regression probes, not representative handover or demonstration data. Choose an
-explicit egress/coverage ID for fixture acceptance; a reset with no ID preserves
-the legacy `incident-day-dev-000` default. Aged fire, existing assignments and
+explicit egress/coverage ID for fixture acceptance; reset with no ID selects the corrected fixture suite or source-map v2 suite
+from exact input/network pins. The adapter requires explicit archival mode for
+old IDs; the direct core API retains explicit-ID replay. Aged fire, existing assignments and
 delayed handover notices initialize the day; prehistory is not a demonstration.
 
 Reward is zero until completion, then `0.8 × newly protected population fraction
@@ -348,3 +349,19 @@ review, physical calibration and source-pack approval remain separate follow-ups
 in #34 and #42. Estimated fuel, the 27 unresolved land/water centres and the
 unknown-land censor guard are unchanged. Technical replay agreement does not
 establish real-world fire prediction or aircraft certification.
+
+
+## Active catalog selection
+
+The [versioned lifecycle registry](../data/catalog_lifecycle_v1/README.md) retires
+the night-only catalogs and superseded day probes. The default HTTP/OpenEnv
+`GET /tasks`/task discovery lists only six input-supported active cases. The
+viewer populates its selector from that response. For a deliberate old-case
+comparison, start the server with `--allow-archived-scenarios`; this does not waive
+source-pack pins or unapproved-data guards. The core accepts an explicit old ID
+for replay, while no-ID reset chooses the corrected suite. No new training splits,
+weights or large generated dataset are introduced.
+
+Current lifecycle/default remediation and current-code acceptance are recorded in
+[the remediation report](../results/realism-remediation-20261029.html). Earlier
+acceptance files retain their original implementation identities.

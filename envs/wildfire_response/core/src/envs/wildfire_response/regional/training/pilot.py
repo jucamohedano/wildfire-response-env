@@ -126,12 +126,19 @@ def run(output, model_id=MODEL_ID, revision=None, steps=2, completion_tokens=153
 def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument('--output', required=True)
+    parser.add_argument('--allow-archived-catalog', action='store_true',
+                        help='Explicit historical pilot only; does not authorize GPU spending')
     parser.add_argument('--model', choices=['Qwen/Qwen3-0.6B', MODEL_ID], default=MODEL_ID)
     parser.add_argument('--revision')
     parser.add_argument('--steps', type=int, default=2)
     parser.add_argument('--completion-tokens', type=int, default=1536)
     parser.add_argument('--tool-iterations', type=int, default=8)
     args = parser.parse_args()
+    from wildfire_core.catalog_lifecycle import require_archived_opt_in
+    try:
+        require_archived_opt_in('ops_v1', allow_archived=args.allow_archived_catalog)
+    except ValueError as error:
+        parser.error(str(error))
     result = run(args.output, args.model, args.revision, args.steps, args.completion_tokens, args.tool_iterations)
     print(json.dumps({key: value for key, value in result.items() if key not in ('logs', 'before', 'after', 'train')}))
 

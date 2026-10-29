@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import Field
 
-from wildfire_core.incident_day import CASE_IDS, fixture_inputs
+from wildfire_core.incident_day import fixture_inputs
 from wildfire_openenv.incident_day import (Identifier, IncidentDayAction, IncidentDayEnvironment,
                                            ReportQuery, StatusRequest, StrictModel)
 
@@ -20,7 +20,7 @@ MAX_BODY_BYTES = 65536
 
 
 class ResetQuery(StrictModel):
-    scenario_id: Identifier = CASE_IDS[0]
+    scenario_id: Identifier | None = None
     seed: int | None = Field(default=None, ge=0, le=2**63 - 1)
 
 
@@ -148,7 +148,7 @@ body{font:16px system-ui;margin:2rem auto;max-width:1100px;padding:0 1rem;color:
 button,input,select{font:inherit;padding:.4rem}button{cursor:pointer}section{background:white;padding:1rem;margin:1rem 0;border-radius:.5rem}
 pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8rem}input[type=range]{width:100%}.bar{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
 </style></head><body><h1>Incident day exercise</h1>
-<div class="bar"><button id="reset">Reset exercise</button><button id="wait">Wait up to 60 minutes</button><strong id="clock">Not started</strong></div>
+<div class="bar"><label for="scenario">Scenario</label><select id="scenario"></select><button id="reset">Reset exercise</button><button id="wait">Wait up to 60 minutes</button><strong id="clock">Not started</strong></div>
 <p id="message"></p><section><label for="history">Recorded trajectory</label><input id="history" type="range" min="0" max="0" value="0"><div id="frame"></div></section>
 <section><h2>Protection</h2><pre id="protection"></pre></section><section><h2>Resources</h2><pre id="resources"></pre></section>
 <section><h2>Reports</h2><pre id="reports"></pre></section>
@@ -158,7 +158,8 @@ async function call(path,body){const response=await fetch(path,{method:'POST',he
 function show(){if(!frames.length)return;const i=Number(document.getElementById('history').value),s=frames[i];document.getElementById('clock').textContent=`Minute ${frames[frames.length-1].minute} / 1440`;document.getElementById('frame').textContent=`Recorded minute ${s.minute} (${i+1} / ${frames.length})`;document.getElementById('protection').textContent=JSON.stringify({districts:s.districts,orders:s.protection_orders,destinations:s.destinations},null,2);document.getElementById('resources').textContent=JSON.stringify(s.resources,null,2);document.getElementById('reports').textContent=JSON.stringify(s.reports,null,2)}
 async function refresh(){const r=await fetch('/state');if(!r.ok)return;const data=await r.json();frames=data.trajectory;const slider=document.getElementById('history');slider.max=Math.max(0,frames.length-1);slider.value=slider.max;show()}
 async function run(path,body){try{await call(path,body);document.getElementById('message').textContent='';await refresh()}catch(error){document.getElementById('message').textContent=error.message}}
-document.getElementById('reset').onclick=()=>run('/reset',{});document.getElementById('wait').onclick=()=>run('/step',{action:{advance_minutes:60}});document.getElementById('history').oninput=show;refresh();
+async function loadTasks(){try{const r=await fetch('/tasks');if(!r.ok)throw Error('Could not load scenarios');const data=await r.json(),select=document.getElementById('scenario');if(!data.default_scenario_id){const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Select a scenario';select.appendChild(placeholder)}for(const task of data.tasks){const option=document.createElement('option');option.value=task.id;option.textContent=task.id;select.appendChild(option)}if(data.default_scenario_id)select.value=data.default_scenario_id}catch(error){document.getElementById('message').textContent=error.message}}
+document.getElementById('reset').onclick=()=>run('/reset',{scenario_id:document.getElementById('scenario').value||null});document.getElementById('wait').onclick=()=>run('/step',{action:{advance_minutes:60}});document.getElementById('history').oninput=show;loadTasks();refresh();
 </script></body></html>'''
 
 
@@ -179,6 +180,17 @@ def create_app(environment):
     @app.get('/', response_class=HTMLResponse)
     def viewer():
         return VIEWER
+
+    @app.get('/tasks')
+    def tasks():
+        def discover():
+            tasks = environment.list_tasks('development')
+            try:
+                default = environment._select_case(None)
+            except ValueError:
+                default = None
+            return {'tasks': tasks, 'default_scenario_id': default}
+        return execute(discover)
 
     @app.post('/reset')
     def reset(query: ResetQuery):
@@ -226,6 +238,7 @@ def main(argv=None):
     parser.add_argument('--inputs-sha256')
     parser.add_argument('--network-sha256')
     parser.add_argument('--allow-unapproved-data', action='store_true')
+    parser.add_argument('--allow-archived-scenarios', action='store_true', help='Enable explicit legacy scenario replay')
     args = parser.parse_args(argv)
     if not 1 <= args.port <= 65535:
         parser.error('port must be between 1 and 65535')
@@ -240,7 +253,8 @@ def main(argv=None):
         inputs, network = args.inputs, args.network
         inputs_hash, network_hash = args.inputs_sha256, args.network_sha256
     environment = IncidentDayEnvironment(inputs, network, expected_inputs_sha256=inputs_hash,
-        expected_network_sha256=network_hash, allow_unapproved_data=args.allow_unapproved_data)
+        expected_network_sha256=network_hash, allow_unapproved_data=args.allow_unapproved_data,
+        allow_archived_scenarios=args.allow_archived_scenarios)
     import uvicorn
     uvicorn.run(create_app(environment), host=args.host, port=args.port)
 

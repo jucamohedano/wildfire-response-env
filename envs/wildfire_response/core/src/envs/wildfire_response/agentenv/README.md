@@ -1,5 +1,9 @@
 # AgentEnv and Hugging Face export
 
+This exporter serves the **archived night-response benchmark**. It requires
+`--allow-archived-catalog`; its output is labeled archived and is not an active
+incident-day training dataset. Historical format/runtime evidence remains valid.
+
 Issue [#30](https://github.com/jucamohedano/wildfire-response-env/issues/30) tracks this port.
 
 ## Plan and data contract
@@ -26,6 +30,7 @@ Export the frozen catalog and, optionally, replay-verified development traces:
 ```sh
 PYTHONPATH=envs/wildfire_response/core/src \
   .runtime/agentenv-venv/bin/python -m envs.wildfire_response.agentenv.export \
+  --allow-archived-catalog \
   --prepared-inputs .runtime/malaga-prepared-inputs-v1/inputs.json \
   --topographic-inputs .runtime/topographic-inputs-v1/inputs.json \
   --trajectory-root .runtime/luna-subagent-benchmark-20261026 \

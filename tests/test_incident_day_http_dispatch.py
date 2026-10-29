@@ -24,7 +24,7 @@ class IncidentDayHTTPDispatchTests(unittest.TestCase):
         inputs, network = fixture_inputs()
         arguments = dict(expected_inputs_sha256=inputs['sha256'], expected_network_sha256=network['sha256'])
         local = IncidentDayEnv(inputs, network, **arguments)
-        remote = IncidentDayEnvironment(inputs, network, **arguments)
+        remote = IncidentDayEnvironment(inputs, network, allow_archived_scenarios=True, **arguments)
         policy = DayDispatcher()
         observation, unused = local.reset(task_id)
         parent = self

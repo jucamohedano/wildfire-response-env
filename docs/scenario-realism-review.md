@@ -15,7 +15,7 @@ Source-aligned geography, measured weather context and declared product metadata
 Use the merged checkout and locally retained pinned bundles. Select a fresh temporary output; the quality tool writes sensitive per-case evaluator findings there. Do not publish its private directory. The first command checks all three registered catalogs, the second the separate ops catalog, and the third all 32 day configurations. No command evaluates a policy or consumes held-out outcomes.
 
 ```sh
-PYTHONPATH=envs/wildfire_response/core/src python -m eval.validate_scenarios \
+PYTHONPATH=envs/wildfire_response/core/src python -m eval.validate_scenarios --allow-archived-catalog \
   --prepared-inputs /home/juancm/hackspain/wildfire-response-env/.runtime/topographic-experiment-v1/malaga-prepared-inputs-v1/inputs.json \
   --prepared-sha256 ab9d649730b6033c5d3f5ad2d01b096b85b767f21f18bd4341c44d791646d108 \
   --topographic-inputs /home/juancm/hackspain/wildfire-response-env/.runtime/topographic-experiment-v1/topographic-inputs-v1/inputs.json \
@@ -24,7 +24,12 @@ PYTHONPATH=envs/wildfire_response/core/src python -m eval.validate_scenarios \
 PYTHONPATH=envs/wildfire_response/core/src python -m envs.wildfire_response.regional.ops.dataset audit
 PYTHONPATH=envs/wildfire_response/core/src python -m eval.review_scenario_realism \
   --real-inputs .runtime/estimated-incident-day-inputs-final.json \
-  --network data/coastal_mobility_v1/network.json
+  --network data/coastal_mobility_v1/network.json --include-archived-scenarios
 ```
 
 Machine-readable aggregate findings: [JSON](../results/scenario-realism-review-20261029.json). Reviewer-authored [HTML report](../results/scenario-realism-review-20261029.html). The existing quality rule meanings and severity boundaries are in [scenario-quality v1](../data/scenario_quality_v1/README.md); incident-day reach uses `incident-day-exercise-plausibility-bounds-v1`. No source download, paid/model/GPU inference, policy rollout or locked-data edit was performed.
+
+The later lifecycle remediation retires the older catalogs from active use. Current
+static-screen v3 defaults to the 12 active cases; `--include-archived-scenarios`
+rechecks the full 32. The historical JSON above retains its original v2/revision
+identity. See [current lifecycle policy](../data/catalog_lifecycle_v1/README.md).
