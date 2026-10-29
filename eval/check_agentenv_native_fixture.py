@@ -26,15 +26,21 @@ def safe_id(value):
     return value
 
 
-def choose_run(instances, episode_id, rewrite, record_builder, published_record):
-    diagnostics = {'expected_native_id': safe_id(episode_id),
+def link_diagnostics(instances, episode_id, rewrite, record_builder):
+    return {'expected_native_id': safe_id(episode_id),
                    'candidates': [{'instance_id': safe_id(instance.get('instance_id')),
-                                   'rewritten_id': safe_id(rewrite(record_builder(instance)).get('instance_id'))}
+                                   'rewritten_id': safe_id(rewrite(record_builder(instance)).get('instance_id')),
+                                   'status': safe_id(instance.get('status'))}
                                   for instance in instances[:20]],
                    'candidate_count': len(instances)}
+
+
+def choose_run(instances, episode_id, rewrite, record_builder, published_record):
+    diagnostics = link_diagnostics(instances, episode_id, rewrite, record_builder)
     matches = [instance for instance in instances
-               if rewrite(record_builder(instance)) == published_record
-               and rewrite(record_builder(instance)).get('instance_id') == episode_id]
+               if rewrite(record_builder(instance)).get('instance_id') == episode_id
+               and rewrite(record_builder(instance)).get('task_id') == published_record.get('task_id')
+               and rewrite(record_builder(instance)).get('task_version') == published_record.get('task_version')]
     if len(matches) != 1 or matches[0]['status'] != 'completed':
         raise NativeLinkError('native episode must match exactly one completed framework record', diagnostics)
     record = matches[0]
@@ -47,11 +53,12 @@ def choose_run(instances, episode_id, rewrite, record_builder, published_record)
     return record, result
 
 
-def native_instance_id(episode_id, dataset_name, bundle_id_root):
-    prefix = dataset_name + '/'
-    if not isinstance(episode_id, str) or not episode_id.startswith(prefix):
-        return None
-    return bundle_id_root + episode_id[len(dataset_name):]
+def verify_task_binding(task, episode, published_record, task_entry, rewrite, trace_task_id, driver_task_id):
+    if (task['task_id'] != rewrite(task_entry.id) or task['task'] != rewrite(task_entry.name)
+            or episode['task'] != task['task'] or published_record.get('task_id') != task['task_id']):
+        raise ValueError('published task and native record do not match the framework task')
+    if driver_task_id != trace_task_id or rewrite(trace_task_id) != rewrite(task_entry.name):
+        raise ValueError('framework task, trace and native task disagree')
 
 
 def verify_reward(native_reward, recorded_reward, replayed_reward):
@@ -67,14 +74,14 @@ def verify_loaded_trace(loaded, framework_trace_hash):
         raise ValueError('loaded trace hash differs from framework-recorded trace')
 
 
-def export_and_check(dataset_dir, bundle_dir):
+def export_and_check(dataset_dir, bundle_dir, diagnostics=None):
+    diagnostics = diagnostics if diagnostics is not None else {}
     os.environ['HF_HUB_OFFLINE'] = '1'
     os.environ['HF_DATASETS_OFFLINE'] = '1'
     from datasets import load_dataset
     from huggingface_hub import DatasetCard
     from agentenv_hf import records, runs
-    from agent_env.task.store import find_task_instance
-    from dataclasses import asdict
+    from agent_env.store.routing import namespace_routing
     from envs.wildfire_response.agentenv.export import (
         TRAJECTORY_EPISODES, TRAJECTORY_TRANSITIONS, _contains_private_key, _write_parquet)
     from envs.wildfire_response.regional.benchmark_v1 import verify_benchmark_trajectory
@@ -89,6 +96,11 @@ def export_and_check(dataset_dir, bundle_dir):
     if len(tasks) != 1 or len(episodes) != 1:
         raise ValueError('expected exactly one fixture task and one native episode')
     task, episode = tasks[0], episodes[0]
+    diagnostics.update(native_task=safe_id(task.get('task')), native_task_id=safe_id(task.get('task_id')),
+                       native_episode_id=safe_id(episode.get('episode_id')),
+                       native_episode_task=safe_id(episode.get('task')), native_status=safe_id(episode.get('status')),
+                       native_reward=episode.get('reward') if type(episode.get('reward')) in (int, float)
+                       and math.isfinite(episode['reward']) else None)
     if task['agents'] or episode['model'] is not None or episode['agent'] is not None:
         raise ValueError('fixture must not deploy or use a model agent')
     if episode['status'] != 'completed' or episode['failed_step']:
@@ -101,18 +113,20 @@ def export_and_check(dataset_dir, bundle_dir):
             or native_raw[0].get('trajectories') or episode['messages']):
         raise ValueError('native record identity differs or contains unexpected chat trajectory')
     bundle = runs.locate(str(bundle_dir))
-    instances, unfinished = runs.instances(bundle, 'all')
-    if unfinished:
-        raise ValueError('unfinished framework runs exist')
     rewrite = records.Rewrite(bundle.id_root, 'wildfire-ci')
-    direct_id = native_instance_id(episode['episode_id'], 'wildfire-ci', bundle.id_root)
-    if direct_id is not None:
-        direct = find_task_instance(direct_id)
-        if direct is not None and all(item['instance_id'] != direct.instance_id for item in instances):
-            instances.append(asdict(direct))
-    framework, result = choose_run(instances, episode['episode_id'], rewrite, records.record, native_raw[0]['record'])
-    if framework['task_id'] not in {entry.id for entry in runs.tasks(bundle)}:
-        raise ValueError('matched framework run does not belong to this bundle')
+    with namespace_routing():
+        instances, unfinished = runs.instances(bundle, 'latest')
+        if unfinished:
+            raise ValueError('unfinished framework runs exist')
+        diagnostics['framework_lookup'] = link_diagnostics(instances, episode['episode_id'], rewrite, records.record)
+        framework, result = choose_run(instances, episode['episode_id'], rewrite, records.record, native_raw[0]['record'])
+    matching_tasks = [entry for entry in runs.tasks(bundle) if entry.id == framework['task_id']]
+    if len(matching_tasks) != 1:
+        raise ValueError('matched framework run does not belong to exactly one bundle task')
+    task_entry = matching_tasks[0]
+    diagnostics.update(framework_task_id=safe_id(framework['task_id']),
+                       rewritten_framework_task_id=safe_id(rewrite(task_entry.id)),
+                       bundle_task_name=safe_id(task_entry.name))
     trajectory, verification = result.get('trajectory'), result.get('verification')
     if not isinstance(trajectory, dict) or not isinstance(verification, dict) or verification.get('passed') is not True:
         raise ValueError('framework record lacks verified public trajectory')
@@ -127,8 +141,9 @@ def export_and_check(dataset_dir, bundle_dir):
     catalog = build_catalog(prepared, domain)
     if catalog['sha256'] != lock['catalog_sha256'] or trajectory['task_id'] not in task_ids(catalog, 'development'):
         raise ValueError('fixture catalog or development task mismatch')
-    if result.get('task_id') != trajectory['task_id'] or trajectory['task_id'] != task['task']:
-        raise ValueError('framework task, trace and native task disagree')
+    diagnostics['trace_task_id'] = safe_id(trajectory.get('task_id'))
+    verify_task_binding(task, episode, native_raw[0]['record'], task_entry, rewrite,
+                        trajectory['task_id'], result.get('task_id'))
     transitions = trajectory['transitions']
     if (len(transitions) != 60 or transitions[-1]['observation']['minute'] != 120
             or not transitions[-1]['terminated'] or transitions[-1]['truncated']):
@@ -216,13 +231,15 @@ def main():
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     args.report.parent.mkdir(parents=True, exist_ok=True)
+    diagnostics = {}
     try:
-        result = export_and_check(args.dataset_dir, args.bundle_dir)
+        result = export_and_check(args.dataset_dir, args.bundle_dir, diagnostics)
     except Exception as exc:
         result = {'status': 'failed', 'error_type': type(exc).__name__,
                   'error': str(exc) if isinstance(exc, NativeLinkError) else 'validation failed; diagnostic details withheld'}
         if isinstance(exc, NativeLinkError):
-            result['id_diagnostics'] = exc.diagnostics
+            diagnostics['framework_lookup'] = exc.diagnostics
+        result['id_diagnostics'] = diagnostics
         args.report.write_text(json.dumps(result, indent=2) + '\n')
         print(json.dumps(result))
         raise SystemExit(1) from None

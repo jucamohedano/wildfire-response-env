@@ -10,7 +10,7 @@ The existing exporter produced local Parquet containing 12 development task rows
 
 The actual plugin command `agent-env hf publish /tmp/agentenv-local-check/fixture --name wildfire-ci --split development --out /tmp/agentenv-local-check/native-empty` also executed locally and reported one task and zero runs. This is proof of local plugin export only, not a native run or a successful native episode load.
 
-`tests/test_agentenv_dataset_roundtrip.py` passed six focused comparison, reward, hash and framework-link tests. A separate real in-process MCP test, `tests/test_agentenv_fixture.py`, drove the actual `BenchmarkEnv` through its MCP adapter for 60 decisions and 120 simulated minutes and independently replayed it in 3.758 seconds. This exercises the driver and adapter; it does not exercise AgentEnv deployment or Docker.
+`tests/test_agentenv_dataset_roundtrip.py` passed seven focused comparison, reward, hash and framework-link tests, including a local framework-store lookup using the plugin publisher’s selection and namespace routing. A separate real in-process MCP test, `tests/test_agentenv_fixture.py`, drove the actual `BenchmarkEnv` through its MCP adapter for 60 decisions and 120 simulated minutes and independently replayed it in 3.758 seconds. This exercises the driver and adapter; it does not exercise AgentEnv deployment or Docker.
 
 ## Prepared Docker CI fixture
 
@@ -36,3 +36,5 @@ PYTHONPATH=envs/wildfire_response/core/src python eval/check_agentenv_dataset_ro
 ```
 
 The checker uses offline mode, verifies the prepared/domain/catalog pins, restricts selected records to development and `training_eligible=false`, compares all transitions, and invokes the benchmark's independent replay and reward verification. It reports the actual loaded schemas and any native loader failure. It does not fetch or publish a Hub dataset.
+
+The first native CI execution and local publication succeeded, but the checker queried outside the CLI’s namespace-routing context and found no candidates. The checker now enables the same namespace routing and `latest` selector used by the publisher; the fixed CI path has not yet been rerun.

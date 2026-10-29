@@ -42,6 +42,65 @@ class DatasetRoundtripTests(unittest.TestCase):
             checker.compare_transitions(self.trace, rows)
 
 class FrameworkLinkTests(unittest.TestCase):
+    def test_real_framework_store_matches_plugin_publisher(self):
+        import os
+        import subprocess
+        import sys
+        import tempfile
+        program = r"""
+import importlib.util, json, sys
+from pathlib import Path
+from agentenv_hf import runs, records, dataset
+from agent_env.store.routing import namespace_routing
+from agent_env.store.document_store import Filter, UpdateSpec
+from agent_env.task.store import get_task_instance_store
+root = Path(sys.argv[1]) / 'bundle'
+(root / 'tasks').mkdir(parents=True)
+(root / 'tasks/smoke.json').write_text('[]')
+bundle = runs.locate(str(root))
+task = runs.tasks(bundle)[0]
+with namespace_routing():
+    store = get_task_instance_store()
+    instance = store.create_instance(task.id, 1, 3)
+    store._doc_store.update('task_instances', Filter.of(instance_id=instance.instance_id),
+        UpdateSpec(set={'status': 'completed',
+            'context': {'metadata': {'script_results': {'drive': {'model_used': False}}}},
+            'completed_steps': [{'step_id': step, 'status': 'success'} for step in ('deploy', 'drive', 'verify')]}))
+    built = dataset.build(bundle, name='proof', split='development', which='latest')
+    raw = json.loads(built.files['raw/proof.jsonl'])
+    import io, pyarrow.parquet as pq
+    native_task = pq.read_table(io.BytesIO(built.files['tasks/proof.parquet'])).to_pylist()[0]
+    native_episode = pq.read_table(io.BytesIO(built.files['episodes/proof.parquet'])).to_pylist()[0]
+    assert native_task['task'] == 'smoke' and native_task['task_id'] == 'proof/smoke'
+    instances, unfinished = runs.instances(bundle, 'latest')
+    assert built.runs == 1 and not unfinished
+    spec = importlib.util.spec_from_file_location('native', Path(sys.argv[2]) / 'eval/check_agentenv_native_fixture.py')
+    native = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(native)
+    match, result = native.choose_run(instances, raw['episode_id'], records.Rewrite(bundle.id_root, 'proof'),
+                                      records.record, raw['record'])
+    assert match['instance_id'] == instance.instance_id and result['model_used'] is False
+    native.verify_task_binding(native_task, native_episode, raw['record'], task,
+                               records.Rewrite(bundle.id_root, 'proof'), 'smoke', 'smoke')
+    try:
+        native.verify_task_binding(native_task, native_episode, raw['record'], task,
+                                   records.Rewrite(bundle.id_root, 'proof'), 'other', 'other')
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('mismatched trace task was accepted')
+outside, _ = runs.instances(bundle, 'latest')
+assert outside == []
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            env = os.environ.copy()
+            env['XDG_STATE_HOME'] = str(Path(tmp) / 'state')
+            env['XDG_CACHE_HOME'] = str(Path(tmp) / 'cache')
+            env['HF_HOME'] = str(Path(tmp) / 'hf')
+            result = subprocess.run([sys.executable, '-c', program, tmp, str(ROOT)], env=env,
+                                    capture_output=True, text=True, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stderr[-3000:])
+
     def test_valid_shape_trace_hash_drift_is_rejected(self):
         import hashlib
         spec = importlib.util.spec_from_file_location('native_fixture_hash', ROOT / 'eval/check_agentenv_native_fixture.py')
@@ -79,8 +138,10 @@ class FrameworkLinkTests(unittest.TestCase):
         rewrite = records.Rewrite(root, 'wildfire-ci')
         published = rewrite(records.record(good))
         episode = tables.episode_row('bench-dev-123', [], published, [], None)['episode_id']
-        self.assertEqual(native.native_instance_id(episode, 'wildfire-ci', root), instance_id)
         self.assertEqual(native.choose_run([good], episode, rewrite, records.record, published)[0], good)
+        extra_metadata = copy.deepcopy(published)
+        extra_metadata['publisher_metadata'] = {'note': 'not an identity field'}
+        self.assertEqual(native.choose_run([good], episode, rewrite, records.record, extra_metadata)[0], good)
         for instances, identifier in [([], episode), ([good, good], episode), ([good], episode + '-wrong')]:
             with self.subTest(instances=instances, episode=identifier), self.assertRaises(native.NativeLinkError) as failure:
                 native.choose_run(instances, identifier, rewrite, records.record, published)
