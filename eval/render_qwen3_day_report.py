@@ -5,6 +5,10 @@ import html
 import json
 from pathlib import Path
 import statistics
+try:
+    from eval.qwen3_report_charts import charts
+except ModuleNotFoundError:
+    from qwen3_report_charts import charts
 
 CASES = [f'incident-day-realmap-v2-{i:03}' for i in range(6)]
 PINS = ('manifest_sha256', 'engine_implementation_sha256', 'lifecycle_sha256', 'inputs_sha256', 'network_sha256')
@@ -204,6 +208,8 @@ def make_report(run_dir, baseline_path):
     baseline_rows = {(r.get('case'), r.get('policy')): r for r in baseline.get('cases', []) if isinstance(r, dict)}
     pins_match = matching(model, baseline)
     completed = sum(verified(r) for r in model_rows.values()) if not pilot else 0
+    replayed = sum((r.get('request_replay') or {}).get('passed') is True for r in model_rows.values())
+    trimmed_cases = sum((r.get('pruned_history_pairs') or 0) > 0 for r in model_rows.values())
     minutes = [r.get('minute') for r in model_rows.values()
                if isinstance(r.get('minute'), int) and not isinstance(r.get('minute'), bool)]
     overview = (f'{len(model_rows)} of {len(CASES)} bounded cases have stopped; '
@@ -211,6 +217,7 @@ def make_report(run_dir, baseline_path):
                 f'The furthest recorded stopping point is minute {max(minutes) if minutes else "unknown"} of 1440. '
                 'Unfinished runs have no full-day score and cannot be ranked against completed baselines.')
     sections = []
+    chart_rows = []
     for case in CASES:
         row = model_rows.get(case)
         records, bad = requests(run_dir / case / 'requests.jsonl')
@@ -228,6 +235,12 @@ def make_report(run_dir, baseline_path):
         outputs = [r['output_tokens'] for r in records if isinstance(r.get('output_tokens'), int) and not isinstance(r.get('output_tokens'), bool)]
         breakdown = error_breakdown(records)
         errors = sum(breakdown.values()) if records else None
+        executed = sum(r.get('executed') is not False for r in records)
+        reason = row.get('reason') if row else None
+        stop_note = {'generation_deadline': 'time limit', 'episode_truncated': 'truncated'}.get(reason, '')
+        chart_rows.append({'label': 'Case ' + case[-3:], 'minute': row.get('minute') if row else None,
+                           'errors': errors, 'executed': executed, 'input_peak': max(inputs) if inputs else None,
+                           'trimmed': row.get('pruned_history_pairs') if row else None, 'stop_note': stop_note})
         metric = lambda k: fmt(outcome.get(k)) if eligible else 'Unscored'
         peak = row.get('gpu_peak_bytes') if row else None
         details = f'<p>Minute: {esc(fmt(row.get("minute") if row else progress.get("minute")))} / 1440 · Calls: {esc(fmt(row.get("calls") if row else len(records)))} · Errors: {esc(fmt(errors))} · Elapsed: {esc(fmt(row.get("seconds") if row else progress.get("elapsed_seconds")))} s · GPU peak allocated: {esc(fmt(peak / (1024**3) if isinstance(peak, (int, float)) else None))} GiB</p>'
@@ -266,18 +279,29 @@ def make_report(run_dir, baseline_path):
                 comparison = (f'Reward {fmt(bo.get("graded_score"))}; protected fraction {fmt(bo.get("protected_population_fraction"))}; additional burned {fmt(bo.get("additional_burned_hectares"))} ha.')
             details += f'<p><strong>{policy.title()}:</strong> {esc(b.get("status", "unknown"))}, minute {esc(fmt(b.get("minute")))}, commands {esc(fmt(b.get("commands")))}, errors {esc(fmt(b.get("errors")))}, public route/evacuation queries {esc(fmt(b.get("public_queries")))}. {esc(comparison)} {esc(b.get("reason", ""))}</p>'
             details += public_timeline(b.get('timeline') or [], baseline=True)
-        sections.append(f'<section><h2>{esc(case)}</h2><p class="status">{esc(status)}</p>{details}</section>')
+        sections.append(f'<details class="case"><summary>{esc(case)} · {esc(status)}</summary><section>{details}</section></details>')
     missing_pins = [k for k in PINS if not pin_value(model,k)]
     pin_note = 'All required pins match.' if pins_match else 'Matching not established. Missing model pins: ' + (', '.join(missing_pins) or 'none; at least one pin differs') + '.'
-    page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qwen3-8B incident-day evaluation</title><style>body{{font:16px/1.55 system-ui,sans-serif;color:#172b31;background:#f2f5f3;margin:0}}main{{max-width:1100px;margin:auto;padding:2rem}}header,section{{background:white;padding:1.4rem 1.8rem;margin:1rem 0;border-radius:12px;box-shadow:0 2px 12px #18382b18}}h1,h2{{line-height:1.2}}h2{{font-size:1.2rem}}.status{{color:#285b46;font-weight:700}}code{{overflow-wrap:anywhere;font-size:.88em}}details{{border-top:1px solid #d7e2dc;padding:.6rem 0}}summary{{cursor:pointer;font-weight:600}}li{{margin:.35rem 0}}.note{{background:#fff3d5;padding:1rem;border-radius:8px}}</style></head><body><main><header><h1>Qwen3-8B · incident-day evaluation</h1><p>Verified, score-eligible completed full-day cases: <strong>{completed} / 6</strong> · Run status: {esc(model.get('status','summary missing or unreadable'))}</p><p>Qwen/Qwen3-8B revision b968826d9c46dd6066d109eabc6255188de91218 · FP16 Tesla V100 32 GB · thinking disabled · greedy decoding · context {esc(fmt(model.get("context_tokens")))} tokens · maximum {esc(fmt(model.get("max_new_tokens")))} new tokens.</p><p>Simulation time is virtual: read-only inspection and draft checks do not advance it. Orders/status requests cost one minute; explicit waits advance up to 60 minutes and may wake early.</p><p>Budget scope: {esc(model.get('budget_scope','not recorded'))}</p><p>Main run bounds: {esc(fmt(model.get("case_wall_seconds")))} seconds per case, {esc(fmt(model.get("global_wall_seconds")))} seconds overall and {esc(fmt(model.get("max_model_calls")))} calls per case. A limit or interrupted run is not a completed result. GPU peak is allocated memory as reported by the runner, and may be cumulative across cases.</p><p>Four setup pilots are preserved and excluded. The current run uses the reviewed native-tool protocol, context handling and deadline guards.</p><p class="note">These six cases are development exercises, not independent real incidents. Field and reward calibration remain open; this is not a safety certification. Protected fraction and burned area are simulated outcomes.</p><p>Baseline matching: {esc(pin_note)} Comparison requires identical case ID and all five manifest, engine, lifecycle, input and network pins.</p></header>{''.join(sections)}</main></body></html>'''
-    note='<p class="note">Protocol audit: run-v1 used ordinary-user tool feedback; run-v2 context trimming discarded the latest tool response. Both pilots are excluded from model conclusions. Run-v3 then exposed a single tool response exceeding the12k context limit. Run-v4 was superseded before completion by the reviewed strict-parser and deadline guards. Main run-v5 uses a hardware-tested32k context with strict single-call parsing and pre-commit deadline checks and preserves native tool roles and the latest tool-call/result pair. Recorded error totals are recomputed from actual draft and commit feedback, excluding null error fields.</p>'
-    reproduction = '''<details><summary>Reproduce this configuration</summary>
-<p>Use the evaluation runner at commit <code>0217aef</code> and the private Wildfire Response Spain dataset at revision <code>d7e1e1c82eb249e35315bd19d1e0fea730fc0da7</code>. This run used Python, PyTorch 2.5.1+cu121, Transformers 4.51.3 and Accelerate 1.6.0 on a Tesla V100 with 32 GiB. The model weights download from Hugging Face; the prepared dataset requires access. Start from a compatible project checkout with its simulator dependencies installed.</p>
-<pre><code>PYTHONPATH=.:envs/wildfire_response/core/src python -m eval.run_qwen3_day \\
+    detail = f"""<details class="method"><summary>Method, limits and reproduction</summary>
+    <p>Qwen/Qwen3-8B revision b968826d9c46dd6066d109eabc6255188de91218; FP16 Tesla V100 32 GB; thinking disabled; greedy decoding; maximum {esc(fmt(model.get("max_new_tokens")))} output tokens. The six cases share one synthetic development landscape, not six independent real incidents.</p>
+    <p>Read-only tools and draft checks do not advance simulated time. Orders and status requests cost one minute; waiting can advance up to 60 minutes and wake earlier. Each case was bounded to {esc(fmt(model.get("case_wall_seconds")))} seconds and {esc(fmt(model.get("max_model_calls")))} calls. Incomplete cases do not have full-day scores. One truncated case received a separately verified invalid-abandonment penalty.</p>
+    <p>Four setup pilots are excluded: v1 used the wrong feedback roles; v2 discarded the latest tool result during trimming; v3 could not fit a single long tool response in its 12k input limit; v4 stopped before the reviewed guards were added. The plotted main run uses a 32k input threshold, native tool roles, and preserves the latest call/result pair during history trimming. Input charts count prompts, not output tokens.</p>
+    <p>Baseline matching: {esc(pin_note)} Scores are comparable only for eligible completed episodes with matching pins. All six recorded request prefixes replayed exactly. Reward and field calibration remain open.</p>
+    <p>Use evaluation runner commit <code>0217aef</code> with private dataset revision <code>d7e1e1c82eb249e35315bd19d1e0fea730fc0da7</code>, PyTorch 2.5.1+cu121, Transformers 4.51.3 and Accelerate 1.6.0. The output directory must not exist. Runtime depends on hardware and load; keep raw logs and checkpoints private.</p>
+    <pre><code>PYTHONPATH=.:envs/wildfire_response/core/src python -m eval.run_qwen3_day \\
   --data /path/to/wildfire-response-spain --output /path/to/new-output-directory \\
-  --context 32768 --case-seconds 900 --seconds 7200 --max-calls 1200</code></pre>
-<p>Output must be a new directory. The wall-clock limits depend on hardware and load, so a repeat need not stop at the same model call. Raw logs and checkpoints may contain private evaluator state; keep them private.</p></details>'''
-    page=page.replace('</header>','<p class="note">'+esc(overview)+'</p>'+note+reproduction+'</header>',1)
+  --context 32768 --case-seconds 900 --seconds 7200 --max-calls 1200</code></pre></details>"""
+    context_stops = sum(str(r.get('reason', '')).startswith('context_capacity') for r in model_rows.values())
+    context_note = f"The recorded run trimmed history in {trimmed_cases} case(s); the first trim replaced the initial situation, and later trims removed older message pairs. {context_stops} stopped because of a context-capacity error. An API may offer a larger window or server-side compaction, but those depend on the provider and configuration and can lose details. <a href=\"https://platform.claude.com/docs/en/build-with-claude/compaction-threshold\">Example: Claude compaction</a>."
+    page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qwen3-8B incident-day evaluation</title>
+    <style>body{{font:16px/1.5 system-ui,sans-serif;color:#172b31;background:#f2f5f3;margin:0}}main{{max-width:1100px;margin:auto;padding:1.5rem}}header,.chart,.method,.case{{background:#fff;padding:1.3rem 1.6rem;margin:1rem 0;border-radius:12px;box-shadow:0 2px 12px #18382b18}}h1,h2{{line-height:1.2;margin:.1rem 0 .4rem}}h2{{font-size:1.15rem}}p{{margin:.5rem 0}}.lede{{font-size:1.1rem}}.note{{background:#fff3d5;padding:.8rem;border-radius:8px}}.stats{{display:flex;gap:1rem;flex-wrap:wrap}}.stat{{background:#eff5f1;border-radius:8px;padding:.6rem 1rem}}.stat strong{{display:block;font-size:1.4rem}}.scroll-hint{{display:none}}.chart{{overflow-x:auto}}.chart svg{{display:block;width:100%;min-width:640px;height:auto}}.chart-label,.chart-value,.axis{{font:13px system-ui,sans-serif;fill:#263b3d}}.axis{{font-size:11px;fill:#6c7e7b}}summary{{cursor:pointer;font-weight:700}}.case section{{padding:.8rem 0 0}}.case details{{border-top:1px solid #d7e2dc;padding:.6rem 0}}code{{overflow-wrap:anywhere;font-size:.88em}}pre{{white-space:pre-wrap}}li{{margin:.35rem 0}}a{{color:#316a58}}@media(max-width:600px){{.scroll-hint{{display:block;font-size:.85em;color:#586c69}}main{{padding:.6rem}}header,.chart,.case,.method{{padding:1rem}}}}</style></head><body><main>
+    <header><h1>Qwen3-8B · Wildfire Ops evaluation</h1><p class="lede">Six simulated incident-day exercises · 32 GB Tesla V100 · no model training</p>
+    <div class="stats"><div class="stat"><strong>{completed} / 6</strong> completed full days</div><div class="stat"><strong>{esc(max(minutes) if minutes else '—')} min</strong> furthest simulated progress</div><div class="stat"><strong>{replayed} / 6</strong> recorded prefixes replayed*</div></div>
+    <p class="note">{esc(overview)} *Replay status is shown per case below. Truncated episodes may have a separate verified penalty.</p>
+    <p>{context_note}</p></header>
+    {charts(chart_rows, model.get('context_tokens'))}
+    <section class="chart"><h2>What to take away</h2><p>Draft rejections can repeat without advancing simulation time; the charts show this separately from prompt size. A stronger or better-prompted model may behave differently. The <a href="https://huggingface.co/Qwen/Qwen3-8B">Qwen3 model card</a> recommends sampling for non-thinking mode; this run used greedy decoding.</p></section>
+    <h2>Case details</h2><p>Expand a case for the tool timeline, stop reason and verification.</p>{''.join(sections)}{detail}</main></body></html>"""
     return page
 
 def main():

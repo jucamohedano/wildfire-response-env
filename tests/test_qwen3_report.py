@@ -41,7 +41,7 @@ def test_report_uses_recorded_bounds(tmp_path):
     (tmp_path/'summary.json').write_text(json.dumps({'context_tokens':32768,'max_new_tokens':768,'case_wall_seconds':900,'global_wall_seconds':7200,'max_model_calls':1200}))
     b=tmp_path/'b.json';b.write_text('{}')
     output=make_report(tmp_path,b)
-    assert 'context 32768 tokens' in output and 'context 12,000 tokens' not in output
+    assert '32,768 tokens' in output and 'context 12,000 tokens' not in output
     assert 'python -m eval.run_qwen3_day' in output
     assert '0217aef' in output and '--case-seconds 900' in output
 
@@ -121,3 +121,22 @@ def test_reused_offer_only_counts_prior_accepted_commits():
     assert rejected_reused_authorizations([row('a', rejected)]) == 0
     assert rejected_reused_authorizations([row('a', None), row('b', rejected)]) == 0
     assert rejected_reused_authorizations([row('a', None), row('a', rejected)]) == 1
+
+
+def test_plots_show_recorded_progress_errors_and_prompt_peak(tmp_path):
+    import json
+    from eval.render_qwen3_day_report import make_report
+    case = 'incident-day-realmap-v2-000'
+    (tmp_path/'modelsummary.json').write_text(json.dumps({
+        'context_tokens':32768, 'cases':[{'case':case,'minute':23,'reason':'generation_deadline',
+                                          'pruned_history_pairs':2}]}))
+    directory=tmp_path/case;directory.mkdir()
+    (directory/'requests.jsonl').write_text(json.dumps({
+        'tool':'check_action','input_tokens':12345,'result':{'valid':False,'error':'invalid'}})+'\n')
+    baseline=tmp_path/'baseline.json';baseline.write_text('{}')
+    output=make_report(tmp_path,baseline)
+    assert output.count('<svg ') == 3
+    assert '23 min · time limit' in output
+    assert '1 · of 1 executed' in output
+    assert '12,345 · 2 trims' in output
+    assert '1 case(s)' in output
