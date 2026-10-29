@@ -1,0 +1,111 @@
+{
+  "version": "development-reward-scale-diagnostic-v1",
+  "rows": [
+    {
+      "task_id": "bench-dev-71f777cb5ff8c9f2",
+      "family": "uncertain_smoke",
+      "recorded_score": 1.0,
+      "population_component": 0.8,
+      "area_component": 0.2,
+      "active_fire_cells": 0,
+      "additional_burned_hectares": 0.0,
+      "additional_area_vs_recorded_dispatcher": 0.0,
+      "eligible_domain_hectares": 33275.0,
+      "one_person_score_change": 0.002285714285714286,
+      "one_cell_score_change": 0.00015026296018031557,
+      "area_equal_to_one_person_score_change_hectares": 380.28571428571433,
+      "diagnostic_budget_sensitivity": [
+        {
+          "area_budget_hectares": 500,
+          "one_cell_linear_penalty": 0.01
+        },
+        {
+          "area_budget_hectares": 1000,
+          "one_cell_linear_penalty": 0.005
+        },
+        {
+          "area_budget_hectares": 5000,
+          "one_cell_linear_penalty": 0.001
+        },
+        {
+          "area_budget_hectares": 33275.0,
+          "one_cell_linear_penalty": 0.00015026296018031557
+        }
+      ]
+    },
+    {
+      "task_id": "bench-dev-16f552e5e1561b06",
+      "family": "false_alarm",
+      "recorded_score": 1.0,
+      "population_component": 0.8,
+      "area_component": 0.2,
+      "active_fire_cells": 0,
+      "additional_burned_hectares": 0.0,
+      "additional_area_vs_recorded_dispatcher": 0.0,
+      "eligible_domain_hectares": 33300.0,
+      "one_person_score_change": 0.002285714285714286,
+      "one_cell_score_change": 0.00015015015015015017,
+      "area_equal_to_one_person_score_change_hectares": 380.5714285714286,
+      "diagnostic_budget_sensitivity": [
+        {
+          "area_budget_hectares": 500,
+          "one_cell_linear_penalty": 0.01
+        },
+        {
+          "area_budget_hectares": 1000,
+          "one_cell_linear_penalty": 0.005
+        },
+        {
+          "area_budget_hectares": 5000,
+          "one_cell_linear_penalty": 0.001
+        },
+        {
+          "area_budget_hectares": 33300.0,
+          "one_cell_linear_penalty": 0.00015015015015015014
+        }
+      ]
+    },
+    {
+      "task_id": "bench-dev-d9c78dfb35a04dff",
+      "family": "overlapping_fires",
+      "recorded_score": 0.9983483483483484,
+      "population_component": 0.8,
+      "area_component": 0.19834834834834836,
+      "active_fire_cells": 4,
+      "additional_burned_hectares": 275.0,
+      "additional_area_vs_recorded_dispatcher": 175.0,
+      "eligible_domain_hectares": 33300.0,
+      "one_person_score_change": 0.002285714285714286,
+      "one_cell_score_change": 0.00015015015015015017,
+      "area_equal_to_one_person_score_change_hectares": 380.5714285714286,
+      "diagnostic_budget_sensitivity": [
+        {
+          "area_budget_hectares": 500,
+          "one_cell_linear_penalty": 0.01
+        },
+        {
+          "area_budget_hectares": 1000,
+          "one_cell_linear_penalty": 0.005
+        },
+        {
+          "area_budget_hectares": 5000,
+          "one_cell_linear_penalty": 0.001
+        },
+        {
+          "area_budget_hectares": 33300.0,
+          "one_cell_linear_penalty": 0.00015015015015015014
+        }
+      ]
+    }
+  ],
+  "score_changes_applied": false,
+  "training_labels_generated": false,
+  "interpretation": "The 80/20 priorities are unchanged. Large geographic normalization makes modest additional area and residual active fire compatible with near-perfect scalar reward.",
+  "limitations": [
+    "Recorded dispatcher is a reference, not an optimal policy or regret lower bound.",
+    "Fixed area budgets illustrate scale sensitivity only; no alternative scores, rankings or preferred normalization are selected.",
+    "Choosing any new normalization or safety condition requires a separately versioned owner-approved objective and new validation."
+  ],
+  "source_sha256": "22202cdb1813835f02d9e33acb631a3e0eaa0ec35f02183f9ab7c41516e775cd",
+  "source": "results/luna-subagent-benchmark-20261026.json"
+}

@@ -24,9 +24,9 @@ calibration nor benchmark saturation.
 The display-road regressions are fixed in merged PR #38. Its focused validation
 passes 109 Python and 126 frontend tests plus a production build. Incident-day
 tests include actual HTTP/OpenEnv, disk-checkpoint replay, finite resources,
-source-input gates and independent reward accounting. Docker execution remains
-unverified where Docker is unavailable. See PR #41 and issue #34 for current
-acceptance evidence and outstanding gates.
+source-input gates and independent reward accounting. Actual Docker execution passes in Linux CI; the installed image is checked
+through an external client against local trajectories. See PR #41 and issue #34
+for current acceptance evidence and outstanding gates.
 
 ## Agent contract
 
@@ -210,9 +210,9 @@ skips, including HTTP parity and frozen extraction checks. See
 physical calibration, real-source input approval, or the absence of observed
 crew-only-access and destination-threat complications in these policy runs.
 
-## Current access and destination coverage
+## Fixture access and destination coverage
 
-The default six-family acceptance suite now uses two additive variants:
+The fixture six-family acceptance suite uses two additive variants:
 `incident-day-coverage-v1-002` and `incident-day-coverage-v1-004`. The other four
 IDs come from the egress suite. All previous IDs and scenario hashes remain
 available; earlier reports keep their original interpretation.
@@ -239,7 +239,7 @@ removed one redundant completed-episode replay while preserving all supported
 legacy and safety regressions. See `results/incident-day-coverage-20261028.html`
 and `.json` for evidence and remaining calibration gates.
 
-Run the current acceptance suite with
+Run the fixture acceptance suite with
 `python eval/check_incident_day_plausibility.py --output /tmp/NEW-COVERAGE-RUN --wall-budget 600`.
 The `--cases` option still selects explicit earlier suites. Targeted partial
 selections remain incomplete suite reports even when their selected episodes
@@ -306,3 +306,41 @@ python eval/check_incident_day_plausibility.py --output /tmp/NEW-EGRESS-RUN --wa
   --cases incident-day-egress-v1-000 incident-day-egress-v1-001 incident-day-egress-v1-002 \
           incident-day-egress-v1-003 incident-day-egress-v1-004 incident-day-egress-v1-005
 ```
+
+
+## Current source-specific acceptance
+
+The six additive `incident-day-realmap-v2-000` through `005` cases retain the
+same source-pack and network pins as v1. All ground road missions in this profile
+use a source-screened corridor subset. Short crew approaches retain declared
+terrain assumptions; missing routes are not filled with invented connectors.
+The v1 and fixture cases keep their original identities and recorded results.
+
+The six v2 days complete all 1,440 minutes with exact replay, independent reward
+agreement, no audit contradictions and no blocking consistency findings. The
+regression run passes **300 tests without skips** (including 37 subtests).
+[HTML acceptance evidence](../results/incident-day-acceptance-20261029.html) and
+[JSON](../results/incident-day-acceptance-20261029.json) pin the implementation.
+
+The wind case checks the active route immediately before and after the wind
+change, its actual stop, delivery of the warning, and a changed approach authorized
+for the same unit before alternate arrival. Unrelated later movement cannot
+satisfy it. Ground setup aborts immediately if the v2 approach becomes unsafe.
+Crew-only work and occupied-destination relocation require actual effects. The
+quiet-period probe uses simulated steps, so a slow host cannot change coverage.
+
+```sh
+python eval/check_incident_day_plausibility.py \
+  --inputs .runtime/estimated-incident-day-inputs-final.json \
+  --network data/coastal_mobility_v1/network.json --allow-unapproved-data \
+  --output /tmp/NEW-REALMAP-V2 --wall-budget 600 \
+  --cases incident-day-realmap-v2-000 incident-day-realmap-v2-001 \
+          incident-day-realmap-v2-002 incident-day-realmap-v2-003 \
+          incident-day-realmap-v2-004 incident-day-realmap-v2-005
+```
+
+This is acceptance of an experimental coordination exercise. Human operational
+review, physical calibration and source-pack approval remain separate follow-ups
+in #34 and #42. Estimated fuel, the 27 unresolved land/water centres and the
+unknown-land censor guard are unchanged. Technical replay agreement does not
+establish real-world fire prediction or aircraft certification.

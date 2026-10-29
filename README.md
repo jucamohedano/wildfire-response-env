@@ -30,10 +30,12 @@ incident-day run. See [incident-day](docs/incident-day.md),
 
 ## Score and limits
 
-Six additional `incident-day-realmap-v1-*` exercises require the pinned estimated
-map pack. They use synthetic incident sectors and temporary posts on cached road
-geometry, with crews traveling to work and returning. They do not reconstruct
-historical deployments. See the [real-map guide](docs/incident-day.md).
+Two six-case real-map suites require the pinned estimated map pack. The current
+`incident-day-realmap-v2-*` suite exercises screened road corridors, wind rerouting,
+crew-only work and evacuation relocation. Crews must travel, set up, work and
+return. Its six full-day runs pass exact replay and independent accounting; the
+earlier v1 cases remain available. Placements are synthetic, not historical
+deployments. See the [real-map guide](docs/incident-day.md).
 
 At completion, the day reward is `0.8 × newly protected population fraction +
 0.2 × fraction of remaining burnable cells not newly burned`. Inherited exposure
