@@ -36,6 +36,19 @@ def verified(row):
             and not o.get('boundary_censored') and not o.get('invalid_abandonment')
             and all(v.get(k) is True for k in ('passed', 'exact_replay', 'independent_reward_agreement')))
 
+
+def verified_abandonment_penalty(row):
+    """Return the simulator's verified penalty, separate from full-day scores."""
+    verification = row.get('verification') or {}
+    outcome = row.get('outcomes') or verification.get('outcomes') or {}
+    replay = row.get('request_replay') or {}
+    if (row.get('truncated') is True and outcome.get('invalid_abandonment') is True
+            and outcome.get('score_eligible') is True and replay.get('passed') is True
+            and replay.get('trajectory_match') is True
+            and all(verification.get(k) is True for k in ('passed', 'exact_replay', 'independent_reward_agreement'))):
+        return outcome.get('graded_score')
+    return None
+
 def pin_value(obj, key):
     for container in (obj, obj.get('pins', {}), obj.get('source_pins', {}), obj.get('runtime', {})):
         if isinstance(container, dict) and container.get(key):
@@ -100,21 +113,6 @@ def has_stale_completed_evacuation(record):
     return any(group.get('id') in completed and group.get('status') == 'unwarned'
                and group.get('observed_at') is None
                for group in result.get('districts', []) if isinstance(group, dict))
-
-
-def replay_outcome_summary(diagnostics):
-    """Describe evaluator outcomes at the recorded stopping time, not actor knowledge."""
-    status = diagnostics.get('population_by_status') or {}
-    parts = []
-    if isinstance(status, dict) and isinstance(status.get('arrived'), int):
-        parts.append(f'{status["arrived"]} simulated people had arrived at a destination')
-    work = diagnostics.get('resources_with_applied_work')
-    if isinstance(work, int) and not isinstance(work, bool):
-        parts.append(f'{work} resource(s) had performed suppression work')
-    fires = diagnostics.get('active_fire_cells')
-    if isinstance(fires, int) and not isinstance(fires, bool):
-        parts.append(f'{fires} fire cells remained active')
-    return '; '.join(parts)
 
 
 def rejected_reused_authorizations(records):
@@ -240,14 +238,9 @@ def make_report(run_dir, baseline_path):
         replay = row.get('request_replay') or {} if row else {}
         if replay:
             details += '<p>Independent recorded-request replay: ' + esc(fmt(replay.get('passed'))) + '; final trace match: ' + esc(fmt(replay.get('trajectory_match'))) + '. This verifies the recorded prefix, not full-horizon eligibility.</p>'
-            if replay.get('passed') is True:
-                diagnostics = replay.get('diagnostics') or {}
-                summary = replay_outcome_summary(diagnostics)
-                if summary:
-                    details += '<p>At the stopping time, evaluator records show: ' + esc(summary) + '. These outcomes do not establish a full-day result or what the model knew.</p>'
-                selected = {key: diagnostics.get(key) for key in ('active_fire_cells','additional_burned_hectares','new_exposed_population','unresolved_evacuations','population_by_status','resource_by_kind_and_state','suppression_work_events','resources_with_applied_work','received_reports','mission_operations_submitted')}
-                qualifier = 'Evaluator-only effects at day end; the model may not have received every update: ' if eligible else 'Evaluator-only diagnostics at the stopping clock; the model may not have received these updates yet. Not comparable with full-day reference outcomes: '
-                details += '<p class="note">' + qualifier + esc(json.dumps(selected, sort_keys=True)) + '</p>'
+        penalty = verified_abandonment_penalty(row) if row and not pilot else None
+        if penalty is not None:
+            details += '<p class="note">The simulator assigned a verified invalid-abandonment penalty of ' + esc(fmt(penalty)) + ' when the episode truncated. This is not a completed-day score.</p>'
         if row:
             details += '<p>History trimming operations: ' + esc(fmt(row.get('pruned_history_pairs'))) + '; the latest call/result pair was retained.</p>'
         if any(recorded_error(record) == "'resource_id'" for record in records):
@@ -276,7 +269,7 @@ def make_report(run_dir, baseline_path):
         sections.append(f'<section><h2>{esc(case)}</h2><p class="status">{esc(status)}</p>{details}</section>')
     missing_pins = [k for k in PINS if not pin_value(model,k)]
     pin_note = 'All required pins match.' if pins_match else 'Matching not established. Missing model pins: ' + (', '.join(missing_pins) or 'none; at least one pin differs') + '.'
-    page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qwen3-8B incident-day evaluation</title><style>body{{font:16px/1.55 system-ui,sans-serif;color:#172b31;background:#f2f5f3;margin:0}}main{{max-width:1100px;margin:auto;padding:2rem}}header,section{{background:white;padding:1.4rem 1.8rem;margin:1rem 0;border-radius:12px;box-shadow:0 2px 12px #18382b18}}h1,h2{{line-height:1.2}}h2{{font-size:1.2rem}}.status{{color:#285b46;font-weight:700}}code{{overflow-wrap:anywhere;font-size:.88em}}details{{border-top:1px solid #d7e2dc;padding:.6rem 0}}summary{{cursor:pointer;font-weight:600}}li{{margin:.35rem 0}}.note{{background:#fff3d5;padding:1rem;border-radius:8px}}</style></head><body><main><header><h1>Qwen3-8B · incident-day evaluation</h1><p>Verified, eligible model cases: <strong>{completed} / 6</strong> · Run status: {esc(model.get('status','summary missing or unreadable'))}</p><p>Qwen/Qwen3-8B revision b968826d9c46dd6066d109eabc6255188de91218 · FP16 Tesla V100 32 GB · thinking disabled · greedy decoding · context {esc(fmt(model.get("context_tokens")))} tokens · maximum {esc(fmt(model.get("max_new_tokens")))} new tokens.</p><p>Simulation time is virtual: read-only inspection and draft checks do not advance it. Orders/status requests cost one minute; explicit waits advance up to 60 minutes and may wake early.</p><p>Budget scope: {esc(model.get('budget_scope','not recorded'))}</p><p>Main run bounds: {esc(fmt(model.get("case_wall_seconds")))} seconds per case, {esc(fmt(model.get("global_wall_seconds")))} seconds overall and {esc(fmt(model.get("max_model_calls")))} calls per case. A limit or interrupted run is not a completed result. GPU peak is allocated memory as reported by the runner, and may be cumulative across cases.</p><p>Four setup pilots are preserved and excluded. The current run uses the reviewed native-tool protocol, context handling and deadline guards.</p><p class="note">These six cases are development exercises, not independent real incidents. Field and reward calibration remain open; this is not a safety certification. Protected fraction and burned area are simulated outcomes.</p><p>Baseline matching: {esc(pin_note)} Comparison requires identical case ID and all five manifest, engine, lifecycle, input and network pins.</p></header>{''.join(sections)}</main></body></html>'''
+    page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qwen3-8B incident-day evaluation</title><style>body{{font:16px/1.55 system-ui,sans-serif;color:#172b31;background:#f2f5f3;margin:0}}main{{max-width:1100px;margin:auto;padding:2rem}}header,section{{background:white;padding:1.4rem 1.8rem;margin:1rem 0;border-radius:12px;box-shadow:0 2px 12px #18382b18}}h1,h2{{line-height:1.2}}h2{{font-size:1.2rem}}.status{{color:#285b46;font-weight:700}}code{{overflow-wrap:anywhere;font-size:.88em}}details{{border-top:1px solid #d7e2dc;padding:.6rem 0}}summary{{cursor:pointer;font-weight:600}}li{{margin:.35rem 0}}.note{{background:#fff3d5;padding:1rem;border-radius:8px}}</style></head><body><main><header><h1>Qwen3-8B · incident-day evaluation</h1><p>Verified, score-eligible completed full-day cases: <strong>{completed} / 6</strong> · Run status: {esc(model.get('status','summary missing or unreadable'))}</p><p>Qwen/Qwen3-8B revision b968826d9c46dd6066d109eabc6255188de91218 · FP16 Tesla V100 32 GB · thinking disabled · greedy decoding · context {esc(fmt(model.get("context_tokens")))} tokens · maximum {esc(fmt(model.get("max_new_tokens")))} new tokens.</p><p>Simulation time is virtual: read-only inspection and draft checks do not advance it. Orders/status requests cost one minute; explicit waits advance up to 60 minutes and may wake early.</p><p>Budget scope: {esc(model.get('budget_scope','not recorded'))}</p><p>Main run bounds: {esc(fmt(model.get("case_wall_seconds")))} seconds per case, {esc(fmt(model.get("global_wall_seconds")))} seconds overall and {esc(fmt(model.get("max_model_calls")))} calls per case. A limit or interrupted run is not a completed result. GPU peak is allocated memory as reported by the runner, and may be cumulative across cases.</p><p>Four setup pilots are preserved and excluded. The current run uses the reviewed native-tool protocol, context handling and deadline guards.</p><p class="note">These six cases are development exercises, not independent real incidents. Field and reward calibration remain open; this is not a safety certification. Protected fraction and burned area are simulated outcomes.</p><p>Baseline matching: {esc(pin_note)} Comparison requires identical case ID and all five manifest, engine, lifecycle, input and network pins.</p></header>{''.join(sections)}</main></body></html>'''
     note='<p class="note">Protocol audit: run-v1 used ordinary-user tool feedback; run-v2 context trimming discarded the latest tool response. Both pilots are excluded from model conclusions. Run-v3 then exposed a single tool response exceeding the12k context limit. Run-v4 was superseded before completion by the reviewed strict-parser and deadline guards. Main run-v5 uses a hardware-tested32k context with strict single-call parsing and pre-commit deadline checks and preserves native tool roles and the latest tool-call/result pair. Recorded error totals are recomputed from actual draft and commit feedback, excluding null error fields.</p>'
     reproduction = '''<details><summary>Reproduce this configuration</summary>
 <p>Use the evaluation runner at commit <code>0217aef</code> and the private Wildfire Response Spain dataset at revision <code>d7e1e1c82eb249e35315bd19d1e0fea730fc0da7</code>. This run used Python, PyTorch 2.5.1+cu121, Transformers 4.51.3 and Accelerate 1.6.0 on a Tesla V100 with 32 GiB. The model weights download from Hugging Face; the prepared dataset requires access. Start from a compatible project checkout with its simulator dependencies installed.</p>

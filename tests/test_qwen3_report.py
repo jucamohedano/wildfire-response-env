@@ -93,14 +93,23 @@ def test_stale_evacuation_warning_matches_the_same_group_and_delivered_order():
     assert not has_stale_completed_evacuation(row)
 
 
-def test_replay_outcome_summary_is_partial_and_uses_recorded_counts():
-    from eval.render_qwen3_day_report import replay_outcome_summary
-    text = replay_outcome_summary({'population_by_status': {'arrived': 350},
-                                   'resources_with_applied_work': 1, 'active_fire_cells': 25})
-    assert '350 simulated people had arrived' in text
-    assert '1 resource(s) had performed suppression work' in text
-    assert '25 fire cells remained active' in text
-    assert replay_outcome_summary({}) == ''
+def test_verified_abandonment_penalty_is_distinct_and_private_diagnostics_not_exported(tmp_path):
+    import json
+    from eval.render_qwen3_day_report import make_report, verified_abandonment_penalty
+    row = {'case':'incident-day-realmap-v2-004', 'minute':31, 'completed':False, 'truncated':True,
+           'verification': {'passed':True, 'exact_replay':True, 'independent_reward_agreement':True,
+                            'outcomes':{'graded_score':0.0,'score_eligible':True,'invalid_abandonment':True}},
+           'request_replay': {'passed':True,'trajectory_match':True,'score_eligible':False,
+                              'diagnostics':{'active_fire_cells':'PRIVATE_DIAGNOSTIC_SENTINEL'}}}
+    assert verified_abandonment_penalty(row) == 0.0
+    (tmp_path/'modelsummary.json').write_text(json.dumps({'cases':[row]}))
+    baseline=tmp_path/'baseline.json';baseline.write_text('{}')
+    output=make_report(tmp_path,baseline)
+    assert 'verified invalid-abandonment penalty of 0.000' in output
+    assert 'not a completed-day score' in output
+    assert 'PRIVATE_DIAGNOSTIC_SENTINEL' not in output
+    row['request_replay']['passed'] = False
+    assert verified_abandonment_penalty(row) is None
 
 
 def test_reused_offer_only_counts_prior_accepted_commits():
