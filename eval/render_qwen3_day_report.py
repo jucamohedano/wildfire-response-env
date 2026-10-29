@@ -157,7 +157,7 @@ def make_report(run_dir, baseline_path):
             details += '<p>Independent recorded-request replay: ' + esc(fmt(replay.get('passed'))) + '; final trace match: ' + esc(fmt(replay.get('trajectory_match'))) + '. This verifies the recorded prefix, not full-horizon eligibility.</p>'
             if not eligible and replay.get('passed') is True:
                 diagnostics = replay.get('diagnostics') or {}
-                selected = {key: diagnostics.get(key) for key in ('active_fire_cells','additional_burned_hectares','new_exposed_population','unresolved_evacuations')}
+                selected = {key: diagnostics.get(key) for key in ('active_fire_cells','additional_burned_hectares','new_exposed_population','unresolved_evacuations','population_by_status','resource_by_kind_and_state','suppression_work_events','resources_with_applied_work','received_reports','mission_operations_submitted')}
                 details += '<p class="note">Partial diagnostics at the stopping clock only; not comparable with full-day reference outcomes: ' + esc(json.dumps(selected, sort_keys=True)) + '</p>'
         details += public_timeline(records)
         for policy in ('passive', 'dispatcher'):

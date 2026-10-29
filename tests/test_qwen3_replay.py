@@ -68,6 +68,9 @@ def test_partial_prefix_preserves_queries_and_never_passively_finishes(captured)
     assert result['passed'] and result['minute'] == 1
     assert result['results_compared'] == 3
     assert result['diagnostics']['public_route_queries'] == 1
+    assert sum(result['diagnostics']['population_by_status'].values()) == result['diagnostics']['population_count']
+    assert sum(result['diagnostics']['resource_by_kind_and_state'].values()) == result['diagnostics']['resource_count']
+    assert result['diagnostics']['suppression_work_events'] == sum(len(record.get('applied_work', [])) for record in env._audit)
     assert result['score'] is None and not result['score_eligible']
     public = json.dumps(result)
     for field in ('initial_observation', 'private_audit', 'checkpoint', 'graded_score', 'transitions'):

@@ -173,8 +173,14 @@ def replay_case(data_dir, case_dir, case_id, *, wall_seconds=300):
                 and outcome['score_eligible'] and not outcome['invalid_abandonment'] and not outcome['boundary_censored'])
     diagnostics = {key: outcome[key] for key in ('additional_burned_hectares', 'inherited_burned_hectares',
         'new_exposed_population', 'inherited_exposed_population', 'unresolved_evacuations')}
+    population_status=Counter()
+    for group in env.ops.groups.values():population_status[group['status']]+=group['count']
+    resource_status=Counter(unit['kind']+':'+unit['state'] for unit in env.ops.resources.values())
+    work=[event for record in env._audit for event in record.get('applied_work', [])]
     diagnostics.update(active_fire_cells=len(env._burning()), population_count=sum(g['count'] for g in env.ops.groups.values()),
-                       resource_count=len(env.ops.resources), tool_call_counts=dict(calls),
+                       population_by_status=dict(population_status), resource_by_kind_and_state=dict(resource_status),
+                       suppression_work_events=len(work), resources_with_applied_work=len({event['resource_id'] for event in work}),
+                       received_reports=len(env.bus.reports), resource_count=len(env.ops.resources), tool_call_counts=dict(calls),
                        mission_operations_submitted=dict(missions), public_route_queries=len(actual['queries']))
     return dict(version=VERSION, case_id=case_id, passed=trajectory_match is True,
                 requests_replayed=count, results_compared=results_checked, expired_unexecuted=expired,
