@@ -102,6 +102,21 @@ def has_stale_completed_evacuation(record):
                for group in result.get('districts', []) if isinstance(group, dict))
 
 
+def replay_outcome_summary(diagnostics):
+    """Describe evaluator outcomes at the recorded stopping time, not actor knowledge."""
+    status = diagnostics.get('population_by_status') or {}
+    parts = []
+    if isinstance(status, dict) and isinstance(status.get('arrived'), int):
+        parts.append(f'{status["arrived"]} simulated people had arrived at a destination')
+    work = diagnostics.get('resources_with_applied_work')
+    if isinstance(work, int) and not isinstance(work, bool):
+        parts.append(f'{work} resource(s) had performed suppression work')
+    fires = diagnostics.get('active_fire_cells')
+    if isinstance(fires, int) and not isinstance(fires, bool):
+        parts.append(f'{fires} fire cells remained active')
+    return '; '.join(parts)
+
+
 def public_feedback(rec):
     """Compact allowlist of what the policy actually received, not evaluator state."""
     result=rec.get('result')
@@ -201,6 +216,9 @@ def make_report(run_dir, baseline_path):
             details += '<p>Independent recorded-request replay: ' + esc(fmt(replay.get('passed'))) + '; final trace match: ' + esc(fmt(replay.get('trajectory_match'))) + '. This verifies the recorded prefix, not full-horizon eligibility.</p>'
             if replay.get('passed') is True:
                 diagnostics = replay.get('diagnostics') or {}
+                summary = replay_outcome_summary(diagnostics)
+                if summary:
+                    details += '<p>At the stopping time, evaluator records show: ' + esc(summary) + '. These outcomes do not establish a full-day result or what the model knew.</p>'
                 selected = {key: diagnostics.get(key) for key in ('active_fire_cells','additional_burned_hectares','new_exposed_population','unresolved_evacuations','population_by_status','resource_by_kind_and_state','suppression_work_events','resources_with_applied_work','received_reports','mission_operations_submitted')}
                 qualifier = 'Evaluator-only effects at day end; the model may not have received every update: ' if eligible else 'Evaluator-only diagnostics at the stopping clock; the model may not have received these updates yet. Not comparable with full-day reference outcomes: '
                 details += '<p class="note">' + qualifier + esc(json.dumps(selected, sort_keys=True)) + '</p>'

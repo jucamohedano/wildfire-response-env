@@ -89,3 +89,13 @@ def test_stale_evacuation_warning_matches_the_same_group_and_delivered_order():
     row['result']['protection_orders'][0]['group_id'] = 'p0'
     row['result']['protection_orders'][0]['received_at'] = None
     assert not has_stale_completed_evacuation(row)
+
+
+def test_replay_outcome_summary_is_partial_and_uses_recorded_counts():
+    from eval.render_qwen3_day_report import replay_outcome_summary
+    text = replay_outcome_summary({'population_by_status': {'arrived': 350},
+                                   'resources_with_applied_work': 1, 'active_fire_cells': 25})
+    assert '350 simulated people had arrived' in text
+    assert '1 resource(s) had performed suppression work' in text
+    assert '25 fire cells remained active' in text
+    assert replay_outcome_summary({}) == ''
