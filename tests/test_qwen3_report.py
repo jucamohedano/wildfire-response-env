@@ -39,3 +39,14 @@ def test_report_uses_recorded_bounds(tmp_path):
     b=tmp_path/'b.json';b.write_text('{}')
     output=make_report(tmp_path,b)
     assert 'context 32768 tokens' in output and 'context 12,000 tokens' not in output
+
+
+def test_pre_dispatch_contract_error_is_not_an_engine_commit():
+    rows=[{'tool':'commit_orders','result':{'error':'Missing action','committed':False}}]
+    assert error_breakdown(rows)=={'tool_contract_error':1}
+
+
+def test_repeated_rejected_drafts_group_without_hiding_feedback():
+    row={'tool':'check_action','minute':0,'arguments':{'action':{}},'result':{'error':'Invalid <route>'}}
+    output=public_timeline([row,row,row])
+    assert '×3 repeated' in output and 'Invalid &lt;route&gt;' in output

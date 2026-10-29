@@ -87,21 +87,32 @@ def error_breakdown(records):
 
 
 def public_timeline(records, baseline=False):
-    # Never include raw model responses, tool results, observations, checkpoints or audits.
-    rows = []
+    # Only selected public call fields and validator messages; never raw replies/results.
+    groups=[]
     for rec in records[:100]:
         if baseline:
-            name, args = (rec.get('tool'), rec.get('arguments', {})) if rec.get('tool') else ('action', rec.get('action', {}))
+            name,args=(rec.get('tool'),rec.get('arguments',{})) if rec.get('tool') else ('action',rec.get('action',{}))
         else:
-            name, args = rec.get('tool'), rec.get('arguments', {})
-        if not isinstance(name, str):
-            continue
-        text = json.dumps(args, ensure_ascii=False, sort_keys=True, default=str)
-        if len(text) > 300:
-            text = text[:300] + '…'
-        rows.append(f'<li><b>Minute {esc(fmt(rec.get("minute")))}</b> · {esc(name)} <code>{esc(text)}</code></li>')
-    omitted = max(0, len(records) - 100)
-    return '<details><summary>Public action timeline (up to 100 entries)</summary><ol>' + ''.join(rows) + '</ol>' + (f'<p>{omitted} further entries omitted.</p>' if omitted else '') + '</details>'
+            name,args=rec.get('tool'),rec.get('arguments',{})
+        if rec.get('executed') is False:
+            name,args='harness stop',{'reason':rec.get('harness_stop')}
+        elif not isinstance(name,str):
+            if rec.get('error'):name,args='malformed response',{}
+            else:continue
+        text=json.dumps(args,ensure_ascii=False,sort_keys=True,default=str)
+        error=str(recorded_error(rec) or '')
+        key=(rec.get('minute'),name,text,error)
+        if groups and groups[-1][0]==key:groups[-1][1]+=1
+        else:groups.append([key,1])
+    rows=[]
+    for (minute,name,text,error),count in groups:
+        text=text[:300]+('…' if len(text)>300 else '')
+        repeated=f' <strong>×{count} repeated</strong>' if count>1 else ''
+        feedback='<br><small>Rejected: '+esc(error[:240])+'</small>' if error else ''
+        rows.append(f'<li><b>Minute {esc(fmt(minute))}</b> · {esc(name)}{repeated} <code>{esc(text)}</code>{feedback}</li>')
+    omitted=max(0,len(records)-100)
+    return '<details><summary>Public action timeline (up to100 records; identical consecutive calls grouped)</summary><ol>'+''.join(rows)+'</ol>'+ (f'<p>{omitted} further entries omitted.</p>' if omitted else '')+'</details>'
+
 
 def make_report(run_dir, baseline_path):
     summary_path = run_dir / 'modelsummary.json'
@@ -139,6 +150,13 @@ def make_report(run_dir, baseline_path):
         details += f'<p>Reward: {esc(metric("graded_score"))} · Protected population fraction: {esc(metric("protected_population_fraction"))} · Additional burned area: {esc(metric("additional_burned_hectares"))} ha</p>'
         details += f'<p>Tool calls: {esc(", ".join(f"{k}: {n}" for k, n in sorted(counts.items())) or "none recorded")} · Input tokens total: {sum(inputs) if inputs else "—"} · Output tokens total: {sum(outputs) if outputs else "—"} · Generation latency mean / median / max: {esc(fmt(statistics.mean(latencies) if latencies else None))} / {esc(fmt(statistics.median(latencies) if latencies else None))} / {esc(fmt(max(latencies) if latencies else None))} s · Malformed request lines: {esc(fmt(bad))}</p>'
         details += '<p>Recorded error categories: ' + esc(json.dumps(breakdown, sort_keys=True)) + '. Tool-contract errors and draft rejections consume no time; engine-invalid commits do. Null error fields are not failures.</p>'
+        replay = row.get('request_replay') or {} if row else {}
+        if replay:
+            details += '<p>Independent recorded-request replay: ' + esc(fmt(replay.get('passed'))) + '; final trace match: ' + esc(fmt(replay.get('trajectory_match'))) + '. This verifies the recorded prefix, not full-horizon eligibility.</p>'
+            if not eligible and replay.get('passed') is True:
+                diagnostics = replay.get('diagnostics') or {}
+                selected = {key: diagnostics.get(key) for key in ('active_fire_cells','additional_burned_hectares','new_exposed_population','unresolved_evacuations')}
+                details += '<p class="note">Partial diagnostics at the stopping clock only; not comparable with full-day reference outcomes: ' + esc(json.dumps(selected, sort_keys=True)) + '</p>'
         details += public_timeline(records)
         for policy in ('passive', 'dispatcher'):
             b = baseline_rows.get((case, policy))
