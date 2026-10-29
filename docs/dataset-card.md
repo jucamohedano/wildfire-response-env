@@ -1,5 +1,9 @@
 # Wildfire benchmark v1 catalog — private candidate
 
+Current prepared runtime downloads and up-to-date source evidence are in the private
+[Wildfire Response Spain dataset](https://huggingface.co/datasets/jucamohedano/wildfire-response-spain).
+See the [download guide](hub-runtime.md). This document describes the older archived catalog.
+
 **Archival dataset card.** The frozen two-hour catalogs are retired from active
 use. Corrected 24-hour development suites are selected by exact input pins; no
 current incident-day train/validation/test corpus is claimed. See the
