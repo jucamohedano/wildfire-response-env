@@ -11,6 +11,18 @@ EPSG:25830; native coordinates are in EPSG:3035; longitude and latitude are the
 stored EPSG:4326 pack centres. Native coordinates are rounded to six decimal
 metres for the ledger; pixels are indexed from the unrounded projection.
 
+## Later visual land review
+
+[visual_land_context_v1.json](visual_land_context_v1.json) records a separate
+29 October 2026 review of georeferenced IGN aerial imagery at the 27 centres
+left uncovered or ambiguous by the cached land-cover probe. All 27 centres
+appear on land. Some surrounding 500 m cells include development, vegetation
+and small water-like features; no whole-cell water fractions were measured.
+The image request and inspected-byte hash are retained, but its acquisition
+date is unknown and it does not recover pre-fire vegetation or fuel moisture.
+These are visual estimates, not authoritative classifications. The original
+source gaps, fuel estimates, runtime masks and censor guards are unchanged.
+
 ## Reproduce
 
 The input JSON documents use their canonical document SHA-256 (not their raw

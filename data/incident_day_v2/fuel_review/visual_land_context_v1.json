@@ -1,0 +1,459 @@
+{
+  "version": "wildfire-visual-land-context-review-v1",
+  "review_date": "2026-10-29",
+  "scope": "Visual review of the 27 centres left uncovered or ambiguous by the cached land-cover probe; not a runtime input or a recovered 2021 classification.",
+  "source": {
+    "source": "IGN PNOA current orthophoto mosaic",
+    "request": "https://www.ign.es/wms-inspire/pnoa-ma?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=OI.OrthoimageCoverage&STYLES=&SRS=EPSG%3A25830&BBOX=297000%2C4036500%2C315500%2C4054500&WIDTH=3000&HEIGHT=2919&FORMAT=image%2Fjpeg",
+    "sha256": "fe34661dbc0afc4c9579a166d58c0ecdef5b176ec878a315ab141536f43e12b3",
+    "crs": "EPSG:25830",
+    "extent": [
+      297000,
+      4036500,
+      315500,
+      4054500
+    ],
+    "width": 3000,
+    "height": 2919,
+    "role": "Visual land/water review only; no capture-date or historical-fuel claim"
+  },
+  "source_pins": {
+    "input_sha256": "50031b3029dcee0a1367ccdd8125d081d19d3b500b2dd373e30ef127d47a2c4d",
+    "fuel_estimate_sha256": "dfbe5fb8844954c15b31f1dd24f4167bc5460a14848c3a8a78df998821c44285"
+  },
+  "method": "Assistant inspected the georeferenced full-domain IGN image and three nine-cell contact sheets. Each yellow outline was the exact 500 m EPSG:25830 grid cell; the cross was the source sample centre. Image pixels were not used to classify fuel or infer roads.",
+  "summary": {
+    "centres_reviewed": 27,
+    "centres_appearing_on_land": 27,
+    "centres_classified_as_open_water": 0,
+    "whole_cell_water_fractions_measured": false
+  },
+  "runtime_changed": false,
+  "source_fuel_mask_changed": false,
+  "fuel_values_changed": false,
+  "censor_guards_removed": false,
+  "limitations": [
+    "Current orthophoto mosaic acquisition date is not established; it is not necessarily pre-fire or 2021 imagery.",
+    "A land centre does not establish that the whole 500 m cell is dry land, traversable or uniformly vegetated.",
+    "Some cells include buildings, managed land, roads or small water features; categorical fuel and moisture are not recovered from this review.",
+    "Treat broad land labels as documented visual estimates. A reviewed aligned mask and mixed-cover policy are still needed before changing runtime guards.",
+    "Raw imagery/contact sheets are not redistributed here. The public GetMap request and SHA-256 document the inspected image; a mutable provider may later return different bytes."
+  ],
+  "cells": [
+    {
+      "review_id": 1,
+      "row": 0,
+      "column": 0,
+      "centre_easting": 297250.0,
+      "centre_northing": 4054250.0,
+      "centre_lon_lat": [
+        -5.267069141,
+        36.6122284853
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 2,
+      "row": 0,
+      "column": 13,
+      "centre_easting": 303750.0,
+      "centre_northing": 4054250.0,
+      "centre_lon_lat": [
+        -5.1944378268,
+        36.6135888081
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 3,
+      "row": 0,
+      "column": 15,
+      "centre_easting": 304750.0,
+      "centre_northing": 4054250.0,
+      "centre_lon_lat": [
+        -5.1832633491,
+        36.613794163
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 4,
+      "row": 1,
+      "column": 4,
+      "centre_easting": 299250.0,
+      "centre_northing": 4053750.0,
+      "centre_lon_lat": [
+        -5.2445909684,
+        36.608147714
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 5,
+      "row": 2,
+      "column": 1,
+      "centre_easting": 297750.0,
+      "centre_northing": 4053250.0,
+      "centre_lon_lat": [
+        -5.2612191816,
+        36.6033267102
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 6,
+      "row": 3,
+      "column": 2,
+      "centre_easting": 298250.0,
+      "centre_northing": 4052750.0,
+      "centre_lon_lat": [
+        -5.2555017642,
+        36.5989286086
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 7,
+      "row": 5,
+      "column": 0,
+      "centre_easting": 297250.0,
+      "centre_northing": 4051750.0,
+      "centre_lon_lat": [
+        -5.2664099665,
+        36.5897085798
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 8,
+      "row": 10,
+      "column": 6,
+      "centre_easting": 300250.0,
+      "centre_northing": 4049250.0,
+      "centre_lon_lat": [
+        -5.2322494271,
+        36.5678208826
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 9,
+      "row": 11,
+      "column": 13,
+      "centre_easting": 303750.0,
+      "centre_northing": 4048750.0,
+      "centre_lon_lat": [
+        -5.1930349456,
+        36.5640424494
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 10,
+      "row": 14,
+      "column": 1,
+      "centre_easting": 297750.0,
+      "centre_northing": 4047250.0,
+      "centre_lon_lat": [
+        -5.2596429794,
+        36.5492784772
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 11,
+      "row": 14,
+      "column": 8,
+      "centre_easting": 301250.0,
+      "centre_northing": 4047250.0,
+      "centre_lon_lat": [
+        -5.220565956,
+        36.5500129418
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 12,
+      "row": 15,
+      "column": 6,
+      "centre_easting": 300250.0,
+      "centre_northing": 4046750.0,
+      "centre_lon_lat": [
+        -5.2316014203,
+        36.5453002701
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 13,
+      "row": 23,
+      "column": 34,
+      "centre_easting": 314250.0,
+      "centre_northing": 4042750.0,
+      "centre_lon_lat": [
+        -5.0743272234,
+        36.512087473
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 14,
+      "row": 23,
+      "column": 35,
+      "centre_easting": 314750.0,
+      "centre_northing": 4042750.0,
+      "centre_lon_lat": [
+        -5.0687468667,
+        36.5121844195
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 15,
+      "row": 24,
+      "column": 34,
+      "centre_easting": 314250.0,
+      "centre_northing": 4042250.0,
+      "centre_lon_lat": [
+        -5.0742069776,
+        36.5075828478
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 16,
+      "row": 27,
+      "column": 36,
+      "centre_easting": 315250.0,
+      "centre_northing": 4040750.0,
+      "centre_lon_lat": [
+        -5.0626882427,
+        36.4942624555
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 17,
+      "row": 32,
+      "column": 26,
+      "centre_easting": 310250.0,
+      "centre_northing": 4038250.0,
+      "centre_lon_lat": [
+        -5.1178646296,
+        36.4707619042
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "vegetated_or_rural_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 18,
+      "row": 32,
+      "column": 35,
+      "centre_easting": 314750.0,
+      "centre_northing": 4038250.0,
+      "centre_lon_lat": [
+        -5.0676685185,
+        36.4716425157
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 19,
+      "row": 33,
+      "column": 27,
+      "centre_easting": 310750.0,
+      "centre_northing": 4037750.0,
+      "centre_lon_lat": [
+        -5.1121651304,
+        36.4663562447
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": [
+        "Nearby dark water-like features require finer delineation if deriving whole-cell land/water fractions."
+      ]
+    },
+    {
+      "review_id": 20,
+      "row": 33,
+      "column": 28,
+      "centre_easting": 311250.0,
+      "centre_northing": 4037750.0,
+      "centre_lon_lat": [
+        -5.1065881878,
+        36.4664548555
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": [
+        "Nearby dark water-like features require finer delineation if deriving whole-cell land/water fractions."
+      ]
+    },
+    {
+      "review_id": 21,
+      "row": 33,
+      "column": 35,
+      "centre_easting": 314750.0,
+      "centre_northing": 4037750.0,
+      "centre_lon_lat": [
+        -5.0675488351,
+        36.4671378409
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 22,
+      "row": 34,
+      "column": 27,
+      "centre_easting": 310750.0,
+      "centre_northing": 4037250.0,
+      "centre_lon_lat": [
+        -5.112042896,
+        36.461851694
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": [
+        "A small dark water-like feature is visible inside the cell near its northern edge; centre appears on land. Exact water fraction is not measured."
+      ]
+    },
+    {
+      "review_id": 23,
+      "row": 34,
+      "column": 28,
+      "centre_easting": 311250.0,
+      "centre_northing": 4037250.0,
+      "centre_lon_lat": [
+        -5.1064662755,
+        36.4619502887
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": [
+        "Nearby dark water-like features require finer delineation if deriving whole-cell land/water fractions."
+      ]
+    },
+    {
+      "review_id": 24,
+      "row": 34,
+      "column": 29,
+      "centre_easting": 311750.0,
+      "centre_northing": 4037250.0,
+      "centre_lon_lat": [
+        -5.100889628,
+        36.4620486231
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 25,
+      "row": 34,
+      "column": 34,
+      "centre_easting": 314250.0,
+      "centre_northing": 4037250.0,
+      "centre_lon_lat": [
+        -5.0730059867,
+        36.4625363901
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    },
+    {
+      "review_id": 26,
+      "row": 35,
+      "column": 33,
+      "centre_easting": 313750.0,
+      "centre_northing": 4036750.0,
+      "centre_lon_lat": [
+        -5.0784624939,
+        36.4579347069
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": [
+        "Blue built/pool-like features are visible; do not classify the whole cell as open water from color alone."
+      ]
+    },
+    {
+      "review_id": 27,
+      "row": 35,
+      "column": 34,
+      "centre_easting": 314250.0,
+      "centre_northing": 4036750.0,
+      "centre_lon_lat": [
+        -5.0728860342,
+        36.4580317237
+      ],
+      "centre_land_water": "land_visual_estimate",
+      "cell_context": "built_managed_and_vegetated_land",
+      "confidence": "visual_review_not_survey_or_authoritative_classification",
+      "notes": []
+    }
+  ]
+}
