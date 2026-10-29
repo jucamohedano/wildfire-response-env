@@ -1,0 +1,77 @@
+{
+  "version": "wildfire-private-release-verification-v1",
+  "release_date": "2026-10-29",
+  "dataset_repo": "jucamohedano/wildfire-response-spain",
+  "tag": "v0.3.0",
+  "revision": "d7e1e1c82eb249e35315bd19d1e0fea730fc0da7",
+  "private_verified": true,
+  "prior_tag": "v0.2.0",
+  "prior_revision": "c84690243840c6339bf82a3b41e0cea279e49a70",
+  "prior_release_unchanged": true,
+  "source_tables_semantically_unchanged": true,
+  "full_matrix": {
+    "configurations": 12,
+    "policies": 4,
+    "completed_days": 48,
+    "simulated_minutes_each": 1440,
+    "exact_replay": true,
+    "independent_reward_agreement": true,
+    "blocking_contradictions": 0,
+    "checkpoint_continuations": 261,
+    "observed_ticks": 69120,
+    "report_sha256": "a4afc7710cee622403e8e1503e600127bd3eb3f8c7a61e8e0d1ec0cc676725fe"
+  },
+  "regression": {
+    "tests_passed": 408,
+    "subtests_passed": 67,
+    "dependency_skips": 0,
+    "runtime": "Dedicated Python 3.12 OpenEnv runtime with pyarrow26"
+  },
+  "fresh_download_runtime_results": [
+    {
+      "case_id": "incident-day-egress-v1-000",
+      "commands": 40,
+      "elapsed_seconds": 5.357,
+      "policy": "passive",
+      "score": 0.9913913913913914,
+      "simulated_minutes": 1440,
+      "status": "complete",
+      "verification": "passed"
+    },
+    {
+      "case_id": "incident-day-realmap-v2-000",
+      "commands": 644,
+      "elapsed_seconds": 29.224,
+      "policy": "dispatcher",
+      "score": 0.9961744452945678,
+      "simulated_minutes": 1440,
+      "status": "complete",
+      "verification": "passed"
+    }
+  ],
+  "table_loader": {
+    "library": "datasets",
+    "version": "5.1.0",
+    "revision": "d7e1e1c82eb249e35315bd19d1e0fea730fc0da7",
+    "configurations": {
+      "tasks": 12,
+      "landscapes": 2,
+      "station_weather": 384,
+      "incident_claims": 7,
+      "municipal_population": 7,
+      "validation_cells": 48
+    }
+  },
+  "recovery": {
+    "interrupted_run_resumed": true,
+    "damaged_incomplete_public_report_recovered": true,
+    "damaged_complete_public_report_recovered": true,
+    "scientific_results_identical": true
+  },
+  "limitations": [
+    "Exercise consistency, not empirical calibration or expert review.",
+    "No trained policy or expert demonstration; validation rows are not actor inputs or training labels.",
+    "Fuel masks, scenario seeds/IDs and reward priorities unchanged.",
+    "Private journals, audits and checkpoints excluded from the Hub release."
+  ]
+}

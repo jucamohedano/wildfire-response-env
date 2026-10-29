@@ -1,16 +1,16 @@
 {
   "version": "wildfire-hub-release-lock-v1",
   "dataset_repo": "jucamohedano/wildfire-response-spain",
-  "revision": "c84690243840c6339bf82a3b41e0cea279e49a70",
-  "tag": "v0.2.0",
+  "revision": "d7e1e1c82eb249e35315bd19d1e0fea730fc0da7",
+  "tag": "v0.3.0",
   "private": true,
-  "manifest_sha256": "2ab25ba1732df1ca48b89ecd7840e15a6cf47d243f19e0955b4c0bda7653a2ea",
-  "dataset_card_sha256": "3fd678cb90d121a2614211e92544a21a1479c4024cf10ea1cbc5bbf781235293",
-  "engine_source_revision": "1d9fdbd0c3b9324a686ac96fc3aff5d3e900508d",
+  "manifest_sha256": "8cf89a78daa3e24f3f8a31695d86c052b9ce0e164790e29e159c99bde6785065",
+  "dataset_card_sha256": "a2aac468fcc84a6169d52a1f80bbacf39ea9792c971945998fe8ea086f1d0d63",
+  "engine_source_revision": "f62eaf4d961211bdbf6b3151020f75006be51a61",
   "engine_implementation_sha256": "af4adc0b2fb92282246411dbac83c1eeac23eb3b4730200c0b34dc288b59323a",
   "lifecycle_sha256": "c46f9b3e8cdebed050022e6b7eb966d09ae89049b689f360b41d28ab2a345d04",
   "loader_sha256": "107e3970b2aa04bea64a0dea24bae89fe34823db071d2cb3c23a4317e853ebe6",
-  "builder_sha256": "5b1423e7a8f1c5b5274e896a295a3a8da3726fba8c73e7bbccc6c7f56f859c6a",
+  "builder_sha256": "04316be84857d7732d2cce34c548250ad69c2697b83de39470cb7f9d393f7301",
   "runtime_ids": [
     "es-ma-2021",
     "fixture"
@@ -20,7 +20,9 @@
     "landscapes": 2,
     "municipal_population": 7,
     "tasks": 12,
+    "validation_cells": 48,
     "weather": 384
   },
-  "training_corpus_available": false
+  "training_corpus_available": false,
+  "validation_report_sha256": "a4afc7710cee622403e8e1503e600127bd3eb3f8c7a61e8e0d1ec0cc676725fe"
 }

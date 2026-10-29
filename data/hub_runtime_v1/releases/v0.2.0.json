@@ -1,0 +1,26 @@
+{
+  "version": "wildfire-hub-release-lock-v1",
+  "dataset_repo": "jucamohedano/wildfire-response-spain",
+  "revision": "c84690243840c6339bf82a3b41e0cea279e49a70",
+  "tag": "v0.2.0",
+  "private": true,
+  "manifest_sha256": "2ab25ba1732df1ca48b89ecd7840e15a6cf47d243f19e0955b4c0bda7653a2ea",
+  "dataset_card_sha256": "3fd678cb90d121a2614211e92544a21a1479c4024cf10ea1cbc5bbf781235293",
+  "engine_source_revision": "1d9fdbd0c3b9324a686ac96fc3aff5d3e900508d",
+  "engine_implementation_sha256": "af4adc0b2fb92282246411dbac83c1eeac23eb3b4730200c0b34dc288b59323a",
+  "lifecycle_sha256": "c46f9b3e8cdebed050022e6b7eb966d09ae89049b689f360b41d28ab2a345d04",
+  "loader_sha256": "107e3970b2aa04bea64a0dea24bae89fe34823db071d2cb3c23a4317e853ebe6",
+  "builder_sha256": "5b1423e7a8f1c5b5274e896a295a3a8da3726fba8c73e7bbccc6c7f56f859c6a",
+  "runtime_ids": [
+    "es-ma-2021",
+    "fixture"
+  ],
+  "counts": {
+    "incident_claims": 7,
+    "landscapes": 2,
+    "municipal_population": 7,
+    "tasks": 12,
+    "weather": 384
+  },
+  "training_corpus_available": false
+}

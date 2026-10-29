@@ -1,0 +1,12 @@
+{
+  "version": "incident-day-action-bounds-v1",
+  "status": "synthetic_exercise_assumptions_not_operational_law",
+  "read_and_draft_minutes": 0,
+  "commit_minutes": 1,
+  "wait_min_minutes": 1,
+  "wait_max_minutes": 60,
+  "request_command_delay_minutes": 2,
+  "authorization_release_protection_command_delay_minutes": 1,
+  "communication_screen_minutes": 60,
+  "basis": "Tool contract and simulator profile; bounds describe this exercise only. Blocking, inherited phases, and end-of-observation censoring can prevent an upper duration bound. Accepted commands do not establish execution, clearance, route validity, or operational effect."
+}

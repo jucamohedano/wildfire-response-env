@@ -1,5 +1,5 @@
 {
-  "version": "wildfire-project-report-figures-v2",
+  "version": "wildfire-project-report-figures-v3",
   "source_input_sha256": "50031b3029dcee0a1367ccdd8125d081d19d3b500b2dd373e30ef127d47a2c4d",
   "implementation_sha256": "af4adc0b2fb92282246411dbac83c1eeac23eb3b4730200c0b34dc288b59323a",
   "source_run": "current-code six-case acceptance referenced in results/realism-remediation-20261029.json",
@@ -333,5 +333,25 @@
     "centres_appearing_on_land": 27,
     "runtime_changed": false,
     "whole_cell_water_fractions_measured": false
+  },
+  "prior_figures_scope": "Maps, cohort sizes, aircraft excerpt and six-case footprint/travel figures describe the earlier development snapshot; current full coverage is in the separate matrix report.",
+  "runtime_matrix": {
+    "source": "../results/runtime-validation-20261029.json",
+    "completed_cells": 48,
+    "active_configurations": 12,
+    "scripted_policies": 4,
+    "checkpoint_continuation_checks": 261,
+    "operational_minute_ticks": 69120,
+    "blocking_contradictions": 0,
+    "regression_tests": 408,
+    "subtests": 67,
+    "dependency_skips": 0,
+    "validator_sha256": "6a731cf8784eb42d9c475e3ddf8a0312d662c5ba1cb16b189b5179e197f37b8e"
+  },
+  "hub_release": {
+    "dataset_repo": "jucamohedano/wildfire-response-spain",
+    "tag": "v0.3.0",
+    "revision": "d7e1e1c82eb249e35315bd19d1e0fea730fc0da7",
+    "private": true
   }
 }
