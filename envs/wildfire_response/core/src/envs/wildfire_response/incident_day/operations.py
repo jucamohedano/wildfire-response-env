@@ -392,6 +392,12 @@ class Operations:
         for unit in self.resources.values():
             state = unit['state']
             movement_state = unit.get('blocked_state') if state == 'blocked' else state
+            if (self.profile.get('revalidate_setup_safety') and unit['kind'] in ('engine', 'crew')
+                    and state == 'on_scene' and not hazard_check(copy.deepcopy(unit['position']), unit['kind'])):
+                self._return(unit, None, minute, planner)
+                emit('operations', 'movement_blocked', {'resource_id': unit['id'],
+                     'movement_state': 'on_scene', 'position': copy.deepcopy(unit['position'])}, actionable=True)
+                continue
             if (self.profile.get('require_return_within_shift') and unit.get('duty_end_at') is not None
                     and state in ('mobilizing', 'travel', 'on_scene', 'working', 'blocked', 'needs_assistance')
                     and movement_state != 'returning'):

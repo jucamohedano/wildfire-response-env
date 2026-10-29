@@ -579,7 +579,12 @@ class IncidentDayEnv:
                     self.ops.clear_aircraft(unit['id'], self.minute)
                 accepted = self.ops.dispatch(unit['id'], offer['sector_id'],
                     self._sector(), approach['journey'], self.minute)
-                self._emit(unit['home_base'], 'dispatch_accepted' if accepted else 'dispatch_declined', dict(resource_id=unit['id']))
+                details = dict(resource_id=unit['id'])
+                if accepted and self._scenario['profile'].get('realmap_v2_wind_coverage'):
+                    details.update(offer_id=offer['id'], approach_id=offer['approach_id'],
+                                   approach_grid=approach['approach_grid'][:],
+                                   approach_point=approach['approach_point'][:], authorized_at=command['due'] - 1)
+                self._emit(unit['home_base'], 'dispatch_accepted' if accepted else 'dispatch_declined', details)
             elif command['kind'] == 'release':
                 unit = self.ops.resources[data]
                 accepted = self.ops.release(data, self._return_route(unit, self.minute), self.minute)

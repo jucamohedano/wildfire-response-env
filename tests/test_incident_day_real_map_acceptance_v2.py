@@ -127,11 +127,87 @@ def test_wind_same_state_loss_warning_and_real_alternative(v2_environment):
     assert result['status'] == 'constraint_evidence_observed'
     evidence = result['causal_evidence']
     assert evidence['warning_received_at'] > event['minute']
-    assert any(item['stopped_or_returned_at'] is not None and item['alternate_reached_at'] is not None
+    assert any(item['stopped_or_returned_at'] == event['minute']
+               for item in evidence['affected_actions'])
+    assert any(item['redispatch'] is not None
+               and item['redispatch']['authorized_at'] >= evidence['warning_received_at']
+               and item['redispatch']['dispatched_at'] < item['redispatch']['travel_at']
+               < item['redispatch']['alternate_reached_at']
                for item in evidence['affected_actions'])
     missing = copy.deepcopy(environment._audit)
     missing[15]['event_effects'] = []
     assert wind_event_coverage(event, environment.inputs, missing, environment.bus.reports)['status'] != 'constraint_evidence_observed'
+
+
+def _wind_trace():
+    inputs = {'grid': {'transform': [1, 0, 0, 0, -1, 0]}}
+    event = {'kind': 'wind', 'minute': 2, 'wind': [0, 2]}
+    unit = 'engine-0'
+    snapshot = dict(kind='wind', minute=2, resource_access=[dict(
+        resource_id=unit, state='travel', position=[1.5, -.5],
+        position_before_safe=True, position_after_safe=False,
+        active_destination=[1.5, -.5], active_approach_grid=[1, 0],
+        active_segment_before_safe=True, active_segment_after_safe=False,
+        before_approaches=[[1, 0]], after_approaches=[[2, 0]])])
+    audit = [dict(minute=minute, resources={unit: dict(state='available', position=[0.5, -.5])})
+             for minute in range(10)]
+    audit[2]['event_effects'] = [snapshot]
+    audit[2]['resources'][unit] = dict(state='blocked', position=[1.5, -.5])
+    audit[7]['resources'][unit]['state'] = 'travel'
+    audit[8]['resources'][unit] = dict(state='on_scene', position=[2.5, -.5])
+    reports = [dict(kind='wind_update', observed_at=2, received_at=4, payload={'wind': [0, 2]}),
+               dict(kind='dispatch_accepted', observed_at=6, received_at=7,
+                    payload=dict(resource_id=unit, offer_id='offer', approach_id='new',
+                                 authorized_at=5, approach_grid=[2, 0], approach_point=[2.5, -.5])),
+               dict(kind='dispatch_accepted', observed_at=1, received_at=2,
+                    payload=dict(resource_id=unit, offer_id='original', approach_id='old',
+                                 authorized_at=0, approach_grid=[1, 0], approach_point=[1.5, -.5]))]
+    return event, inputs, audit, reports
+
+
+def test_wind_coverage_requires_same_unit_immediate_stop_and_new_authorized_route():
+    event, inputs, audit, reports = _wind_trace()
+    assert wind_event_coverage(event, inputs, audit, reports)['status'] == 'constraint_evidence_observed'
+    later = copy.deepcopy(audit)
+    later[2]['resources']['engine-0']['state'] = 'travel'
+    later[3]['resources']['engine-0']['state'] = 'blocked'
+    assert wind_event_coverage(event, inputs, later, reports)['status'] != 'constraint_evidence_observed'
+    already_blocked = copy.deepcopy(audit)
+    already_blocked[2]['event_effects'][0]['resource_access'][0]['state'] = 'blocked'
+    assert wind_event_coverage(event, inputs, already_blocked, reports)['status'] != 'constraint_evidence_observed'
+    moved_at_stop = copy.deepcopy(audit)
+    moved_at_stop[2]['resources']['engine-0']['position'] = [1.6, -.5]
+    assert wind_event_coverage(event, inputs, moved_at_stop, reports)['status'] != 'constraint_evidence_observed'
+    unchanged = copy.deepcopy(reports)
+    unchanged[1]['payload']['approach_grid'] = [1, 0]
+    unchanged[1]['payload']['approach_point'] = [1.5, -.5]
+    assert wind_event_coverage(event, inputs, audit, unchanged)['status'] != 'constraint_evidence_observed'
+    early = copy.deepcopy(reports)
+    early[1]['payload']['authorized_at'] = 3
+    assert wind_event_coverage(event, inputs, audit, early)['status'] != 'constraint_evidence_observed'
+    no_point = copy.deepcopy(reports)
+    del no_point[1]['payload']['approach_point']
+    assert wind_event_coverage(event, inputs, audit, no_point)['status'] != 'constraint_evidence_observed'
+    reused = copy.deepcopy(reports)
+    reused[1]['payload']['offer_id'] = 'original'
+    assert wind_event_coverage(event, inputs, audit, reused)['status'] != 'constraint_evidence_observed'
+    unrelated = copy.deepcopy(reports)
+    unrelated[1]['payload']['resource_id'] = 'engine-1'
+    assert wind_event_coverage(event, inputs, audit, unrelated)['status'] != 'constraint_evidence_observed'
+    retained = copy.deepcopy(audit)
+    retained[2]['event_effects'][0]['resource_access'][0]['after_approaches'].append([1, 0])
+    assert wind_event_coverage(event, inputs, retained, reports)['status'] != 'constraint_evidence_observed'
+    no_travel = copy.deepcopy(audit)
+    no_travel[7]['resources']['engine-0']['state'] = 'available'
+    assert wind_event_coverage(event, inputs, no_travel, reports)['status'] != 'constraint_evidence_observed'
+    wrong_point = copy.deepcopy(audit)
+    wrong_point[8]['resources']['engine-0']['position'] = [2.6, -.5]
+    assert wind_event_coverage(event, inputs, wrong_point, reports)['status'] != 'constraint_evidence_observed'
+    interrupted = copy.deepcopy(reports)
+    interrupted.append(dict(kind='dispatch_accepted', observed_at=8, received_at=9,
+                            payload=dict(resource_id='engine-0', offer_id='later', approach_id='later',
+                                         authorized_at=7, approach_grid=[2, 0], approach_point=[2.5, -.5])))
+    assert wind_event_coverage(event, inputs, audit, interrupted)['status'] != 'constraint_evidence_observed'
 
 
 def test_crew_restriction_requires_delivered_refusals_and_actual_work(v2_environment):

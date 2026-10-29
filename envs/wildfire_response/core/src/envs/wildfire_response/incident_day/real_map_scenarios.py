@@ -191,6 +191,7 @@ def build_real_map_v2_scenario(inputs, network, identifier, seed=None):
     scenario.update(id=identifier, version='wildfire-incident-day-realmap-scenarios-v2',
                     parent_scenario_sha256=parent_sha256)
     scenario['profile']['version'] = 'wildfire-incident-day-realmap-profile-v2'
+    scenario['profile']['revalidate_setup_safety'] = True
     scenario['profile']['allowed_road_edge_ids'] = sorted(
         WIND_ROAD_EDGES if index == 1 else ALLOWED_ROAD_EDGES)
     if index == 1:
