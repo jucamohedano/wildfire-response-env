@@ -50,3 +50,15 @@ def test_repeated_rejected_drafts_group_without_hiding_feedback():
     row={'tool':'check_action','minute':0,'arguments':{'action':{}},'result':{'error':'Invalid <route>'}}
     output=public_timeline([row,row,row])
     assert '×3 repeated' in output and 'Invalid &lt;route&gt;' in output
+
+
+def test_completed_grade_requires_independent_request_replay():
+    from eval.render_qwen3_day_report import verified
+    row={'completed':True,'minute':1440,'truncated':False,
+         'outcomes':{'score_eligible':True},
+         'verification':{'passed':True,'exact_replay':True,'independent_reward_agreement':True}}
+    assert verified(row) is False
+    row['request_replay']={'passed':True,'score_eligible':False}
+    assert verified(row) is False
+    row['request_replay']['score_eligible']=True
+    assert verified(row) is True

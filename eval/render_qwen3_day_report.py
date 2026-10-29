@@ -29,7 +29,9 @@ def fmt(value, digits=3):
 def verified(row):
     v = row.get('verification') or {}
     o = row.get('outcomes') or v.get('outcomes') or {}
-    return (row.get('completed') is True and row.get('minute') == 1440
+    replay = row.get('request_replay') or {}
+    return (replay.get('passed') is True and replay.get('score_eligible') is True
+            and row.get('completed') is True and row.get('minute') == 1440
             and not row.get('truncated') and o.get('score_eligible') is True
             and not o.get('boundary_censored') and not o.get('invalid_abandonment')
             and all(v.get(k) is True for k in ('passed', 'exact_replay', 'independent_reward_agreement')))
