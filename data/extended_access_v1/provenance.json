@@ -1,0 +1,205 @@
+{
+  "version": "extended-access-provenance-v1",
+  "status": "incomplete_observations_not_routing",
+  "extent": {
+    "crs": "EPSG:25830",
+    "bounds": [
+      290000,
+      4035000,
+      332000,
+      4064500
+    ],
+    "cell_metres": 500,
+    "width": 84,
+    "height": 59
+  },
+  "extent_reference": {
+    "archive_sha256": "0b35e4f6ec7ab198f51cd66705a090a496d5b98f9203c825b499a9f8ebbb2cbd",
+    "site_codes": [
+      "ES6170004",
+      "ES6170010"
+    ],
+    "interpretation": "protected site extent proxy; not land, water, road or historical evidence"
+  },
+  "road_source": {
+    "path": "data/coastal_mobility_v1/source_snapshot.json.gz",
+    "sha256": "fd276b8a4a799cffedd268f485a97aaff5ff88d83d11726be0e23894d282f323",
+    "selection_bbox_wgs84": [
+      -5.345,
+      36.36,
+      -5.13,
+      36.625
+    ],
+    "acquisition_manifest": "data/coastal_mobility_v1/acquisition.json",
+    "attribution": "© OpenStreetMap contributors",
+    "license": "ODbL-1.0",
+    "limitations": "Retained original segments only with both nodes in selection bbox; no access, routing, completeness or historical claims.",
+    "prior_acquisition_bbox_wgs84": [
+      -5.42,
+      36.36,
+      -4.96,
+      36.65
+    ],
+    "prior_acquisition_coverage_limitation": "Corrected map extends east and north beyond acquisition bbox; raw tiles unavailable; the retained snapshot selection bbox is smaller."
+  },
+  "coastline": {
+    "status": "one_open_osm_node_chain_no_verified_land_sea_polygons",
+    "surface": "unknown_for_every_cell",
+    "osm_samples": "data/extended_access_v1/tile-acquisition.json",
+    "official_candidate": "https://centrodedescargas.cnig.es/CentroDescargas/linea-costa",
+    "additional_candidate": "https://osmdata.openstreetmap.de/data/land-polygons.html",
+    "limitations": "The retrieved chain is node-connected with outside endpoints and four map-boundary crossings; it does not prove physical shoreline completeness, tidal interpretation or valid land/sea polygons."
+  },
+  "output": {
+    "path": "/tmp/extended-access-acquisition/observations.json.gz",
+    "sha256": "0dc62cecc69b8b167ba6b344ee4e61c97c09b3115de0a92b60ea39ce2801037d",
+    "segments": 92945,
+    "observed_cells": 1389,
+    "unknown_surface_cells": 4956,
+    "distribution": "private local derived output; excluded from repository pending rights review"
+  },
+  "footprint_estimate": {
+    "method": "512 intervals per WGS84 bbox side, transformed to EPSG:25830 then polygon/cell intersection",
+    "map_area_fraction": 0.319724,
+    "cells_fully_inside": 1524,
+    "cells_intersecting": 1632,
+    "cells_outside": 3324,
+    "interpretation": "Approximate selection footprint, not guaranteed road coverage."
+  },
+  "acquisition_footprint_estimate": {
+    "method": "512 intervals per WGS84 bbox side, transformed to EPSG:25830 then polygon/cell intersection",
+    "map_area_fraction": 0.647771,
+    "cells_fully_inside": 3150,
+    "cells_intersecting": 3268,
+    "cells_outside": 1688,
+    "interpretation": "Historical request footprint only; raw tile cache unavailable; not evidence of complete road coverage."
+  },
+  "new_road_samples": {
+    "manifest": "data/extended_access_v1/tile-acquisition.json",
+    "status": "sparse_non_atomic_raw_tiles_private_tmp_not_routing",
+    "acquisition_date": "2026-10-30",
+    "note": "Earlier acquisition does not cover north/east of corrected grid; new samples do not establish full coverage."
+  },
+  "overpass_attempt": {
+    "primary": "HTTP 406",
+    "mirrors": "kumi and private.coffee timed out after 45 seconds"
+  },
+  "bounded_lattice_2026_10_30": {
+    "raw_manifest": "/tmp/extended-access-lattice-v1/manifest-first-run.json",
+    "manifest_sha256": "e7855f5c78a06ff7805e8c0167a42343dadf4f61c85d34ff305737417415d04d",
+    "envelope_wgs84": [
+      -5.352,
+      36.436,
+      -4.873,
+      36.713
+    ],
+    "root_tiles": 160,
+    "successful_tiles": 101,
+    "pending_tiles": 59,
+    "elapsed_seconds": 47.826,
+    "response_body_bytes": 100000000,
+    "saved_response_header_bytes": 57586,
+    "cap_overrun": "First run counted response bodies only. Headers exceeded the requested total 100 MB cap; TLS/request/protocol overhead unmeasured. Code now budgets header bytes and reserves 1 MB for protocol overhead.",
+    "lattice_approx_map_area_fraction": 0.604299,
+    "combined_with_nine_samples_approx_map_area_fraction": 0.628098,
+    "combined_estimated_cells_fully_inside": 3016,
+    "combined_estimated_cells_partly_intersecting": 178,
+    "combined_estimated_cells_outside": 1762,
+    "combined_unique_nodes": 306590,
+    "combined_unique_highway_ways": 9081,
+    "combined_unique_coastline_ways": 5,
+    "combined_coastline_endpoint_components": 2,
+    "combined_coastline_degree_one_nodes": 4,
+    "identity_conflicts": "zero node version/coordinates or highway/coastline way version, node sequence and selected class tags; other tags not compared",
+    "limitation": "Request footprint does not guarantee source completeness, access, legal routability or land/water classification; all raw and derived data are private under /tmp."
+  },
+  "resumed_lattice_2026_10_30": {
+    "raw_manifest": "/tmp/extended-access-lattice-v1/manifest-second-run.json",
+    "manifest_sha256": "c63cb5f1f3cb87fe74387d6166e5216e4cdb1a3870ebf98d24f0407168d3b74b",
+    "audit": "/tmp/extended-access-lattice-v1/resumed-combined-audit-final.json",
+    "audit_sha256": "5598b2787e54bdc5a937258ea53c15bcd16757630b918d4efd8a73fb66bbaea7",
+    "additional_response_body_bytes": 98973436,
+    "additional_response_header_bytes": 27132,
+    "additional_elapsed_seconds": 37.674,
+    "additional_limits": {
+      "response_header_bytes": 100000000,
+      "seconds": 180
+    },
+    "successful_tiles": 148,
+    "pending_tiles": 12,
+    "all_pending_intersect_map": true,
+    "combined_map_request_bbox_area_fraction_approx": 0.933181,
+    "combined_cells_fully_inside_approx": 4578,
+    "combined_cells_partly_intersecting_approx": 88,
+    "combined_cells_outside_approx": 290,
+    "combined_unique_nodes": 634980,
+    "combined_unique_highway_ways": 20648,
+    "combined_unique_coastline_ways": 16,
+    "combined_coastline_endpoint_components": 1,
+    "combined_coastline_degree_one_nodes": 2,
+    "restriction_relations": 243,
+    "restriction_relations_missing_members": 4,
+    "status": "incomplete_not_routing_all_surfaces_unknown",
+    "limitation": "Partial non-atomic source and existing graph does not encode turn restrictions; no full-footprint directed network produced."
+  },
+  "completed_lattice_2026_10_30": {
+    "manifest": "/tmp/extended-access-lattice-v1/manifest.json",
+    "manifest_sha256": "96c5d0c165644911f20098fe37a51aa4431af388fbd573505bf1ffb509132076",
+    "audit": "/tmp/extended-access-lattice-v1/complete-audit.json",
+    "audit_sha256": "ec7801355d9033cb00d309ba0827eb6e8146df524fada72ae8b7e8332b9c0603",
+    "additional_response_body_bytes": 19761222,
+    "additional_response_header_bytes": 6816,
+    "additional_elapsed_seconds": 7.218,
+    "successful_tiles": 160,
+    "pending_tiles": 0,
+    "estimated_cells_covered": 4956,
+    "estimated_uncovered_area_m2": 0,
+    "restriction_relations": 262,
+    "restriction_relations_missing_members": 3,
+    "coastline_ways": 16,
+    "coastline_source_nodes": 1130,
+    "coastline_components": 1,
+    "coastline_endpoints_outside_map": 2,
+    "map_boundary_crossings": 4,
+    "unknown_surface_cells": 4956,
+    "interpretation": "Full request footprint, not source completeness, access or a verified land/sea polygon."
+  },
+  "directed_road_candidate": {
+    "path": "/tmp/extended-access-lattice-v1/directed-road-candidate-v2.json.gz",
+    "sha256": "976875d58d2d134ba1f5d2aa62030f23b567f56d0bf98dd9820f88a2cb3ae343",
+    "version": "extended-access-directed-road-candidate-v2",
+    "nodes": 92278,
+    "ways": 8665,
+    "directed_arcs": 168948,
+    "preserved_restrictions": 262,
+    "excluded_restriction_way_ids": 426,
+    "blocked_barrier_or_via_node_ids": 3286,
+    "status": "private source candidate; not operational access",
+    "restriction_policy": "Retain raw restriction tags and members, exclude referenced ways and arcs incident to via nodes; no turn-relation execution.",
+    "weak_components": 511,
+    "largest_weak_component_nodes": 37498,
+    "directed_reachable_nodes_from_smallest_id_in_largest_component": 35598,
+    "non_routable_boundary_segments": 100,
+    "boundary_policy": "Both original endpoints must be inside bounds for a routable arc; crossings are retained only as evidence.",
+    "supersedes": "v1 allowed outside junctions and was removed"
+  },
+  "surface_assessment": {
+    "path": "/tmp/extended-access-lattice-v1/coastal-surface-assessment-v1.json",
+    "sha256": "4d51c65487af647b633eff2d3550b857ab3013981c0dbca10d4415e86c50a571",
+    "version": "extended-access-coastal-surface-assessment-v1",
+    "status": "all_unknown_source_completeness_unverified",
+    "unknown_cells": 4956,
+    "classified_cells": 0,
+    "coastline_ways": 16,
+    "boundary_crossings": 4,
+    "faces": 3,
+    "oriented_segments_tested": 679,
+    "source_epoch": "2026",
+    "blockers": [
+      "OSM map bbox API can omit crossing ways without nodes inside the request bbox",
+      "non-atomic snapshot and physical source completeness unverified",
+      "coastline land-side does not prove absence of inland water"
+    ],
+    "reference": "https://wiki.openstreetmap.org/wiki/Api06"
+  }
+}
