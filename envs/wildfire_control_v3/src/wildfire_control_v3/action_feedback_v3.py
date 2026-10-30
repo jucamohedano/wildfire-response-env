@@ -16,6 +16,7 @@ malformed action with a fixed public error, rather than exposing its contents.
 """
 
 import json
+from envs.wildfire_response.regional.ops.generator import digest
 from . import _capture_source
 
 _LOADED_SOURCE_SHA256, _LOADED_CODE_MATCH = _capture_source(__name__, __file__, __loader__)
@@ -45,6 +46,8 @@ _MESSAGES = {
     'unknown_destination': 'Choose a destination from the current public situation.',
     'invalid_shelter_destination': 'Sheltering does not use a destination or an evacuation approach.',
     'invalid_evacuation_approach': 'Choose an approach proposed for this group and destination.',
+    'stale_evacuation_approach': 'The delivered group information changed after this approach was proposed.',
+    'population_position_unknown': 'The last reported group position is unknown or the group is moving; inspect delivered reports.',
     'invalid_action': 'The action did not pass validation.',
 }
 
@@ -86,7 +89,7 @@ def _classify(env, action):
 
     situation = env.get_situation()
     resources = {item['id'] for item in situation['resources']}
-    groups = {item['id'] for item in situation['districts']}
+    groups = {item['id']: item for item in situation['districts']}
     destinations = {item['id'] for item in situation['destinations']}
     centers = set(situation['centers'])
     offers = {item['id']: item for item in situation['offers']}
@@ -159,6 +162,14 @@ def _classify(env, action):
             option = approaches.get(approach) if _identifier(approach) else None
             if not isinstance(option, dict) or option.get('group_id') != group or option.get('destination_id') != destination:
                 return _problem('invalid_evacuation_approach', field, index, 'evacuation_options')
+            position = groups[group].get('position')
+            if position is None or groups[group].get('status') in (None, 'unknown', 'evacuating'):
+                return _problem('population_position_unknown', field, index, 'get_reports')
+            origin = (option.get('journey') or {}).get('origin')
+            binding = option.get('_population_knowledge')
+            if ((origin is not None and origin != position)
+                    or (isinstance(binding, str) and binding != digest(groups[group]))):
+                return _problem('stale_evacuation_approach', field, index, 'evacuation_options')
     return None
 
 
@@ -169,7 +180,7 @@ def explain_result_v3(env, action, result):
     diagnostic = _classify(env, action)
     details = diagnostic or _problem('invalid_action')
     result = {'valid': False, 'error': _MESSAGES[details['code']], **details}
-    if details['code'] in ('invalid_resource_approach', 'invalid_evacuation_approach'):
+    if details['code'] in ('invalid_resource_approach', 'invalid_evacuation_approach', 'stale_evacuation_approach'):
         result['field_path'] = f"{details['field']}[{details['order_index']}].approach_id"
         item = action[details['field']][details['order_index']]
         if details['code'] == 'invalid_resource_approach':

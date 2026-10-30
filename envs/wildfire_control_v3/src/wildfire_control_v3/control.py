@@ -2,6 +2,7 @@
 import copy
 import hashlib
 import json
+import math
 from pathlib import Path
 from threading import RLock
 
@@ -11,9 +12,11 @@ from . import (INTERFACE_VERSION, _LOADED_PACKAGE_CODE_MATCH, _LOADED_PACKAGE_SO
                _capture_source, _source_sha256)
 from . import action_feedback_v3 as _feedback_module, briefing_v3 as _briefing_module
 from . import knowledge_v3 as _knowledge_module, verifier_v3 as _verifier_module
+from . import population_engine_v3 as _population_engine_module
 from .action_feedback_v3 import check_action_v3, explain_result_v3
 from .briefing_v3 import build_briefing_v3
 from .knowledge_v3 import reconcile_situation_v3
+from .population_engine_v3 import PopulationEngineV3
 from .verifier_v3 import VERSION as VERIFIER_VERSION, verify_outcome
 
 
@@ -66,7 +69,8 @@ _LOADED_CONTROL_SOURCE_SHA256, _LOADED_CONTROL_CODE_MATCH = _capture_source(__na
 def _loaded_sources_match():
     try:
         package = Path(__file__).parent
-        modules = (_feedback_module, _briefing_module, _knowledge_module, _verifier_module)
+        modules = (_feedback_module, _briefing_module, _knowledge_module, _verifier_module,
+                   _population_engine_module)
         return (_LOADED_PACKAGE_CODE_MATCH and _LOADED_CONTROL_CODE_MATCH
                 and _source_sha256(package / '__init__.py') == _LOADED_PACKAGE_SOURCE_SHA256
                 and _source_sha256(__file__) == _LOADED_CONTROL_SOURCE_SHA256
@@ -176,7 +180,10 @@ class ControlCenterV3:
             # Validate on a detached engine. The active wrapper is untouched if
             # core restore, pin checks, or guard consistency fail at any point.
             current = self.environment
-            candidate = IncidentDayEnv(current.inputs, current.network.document,
+            engine_class = type(current)
+            if engine_class not in (IncidentDayEnv, PopulationEngineV3):
+                raise ValueError('Unsupported control checkpoint engine')
+            candidate = engine_class(current.inputs, current.network.document,
                 expected_inputs_sha256=current.inputs['sha256'],
                 expected_network_sha256=current.network.sha256,
                 allow_unapproved_data=current.inputs['approval_status'] != 'approved_synthetic_fixture')
@@ -330,6 +337,19 @@ class ControlCenterV3:
             return {'error': 'Execution status is unknown; inspect the current situation before retrying.',
                     'execution': 'indeterminate'}
         if not mutating and isinstance(result, dict) and result.get('committed') is False:
+            if (name == 'evacuation_options' and isinstance(self.environment, PopulationEngineV3)
+                    and isinstance(arguments, dict) and isinstance(arguments.get('group_id'), str)):
+                try:
+                    groups = self.environment.get_situation()['districts']
+                    group = next((item for item in groups if item.get('id') == arguments['group_id']), None)
+                    position = group.get('position') if group else None
+                    usable = (isinstance(position, (list, tuple)) and len(position) == 2
+                              and all(type(x) in (int, float) and math.isfinite(x) for x in position))
+                    if group and (not usable or group.get('status') in (None, 'unknown', 'evacuating')):
+                        return {'error': 'The last reported population position is unknown or moving; inspect delivered reports before routing.',
+                                'code': 'population_position_unknown', 'next_tool': 'get_reports', 'committed': False}
+                except Exception:
+                    pass
             return {'error': 'The public query failed; inspect the tool inputs.', 'committed': False}
         if (validation and not validation['valid'] and isinstance(result, dict)
                 and isinstance(result.get('info'), dict) and result['info'].get('error')):
@@ -364,3 +384,12 @@ class ControlCenterV3:
         if name == 'get_situation' and isinstance(result, dict):
             result['control_interface_version'] = self.version
         return copy.deepcopy(result)
+
+
+def create_population_control(inputs, network, *, expected_inputs_sha256, expected_network_sha256,
+                              allow_unapproved_data=False, artifact_dir=None, identical_check_limit=3):
+    """Explicitly opt into event-time population knowledge on a pinned input pack."""
+    engine = PopulationEngineV3(inputs, network, expected_inputs_sha256=expected_inputs_sha256,
+        expected_network_sha256=expected_network_sha256, allow_unapproved_data=allow_unapproved_data,
+        artifact_dir=artifact_dir)
+    return ControlCenterV3(engine, identical_check_limit=identical_check_limit)
