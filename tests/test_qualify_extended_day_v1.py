@@ -28,7 +28,9 @@ class FakeEpisode:
     def verify_episode(self):
         return {'passed': True, 'exact_replay': True, 'independent_reward_agreement': True,
                 'outcomes': {'reward_version': self.reward_version,
-                             'graded_score': .75, 'score_eligible': True}}
+                             'graded_score': .75, 'score_eligible': True,
+                             'boundary_censored': False, 'invalid_abandonment': False,
+                             'completed_minutes': self.minute}}
 
 
 def test_twelve_completed_episodes_are_verified_and_scored():
@@ -70,6 +72,17 @@ def test_future_report_or_engine_error_does_not_leak_and_is_unscored():
     assert report['cases'][0]['reason'] == report['cases'][1]['reason'] == 'setup_or_validation_error'
     assert 'private scenario annotation' not in str(report)
     assert report['cases'][0]['score'] is report['cases'][1]['score'] is None
+
+
+def test_censored_or_incomplete_outcome_is_unscored_even_if_adapter_claims_terminal():
+    class ContradictoryEpisode(FakeEpisode):
+        def verify_episode(self):
+            result = super().verify_episode()
+            result['outcomes']['boundary_censored'] = True
+            return result
+    report = qualify(IDS, make_environment=lambda _: ContradictoryEpisode(), make_policy=WaitPolicy)
+    assert report['status'] == 'incomplete'
+    assert all(row['status'] == 'not_scored' and row['score'] is None for row in report['cases'])
 
 
 def test_budget_stop_never_produces_success():

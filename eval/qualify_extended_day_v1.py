@@ -99,7 +99,9 @@ def qualify(case_ids, *, make_environment, make_policy, wall_seconds=1800, now=t
                 valid = (terminated and not truncated and minute == HORIZON and
                          verification.get('passed') is True and row['exact_replay'] and
                          row['independent_reward'] and outcome.get('reward_version') == EXPECTED_REWARD and
-                         outcome.get('score_eligible') is True and type(score) in (int, float) and
+                         outcome.get('score_eligible') is True and outcome.get('boundary_censored') is False and
+                         outcome.get('invalid_abandonment') is False and outcome.get('completed_minutes') == HORIZON and
+                         type(outcome.get('completed_minutes')) is int and type(score) in (int, float) and
                          math.isfinite(score) and 0 <= score <= 1)
                 if now() - start >= wall_seconds:
                     row['reason'] = 'budget'
