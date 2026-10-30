@@ -137,7 +137,33 @@ shared weather/moisture or checkpoint protocol. The adapter rejects those active
 hooks before a step rather than silently running without weather coupling.
 Ordinary wind events in the pinned incident-day scenario still update the
 adapter's fire and affect containment. Temperature, humidity and rain effects
-from the separate weather runtime are not applied.
+from the separate weather runtime are not applied. The adapter also rejects
+an active `IncidentEvalBridgeV1` scenario dispatcher; a process-global scenario
+hook is not an authorized catalog input to this adapter.
+
+A no-collision coupling has not been implemented. The existing weather runtime
+owns process-wide fire construction, reset, minute, restore and event-bus hooks,
+while its scenario bridge owns the global scenario builder. Its weather fire
+maintains a pinned, lagged moisture state through warm-up and uses the current
+minute's weather before the fire step. Its bus hooks also suppress the ordinary
+wind report and implement delayed, causally deduplicated weather reports. The
+containment adapter currently intercepts the same fire step and accepts only an
+unmodified `DayFire` at handover; its fresh replay and restore paths instantiate
+the exact containment adapter and fire classes. Combining the contexts or simply
+copying one fire state into the other would skip one or more of those behaviors.
+
+Safe integration needs one explicit owner for scenario dispatch, warm-up,
+weather and containment advancement, delayed reports, and cleanup; a joint
+checkpoint and fresh replay must pin the weather catalog, scenario, weather
+source and moisture clock along with containment. It also needs parity tests
+against the real weather runtime, including out-of-order report delivery,
+weather changes on the fire minute, interruption and restore. The existing
+weather runtime and catalog bridge live under `eval/` and depend on the
+separately packaged control interface, so a distributable integration must
+also define and validate those dependencies. The actor-visible wind remains the
+last delivered report; the physical fire uses the applicable true wind before
+that delivery, as in the existing runtime. No compatibility or evaluation claim
+is made until this combined lifecycle is implemented and verified.
 
 The source-map **uncertain-land censor guard is also unsupported** here. After
 normal input validation, the adapter rejects any input whose estimated-fuel

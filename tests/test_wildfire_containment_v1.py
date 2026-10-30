@@ -1125,3 +1125,32 @@ def test_unbound_keyword_instance_still_records_public_call(day_inputs):
     assert view['minute'] == 0
     assert env.trajectory()['calls'][-1]['operation'] == 'get_situation'
     assert replay_public(env, env.trajectory()).checkpoint() == env.checkpoint()
+
+
+def test_active_catalog_bridge_is_rejected_before_containment_mutates(day_inputs):
+    from eval.incident_eval_bridge_v1 import CATALOG_VERSION, IncidentEvalBridgeV1
+    from envs.wildfire_response.incident_day import environment as day
+    from envs.wildfire_response.incident_day.scenarios import build_scenario
+    from envs.wildfire_response.regional.ops.generator import digest
+    from wildfire_core.incident_day import fixture_inputs
+    inputs, network = fixture_inputs()
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    saved = env.checkpoint()
+    original_builder = day.build_scenario
+    case = build_scenario(env.inputs, env.network, 'incident-day-egress-v1-000')
+    case.update(id='containment-bridge-test-000', seed=8140000)
+    case['sha256'] = digest({key: value for key, value in case.items() if key != 'sha256'})
+    catalog = dict(version=CATALOG_VERSION, inputs_sha256=inputs['sha256'],
+                   network_sha256=network['sha256'], cases=[case])
+    catalog['sha256'] = digest(catalog)
+    with IncidentEvalBridgeV1(catalog):
+        assert day.build_scenario is not original_builder
+        with pytest.raises(RuntimeError, match='Patched incident-day'):
+            env.advance_time(1)
+        with pytest.raises(RuntimeError, match='Patched incident-day'):
+            env.reset('incident-day-dev-000')
+        with pytest.raises(RuntimeError, match='Patched incident-day'):
+            make_adapter(day_inputs)
+    assert day.build_scenario is original_builder
+    assert env.checkpoint() == saved

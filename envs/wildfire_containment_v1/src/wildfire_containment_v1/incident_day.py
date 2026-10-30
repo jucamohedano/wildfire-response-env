@@ -8,7 +8,7 @@ from envs.wildfire_response.incident_day import environment as day
 from envs.wildfire_response.incident_day.environment import IncidentDayEnv, implementation_digest
 from envs.wildfire_response.incident_day.events import EventBus
 from envs.wildfire_response.incident_day.outcomes import recompute
-from envs.wildfire_response.incident_day.scenarios import DayFire
+from envs.wildfire_response.incident_day.scenarios import DayFire, build_scenario
 from envs.wildfire_response.incident_day.scenarios import grid_point
 from envs.wildfire_response.regional.ops.generator import digest
 
@@ -17,14 +17,14 @@ from .kernel import ContainmentKernel, _edge, _number
 from .transcript import (PUBLIC_CALLS, TRANSCRIPT_VERSION, arguments, json_equal,
                          json_result, transcribed)
 
-VERSION = 'wildfire-containment-incident-adapter-v9'
+VERSION = 'wildfire-containment-incident-adapter-v10'
 CORE = 'af4adc0b2fb92282246411dbac83c1eeac23eb3b4730200c0b34dc288b59323a'
 
 
 def _check_runtime():
     # The weather runtime installs process-wide class hooks without changing
     # source-file hashes. Their combined lifecycle is not supported here.
-    if (day.DayFire is not DayFire or
+    if (day.DayFire is not DayFire or day.build_scenario is not build_scenario or
             any(getattr(method, '__module__', None) != module
                 or getattr(method, '__qualname__', None) != name
                 for method, module, name in (
