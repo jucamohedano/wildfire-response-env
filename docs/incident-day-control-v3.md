@@ -168,3 +168,38 @@ This is supplemental evidence for a modified action history. Its baseline is
 a fresh reconstruction; it does not restore a checkpoint from the original run
 or remove that run's blocked matrix status. Run it only after the matrix process
 has exited. Like the matrix, the probe cannot resume an interrupted run.
+
+## Trusted wait recovery
+
+`eval.wait_recovery_v1.WaitRecoveryV1` is an opt-in trusted-driver layer for
+`ControlCenterV3` waits. It writes a private checkpoint and the selected wait
+before executing it, and writes the resulting checkpoint and public result
+before returning. After a restart, `recover()` restores the journal and, if the
+wait was pending, replays it from the pre-wait checkpoint. Its owner-only
+directory must be unique to the episode; the caller must use consecutive
+sequence numbers and serialize access to the control.
+
+```python
+from eval.wait_recovery_v1 import WaitRecoveryV1
+
+# control is reset; private_dir already exists with owner-only permissions.
+waits = WaitRecoveryV1(control, private_dir, run_identity="unique-episode-id")
+result = waits.start(1, max_minutes=60, initialize=True)
+# After a process restart, construct a fresh matching control and driver, then
+# call waits.recover() before issuing any further actions.
+```
+
+This layer does not automatically wrap agent tools. The driver must use it for
+every wait and recover before issuing later actions. It persists control state,
+not policy, observer or matrix-runner state, later non-wait actions, or external
+output delivery; those require separate coordination. The control must not use
+an artifact directory. Journal hashes detect accidental corruption, not a
+malicious writer or rollback. This method does not checkpoint inside a wait or
+change the historical matrix's blocked entries. Exceptions and tracebacks are
+trusted-only: their frames can retain private state, so do not expose them to
+an agent or an untrusted logging service.
+
+The [recovery campaign](../results/wait-recovery-v1-20261030.json) exercises
+the six previously blocked case-policy pairs with real child-process deaths,
+including during a refill tick. It reconstructs those cases and does not prove
+identity with the archived trajectories. It is not a 48-case recovery matrix.
