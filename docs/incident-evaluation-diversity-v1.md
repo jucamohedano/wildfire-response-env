@@ -18,7 +18,7 @@ other incidents and landscapes.
 | Aircraft and daylight | Day, night and scheduled aircraft unavailability; the model's gates are not aviation authorization. |
 | Access and coordination | Wind-driven changes, engine access restrictions and temporary centre unavailability. |
 | People and destinations | Existing synthetic cohorts, including a case where an occupied reception centre later closes. |
-| Reports | Scheduled synthetic calls, including conflicting locations and a duplicate, delivered with stated delays. |
+| Reports | Scheduled synthetic calls, including conflicting claims about the same place and a duplicate, delivered with stated delays. |
 
 The catalog contains twelve different decision families, including a delayed
 large-fire handover, wind-driven access loss, a rain front, aircraft limits,
@@ -40,3 +40,33 @@ generator. They are suitable for development evaluation, not a secret or
 independent held-out test. Never expose the private runtime catalog, generator
 source, schedules, evaluator annotations or checkpoints as agent tools. A later
 blind benchmark needs privately sampled cases and isolation from their inputs.
+
+## Compile and qualify locally
+
+With the pinned source-map pack installed, use a fresh private directory:
+
+```sh
+PYTHONPATH=envs/wildfire_control_v3/src:envs/wildfire_response/core/src:. \
+python -m eval.generate_incident_evaluation_v1 \
+  --data-dir .runtime/wildfire-response-spain --output /tmp/incident-eval-v1
+```
+
+`catalog.json` contains future events and must remain private. `preflight.json`
+contains private case-family labels. `provenance.json` records the source,
+synthetic assumptions and seeds; `lock.json` pins the runtime and data. Record
+the lock file's SHA-256 and catalog SHA-256 in trusted evaluation configuration
+before a run. They are not model input. An example qualification command is:
+
+```sh
+PYTHONPATH=envs/wildfire_control_v3/src:envs/wildfire_response/core/src:. \
+python -m eval.check_incident_evaluation_v1 \
+  --data-dir .runtime/wildfire-response-spain --pack-dir /tmp/incident-eval-v1 \
+  --expected-lock-sha256 "$EXPECTED_LOCK_SHA256" \
+  --expected-catalog-sha256 "$EXPECTED_CATALOG_SHA256" \
+  --output /tmp/incident-eval-v1-qualification.json --policy dispatcher
+```
+
+The qualification checks completion, delivery chronology, exact replay and
+independent reward agreement for one named policy. A partial, censored or
+interrupted run stays incomplete; this check alone does not establish causal
+coverage or a representative held-out benchmark.

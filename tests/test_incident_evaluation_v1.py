@@ -94,3 +94,146 @@ def test_compiled_exercises_have_causal_event_shapes(compiled):
     assert len(reports) == 3 and reports[0]['location'] == reports[2]['location']
     assert reports[0]['minute'] == reports[1]['minute'] and reports[0]['text'] == reports[1]['text']
     assert 'flames' in reports[0]['text'] and 'no flames' in reports[2]['text']
+
+
+def _engine(base):
+    return PopulationEngineV3(base.inputs,base.network.document,
+        expected_inputs_sha256=base.inputs['sha256'],expected_network_sha256=base.network.sha256,
+        allow_unapproved_data=True)
+
+
+def _advance_to(env, minute):
+    observation = env.get_situation()
+    while observation['minute'] < minute:
+        observation, _, terminated, truncated, _ = env.step({'advance_minutes':1})
+        assert not (terminated or truncated), 'case ended before its intended exercise'
+    return observation
+
+
+def _reports(env):
+    items, cursor = [], 0
+    while True:
+        page = env.get_reports(after_cursor=cursor, limit=20)
+        items.extend(page)
+        cursor += len(page)
+        if len(page) < 20:
+            return items
+
+
+def test_wind_shift_changes_public_routes_after_delivery(compiled):
+    base, catalog, _ = compiled
+    proposed = IncidentWeatherRuntimeV1(catalog, expected_pins={})
+    with IncidentWeatherRuntimeV1(catalog, expected_pins=proposed.pins):
+        env = _engine(base)
+        observation, _ = env.reset('incident-eval-v1-002')
+        before = {tuple(option['approach_grid']) for option in env.route_options('engine-0')['options']}
+        observation = _advance_to(env,15)
+        assert observation['wind'] == [1,0]  # New physical wind has not arrived yet.
+        while observation['minute'] < 30 and not any(
+                report['kind']=='weather_update' and report['observed_at']==15
+                for report in _reports(env)):
+            observation = _advance_to(env,observation['minute']+1)
+        assert observation['wind'] == [0,2]
+        after = {tuple(option['approach_grid']) for option in env.route_options('engine-0')['options']}
+        assert before - after and after
+
+
+def test_rain_changes_spread_proxy_and_is_delivered(compiled):
+    base, catalog, _ = compiled
+    proposed = IncidentWeatherRuntimeV1(catalog, expected_pins={})
+    with IncidentWeatherRuntimeV1(catalog, expected_pins=proposed.pins):
+        env = _engine(base)
+        env.reset('incident-eval-v1-003')
+        _advance_to(env,240)
+        before = env.fire.rules['spread_factor']
+        observation = _advance_to(env,300)
+        after = env.fire.rules['spread_factor']
+        assert after < before
+        reports = _reports(env)
+        assert any(r['kind']=='weather_update' and r['observed_at']==240
+                   and r['payload']['rain_mm_per_hour'] == 4 for r in reports)
+        assert observation['minute'] == 300
+    # Same initial state, seed, wind, temperature and humidity; only rain differs.
+    dry = copy.deepcopy(catalog)
+    case = next(item for item in dry['cases'] if item['id'] == 'incident-eval-v1-003')
+    for row in case['weather_schedule']:
+        row['rain_mm_per_hour'] = 0
+    case['sha256'] = digest({key:value for key,value in case.items() if key != 'sha256'})
+    dry['sha256'] = digest({key:value for key,value in dry.items() if key != 'sha256'})
+    proposed = IncidentWeatherRuntimeV1(dry, expected_pins={})
+    with IncidentWeatherRuntimeV1(dry, expected_pins=proposed.pins):
+        env = _engine(base)
+        env.reset('incident-eval-v1-003')
+        _advance_to(env,300)
+        assert after < env.fire.rules['spread_factor']
+
+
+def test_wind_closes_and_reopens_aircraft_window(compiled):
+    base, catalog, _ = compiled
+    proposed = IncidentWeatherRuntimeV1(catalog, expected_pins={})
+    with IncidentWeatherRuntimeV1(catalog, expected_pins=proposed.pins):
+        env = _engine(base)
+        observation, _ = env.reset('incident-eval-v1-005')
+        assert observation['aircraft_operable'] is True
+        observation = _advance_to(env,190)
+        assert observation['wind'] == [2.9,0]
+        assert observation['aircraft_operable'] is False
+        observation = _advance_to(env,260)
+        assert observation['wind'] == [1,0]
+        assert observation['aircraft_operable'] is True
+
+
+def test_reported_engine_access_restriction_preserves_crew_approach(compiled):
+    base, catalog, _ = compiled
+    proposed = IncidentWeatherRuntimeV1(catalog, expected_pins={})
+    with IncidentWeatherRuntimeV1(catalog, expected_pins=proposed.pins):
+        env = _engine(base)
+        env.reset('incident-eval-v1-004')
+        assert env.route_options('engine-0')['options']
+        observation = _advance_to(env,100)
+        assert 'engine' in observation['access_restrictions']
+        assert not env.route_options('engine-0')['options']
+        assert env.route_options('crew-0')['options']
+
+
+def test_night_case_opens_after_dawn_without_synthetic_outage(compiled):
+    base, catalog, _ = compiled
+    proposed = IncidentWeatherRuntimeV1(catalog, expected_pins={})
+    with IncidentWeatherRuntimeV1(catalog, expected_pins=proposed.pins):
+        env = _engine(base)
+        observation, _ = env.reset('incident-eval-v1-009')
+        assert observation['aircraft_operable'] is False
+        observation = _advance_to(env,600)
+        assert observation['aircraft_operable'] is True
+        assert not any(event['kind']=='aircraft_unavailable' for event in
+                       next(case for case in catalog['cases'] if case['id']=='incident-eval-v1-009')['events'])
+
+
+def test_conflicting_reports_are_delivered_and_duplicate_does_not_wake(compiled):
+    base, catalog, _ = compiled
+    proposed = IncidentWeatherRuntimeV1(catalog, expected_pins={})
+    with IncidentWeatherRuntimeV1(catalog, expected_pins=proposed.pins):
+        env = _engine(base)
+        env.reset('incident-eval-v1-008')
+        _advance_to(env,35)
+        reports = [r for r in _reports(env) if r['kind']=='incoming_report']
+        assert len(reports) == 3
+        assert reports[0]['observed_at'] == reports[2]['observed_at'] == 20
+        assert reports[0]['text'] == reports[2]['text'] and reports[2]['actionable'] is False
+        assert 'no flames' in reports[1]['text'] and reports[1]['location'] == reports[0]['location']
+
+
+def test_occupied_destination_closure_reaches_public_group(compiled):
+    base, catalog, _ = compiled
+    proposed = IncidentWeatherRuntimeV1(catalog, expected_pins={})
+    with IncidentWeatherRuntimeV1(catalog, expected_pins=proposed.pins):
+        env = _engine(base)
+        obs, _ = env.reset('incident-eval-v1-006')
+        group = next(g for g in obs['districts'] if g['id']=='population-1')
+        assert group['status'] == 'arrived'
+        obs = _advance_to(env,490)
+        group = next(g for g in obs['districts'] if g['id']=='population-1')
+        reports = _reports(env)
+        assert group['status'] == 'blocked'
+        assert any(r['kind']=='relocation_required' and r['payload']['group']['id']=='population-1'
+                   for r in reports)

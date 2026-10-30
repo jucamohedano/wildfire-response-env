@@ -38,14 +38,14 @@ TEMPLATES = (
     dict(family='late_large_fire', parent=5, center=(16, 26), radius=4, warmup=240,
          ground_delay=240, ground_waves=2, weather=[w(0,[1,0],34,25),w(300,[1.5,0.5],37,20),w(420,[-0.5,0],26,46)]),
     dict(family='wind_shift_access', parent=1, center=(16, 26), radius=2, warmup=60,
-         weather=[w(0,[1,0],31,30),w(15,[0,2],32,27),w(600,[-1,0],28,40)]),
+         weather=[w(0,[1,0],31,30),w(15,[0,2],32,27),w(90,[1,0],30,35),w(600,[-0.5,0],28,40)]),
     dict(family='rain_front', parent=0, center=(16, 26), radius=3, warmup=120,
          weather=[w(0,[0.5,-0.5],25,48),w(240,[0,1],20,82,4),w(720,[-0.5,0],19,76,1)]),
     dict(family='ground_access_restriction', parent=2, center=(16, 28), radius=2, warmup=120,
          weather=[w(0,[-1,0],30,32),w(360,[0,-1],34,24),w(960,[0.5,0],24,55)]),
     dict(family='aircraft_window', parent=3, center=(17, 26), radius=3, warmup=60,
          start_utc='2021-09-09T09:00:00Z',
-         weather=[w(0,[1,0],28,35),w(180,[2.9,0],33,24),w(480,[1,0],27,42)]),
+         weather=[w(0,[1,0],28,35),w(180,[2.9,0],33,24),w(240,[1,0],30,35),w(480,[0.5,0],27,42)]),
     dict(family='occupied_destination_closure', parent=4, center=(16, 28), radius=2, warmup=60,
          weather=[w(0,[0,-1],26,46),w(360,[0.5,-1],31,30),w(900,[-1,0],23,60)]),
     dict(family='regional_shortage', parent=5, center=(16, 26), radius=3, warmup=120,
@@ -53,7 +53,7 @@ TEMPLATES = (
     dict(family='conflicting_incoming_calls', parent=0, center=(15, 26), radius=3, warmup=60,
          reports='conflicting', weather=[w(0,[0,-1],29,35),w(300,[1,0],34,25),w(900,[0,1],24,55)]),
     dict(family='night_to_dawn_response', parent=3, center=(17, 26), radius=3, warmup=120,
-         start_utc='2021-09-09T18:00:00Z',
+         start_utc='2021-09-09T21:00:00Z',
          weather=[w(0,[1,0],23,55),w(480,[0,-1],18,75),w(900,[1,0],30,30)]),
     dict(family='large_cooling_rain', parent=0, center=(16, 25), radius=4, warmup=120,
          weather=[w(0,[0,-1],30,35),w(180,[-1,0],22,78,2),w(600,[0.5,0],21,82,1)]),
@@ -175,6 +175,9 @@ def build_catalog(inputs, network):
         scenario['profile']['causal_coverage'] = False
         scenario['start_utc'] = spec.get('start_utc',scenario['start_utc'])
         scenario['events'] = [copy.deepcopy(event) for event in parent['events'] if event['kind'] != 'wind']
+        if spec['family'] == 'night_to_dawn_response':
+            # This family exercises the solar window, not an unrelated outage.
+            scenario['events'] = [event for event in scenario['events'] if event['kind'] != 'aircraft_unavailable']
         if spec['family'] in ('late_large_fire', 'staggered_limited_resources'):
             # Place the shortage event while these high-growth exercises still
             # have a plausible modeled opportunity before the terrain guard.
