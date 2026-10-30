@@ -30,13 +30,14 @@ jobs:
         run: python -m pip install -e envs/wildfire_response/core -e envs/wildfire_control_v3 pytest==9.2.0 pyarrow==26.0.0
       - name: Test public interface and existing core contracts
         run: >-
-          python -m pytest -q
+          python -m pytest -q -ra
           tests/test_control_interface_v3.py
           tests/test_control_v3_parity_runner.py
           tests/test_control_population_v3_integration.py
           tests/test_incident_day_action_feedback_v3.py
           tests/test_incident_day_briefing_v3.py
           tests/test_incident_day_knowledge_v3.py
+          tests/test_incident_day_realmap_briefing_v3.py
           tests/test_incident_day_verifier_v3.py
           tests/test_population_engine_v3_unit.py
           tests/test_population_freshness_v3_integration.py

@@ -4,7 +4,9 @@
 ``situation``. Each existing district gets an additive ``knowledge_v3`` mapping:
 ``status``, ``destination_id``, ``position``, ``observed_at``, ``received_at``,
 ``report_id``, and ``basis``. Unknown values are None, never synthetic times.
-Legacy district fields are unchanged. A timestamped district snapshot or a
+Legacy district fields are unchanged. A matching, same-minute delivered arrival
+can associate an otherwise orderless district snapshot with its public order;
+conflicting order IDs remain unknown. A timestamped district snapshot or a
 received resident/relocation group snapshot is evidence. An operations
 ``evacuation_arrived`` report is evidence only when it is an operations report,
 its embedded completed order matches a delivered public order and the group,
@@ -49,13 +51,20 @@ def reconcile_situation_v3(situation: dict, delivered_reports: list[dict]) -> di
     candidates = {}
     hazards = {}
     delivered_orders = {}
+    ambiguous_orders = set()
     for order in situation.get('protection_orders', []):
         if not isinstance(order, dict) or not _minute(now):
             continue
         observed, received = order.get('observed_at'), order.get('received_at')
         if (isinstance(order.get('id'), str) and _minute(observed) and _minute(received)
                 and observed <= received <= now):
-            delivered_orders[order['id']] = order
+            identifier = order['id']
+            previous = delivered_orders.get(identifier)
+            if previous is not None and any(previous.get(key) != order.get(key)
+                    for key in ('id', 'group_id', 'action', 'destination_id')):
+                ambiguous_orders.add(identifier)
+            elif previous is None or received < previous['received_at']:
+                delivered_orders[identifier] = order
     for district in districts:
         if not isinstance(district, dict) or not isinstance(district.get('id'), str):
             continue
@@ -65,8 +74,18 @@ def reconcile_situation_v3(situation: dict, delivered_reports: list[dict]) -> di
         observed, received = district.get('observed_at'), district.get('received_at')
         if (_minute(now) and _minute(observed) and _minute(received)
                 and observed <= received <= now and isinstance(district.get('status'), str)):
+            position = district.get('position')
+            # Population v3 supplies field-level provenance. A position from an
+            # older observation is not part of a later status snapshot.
+            provenance = district.get('field_provenance')
+            if isinstance(provenance, dict):
+                position_source = provenance.get('position')
+                if not (isinstance(position_source, dict) and _minute(position_source.get('observed_at'))
+                        and position_source['observed_at'] == observed and _minute(position_source.get('received_at'))
+                        and observed <= position_source['received_at'] <= received <= now):
+                    position = None
             candidates[group_id].append(_candidate(district['status'], district.get('destination_id'),
-                district.get('position'), observed, received, None, 'district_snapshot', district.get('order_id')))
+                position, observed, received, None, 'district_snapshot', district.get('order_id')))
 
     for report in delivered_reports:
         if not isinstance(report, dict) or not _minute(now):
@@ -89,7 +108,8 @@ def reconcile_situation_v3(situation: dict, delivered_reports: list[dict]) -> di
         if not isinstance(group_id, str) or group_id not in candidates:
             continue
         if kind == 'evacuation_arrived' and isinstance(order, dict):
-            known_order = delivered_orders.get(order.get('id')) if isinstance(order.get('id'), str) else None
+            known_order = (delivered_orders.get(order.get('id'))
+                           if isinstance(order.get('id'), str) and order['id'] not in ambiguous_orders else None)
             if (report.get('source') == 'operations' and report.get('role') == 'responder'
                     and isinstance(known_order, dict)
                     and all(known_order.get(key) == order.get(key)
@@ -99,7 +119,7 @@ def reconcile_situation_v3(situation: dict, delivered_reports: list[dict]) -> di
                     and order.get('state') == 'completed' and order.get('completed_at') == observed
                     and isinstance(order.get('destination_id'), str)):
                 candidates[group_id].append(_candidate('arrived', order['destination_id'], None,
-                    observed, received, rid, 'evacuation_arrived', order['id']))
+                    observed, max(received, known_order['received_at']), rid, 'evacuation_arrived', order['id']))
         elif kind in ('movement_blocked', 'movement_resumed'):
             hazards[group_id].append((observed, received, rid, payload.get('order_id'), kind))
         elif kind in ('protection_accepted', 'order_delivered', 'order_acknowledged'):
@@ -134,10 +154,33 @@ def reconcile_situation_v3(situation: dict, delivered_reports: list[dict]) -> di
                 chosen = deepcopy(chosen)
                 positions = {repr(item['position']) for item in top if item['position'] is not None}
                 if len(positions) == 1:
-                    chosen['position'] = deepcopy(next(item['position'] for item in top if item['position'] is not None))
+                    position_evidence = [item for item in top if item['position'] is not None]
+                    chosen['position'] = deepcopy(position_evidence[0]['position'])
+                    # A matching position supplied by a later delivery was
+                    # not known when an earlier arrival report was received.
+                    chosen['received_at'] = max(chosen['received_at'],
+                                                min(item['received_at'] for item in position_evidence))
                 elif len(positions) > 1:
                     chosen['position'] = None
                 if chosen['status'] == 'arrived':
+                    # The v3 district view intentionally omits internal order
+                    # bookkeeping. Only a validated arrival at this same
+                    # observation time can bind it to a public order. Do not
+                    # choose between conflicting IDs or use a later arrival.
+                    invalid_order = any(item['_order_id'] is not None and not isinstance(item['_order_id'], str)
+                                        for item in top)
+                    order_ids = {item['_order_id'] for item in top if isinstance(item['_order_id'], str)}
+                    arrivals = {item['_order_id'] for item in top if item['basis'] == 'evacuation_arrived'}
+                    if invalid_order or len(order_ids) > 1:
+                        chosen = unknown
+                    elif chosen['_order_id'] is None and len(order_ids) == 1 and order_ids == arrivals:
+                        chosen['_order_id'] = next(iter(order_ids))
+                        # Association is not available until both the
+                        # matching arrival and its public order are delivered.
+                        available = min(item['received_at'] for item in top
+                                        if item['basis'] == 'evacuation_arrived'
+                                        and item['_order_id'] == chosen['_order_id'])
+                        chosen['received_at'] = max(chosen['received_at'], available)
                     invalidators = [h for h in hazards[group_id] if h[0] >= latest and
                                     (h[4] in ('movement_blocked', 'movement_resumed') or h[3] != chosen['_order_id'])
                                     and not (h[0] == latest and h[4] == 'movement_resumed'

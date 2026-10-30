@@ -1,5 +1,6 @@
 """The v3 control wrapper must use the corrected public population view."""
 import copy
+import json
 
 from wildfire_core.incident_day import fixture_inputs
 from wildfire_control_v3.control import ControlCenterV3, create_population_control, interface_digest
@@ -47,7 +48,10 @@ def test_delivered_arrival_drives_briefing_and_relocation_options():
     assert group['status'] == 'arrived'
     assert group['position'] == destinations['destination-0']['position']
     assert group['observed_at'] <= group['received_at'] <= observation['minute']
-    assert 'population-0' in result['briefing']['page']
+    line = next(line for line in result['briefing']['page'].splitlines() if line.startswith('DISTRICTS '))
+    briefing_group = next(item for item in json.loads(line.split(') ', 1)[1]) if item['id'] == 'population-0')
+    assert briefing_group['status'] == briefing_group['delivered_knowledge']['status'] == 'arrived'
+    assert briefing_group['delivered_knowledge']['destination_id'] == 'destination-0'
     stale_action = {'protection_orders': [{'group_id': 'population-0', 'action': 'evacuate',
         'destination_id': 'destination-1', 'approach_id': old['id']}]}
     stale = control.execute('check_action', {'action': stale_action})

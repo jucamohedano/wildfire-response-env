@@ -120,3 +120,143 @@ def test_snapshot_freshness_and_late_old_report():
     assert knowledge(s, [arrival(10, 30)])['status'] == 'blocked'
     s['districts'][0]['received_at'] = 41
     assert knowledge(s, [])['observed_at'] is None
+
+
+def test_realmap_public_arrival_at_six_delivered_at_ten_matches_orderless_district():
+    s = situation(9)
+    s['protection_orders'][0].update(observed_at=3, received_at=6)
+    s['districts'][0].update(status='unwarned', destination_id=None,
+                            position=[1, 2], observed_at=0, received_at=0)
+    arrived = arrival(6, 10)
+    # A future report and order snapshot cannot be used at minute nine.
+    future = deepcopy(s)
+    future['protection_orders'][0].update(observed_at=6, received_at=10)
+    assert knowledge(future, [arrived])['status'] == 'unwarned'
+    s['minute'] = 10
+    s['districts'][0].update(status='arrived', destination_id='d', position=[3, 4],
+                            observed_at=6, received_at=10,
+                            field_provenance={'position': {'observed_at': 6, 'received_at': 10}})
+    s['protection_orders'][0].update(state='completed', observed_at=6, received_at=10)
+    actual = knowledge(s, [arrived])
+    assert (actual['status'], actual['destination_id'], actual['position']) == ('arrived', 'd', [3, 4])
+    assert (actual['observed_at'], actual['received_at']) == (6, 10)
+    # Out-of-order delivery of an older notice about another order cannot
+    # invalidate a newer observation, even when it arrives later.
+    old = report('order_acknowledged', 2, 10, {'group_id': 'g', 'order_id': 'old'})
+    assert knowledge(s, [arrived, old]) == actual
+
+
+def test_same_minute_different_order_and_conflicting_arrivals_remain_unknown():
+    s = situation(20)
+    s['districts'][0].update(status='arrived', destination_id='d', position=[3, 4],
+                            observed_at=10, received_at=12)
+    s['protection_orders'][0].update(observed_at=10, received_at=12)
+    another = report('order_acknowledged', 10, 13, {'group_id': 'g', 'order_id': 'new'})
+    for sequence in permutations([arrival(), another]):
+        assert knowledge(s, list(sequence))['status'] is None
+    other_order = dict(id='other', group_id='g', action='evacuate', destination_id='d',
+                       observed_at=10, received_at=12)
+    s['protection_orders'].append(other_order)
+    other_arrival = arrival(order_id='other')
+    for sequence in permutations([arrival(), other_arrival]):
+        assert knowledge(s, list(sequence))['status'] is None
+
+
+def test_orderless_arrival_does_not_borrow_later_or_undelivered_order_evidence():
+    s = situation(15)
+    s['districts'][0].update(status='arrived', destination_id='d', position=[3, 4],
+                            observed_at=10, received_at=12)
+    s['protection_orders'][0].update(observed_at=10, received_at=12)
+    future = arrival(10, 16)
+    assert knowledge(s, [future])['status'] is None
+    different_minute = arrival(11, 12)
+    assert knowledge(s, [different_minute])['observed_at'] == 11
+    # A new same-minute order, even delivered late, is not confused with the
+    # matching arrival order once its receipt becomes public.
+    newer = report('order_delivered', 10, 16, {'group_id': 'g', 'order_id': 'new'})
+    assert knowledge(s, [arrival(), newer])['status'] == 'arrived'
+    s['minute'] = 16
+    assert knowledge(s, [arrival(), newer])['status'] is None
+
+
+def test_position_provenance_cannot_make_an_older_position_look_new():
+    s = situation()
+    s['districts'][0].update(status='arrived', destination_id='d', position=[3, 4],
+                            observed_at=10, received_at=12,
+                            field_provenance={'position': {'observed_at': 5, 'received_at': 6}})
+    result = knowledge(s, [arrival()])
+    assert result['status'] == 'arrived' and result['position'] is None
+    s['districts'][0]['field_provenance']['position'] = {'observed_at': 10, 'received_at': 41}
+    assert knowledge(s, [arrival()])['position'] is None
+
+
+def test_conflicting_duplicate_order_snapshots_never_authenticate_arrival():
+    s = situation()
+    duplicate = dict(s['protection_orders'][0], destination_id='different', received_at=13)
+    for orders in permutations([s['protection_orders'][0], duplicate]):
+        s['protection_orders'] = list(orders)
+        assert knowledge(s, [arrival()])['status'] is None
+
+
+def test_combined_position_is_not_attributed_to_an_earlier_arrival_receipt():
+    s = situation(14)
+    s['districts'][0].update(status='arrived', destination_id='d', position=[3, 4],
+                            observed_at=10, received_at=14,
+                            field_provenance={'position': {'observed_at': 10, 'received_at': 14}})
+    result = knowledge(s, [arrival()])
+    assert result['status'] == 'arrived' and result['position'] == [3, 4]
+    assert result['received_at'] == 14
+    s['districts'][0]['received_at'] = 12
+    assert knowledge(s, [arrival()])['position'] is None
+
+
+def test_invalid_district_order_identity_stays_unknown():
+    s = situation()
+    s['districts'][0].update(status='arrived', destination_id='d', observed_at=10,
+                            received_at=12, order_id=['invalid'])
+    assert knowledge(s, [arrival()])['status'] is None
+
+
+def test_borrowed_order_identity_waits_for_arrival_and_public_order():
+    s = situation(10)
+    s['districts'][0].update(status='arrived', destination_id='d', position=[3, 4],
+                            observed_at=6, received_at=7)
+    s['protection_orders'][0].update(observed_at=6, received_at=10)
+    arrived = arrival(6, 10)
+    result = knowledge(s, [arrived])
+    assert result['status'] == 'arrived' and result['received_at'] == 10
+    assert result['observed_at'] == 6 and result['position'] == [3, 4]
+
+    # The arrival was received at ten, but its public order was not delivered
+    # until thirteen: the association cannot be attributed to minute ten.
+    s['minute'] = 13
+    s['protection_orders'][0]['received_at'] = 13
+    result = knowledge(s, [arrived])
+    assert result['status'] == 'arrived' and result['received_at'] == 13
+    # Arrival-only evidence also requires both deliveries.
+    s['districts'][0].pop('observed_at')
+    assert knowledge(s, [arrived])['received_at'] == 13
+
+
+def test_duplicate_matching_orders_use_first_public_receipt_in_any_order():
+    s = situation(20)
+    s['districts'][0].update(status='arrived', destination_id='d', position=[3, 4],
+                            observed_at=6, received_at=7)
+    order = dict(s['protection_orders'][0], observed_at=6, received_at=9)
+    later = dict(order, received_at=13)
+    for sequence in permutations([order, later]):
+        s['protection_orders'] = list(sequence)
+        assert knowledge(s, [arrival(6, 10)])['received_at'] == 10
+
+
+def test_late_conflicting_order_invalidates_borrowed_identity():
+    s = situation(15)
+    s['districts'][0].update(status='arrived', destination_id='d', position=[3, 4],
+                            observed_at=6, received_at=7)
+    s['protection_orders'][0].update(observed_at=6, received_at=10)
+    arrived = arrival(6, 10)
+    conflict = report('order_acknowledged', 6, 16, {'group_id': 'g', 'order_id': 'different'})
+    assert knowledge(s, [arrived, conflict])['received_at'] == 10
+    s['minute'] = 16
+    result = knowledge(s, [arrived, conflict])
+    assert result['status'] is None and result['received_at'] is None

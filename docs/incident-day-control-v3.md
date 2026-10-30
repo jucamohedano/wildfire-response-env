@@ -28,8 +28,8 @@ PY
 
 `tool_definitions_v3()` returns the named public tools. The additive
 `get_briefing` page is a bounded projection; it is **not** the complete world
-or complete delivered record. `get_situation` still provides the full v2
-public observation. `get_report_page` supplies explicit cursor, count and
+or complete delivered record. `get_situation` still provides the selected
+engine's full public observation. `get_report_page` supplies explicit cursor, count and
 continuation fields; `get_reports` remains available for existing queries.
 Report content and role are untrusted data. An observation is what has been
 delivered, not a guarantee of current conditions or knowledge of future events.
@@ -117,3 +117,35 @@ not a passed suite. `incomplete` and `failed` exit nonzero. Budgets are checked
 after atomic simulator and verifier calls and after staging the final report,
 before its atomic rename. The rename itself cannot be preempted. Interrupted
 work is never scored.
+
+## Population-engine runtime matrix
+
+With the pinned data pack available, the real-map briefing regression can be
+run independently. Set `WILDFIRE_ISSUE59_DATA` if it is not stored at
+`.runtime/wildfire-response-spain`:
+
+```sh
+python -m pytest -q -ra tests/test_incident_day_realmap_briefing_v3.py
+```
+
+Count the real-map regression as verified only when it passes; a missing pack
+is reported as a skip. The fixture-based regression also runs without the pack.
+
+To check the separately versioned population engine against all active
+development cases and policies, use a fresh process and output directory:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPYCACHEPREFIX="$(mktemp -d /tmp/wildfire-v3-cache.XXXXXX)" \
+PYTHONPATH=envs/wildfire_control_v3/src:envs/wildfire_response/core/src:. \
+python -m eval.validate_population_v3_runtime \
+  --data-dir .runtime/wildfire-response-spain \
+  --output /tmp/wildfire-population-v3-matrix --wall-seconds 5400
+```
+
+The runner uses one CPU worker and publishes only aggregate checks. Keep all
+source files immutable from before import until the process exits: loader/source
+comparisons alone cannot prove which code executed during an import-time edit.
+An interrupted or budget-limited run is incomplete and must be restarted in a
+new output directory; this runner does not resume a partial matrix. Unexercised
+checkpoint boundaries are reported, not counted as passed. These development
+checks do not establish real-world calibration.
