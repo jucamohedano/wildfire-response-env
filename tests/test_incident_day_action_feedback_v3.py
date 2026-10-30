@@ -47,6 +47,9 @@ def test_public_approach_bindings_and_read_only(env):
             if code in ('invalid_resource_approach', 'invalid_evacuation_approach'):
                 assert result['field_path'] == f'{field}[0].approach_id'
                 assert "'resource_id'" not in result['error']
+                assert result['next_arguments'] == ({'resource_id': action['requests'][0]['resource_id'], 'sector_id':'incident'}
+                    if code == 'invalid_resource_approach' else {'group_id':action['protection_orders'][0]['group_id'],
+                    'destination_id':action['protection_orders'][0]['destination_id']})
         assert action == before_action
         assert result == check_action_v3(env, action)
     assert env.checkpoint() == checkpoint

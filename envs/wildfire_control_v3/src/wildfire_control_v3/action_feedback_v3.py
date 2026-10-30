@@ -16,9 +16,9 @@ malformed action with a fixed public error, rather than exposing its contents.
 """
 
 import json
-from . import _source_sha256
+from . import _capture_source
 
-_LOADED_SOURCE_SHA256 = _source_sha256(__file__)
+_LOADED_SOURCE_SHA256, _LOADED_CODE_MATCH = _capture_source(__name__, __file__, __loader__)
 
 
 _FIELDS = ('requests', 'authorizations', 'releases', 'status_requests', 'protection_orders')
@@ -171,6 +171,11 @@ def explain_result_v3(env, action, result):
     result = {'valid': False, 'error': _MESSAGES[details['code']], **details}
     if details['code'] in ('invalid_resource_approach', 'invalid_evacuation_approach'):
         result['field_path'] = f"{details['field']}[{details['order_index']}].approach_id"
+        item = action[details['field']][details['order_index']]
+        if details['code'] == 'invalid_resource_approach':
+            result['next_arguments'] = {'resource_id': item['resource_id'], 'sector_id': item['sector_id']}
+        else:
+            result['next_arguments'] = {'group_id': item['group_id'], 'destination_id': item['destination_id']}
     return result
 
 

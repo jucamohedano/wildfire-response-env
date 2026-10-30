@@ -1,5 +1,8 @@
 import copy
 import json
+import os
+import py_compile
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -34,6 +37,7 @@ def test_repeated_invalid_checks_do_not_mutate_time_or_block_valid_orders(wrappe
         assert wrapped.execute('check_action', invalid)['valid'] is False
     guard = wrapped.execute('check_action', invalid)
     assert guard['code'] == 'repeated_invalid_draft'
+    assert guard['previous_validation']['code'] == 'unknown_resource'
     assert env.minute == 0 and env.get_situation() == before
     situation = wrapped.execute('get_situation', {})
     assert situation.pop('control_interface_version') == wrapped.version
@@ -228,6 +232,35 @@ with patch.object(Path, 'read_bytes', updated):
     assert result['status'] == 'identity_mismatch' and result['score'] is None
 '''
     result = subprocess.run([sys.executable, '-c', script], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
+def test_stale_timestamp_bytecode_cannot_be_scored(tmp_path):
+    root = Path(__file__).parents[1]
+    source = root/'envs/wildfire_control_v3/src/wildfire_control_v3'
+    package = tmp_path/'wildfire_control_v3'
+    shutil.copytree(source, package, ignore=shutil.ignore_patterns('__pycache__'))
+    target = package/'verifier_v3.py'
+    old = target.read_bytes()
+    replacement = old.replace(b"wildfire-incident-day-verifier-v3", b"wildfire-incident-day-verifier-v4")
+    assert replacement != old and len(replacement) == len(old)
+    original_stat = target.stat()
+    py_compile.compile(str(target), doraise=True, invalidation_mode=py_compile.PycInvalidationMode.TIMESTAMP)
+    target.write_bytes(replacement)
+    os.utime(target, ns=(original_stat.st_atime_ns, original_stat.st_mtime_ns))
+    script = r'''
+import wildfire_control_v3.verifier_v3 as verifier
+assert verifier.VERSION.endswith('v3')  # stale bytecode really was executed
+assert verifier._LOADED_CODE_MATCH is False
+from wildfire_control_v3.control import ControlCenterV3, interface_digest
+result = ControlCenterV3(object()).finalize(expected_identity={}, expected_interface_sha256=interface_digest())
+assert result['status'] == 'identity_mismatch' and result['score'] is None
+'''
+    environment = os.environ.copy()
+    environment['PYTHONPATH'] = os.pathsep.join((str(tmp_path),
+        str(root/'envs/wildfire_response/core/src'), environment.get('PYTHONPATH', '')))
+    result = subprocess.run([sys.executable, '-c', script], cwd=tmp_path, env=environment,
+                            capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
 
 

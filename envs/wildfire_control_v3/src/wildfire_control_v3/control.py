@@ -7,7 +7,8 @@ from threading import RLock
 
 from wildfire_core.incident_day import IncidentDayEnv, IncidentDayTools, tools
 
-from . import INTERFACE_VERSION, _LOADED_PACKAGE_SOURCE_SHA256, _source_sha256
+from . import (INTERFACE_VERSION, _LOADED_PACKAGE_CODE_MATCH, _LOADED_PACKAGE_SOURCE_SHA256,
+               _capture_source, _source_sha256)
 from . import action_feedback_v3 as _feedback_module, briefing_v3 as _briefing_module
 from . import knowledge_v3 as _knowledge_module, verifier_v3 as _verifier_module
 from .action_feedback_v3 import check_action_v3, explain_result_v3
@@ -59,16 +60,18 @@ def interface_digest():
     return _fingerprint(files).hex()
 
 
-_LOADED_CONTROL_SOURCE_SHA256 = _source_sha256(__file__)
+_LOADED_CONTROL_SOURCE_SHA256, _LOADED_CONTROL_CODE_MATCH = _capture_source(__name__, __file__, __loader__)
 
 
 def _loaded_sources_match():
     try:
         package = Path(__file__).parent
         modules = (_feedback_module, _briefing_module, _knowledge_module, _verifier_module)
-        return (_source_sha256(package / '__init__.py') == _LOADED_PACKAGE_SOURCE_SHA256
+        return (_LOADED_PACKAGE_CODE_MATCH and _LOADED_CONTROL_CODE_MATCH
+                and _source_sha256(package / '__init__.py') == _LOADED_PACKAGE_SOURCE_SHA256
                 and _source_sha256(__file__) == _LOADED_CONTROL_SOURCE_SHA256
-                and all(Path(module.__file__).resolve().parent == package.resolve()
+                and all(module._LOADED_CODE_MATCH
+                        and Path(module.__file__).resolve().parent == package.resolve()
                         and _source_sha256(module.__file__) == module._LOADED_SOURCE_SHA256
                         for module in modules))
     except (OSError, AttributeError, TypeError):
@@ -272,9 +275,16 @@ class ControlCenterV3:
             action_key = _fingerprint(arguments['action']) or hashlib.sha256(b'invalid-json').digest()
             signature = (situation_key, action_key) if situation_key else None
             if signature is not None and signature == self._last_failed_check and self._repetitions >= self.identical_check_limit:
-                return {'valid': False, 'error': 'This unchanged draft has already failed the check.',
-                        'code': 'repeated_invalid_draft',
-                        'next_step': 'Change the draft, obtain fresh options, or take another valid action.'}
+                response = {'valid': False, 'error': 'This unchanged draft has already failed the check.',
+                            'code': 'repeated_invalid_draft',
+                            'next_step': 'Change the draft, obtain fresh options, or take another valid action.'}
+                try:
+                    response['previous_validation'] = explain_result_v3(
+                        self.environment, arguments['action'], {'valid': False, 'error': None})
+                except Exception:
+                    # The guard must remain available without disclosing errors.
+                    pass
+                return response
             try:
                 result = self._tools.execute(name, arguments)
                 if isinstance(result, dict) and 'valid' in result:

@@ -71,8 +71,11 @@ It does not prove field realism. The caller must report timeouts accurately.
 `wildfire_control_v3.control.interface_digest()` can be used when preparing and
 recording an evaluation configuration before the run starts. Use a fresh
 process and immutable source files for evaluation. The interface records source
-fingerprints when its modules load and checks them around verification; this
-is an integrity check, not a security attestation of an untrusted process.
+fingerprints when its modules load, checks source against the loader's code,
+and checks them around verification. The source/bytecode comparison is tested
+on source-installed CPython 3.12; unsupported loaders fail closed. These are
+consistency checks, not a security attestation of an untrusted process or a
+substitute for immutable deployments.
 
 `private_checkpoint()` and `restore_private_checkpoint(...)` are **trusted
 driver methods**, not model tools. Their envelope contains the v2 checkpoint,

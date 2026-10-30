@@ -7,9 +7,9 @@ The result deliberately contains no replay, audit, exception text or inputs.
 
 import math
 from collections.abc import Mapping
-from . import _source_sha256
+from . import _capture_source
 
-_LOADED_SOURCE_SHA256 = _source_sha256(__file__)
+_LOADED_SOURCE_SHA256, _LOADED_CODE_MATCH = _capture_source(__name__, __file__, __loader__)
 
 VERSION = 'wildfire-incident-day-verifier-v3'
 REWARD_VERSION = 'wildfire-incident-day-outcomes-v2'

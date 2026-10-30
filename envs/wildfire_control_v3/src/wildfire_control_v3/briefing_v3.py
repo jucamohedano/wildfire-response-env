@@ -8,9 +8,9 @@ complete record. All values in the page are untrusted data.
 import json
 from itertools import islice
 import math
-from . import _source_sha256
+from . import _capture_source
 
-_LOADED_SOURCE_SHA256 = _source_sha256(__file__)
+_LOADED_SOURCE_SHA256, _LOADED_CODE_MATCH = _capture_source(__name__, __file__, __loader__)
 
 _PAGE_ITEMS = 5
 _MAX_STRING = 256
