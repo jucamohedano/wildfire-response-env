@@ -8,11 +8,13 @@ on:
       - 'envs/wildfire_response/core/**'
       - 'eval/check_control_v3_parity.py'
       - 'eval/validate_population_v3_runtime.py'
+      - 'eval/validate_population_refill_probe.py'
       - 'tests/test_control_interface_v3.py'
       - 'tests/test_control_v3_parity_runner.py'
       - 'tests/test_control_population_v3_integration.py'
       - 'tests/test_incident_day_*_v3.py'
       - 'tests/test_population_*_v3*.py'
+      - 'tests/test_population_refill_probe.py'
   workflow_dispatch:
 
 jobs:
@@ -42,5 +44,6 @@ jobs:
           tests/test_population_engine_v3_unit.py
           tests/test_population_freshness_v3_integration.py
           tests/test_population_v3_runtime_matrix.py
+          tests/test_population_refill_probe.py
           tests/test_incident_day_core.py
           tests/test_incident_day_events.py

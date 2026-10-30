@@ -1,0 +1,324 @@
+{
+  "version": "wildfire-population-v3-refill-probe-v2",
+  "status": "complete",
+  "scope": "fixture_refill",
+  "baseline_kind": "freshly_reconstructed_unsplit",
+  "pins": {
+    "dataset_manifest_sha256": "8cf89a78daa3e24f3f8a31695d86c052b9ce0e164790e29e159c99bde6785065",
+    "dataset_revision": "d7e1e1c82eb249e35315bd19d1e0fea730fc0da7",
+    "core_sha256": "af4adc0b2fb92282246411dbac83c1eeac23eb3b4730200c0b34dc288b59323a",
+    "lifecycle_sha256": "c46f9b3e8cdebed050022e6b7eb966d09ae89049b689f360b41d28ab2a345d04",
+    "interface_version": "wildfire-control-interface-v3",
+    "population_version": "wildfire-incident-day-population-v3",
+    "population_engine_sha256": "8faa3a8dd6ce756f2ec58fd341977e26765efda943e9d9659b31ca5fdf9280e7",
+    "v3_sources_sha256": "8ff843d115a9108f8cae3ffd768216bb5b30ed7717a77edbd6377831365f5a1f",
+    "validator_sha256": "ae50f63da27bf2b8885e8fee536df5d4dd7ded5ad67cf1a3d31ce71addefa2f2",
+    "source_attestation": "current_source_and_loader_only; immutable_sources_from_before_import_required",
+    "original_report_sha256": "9bea928ca4cb00aade9f8be20d5d54e1f27fc4aee89ed5e3248429bccfc0ee79",
+    "probe_sha256": "f65f1bc5c16446486d87cbc82568e61a050c1e88dcbb8879108e106b7e83532d"
+  },
+  "eligible_cells": 6,
+  "selected_cells": 6,
+  "cases": [
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-coverage-v1-002",
+      "policy": "passive",
+      "original_cell_status": "blocked",
+      "original_refill_status": "unsupported",
+      "status": "passed",
+      "baseline_kind": "freshly_reconstructed_unsplit",
+      "case_pins": {
+        "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+        "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+        "scenario_sha256": "dbdae91791f7a75d82568d650523eb31b1cd5cd4db92605f9c95f25e91451157"
+      },
+      "reconstructed_wait_start_minute": 15,
+      "reconstructed_wait_end_minute": 27,
+      "refill_minute": 23,
+      "reconstructed_pre_wait_full_checkpoint_equal": true,
+      "refill_restore_full_checkpoint_equal": true,
+      "continuation": [
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        },
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        }
+      ],
+      "reconstructed_wait_end_comparison": {
+        "versioned_state_except_decision_and_actions_equal": true,
+        "audit_equal": true,
+        "operations_equal": true,
+        "fire_equal": true,
+        "communications_equal": true,
+        "population_evidence_equal": true,
+        "public_situation_except_decision_equal": true,
+        "reconstructed_baseline_decisions": 4,
+        "segmented_decisions": 15,
+        "decision_counts_equal": false,
+        "action_histories_equal": false
+      },
+      "targeted_final_minute": 1440,
+      "targeted_verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      }
+    },
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-coverage-v1-004",
+      "policy": "passive",
+      "original_cell_status": "blocked",
+      "original_refill_status": "unsupported",
+      "status": "passed",
+      "baseline_kind": "freshly_reconstructed_unsplit",
+      "case_pins": {
+        "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+        "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+        "scenario_sha256": "bf8c6109816e88c191373df3918bd74e4ee950a40cfd5d8645f467274a3fd06a"
+      },
+      "reconstructed_wait_start_minute": 15,
+      "reconstructed_wait_end_minute": 28,
+      "refill_minute": 23,
+      "reconstructed_pre_wait_full_checkpoint_equal": true,
+      "refill_restore_full_checkpoint_equal": true,
+      "continuation": [
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        },
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        }
+      ],
+      "reconstructed_wait_end_comparison": {
+        "versioned_state_except_decision_and_actions_equal": true,
+        "audit_equal": true,
+        "operations_equal": true,
+        "fire_equal": true,
+        "communications_equal": true,
+        "population_evidence_equal": true,
+        "public_situation_except_decision_equal": true,
+        "reconstructed_baseline_decisions": 5,
+        "segmented_decisions": 17,
+        "decision_counts_equal": false,
+        "action_histories_equal": false
+      },
+      "targeted_final_minute": 1440,
+      "targeted_verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      }
+    },
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-egress-v1-000",
+      "policy": "conservative",
+      "original_cell_status": "blocked",
+      "original_refill_status": "unsupported",
+      "status": "passed",
+      "baseline_kind": "freshly_reconstructed_unsplit",
+      "case_pins": {
+        "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+        "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+        "scenario_sha256": "9360e5735f3149555254be7181c13c44aee7c4a5bf0e36a63c42d48ba17ca717"
+      },
+      "reconstructed_wait_start_minute": 15,
+      "reconstructed_wait_end_minute": 23,
+      "refill_minute": 19,
+      "reconstructed_pre_wait_full_checkpoint_equal": true,
+      "refill_restore_full_checkpoint_equal": true,
+      "continuation": [
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        },
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        }
+      ],
+      "reconstructed_wait_end_comparison": {
+        "versioned_state_except_decision_and_actions_equal": true,
+        "audit_equal": true,
+        "operations_equal": true,
+        "fire_equal": true,
+        "communications_equal": true,
+        "population_evidence_equal": true,
+        "public_situation_except_decision_equal": true,
+        "reconstructed_baseline_decisions": 8,
+        "segmented_decisions": 15,
+        "decision_counts_equal": false,
+        "action_histories_equal": false
+      },
+      "targeted_final_minute": 1440,
+      "targeted_verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      }
+    },
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-egress-v1-000",
+      "policy": "passive",
+      "original_cell_status": "blocked",
+      "original_refill_status": "unsupported",
+      "status": "passed",
+      "baseline_kind": "freshly_reconstructed_unsplit",
+      "case_pins": {
+        "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+        "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+        "scenario_sha256": "9360e5735f3149555254be7181c13c44aee7c4a5bf0e36a63c42d48ba17ca717"
+      },
+      "reconstructed_wait_start_minute": 15,
+      "reconstructed_wait_end_minute": 28,
+      "refill_minute": 23,
+      "reconstructed_pre_wait_full_checkpoint_equal": true,
+      "refill_restore_full_checkpoint_equal": true,
+      "continuation": [
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        },
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        }
+      ],
+      "reconstructed_wait_end_comparison": {
+        "versioned_state_except_decision_and_actions_equal": true,
+        "audit_equal": true,
+        "operations_equal": true,
+        "fire_equal": true,
+        "communications_equal": true,
+        "population_evidence_equal": true,
+        "public_situation_except_decision_equal": true,
+        "reconstructed_baseline_decisions": 5,
+        "segmented_decisions": 17,
+        "decision_counts_equal": false,
+        "action_histories_equal": false
+      },
+      "targeted_final_minute": 1440,
+      "targeted_verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      }
+    },
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-egress-v1-003",
+      "policy": "conservative",
+      "original_cell_status": "blocked",
+      "original_refill_status": "unsupported",
+      "status": "passed",
+      "baseline_kind": "freshly_reconstructed_unsplit",
+      "case_pins": {
+        "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+        "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+        "scenario_sha256": "2ba002ce8726b73390a6c70963160d00b2ebd5814e707ef843ef920d28cd3b75"
+      },
+      "reconstructed_wait_start_minute": 15,
+      "reconstructed_wait_end_minute": 23,
+      "refill_minute": 19,
+      "reconstructed_pre_wait_full_checkpoint_equal": true,
+      "refill_restore_full_checkpoint_equal": true,
+      "continuation": [
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        },
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        }
+      ],
+      "reconstructed_wait_end_comparison": {
+        "versioned_state_except_decision_and_actions_equal": true,
+        "audit_equal": true,
+        "operations_equal": true,
+        "fire_equal": true,
+        "communications_equal": true,
+        "population_evidence_equal": true,
+        "public_situation_except_decision_equal": true,
+        "reconstructed_baseline_decisions": 9,
+        "segmented_decisions": 16,
+        "decision_counts_equal": false,
+        "action_histories_equal": false
+      },
+      "targeted_final_minute": 1440,
+      "targeted_verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      }
+    },
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-egress-v1-005",
+      "policy": "passive",
+      "original_cell_status": "blocked",
+      "original_refill_status": "unsupported",
+      "status": "passed",
+      "baseline_kind": "freshly_reconstructed_unsplit",
+      "case_pins": {
+        "inputs_sha256": "414f7c71d6c00c76587c54d6d18af6e9ff1df3dc9b214ab814bab5be6640292e",
+        "network_sha256": "50c70935e0519047a3130aa03b04a389d7434afa92e4119ec719b80cbe943402",
+        "scenario_sha256": "7afb1f448dfa730abab07f62f9e9739ae843592eed85e5b8f1088a2023aa62b0"
+      },
+      "reconstructed_wait_start_minute": 15,
+      "reconstructed_wait_end_minute": 28,
+      "refill_minute": 23,
+      "reconstructed_pre_wait_full_checkpoint_equal": true,
+      "refill_restore_full_checkpoint_equal": true,
+      "continuation": [
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        },
+        {
+          "public_equal": true,
+          "full_checkpoint_equal": true
+        }
+      ],
+      "reconstructed_wait_end_comparison": {
+        "versioned_state_except_decision_and_actions_equal": true,
+        "audit_equal": true,
+        "operations_equal": true,
+        "fire_equal": true,
+        "communications_equal": true,
+        "population_evidence_equal": true,
+        "public_situation_except_decision_equal": true,
+        "reconstructed_baseline_decisions": 5,
+        "segmented_decisions": 17,
+        "decision_counts_equal": false,
+        "action_histories_equal": false
+      },
+      "targeted_final_minute": 1440,
+      "targeted_verification": {
+        "passed": true,
+        "exact_replay": true,
+        "independent_reward_agreement": true
+      }
+    }
+  ],
+  "elapsed_seconds": 39.16,
+  "workers": 1,
+  "limitations": [
+    "Baseline is a freshly reconstructed unsplit run of the case and policy under the same pins.",
+    "The original report has no pre-wait checkpoint or action digest; equality is relative to the reconstruction and does not establish original trajectory identity or score equality.",
+    "Supplementary segmented trajectory; no checkpoint inside the original uninterrupted action.",
+    "Original matrix cells remain unchanged and blocked.",
+    "Wait for the matrix process to exit before pinning its report; terminal cells do not prove process exit.",
+    "No resume: restart in a new output directory after interruption.",
+    "Immutable sources before import and throughout execution are required; loader checks cannot attest prior execution.",
+    "SIGALRM may be delayed by native code that does not return control."
+  ]
+}

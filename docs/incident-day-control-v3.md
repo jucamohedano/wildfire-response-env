@@ -149,3 +149,22 @@ An interrupted or budget-limited run is incomplete and must be restarted in a
 new output directory; this runner does not resume a partial matrix. Unexercised
 checkpoint boundaries are reported, not counted as passed. These development
 checks do not establish real-world calibration.
+
+When a completed matrix identifies a refill phase only inside an uninterrupted
+wait, a separate probe can reconstruct the case and policy under the same pins,
+split the wait into one-minute actions and test a new checkpoint boundary:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPYCACHEPREFIX="$(mktemp -d /tmp/wildfire-v3-probe-cache.XXXXXX)" \
+PYTHONPATH=envs/wildfire_control_v3/src:envs/wildfire_response/core/src:. \
+python -m eval.validate_population_refill_probe \
+  --data-dir .runtime/wildfire-response-spain \
+  --original-report results/population-v3-runtime-matrix-20261030.json \
+  --original-report-sha256 "$(sha256sum results/population-v3-runtime-matrix-20261030.json | cut -d' ' -f1)" \
+  --output /tmp/wildfire-v3-refill-probe --wall-seconds 1200
+```
+
+This is supplemental evidence for a modified action history. Its baseline is
+a fresh reconstruction; it does not restore a checkpoint from the original run
+or remove that run's blocked matrix status. Run it only after the matrix process
+has exited. Like the matrix, the probe cannot resume an interrupted run.
