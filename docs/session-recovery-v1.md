@@ -30,3 +30,26 @@ All policy selection and its public queries form one transaction. During selecti
 The control checkpoint contains the private simulation trajectory, audit and other hidden state; policy checkpoints, observations, call records and evaluator state may also be sensitive. Store and process the journal only within the trusted boundary. Never expose journal data, run identities, exceptions or tracebacks to actors. All actions, calls, policy and observer changes must go through the driver; do not mutate or operate on the owned objects between transactions. New wrappers must recover from a fresh identically reset state. Sequence checks and locking reject stale in-process writers and unexpected state changes. If a failure leaves non-JSON state that cannot be compared safely, the instance is poisoned and cannot recover or step; use a new identically reset instance to recover the durable journal. No in-process rollback is attempted in that case. Only the most recent result is retained. Atomic same-directory replacement, file and directory fsync, and an advisory lock require a filesystem that honors those operations.
 
 Checksums detect accidental corruption, not hostile modification. Replacing a journal with an older valid journal after a process restart cannot be detected without an independent trusted monotonic anchor. An owner must prevent such rollback externally. A lost response can be redelivered for the latest committed sequence, but the caller must coordinate its own delivery acknowledgements and external history. An external agent's transcript or provider request/response is not automatically included or made durable. A model request whose response was not durably recorded is **ambiguous/incomplete**: it may already have run or incurred cost. Do not retry or claim exactly-once provider calls, external actions, payments, delivery, or model training from this protocol. Learner state and training jobs are unsupported. A custom policy is safe only if its owner satisfies the local deterministic contract; identity strings do not enforce it.
+
+## Full-day session matrix
+
+With the pinned dataset installed, the separate session matrix compares each
+active case and scripted policy with an independently driven control, restores
+one completed journal and verifies the final outcome. It does not test process
+death in every case, resume the matrix itself, or change the older matrix.
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPYCACHEPREFIX="$(mktemp -d /tmp/wildfire-session-cache.XXXXXX)" \
+PYTHONPATH=envs/wildfire_response/core/src:envs/wildfire_control_v3/src:. \
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+python -m eval.validate_session_recovery_matrix \
+  --data-dir .runtime/wildfire-response-spain \
+  --reference-report results/population-v3-runtime-matrix-20261030.json \
+  --reference-sha256 "$(sha256sum results/population-v3-runtime-matrix-20261030.json | cut -d' ' -f1)" \
+  --output /tmp/wildfire-session-matrix --wall-seconds 10800
+```
+
+Use a fresh output directory and immutable source/data. A subset, timeout or
+interruption is incomplete. The report contains aggregate results only; any
+private temporary journals must stay outside public output and may remain after
+an uncatchable process termination.
