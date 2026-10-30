@@ -12,6 +12,11 @@ on:
       - 'eval/wait_recovery_v1.py'
       - 'eval/session_recovery_v1.py'
       - 'eval/validate_session_recovery_matrix.py'
+      - 'eval/incident_weather_v1.py'
+      - 'eval/incident_weather_runtime_v1.py'
+      - 'eval/incident_eval_bridge_v1.py'
+      - 'eval/generate_incident_evaluation_v1.py'
+      - 'eval/check_incident_evaluation_v1.py'
       - 'eval/validate_wait_recovery.py'
       - 'eval/validate_wait_recovery_matrix.py'
       - 'tests/test_control_interface_v3.py'
@@ -23,6 +28,9 @@ on:
       - 'tests/test_wait_recovery*.py'
       - 'tests/test_session_recovery*.py'
       - 'tests/test_full_session_recovery_integration.py'
+      - 'tests/test_incident_weather*.py'
+      - 'tests/test_incident_eval*.py'
+      - 'tests/test_incident_qualification_v1.py'
   workflow_dispatch:
 
 jobs:
@@ -59,5 +67,10 @@ jobs:
           tests/test_session_recovery_v1.py
           tests/test_session_recovery_matrix.py
           tests/test_full_session_recovery_integration.py
+          tests/test_incident_weather_v1.py
+          tests/test_incident_weather_runtime_v1.py
+          tests/test_incident_eval_bridge_v1.py
+          tests/test_incident_evaluation_v1.py
+          tests/test_incident_qualification_v1.py
           tests/test_incident_day_core.py
           tests/test_incident_day_events.py
