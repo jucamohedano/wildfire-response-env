@@ -7,6 +7,9 @@ The result deliberately contains no replay, audit, exception text or inputs.
 
 import math
 from collections.abc import Mapping
+from . import _source_sha256
+
+_LOADED_SOURCE_SHA256 = _source_sha256(__file__)
 
 VERSION = 'wildfire-incident-day-verifier-v3'
 REWARD_VERSION = 'wildfire-incident-day-outcomes-v2'
@@ -59,6 +62,11 @@ def verify_outcome(env, *, expected_identity, infrastructure_timeout=False):
                 or verification.get('exact_replay') is not True
                 or verification.get('independent_reward_agreement') is not True):
             return _result('verification_failed')
+        after = env.trajectory()
+        if not isinstance(after, Mapping) or any(
+                type(after.get(key)) is not type(expected_identity[key])
+                or after.get(key) != expected_identity[key] for key in IDENTITY_FIELDS):
+            return _result('identity_mismatch')
         outcome = verification.get('outcomes')
         if not isinstance(outcome, Mapping):
             return _result('verification_failed')

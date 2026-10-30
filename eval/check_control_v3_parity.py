@@ -18,7 +18,7 @@ import pyarrow.parquet as pq
 
 from eval.hub_runtime import make_environment
 from envs.wildfire_response.incident_day.baselines import DayDispatcher
-from wildfire_control_v3.control import ControlCenterV3
+from wildfire_control_v3.control import ControlCenterV3, interface_digest
 from wildfire_control_v3.verifier_v3 import IDENTITY_FIELDS
 
 RELEASE_LOCK = Path(__file__).resolve().parents[1] / 'data/hub_runtime_v1/release.json'
@@ -134,6 +134,10 @@ def main(argv=None):
             raise ValueError('task identities differ from the verified package')
         _budget_check(deadline)
         control = ControlCenterV3(candidate)
+        # Capture the v3 interface identity before any episode begins; the
+        # verifier compares it again at finalization.
+        interface_pin = interface_digest()
+        report['control_interface_sha256'] = interface_pin
         report['total_active_cases'] = len(entry['scenario_ids'])
 
         class PublicRoutes:
@@ -200,7 +204,7 @@ def main(argv=None):
                 _budget_check(deadline)
                 baseline_check = baseline.verify_episode()
                 _budget_check(deadline)
-                gate = control.finalize(expected_identity=trusted)
+                gate = control.finalize(expected_identity=trusted, expected_interface_sha256=interface_pin)
                 _budget_check(deadline)
                 if (not all(baseline_check.get(k) is True for k in
                             ('passed', 'exact_replay', 'independent_reward_agreement'))

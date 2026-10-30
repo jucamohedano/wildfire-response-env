@@ -16,6 +16,9 @@ malformed action with a fixed public error, rather than exposing its contents.
 """
 
 import json
+from . import _source_sha256
+
+_LOADED_SOURCE_SHA256 = _source_sha256(__file__)
 
 
 _FIELDS = ('requests', 'authorizations', 'releases', 'status_requests', 'protection_orders')

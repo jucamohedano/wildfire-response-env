@@ -1,12 +1,14 @@
 import copy
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
 from wildfire_core.incident_day import IncidentDayEnv, fixture_inputs
 from envs.wildfire_response.incident_day.environment import implementation_digest
-from wildfire_control_v3.control import ControlCenterV3, _fingerprint, tool_definitions_v3
+from wildfire_control_v3.control import ControlCenterV3, _fingerprint, interface_digest, tool_definitions_v3
 from wildfire_control_v3.verifier_v3 import IDENTITY_FIELDS
 
 
@@ -184,16 +186,49 @@ def test_read_only_tool_errors_do_not_expose_exception_details(wrapped, monkeypa
 
 def test_terminal_reward_requires_pinned_driver_verification(wrapped):
     identity = {key: wrapped.environment.trajectory()[key] for key in IDENTITY_FIELDS}
+    interface_pin = interface_digest()
     for _ in range(3):
         result = wrapped.execute('commit_orders', {'action': {'unknown': []}})
     assert result['truncated'] is True
     assert result['reward'] is None and result['verification_required'] is True
     assert 'outcomes' not in result['info']
-    assert wrapped.finalize(expected_identity=identity)['status'] == 'invalid_abandonment'
-    assert wrapped.finalize(expected_identity=identity)['score'] == 0.0
-    assert wrapped.finalize(expected_identity=identity, infrastructure_timeout=True)['score'] is None
+    assert wrapped.finalize(expected_identity=identity, expected_interface_sha256=interface_pin)['status'] == 'invalid_abandonment'
+    assert wrapped.finalize(expected_identity=identity, expected_interface_sha256=interface_pin)['score'] == 0.0
+    assert wrapped.finalize(expected_identity=identity, expected_interface_sha256='bad')['status'] == 'identity_mismatch'
+    assert wrapped.finalize(expected_identity=identity, expected_interface_sha256=interface_pin, infrastructure_timeout=True)['score'] is None
     identity['seed'] += 1
-    assert wrapped.finalize(expected_identity=identity)['status'] == 'identity_mismatch'
+    assert wrapped.finalize(expected_identity=identity, expected_interface_sha256=interface_pin)['status'] == 'identity_mismatch'
+
+
+def test_interface_change_during_verification_is_not_scored(wrapped, monkeypatch):
+    import wildfire_control_v3.control as module
+    identity = {key: wrapped.environment.trajectory()[key] for key in IDENTITY_FIELDS}
+    interface_pin = interface_digest()
+    for _ in range(3):
+        wrapped.execute('commit_orders', {'action': {'unknown': []}})
+    values = iter((interface_pin, '0' * 64))
+    monkeypatch.setattr(module, 'interface_digest', lambda: next(values))
+    result = wrapped.finalize(expected_identity=identity, expected_interface_sha256=interface_pin)
+    assert result['status'] == 'identity_mismatch' and result['score'] is None
+
+
+def test_preimported_helper_changed_before_control_import_cannot_be_scored():
+    script = r'''
+from pathlib import Path
+from unittest.mock import patch
+import wildfire_control_v3.verifier_v3
+original = Path.read_bytes
+def updated(path):
+    data = original(path)
+    return data + b'\n# changed on disk' if path.name == 'verifier_v3.py' else data
+with patch.object(Path, 'read_bytes', updated):
+    import wildfire_control_v3.control as control
+    wrapper = control.ControlCenterV3(object())
+    result = wrapper.finalize(expected_identity={}, expected_interface_sha256=control.interface_digest())
+    assert result['status'] == 'identity_mismatch' and result['score'] is None
+'''
+    result = subprocess.run([sys.executable, '-c', script], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
 
 
 def test_private_checkpoint_restores_guard_and_seeded_continuation(wrapped):
@@ -249,6 +284,7 @@ def test_full_fixture_day_matches_v2_and_independently_verifies(wrapped):
     initial, _ = baseline.reset('incident-day-egress-v1-000')
     assert initial == wrapped.environment.get_situation()
     identity = {key: baseline.trajectory()[key] for key in IDENTITY_FIELDS}
+    interface_pin = interface_digest()
     while not baseline.terminated and not baseline.truncated:
         observation, reward, terminated, truncated, info = baseline.advance_time(60)
         result = wrapped.execute('advance', {})
@@ -259,6 +295,6 @@ def test_full_fixture_day_matches_v2_and_independently_verifies(wrapped):
         if not (terminated or truncated):
             assert result['reward'] == reward
     assert baseline.terminated and baseline.minute == 1440
-    final = wrapped.finalize(expected_identity=identity)
+    final = wrapped.finalize(expected_identity=identity, expected_interface_sha256=interface_pin)
     assert final['status'] == 'full_day' and final['verified'] is True
     assert final['score'] == pytest.approx(baseline.verify_episode()['outcomes']['graded_score'])

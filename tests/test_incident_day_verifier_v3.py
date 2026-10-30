@@ -111,6 +111,17 @@ class VerifierV3Tests(unittest.TestCase):
         assert verify_outcome(env, expected_identity={})['status'] == 'identity_mismatch'
         assert env.calls == 0
 
+    def test_identity_change_during_replay_is_not_scored(self):
+        env = StubEnv()
+        expected = env.trajectory()
+        verification = env.verification
+        def change():
+            env.trajectory = lambda: {**expected, 'scenario_sha256':'changed'}
+            return verification
+        env.verify_episode = change
+        result = verify_outcome(env, expected_identity=expected)
+        assert result['status'] == 'identity_mismatch' and result['score'] is None
+
     def test_real_abandonment_replay_and_reward_tampering(self):
         inputs, network = fixture_inputs()
         env = IncidentDayEnv(inputs, network, expected_inputs_sha256=inputs['sha256'],

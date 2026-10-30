@@ -7,11 +7,13 @@ from threading import RLock
 
 from wildfire_core.incident_day import IncidentDayEnv, IncidentDayTools, tools
 
-from . import INTERFACE_VERSION
+from . import INTERFACE_VERSION, _LOADED_PACKAGE_SOURCE_SHA256, _source_sha256
+from . import action_feedback_v3 as _feedback_module, briefing_v3 as _briefing_module
+from . import knowledge_v3 as _knowledge_module, verifier_v3 as _verifier_module
 from .action_feedback_v3 import check_action_v3, explain_result_v3
 from .briefing_v3 import build_briefing_v3
 from .knowledge_v3 import reconcile_situation_v3
-from .verifier_v3 import verify_outcome
+from .verifier_v3 import VERSION as VERIFIER_VERSION, verify_outcome
 
 
 def tool_definitions_v3():
@@ -49,12 +51,33 @@ def _fingerprint(value):
     return hashlib.sha256(raw).digest()
 
 
-def _interface_digest():
+def interface_digest():
     """Pin the additive interface separately from the frozen engine digest."""
     package = Path(__file__).parent
     files = {path.name: hashlib.sha256(path.read_bytes()).hexdigest()
              for path in sorted(package.glob('*.py'))}
     return _fingerprint(files).hex()
+
+
+_LOADED_CONTROL_SOURCE_SHA256 = _source_sha256(__file__)
+
+
+def _loaded_sources_match():
+    try:
+        package = Path(__file__).parent
+        modules = (_feedback_module, _briefing_module, _knowledge_module, _verifier_module)
+        return (_source_sha256(package / '__init__.py') == _LOADED_PACKAGE_SOURCE_SHA256
+                and _source_sha256(__file__) == _LOADED_CONTROL_SOURCE_SHA256
+                and all(Path(module.__file__).resolve().parent == package.resolve()
+                        and _source_sha256(module.__file__) == module._LOADED_SOURCE_SHA256
+                        for module in modules))
+    except (OSError, AttributeError, TypeError):
+        return False
+
+
+# A long-running driver must restart after editing the interface package. The
+# post-verification check below also detects edits made during a replay.
+_LOADED_INTERFACE_SHA256 = interface_digest()
 
 
 class ControlCenterV3:
@@ -101,11 +124,13 @@ class ControlCenterV3:
         Never expose this method or its result as an agent tool or public artifact.
         """
         with self._lock:
+            if not _loaded_sources_match() or interface_digest() != _LOADED_INTERFACE_SHA256:
+                raise RuntimeError('Control interface source changed; restart before checkpointing')
             saved_guard = self._last_failed_check
             if saved_guard is not None and saved_guard[0] != _fingerprint(self.environment.get_situation()):
                 saved_guard = None
             signature = None if saved_guard is None else [x.hex() for x in saved_guard]
-            state = {'version': self.version, 'interface_sha256': _interface_digest(),
+            state = {'version': self.version, 'interface_sha256': interface_digest(),
                      'identical_check_limit': self.identical_check_limit,
                      'last_failed_check': signature, 'repetitions': self._repetitions if signature else 0,
                      'option_snapshots': [[key.hex(), value.hex()] for key, value in sorted(self._option_snapshots.items())],
@@ -123,7 +148,8 @@ class ControlCenterV3:
             state = {key: item for key, item in value.items() if key != 'sha256'}
             actual = _fingerprint(state)
             if (set(value) != expected or actual is None or value['sha256'] != actual.hex()
-                    or value['version'] != self.version or value['interface_sha256'] != _interface_digest()
+                    or value['version'] != self.version or value['interface_sha256'] != interface_digest()
+                    or not _loaded_sources_match() or interface_digest() != _LOADED_INTERFACE_SHA256
                     or value['identical_check_limit'] != self.identical_check_limit
                     or type(value['repetitions']) is not int or not 0 <= value['repetitions'] <= self.identical_check_limit):
                 raise ValueError('Control checkpoint identity or integrity differs')
@@ -179,15 +205,30 @@ class ControlCenterV3:
         briefing['control_interface_version'] = self.version
         return briefing
 
-    def finalize(self, *, expected_identity, infrastructure_timeout=False):
+    def finalize(self, *, expected_identity, expected_interface_sha256, infrastructure_timeout=False):
         """Trusted driver boundary: score only after pinned independent verification.
 
         This is intentionally not an actor-facing tool. The caller supplies
         predeclared trusted pins and the authoritative timeout state.
         """
         with self._lock:
-            return verify_outcome(self.environment, expected_identity=expected_identity,
-                                  infrastructure_timeout=infrastructure_timeout)
+            if type(infrastructure_timeout) is not bool:
+                raise TypeError('infrastructure_timeout must be a boolean')
+            if infrastructure_timeout:
+                return verify_outcome(self.environment, expected_identity=expected_identity,
+                                      infrastructure_timeout=True)
+            if (not isinstance(expected_interface_sha256, str)
+                    or expected_interface_sha256 != _LOADED_INTERFACE_SHA256
+                    or not _loaded_sources_match()
+                    or expected_interface_sha256 != interface_digest()):
+                return {'verifier_version': VERIFIER_VERSION, 'status': 'identity_mismatch',
+                        'verified': False, 'score_eligible': False, 'score': None}
+            result = verify_outcome(self.environment, expected_identity=expected_identity,
+                                    infrastructure_timeout=infrastructure_timeout)
+            if not _loaded_sources_match() or expected_interface_sha256 != interface_digest():
+                return {'verifier_version': VERIFIER_VERSION, 'status': 'identity_mismatch',
+                        'verified': False, 'score_eligible': False, 'score': None}
+            return result
 
     def execute(self, name, arguments):
         with self._lock:

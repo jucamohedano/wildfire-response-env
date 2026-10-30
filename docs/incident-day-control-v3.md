@@ -59,13 +59,20 @@ actions include the original public observation plus a separately labelled
 briefing, so no observation fields are replaced by a summary.
 
 Terminal action results deliberately withhold the raw score until a trusted
-driver calls `finalize(expected_identity=..., infrastructure_timeout=...)`.
+driver calls `finalize(expected_identity=..., expected_interface_sha256=...,
+infrastructure_timeout=...)`.
 The caller must supply predeclared task, seed, engine, input, network and
-scenario identity pins from its evaluation configuration; never take its
+scenario identity pins and the v3 interface code digest from its evaluation
+configuration; never take its
 expected pins from the run being evaluated. The gate invokes the v2 replay and
 independent reward calculation, rejects mismatched identity, and distinguishes
 completed days, invalid abandonment, censoring, incomplete runs and timeouts.
 It does not prove field realism. The caller must report timeouts accurately.
+`wildfire_control_v3.control.interface_digest()` can be used when preparing and
+recording an evaluation configuration before the run starts. Use a fresh
+process and immutable source files for evaluation. The interface records source
+fingerprints when its modules load and checks them around verification; this
+is an integrity check, not a security attestation of an untrusted process.
 
 `private_checkpoint()` and `restore_private_checkpoint(...)` are **trusted
 driver methods**, not model tools. Their envelope contains the v2 checkpoint,

@@ -1,0 +1,38 @@
+name: Incident-day control interface v3
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/control-interface-v3.yml'
+      - 'envs/wildfire_control_v3/**'
+      - 'envs/wildfire_response/core/**'
+      - 'eval/check_control_v3_parity.py'
+      - 'tests/test_control_interface_v3.py'
+      - 'tests/test_control_v3_parity_runner.py'
+      - 'tests/test_incident_day_*_v3.py'
+  workflow_dispatch:
+
+jobs:
+  fixture-and-interface:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install core, interface and test dependencies
+        run: python -m pip install -e envs/wildfire_response/core -e envs/wildfire_control_v3 pytest==9.2.0 pyarrow==26.0.0
+      - name: Test public interface and existing core contracts
+        run: >-
+          python -m pytest -q
+          tests/test_control_interface_v3.py
+          tests/test_control_v3_parity_runner.py
+          tests/test_incident_day_action_feedback_v3.py
+          tests/test_incident_day_briefing_v3.py
+          tests/test_incident_day_knowledge_v3.py
+          tests/test_incident_day_verifier_v3.py
+          tests/test_incident_day_core.py
+          tests/test_incident_day_events.py

@@ -25,6 +25,9 @@ last-known knowledge, not a guarantee of present safety or location.
 """
 
 from copy import deepcopy
+from . import _source_sha256
+
+_LOADED_SOURCE_SHA256 = _source_sha256(__file__)
 
 
 def _minute(value):

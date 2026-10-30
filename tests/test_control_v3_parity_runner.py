@@ -86,7 +86,7 @@ def test_release_manifest_and_task_bytes_are_pinned(tmp_path):
     ('reward_mismatch','failed',1), ('identity_mismatch','failed',1),
 ])
 def test_full_runner_failure_and_timeout_paths(tmp_path, monkeypatch, mode, status, code):
-    clock = {'now':0, 'created':0}
+    clock = {'now':0, 'created':0, 'finalize':[]}
     monkeypatch.setattr(runner.time, 'monotonic', lambda: clock['now'])
     cases = ['case'] + [f'case-{i}' for i in range(5)]
     entry = {'scenario_ids':cases, 'inputs_sha256':'i', 'network_sha256':'n'}
@@ -140,6 +140,7 @@ def test_full_runner_failure_and_timeout_paths(tmp_path, monkeypatch, mode, stat
                     'briefing':{'reports':{'delivered_count':0}}}
 
         def finalize(self, **kwargs):
+            clock['finalize'].append(kwargs)
             if mode == 'candidate_verify_late':
                 clock['now'] = 11
             return {'status':'full_day', 'verified':True, 'score':0.6}
@@ -160,6 +161,8 @@ def test_full_runner_failure_and_timeout_paths(tmp_path, monkeypatch, mode, stat
     actual = runner.main(['--data-dir', str(tmp_path), '--wall-seconds', '10',
                           '--limit', '1', '--output', str(output)])
     assert actual == code and json.loads(output.read_text())['status'] == status
+    if mode == 'normal':
+        assert clock['finalize'][0]['expected_interface_sha256'] == runner.interface_digest()
 
 
 @pytest.mark.parametrize('value', ['nan', 'inf', '-inf', '0'])
