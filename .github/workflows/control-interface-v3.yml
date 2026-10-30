@@ -11,6 +11,7 @@ on:
       - 'eval/validate_population_refill_probe.py'
       - 'eval/wait_recovery_v1.py'
       - 'eval/validate_wait_recovery.py'
+      - 'eval/validate_wait_recovery_matrix.py'
       - 'tests/test_control_interface_v3.py'
       - 'tests/test_control_v3_parity_runner.py'
       - 'tests/test_control_population_v3_integration.py'
@@ -50,5 +51,6 @@ jobs:
           tests/test_population_refill_probe.py
           tests/test_wait_recovery_v1.py
           tests/test_wait_recovery_validation.py
+          tests/test_wait_recovery_active_matrix.py
           tests/test_incident_day_core.py
           tests/test_incident_day_events.py

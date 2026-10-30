@@ -203,3 +203,7 @@ The [recovery campaign](../results/wait-recovery-v1-20261030.json) exercises
 the six previously blocked case-policy pairs with real child-process deaths,
 including during a refill tick. It reconstructs those cases and does not prove
 identity with the archived trajectories. It is not a 48-case recovery matrix.
+
+`eval.validate_wait_recovery_matrix` separately checks a selected wait in each
+active case and policy. Its report describes only those reconstructed waits and
+their short policy continuations, not full-day recovery or matrix-runner resume.
