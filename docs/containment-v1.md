@@ -27,7 +27,8 @@ public approach cell, with two distinct proposals per edge: one for each
 public offer and edge; neither alternative depends on hidden line or fire
 state. An agent can select either orientation using public information. These
 are grid-cell abstractions, not field assessments of what is at risk. Select
-one by calling `authorize_hold(offer_id, proposal_id)`, which submits the ordinary one-minute authorization. Aircraft,
+one by calling `authorize_hold(offer_id, proposal_id)`, which submits the
+ordinary one-minute authorization. Aircraft,
 invented segments, stale offers and a segment already reserved by an actor's
 hold command are rejected. A reservation reflects the actor's own authorization,
 not private dispatch success. Reservations are retired only when public evidence
@@ -52,13 +53,12 @@ The adapter checks the resulting actual duty and water deductions against the
 kernel costs. Units cannot hold and suppress in the same minute. A failed line
 cannot receive more work from its old mission. Once its reservation is retired
 by delivered evidence, a new offer and authorization can restart a failed line
-at zero strength. A fresh
-mission can also choose the opposite side of an intact line: the orientation
+at zero strength. A fresh mission can also choose the opposite side of an intact line: the orientation
 changes when the newly authorized unit first performs hold work, not when it
 is dispatched. The standalone kernel trusts the caller to authorize such a
 change; simultaneous assignments on the same edge must agree on the side. If
-safety, access, duty, water, or target checks fail, existing operations can stop or
-return the unit; a proposal does not override those checks.
+safety, access, duty, water, or target checks fail, existing operations can
+stop or return the unit; a proposal does not override those checks.
 
 While a holding unit works, it can report a coarse `holding` or `breached`
 status; when an unavailable line is encountered it reports `unavailable`. These
@@ -70,10 +70,65 @@ setting applies to its own `observe`/`reports` API; adapter reports use the
 incident-day bus instead. Private containment work records, hidden line state,
 undelivered communications and joint checkpoints are trusted-driver data.
 
-`checkpoint()` and `restore()` preserve the host and derivative fire state,
-RNGs, missions, proposals, actor reservations, private work records, and queued
-communications together. Do not expose these checkpoints to an actor. The
-integrity hashes detect accidental changes, not malicious tampering.
+## Public transcript, replay and reward verification
+
+`trajectory()` returns `wildfire-containment-public-transcript-v1`: the public
+reset arguments and result, followed by ordered outermost episode API calls,
+arguments, public results or actor-visible errors, and before/after minutes.
+The recorded calls include situation and report reads, draft checks, route and
+evacuation queries, ordinary commands and waits, `propose_hold`, and
+`authorize_hold`. Internal calls are not recorded twice. `trajectory()` itself,
+trusted verification, private checkpoints and replay-control calls are not
+transcript entries. Reset starts a new transcript. Mid-episode `outcomes()` is
+rejected because it would expose hidden state; terminal outcomes are public.
+
+The transcript contains only information returned to the actor or supplied by
+it, not private line strengths, undelivered reports, future event schedules,
+minute audits, simulator checkpoints or evaluator labels. The reset entry
+includes a seed only if the caller supplied one. Protect transcript storage as
+appropriate for the actor's own submitted data. Inputs to recorded calls must
+be finite JSON values; unsupported values are rejected before the call changes
+state. A public result that cannot be serialized, an interruption, or a failure in a
+call that may mutate state invalidates the transcript even if the clock did not
+move. Malformed public call signatures, including a conflicting caller-supplied
+`self` keyword on a bound call, are checked before entering a method and
+recorded as recoverable TypeErrors. Explicit pre-mutation hold, route and
+evacuation identity validation failures, and failures of the pinned read-only
+queries, also remain recordable. Route or
+evacuation failures after the engine starts building approaches still invalidate
+the transcript. A failed base restore also invalidates the
+transcript and re-enables recording; restore a valid checkpoint or reset before
+publishing or verifying. Reads add transcript entries but do not advance simulation
+time or consume fire randomness. This API is for a single trusted driver; it is
+not a concurrent or adversarial sandbox.
+
+For trusted replay, save `trajectory()` separately from the result of
+`private_replay_pins()`. **The pins are private:** they include the scenario's
+seed and identity. Construct a fresh adapter with independently trusted, pinned
+inputs, network, containment configuration and pressure scale, then call
+`fresh.replay_transcript(transcript, **pins)`. The method checks the trusted
+transcript digest and the core, adapter-source, input, network, scenario, seed
+and configuration pins, reproduces reset and each public call in order, and
+compares every recorded result or error using canonical JSON, preserving the
+difference between booleans, integers and floating-point numbers. The expected transcript digest must
+come from a trusted source, not be recomputed from an untrusted replacement.
+Discard a replay instance after any error. Hashes detect accidental changes;
+they are not signatures or authentication against malicious input.
+
+After a terminal or abandoned episode, `verify_episode()` performs that fresh
+replay, compares the complete private checkpoint including fire, operations,
+communications, containment records and the minute audit, and independently
+recomputes the existing incident-day reward from the replayed minute audit.
+It checks the resulting outcome fields and recorded reward. An abandoned or
+censored run is not a successful completed day. This checks deterministic
+consistency and independent reward accounting, not the physical accuracy of
+the fire, a separately observed containment audit, or policy quality.
+
+`checkpoint()` and `restore()` preserve the transcript as well as host and
+fire state, RNGs, missions, proposals, reservations, private work records and
+queued communications. Do not expose these checkpoints to an actor. They pin
+this package's Python sources and the underlying identities, and their integrity
+hashes detect accidental changes, not malicious tampering.
 
 The separate `IncidentWeatherRuntimeV1` and `WeatherDayFire` are currently
 **incompatible** with this adapter: the weather runtime installs its own
@@ -99,30 +154,25 @@ not modify the installed core. It fails closed on unsupported fire stepping,
 resource-accounting disagreement, unresolved-land censoring, unreviewed core
 versions and artifact export. Host-side exceptions after a minute begins are not
 transactional; restore a prior joint checkpoint rather than retrying a partially
-applied step. `trajectory()` and `verify_episode()` deliberately raise: the
-frozen action and query logs do not record the proposed edge, protected side,
-or `authorize_hold` call. Replaying only its ordinary authorization would
-produce a suppression mission instead. Safe support needs a versioned public
-transcript with hold proposals and authorizations in causal order, a replay
-implementation that validates their identities and outputs, and independent
-containment audit and reward checks. Until those exist, there is no supported
-trajectory-based replay or agent evaluation. Typed OpenEnv/tools, persistent artifact export, independent
-containment auditing, full-day acceptance and the active-case/policy matrix
-remain unimplemented. Do not use this adapter to claim the original benchmark's
-scores or verification guarantees.
+applied step. Typed OpenEnv/tools, persistent artifact export, an independent
+containment audit, full-day acceptance and the active-case/policy matrix remain
+unimplemented. Do not use this adapter to claim the original benchmark's scores
+or validation guarantees.
 
 The focused fixture test exercises the real request, offer, authorization,
 travel, setup, shared engine water and duty, exhaustion, delayed report and
 joint-checkpoint replay. Focused regressions also cover automatic returns after
 water or duty exhaustion, retrying the same line after public status arrives,
-and declined replacement holds, including delayed delivery and stale reports. It then places one controlled synthetic fire source
+and declined replacement holds, including delayed delivery and stale reports.
+A separate probe places one controlled synthetic fire source
 next to the built segment and checks that the actual environment fire step
 blocks that crossing while a matching `DayFire` ignites it. This controlled
 probe is not a historical or physically calibrated fire scenario. A separate
-CPU smoke explicitly repeats the same public request, directional proposal and
-hold authorization on two instances, compares each subsequent result, reaches
-minute 1,440 without censoring, and compares the final private checkpoints.
-That test is not trajectory-based replay or independent evaluation.
+CPU test repeats the same public request, directional proposal and hold
+authorization on two instances, restores a third from a joint checkpoint,
+reaches minute 1,440 without censoring and compares the final checkpoints. It
+then verifies a fresh transcript replay and independent reward recomputation.
+This single synthetic case is not the active-case/policy acceptance matrix.
 
 ## Fire derivative and line rule
 

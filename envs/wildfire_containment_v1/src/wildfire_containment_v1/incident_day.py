@@ -1,19 +1,23 @@
 """Narrow opt-in incident-day adapter, pinned to the reviewed core."""
 import copy
 import hashlib
+import math
 from pathlib import Path
 
 from envs.wildfire_response.incident_day import environment as day
 from envs.wildfire_response.incident_day.environment import IncidentDayEnv, implementation_digest
 from envs.wildfire_response.incident_day.events import EventBus
+from envs.wildfire_response.incident_day.outcomes import recompute
 from envs.wildfire_response.incident_day.scenarios import DayFire
 from envs.wildfire_response.incident_day.scenarios import grid_point
 from envs.wildfire_response.regional.ops.generator import digest
 
 from .fire import ContainmentDayFire
 from .kernel import ContainmentKernel, _edge, _number
+from .transcript import (PUBLIC_CALLS, TRANSCRIPT_VERSION, arguments, json_equal,
+                         json_result, transcribed)
 
-VERSION = 'wildfire-containment-incident-adapter-v4'
+VERSION = 'wildfire-containment-incident-adapter-v9'
 CORE = 'af4adc0b2fb92282246411dbac83c1eeac23eb3b4730200c0b34dc288b59323a'
 
 
@@ -62,31 +66,58 @@ class ContainmentIncidentDayEnv(IncidentDayEnv):
         self._tick_work = []
         self._observed = {}
         self._containment_audit = []
+        self._transcript = []
+        self._transcript_reset = None
+        self._transcript_enabled = False
+        self._transcript_depth = 0
+        self._safe_validation_error = None
+        self._transcript_valid = True
+
+    def _check_public_runtime(self):
+        _check_runtime()
+
+    def _reject_public_validation(self, error):
+        # Mark this exact pre-mutation exception, not its type. A later failure
+        # of the same type after a cache update must still poison the transcript.
+        self._safe_validation_error = error
+        raise error
 
     def reset(self, scenario_id=None, seed=None):
         _check_runtime()
         if implementation_digest() != CORE or self._source_pin != _source_digest():
             raise RuntimeError('Adapter or incident-day core source changed')
+        reset_args = arguments((), dict(scenario_id=scenario_id, seed=seed))
+        self._transcript_enabled = False
+        self._transcript, self._transcript_reset = [], None
+        self._transcript_valid = True
         self._missions, self._proposal_cache, self._observed, self._requested = {}, {}, {}, {}
         self._pending_hold, self._tick_work = None, []
         self._containment_audit = []
-        observation, info = super().reset(scenario_id, seed)
-        self.fire = ContainmentDayFire.from_day_fire(self.fire,
-            containment=ContainmentKernel(**self._config), pressure_scale=self._scale)
+        try:
+            observation, info = super().reset(scenario_id, seed)
+            self.fire = ContainmentDayFire.from_day_fire(self.fire,
+                containment=ContainmentKernel(**self._config), pressure_scale=self._scale)
+            self._transcript_reset = dict(arguments=reset_args, result=json_result((observation, info)))
+        except BaseException:
+            self._transcript_valid = False
+            self._transcript_enabled = True
+            raise
+        self._transcript_enabled = True
         return observation, info
 
+    @transcribed
     def propose_hold(self, offer_id):
         """Propose both protected endpoints for each public approach edge."""
         _check_runtime()
         if self._scenario is None or self.terminated or self.truncated:
-            raise RuntimeError('A live episode is required')
+            self._reject_public_validation(RuntimeError('A live episode is required'))
         offer = self._offers.get(offer_id)
         if not offer or offer['status'] != 'offered' or offer['expires_at'] <= self.minute:
-            raise ValueError('Choose a live delivered offer')
+            self._reject_public_validation(ValueError('Choose a live delivered offer'))
         resource = self._known_resources.get(offer['resource_id'])
         approach = self._approaches.get(offer['approach_id'])
         if not resource or resource['kind'] not in ('crew', 'engine') or not approach:
-            raise ValueError('A ground offer with a public approach is required')
+            self._reject_public_validation(ValueError('A ground offer with a public approach is required'))
         x, y = approach['approach_grid']
         result = []
         for dx, dy in ((-1, 0), (0, -1), (0, 1), (1, 0)):
@@ -102,25 +133,27 @@ class ContainmentIncidentDayEnv(IncidentDayEnv):
                 result.append(proposal)
         return result
 
+    @transcribed
     def authorize_hold(self, offer_id, proposal_id):
         """Authorize the existing offer and bind its proposed line to dispatch."""
         _check_runtime()
         proposal = self._proposal_cache.get(proposal_id)
         if not proposal or proposal['offer_id'] != offer_id:
-            raise ValueError('Choose a line proposed for this offer')
+            self._reject_public_validation(ValueError('Choose a line proposed for this offer'))
         offer = self._offers.get(offer_id)
         if not offer or offer['status'] != 'offered' or offer['expires_at'] <= self.minute:
-            raise ValueError('Offer is no longer live')
+            self._reject_public_validation(ValueError('Offer is no longer live'))
         if any(item['edge'] == proposal['edge'] for items in self._requested.values() for item in items):
-            raise ValueError('Line already has a hold mission')
+            self._reject_public_validation(ValueError('Line already has a hold mission'))
         if not self.check_action({'authorizations': [offer_id]})['valid']:
-            raise ValueError('Authorization is invalid')
+            self._reject_public_validation(ValueError('Authorization is invalid'))
         self._pending_hold = copy.deepcopy(proposal)
         try:
             return self.step({'authorizations': [offer_id]})
         finally:
             self._pending_hold = None
 
+    @transcribed
     def step(self, action):
         _check_runtime()
         # Reservations are retired only when relevant public evidence arrives.
@@ -132,6 +165,54 @@ class ContainmentIncidentDayEnv(IncidentDayEnv):
                 edge=copy.deepcopy(self._pending_hold['edge']), requested_at=self.minute,
                 dispatch_at=self.minute + 1, offer_id=self._pending_hold['offer_id']))
         return super().step(action)
+
+    @transcribed
+    def advance_time(self, max_minutes=60):
+        return super().advance_time(max_minutes)
+
+    @transcribed
+    def request_status(self, center_id, subject='situation'):
+        return super().request_status(center_id, subject)
+
+    @transcribed
+    def check_action(self, action):
+        return super().check_action(action)
+
+    @transcribed
+    def get_situation(self):
+        return super().get_situation()
+
+    @transcribed
+    def get_reports(self, ids=None, *, after_cursor=0, limit=20):
+        return super().get_reports(ids, after_cursor=after_cursor, limit=limit)
+
+    @transcribed
+    def route_options(self, resource_id, sector_id='incident'):
+        # Mirror the core's checks before it can populate _approaches.
+        try:
+            unit = self._known_resources.get(resource_id)
+        except TypeError as error:
+            self._reject_public_validation(error)
+        if unit is None or sector_id != 'incident':
+            self._reject_public_validation(ValueError('Choose a public resource and sector'))
+        return super().route_options(resource_id, sector_id)
+
+    @transcribed
+    def evacuation_options(self, group_id, destination_id):
+        # The core writes proposed journeys after these public-identity checks.
+        try:
+            valid = group_id in self._known_groups and destination_id in self._known_destinations
+        except TypeError as error:
+            self._reject_public_validation(error)
+        if not valid:
+            self._reject_public_validation(ValueError('Choose a reported group and destination'))
+        return super().evacuation_options(group_id, destination_id)
+
+    @transcribed
+    def outcomes(self):
+        if not (self.terminated or self.truncated):
+            raise RuntimeError('Outcomes are available only after the episode ends')
+        return super().outcomes()
 
     def _receive(self, records):
         super()._receive(records)
@@ -301,7 +382,10 @@ class ContainmentIncidentDayEnv(IncidentDayEnv):
                      config=copy.deepcopy(self._config), pressure_scale=self._scale,
                      missions=copy.deepcopy(self._missions), proposals=copy.deepcopy(self._proposal_cache),
                      observed=copy.deepcopy(self._observed), requested=copy.deepcopy(self._requested),
-                     containment_audit=copy.deepcopy(self._containment_audit))
+                     containment_audit=copy.deepcopy(self._containment_audit),
+                     transcript=copy.deepcopy(self._transcript),
+                     transcript_reset=copy.deepcopy(self._transcript_reset),
+                     transcript_valid=self._transcript_valid)
         value['sha256'] = digest(value)
         return value
 
@@ -311,25 +395,143 @@ class ContainmentIncidentDayEnv(IncidentDayEnv):
         if (not isinstance(value, dict) or value.get('version') != VERSION
                 or value.get('source') != _source_digest() or self._source_pin != _source_digest()
                 or implementation_digest() != CORE or value.get('core') != CORE
-                or value.get('config') != self._config or value.get('pressure_scale') != self._scale
+                or not json_equal(value.get('config'), self._config)
+                or not json_equal(value.get('pressure_scale'), self._scale)
                 or value.get('sha256') != digest({k: v for k, v in value.items() if k != 'sha256'})):
             raise ValueError('Adapter checkpoint identity or integrity differs')
         fire = ContainmentDayFire.restore(value['fire'])
         if (digest(value['fire']['fire']) != digest(value['base']['state']['fire'])
-                or fire._containment._minute != value['base']['state']['minute']):
+                or not json_equal(fire._containment._minute, value['base']['state']['minute'])):
             raise ValueError('Adapter checkpoint fire or clock differs')
-        super().restore(value['base'])
-        self.fire = fire
-        self._missions = value['missions']
-        self._proposal_cache = value['proposals']
-        self._observed = value['observed']
-        self._requested = value['requested']
-        self._containment_audit = value['containment_audit']
-        self._pending_hold, self._tick_work = None, []
-        return self.get_situation()
-
-    def verify_episode(self):
-        raise RuntimeError('Containment episode verification is not implemented')
+        self._transcript_enabled = False
+        try:
+            super().restore(value['base'])
+            self.fire = fire
+            self._missions = value['missions']
+            self._proposal_cache = value['proposals']
+            self._observed = value['observed']
+            self._requested = value['requested']
+            self._containment_audit = value['containment_audit']
+            self._pending_hold, self._tick_work = None, []
+            self._transcript = value['transcript']
+            self._transcript_reset = value['transcript_reset']
+            self._transcript_valid = value['transcript_valid']
+            self._transcript_depth = 0
+            result = IncidentDayEnv.get_situation(self)
+        except BaseException:
+            # Base restore can have partially replaced state. Continue recording
+            # if the caller proceeds, but never publish/verify this transcript.
+            self._transcript_valid = False
+            self._transcript_enabled = True
+            raise
+        self._transcript_enabled = True
+        return result
 
     def trajectory(self):
-        raise RuntimeError('Containment trajectory export is not implemented')
+        """Return only public calls and their public results; never private state."""
+        _check_runtime()
+        if self._scenario is None or not self._transcript_valid or self._transcript_reset is None:
+            raise RuntimeError('A valid reset transcript is required')
+        return copy.deepcopy(dict(version=TRANSCRIPT_VERSION, adapter_version=VERSION,
+                                  reset=self._transcript_reset, calls=self._transcript))
+
+    def private_replay_pins(self):
+        """Trusted driver only: includes private seed and scenario identity."""
+        transcript = self.trajectory()
+        return dict(expected_transcript_sha256=digest(transcript),
+                    expected_scenario_sha256=self._scenario['sha256'],
+                    expected_seed=self._scenario['seed'], expected_core_sha256=CORE,
+                    expected_adapter_sha256=self._source_pin,
+                    expected_inputs_sha256=self.inputs['sha256'],
+                    expected_network_sha256=self.network.sha256,
+                    expected_containment_config=copy.deepcopy(self._config),
+                    expected_pressure_scale=self._scale)
+
+    def replay_transcript(self, transcript, *, expected_transcript_sha256,
+                          expected_scenario_sha256, expected_seed,
+                          expected_core_sha256, expected_adapter_sha256,
+                          expected_inputs_sha256, expected_network_sha256,
+                          expected_containment_config, expected_pressure_scale):
+        """Replay public calls in a fresh instance using caller-trusted pins.
+
+        Inputs, network, configuration, and pressure scale are independently
+        supplied to this instance's constructor. Discard this instance on error.
+        """
+        _check_runtime()
+        if type(self) is not ContainmentIncidentDayEnv or self._scenario is not None:
+            raise ValueError('Replay requires a fresh, unmodified adapter')
+        if (expected_core_sha256 != CORE or expected_adapter_sha256 != self._source_pin
+                or expected_inputs_sha256 != self.inputs['sha256']
+                or expected_network_sha256 != self.network.sha256
+                or not json_equal(expected_containment_config, self._config)
+                or not json_equal(expected_pressure_scale, self._scale)
+                or not isinstance(transcript, dict) or digest(transcript) != expected_transcript_sha256
+                or set(transcript) != {'version', 'adapter_version', 'reset', 'calls'}
+                or transcript['version'] != TRANSCRIPT_VERSION or transcript['adapter_version'] != VERSION
+                or not isinstance(transcript['calls'], list)):
+            raise ValueError('Transcript or trusted implementation pins differ')
+        reset = transcript['reset']
+        if not isinstance(reset, dict) or set(reset) != {'arguments', 'result'}:
+            raise ValueError('Invalid public reset entry')
+        try:
+            self.reset(*reset['arguments']['args'], **reset['arguments']['kwargs'])
+        except Exception as error:
+            self._transcript_valid = False
+            raise ValueError('Transcript reset failed') from error
+        if (self._scenario['sha256'] != expected_scenario_sha256
+                or type(expected_seed) is not type(self._scenario['seed'])
+                or self._scenario['seed'] != expected_seed or not json_equal(self._transcript_reset, reset)):
+            self._transcript_valid = False
+            raise ValueError('Scenario pin or public reset differs')
+        for entry in transcript['calls']:
+            if (not isinstance(entry, dict) or entry.get('operation') not in PUBLIC_CALLS
+                    or not isinstance(entry.get('arguments'), dict)
+                    or set(entry['arguments']) != {'args', 'kwargs'}
+                    or not isinstance(entry['arguments']['args'], list)
+                    or not isinstance(entry['arguments']['kwargs'], dict)):
+                self._transcript_valid = False
+                raise ValueError('Unsupported public transcript entry')
+            count = len(self._transcript)
+            try:
+                getattr(self, entry['operation'])(*entry['arguments']['args'], **entry['arguments']['kwargs'])
+            except Exception:
+                pass
+            if len(self._transcript) != count + 1 or not json_equal(self._transcript[-1], entry):
+                self._transcript_valid = False
+                raise ValueError('Public call or result did not replay exactly')
+        if not json_equal(self.trajectory(), transcript):
+            self._transcript_valid = False
+            raise ValueError('Public transcript differs after replay')
+        return IncidentDayEnv.get_situation(self)
+
+    def verify_episode(self):
+        """Trusted verification: fresh replay plus separate outcome recomputation."""
+        _check_runtime()
+        if type(self) is not ContainmentIncidentDayEnv:
+            raise RuntimeError('Verification requires the exact adapter class')
+        if not self.terminated and not self.truncated:
+            raise RuntimeError('Finish the episode before verification')
+        transcript = self.trajectory()
+        replay = ContainmentIncidentDayEnv(self.inputs, self.network.document,
+            expected_inputs_sha256=self.inputs['sha256'], expected_network_sha256=self.network.sha256,
+            allow_unapproved_data=self.inputs['approval_status'] != 'approved_synthetic_fixture',
+            containment_config=self._config, pressure_scale=self._scale)
+        replay.replay_transcript(transcript, **self.private_replay_pins())
+        if digest(replay.checkpoint()) != digest(self.checkpoint()):
+            raise ValueError('Private fire, operations, communications or audit differ from replay')
+        independent = recompute(replay._audit, terminal=replay.terminated,
+                                abandoned=replay.abandoned, censored=replay.censored)
+        actual = replay.outcomes()
+        if set(actual) != set(independent):
+            raise ValueError('Independent outcome accounting fields differ')
+        for key, value in independent.items():
+            other = actual.get(key)
+            if (type(value) is not type(other) or
+                    (not math.isclose(value, other, rel_tol=1e-12, abs_tol=1e-12)
+                     if type(value) is float else value != other)):
+                raise ValueError('Independent outcome accounting differs')
+        if (type(self.reward) is not type(independent['graded_score']) or
+                not math.isclose(self.reward, independent['graded_score'], rel_tol=1e-12, abs_tol=1e-12)):
+            raise ValueError('Recorded reward differs from independent accounting')
+        return dict(passed=True, exact_replay=True, independent_reward_agreement=True,
+                    outcomes=independent)

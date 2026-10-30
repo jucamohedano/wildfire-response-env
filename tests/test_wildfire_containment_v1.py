@@ -331,6 +331,7 @@ def test_incident_day_authorized_hold_consumes_shared_resources_reports_and_repl
     saved = json.loads(json.dumps(env.checkpoint()))
     other = make_adapter(day_inputs)
     assert other.restore(saved) == env.get_situation()
+    other.get_situation()  # Record the same public read on both continuations.
     initial_water = env.ops.resources['engine-1']['water_litres']
     initial_duty = env.ops.resources['engine-1']['work_remaining']
     while not env.fire.checkpoint()['containment']['lines']:
@@ -341,10 +342,14 @@ def test_incident_day_authorized_hold_consumes_shared_resources_reports_and_repl
     assert unit['water_litres'] == initial_water - env.ops.profile['engine_litres_per_minute']
     assert not any(item['resource_id'] == 'engine-1' for item in env._audit[-1]['applied_work'])
     assert env._containment_audit[-1]['resource_id'] == 'engine-1'
-    with pytest.raises(RuntimeError, match='not implemented'):
-        env.trajectory()
+    assert env.trajectory()['version'] == 'wildfire-containment-public-transcript-v1'
     assert not any(report['kind'] == 'containment_status' for report in env.get_situation()['reports'])
+    assert any(item.get('record', {}).get('kind') == 'containment_status'
+               for item in env.bus.checkpoint()['queue'])
+    assert 'containment_status' not in json.dumps(env.trajectory())
     assert 'strength' not in json.dumps(env.get_situation())
+    other.get_situation()
+    other.get_situation()
     # Checkpoint while a report is still in flight and while the assignment is active.
     resumed = make_adapter(day_inputs)
     resumed.restore(json.loads(json.dumps(env.checkpoint())))
@@ -418,7 +423,7 @@ def test_adapter_rejects_real_aircraft_offer_and_legacy_exports(day_inputs):
     offer = env.get_situation()['offers'][0]
     with pytest.raises(ValueError, match='ground'):
         env.propose_hold(offer['id'])
-    with pytest.raises(RuntimeError, match='not implemented'):
+    with pytest.raises(RuntimeError, match='Finish the episode'):
         env.verify_episode()
 
 
@@ -563,22 +568,33 @@ def test_full_day_explicit_hold_calls_replay_on_cpu(day_inputs):
     assert routes[0] == routes[1]
     request = {'requests': [dict(resource_id='engine-1', sector_id='incident', approach_id=routes[0]['id'])]}
     assert left.step(request) == right.step(request)
-    while not left.get_situation()['offers']:
+    while True:
+        left_view, right_view = left.get_situation(), right.get_situation()
+        assert left_view == right_view
+        if left_view['offers']:
+            break
         assert left.advance_time(1) == right.advance_time(1)
-    offer = left.get_situation()['offers'][0]
-    assert offer == right.get_situation()['offers'][0]
+    offer = left_view['offers'][0]
     first = left.propose_hold(offer['id'])
     assert first == right.propose_hold(offer['id'])
     assert left.authorize_hold(offer['id'], first[1]['id']) == right.authorize_hold(offer['id'], first[1]['id'])
+    resumed = None
     while not left.terminated and not left.truncated:
-        assert left.advance_time(60) == right.advance_time(60)
+        first_result = left.advance_time(60)
+        assert first_result == right.advance_time(60)
+        if resumed is not None:
+            assert first_result == resumed.advance_time(60)
+        elif left.minute >= 600:
+            resumed = make_adapter(day_inputs)
+            resumed.restore(json.loads(json.dumps(left.checkpoint())))
     assert left.terminated and not left.truncated and left.minute == 1440
-    assert len(left._containment_audit) == 5
-    assert left.checkpoint() == right.checkpoint()
-    with pytest.raises(RuntimeError, match='not implemented'):
-        left.trajectory()
-    with pytest.raises(RuntimeError, match='not implemented'):
-        left.verify_episode()
+    assert resumed is not None and len(left._containment_audit) == 5
+    assert left.checkpoint() == right.checkpoint() == resumed.checkpoint()
+    assert left.trajectory() == right.trajectory() == resumed.trajectory()
+    before_verification = resumed.checkpoint()
+    verified = resumed.verify_episode()
+    assert verified['exact_replay'] and verified['independent_reward_agreement']
+    assert resumed.checkpoint() == before_verification
 
 
 def test_release_reservation_waits_for_delivered_ack_and_failed_release_keeps_mission(day_inputs, monkeypatch):
@@ -655,7 +671,11 @@ def test_auto_return_reservation_waits_for_public_evidence_then_fresh_hold(day_i
                   and r['payload'].get('resource', {}).get('id') == 'engine-1'
                   and r['payload']['resource']['state'] == 'returning')
     assert report['received_at'] > report['observed_at']
-    assert env.checkpoint() == before_delivery.checkpoint()
+    left_state, right_state = env.checkpoint(), before_delivery.checkpoint()
+    for state in (left_state, right_state):
+        state.pop('transcript')
+        state.pop('sha256')
+    assert left_state == right_state
     # Wait for the public refill/availability report, then request a new offer
     # from an actual publicly proposed route to the same grid approach.
     while env._known_resources['engine-1']['state'] != 'available':
@@ -727,3 +747,381 @@ def test_late_public_evidence_does_not_retire_newer_hold(day_inputs):
                   dict(kind='dispatch_declined', observed_at=old, received_at=env.minute,
                        payload=dict(resource_id='engine-1'))])
     assert env._requested['engine-1'] == before
+
+
+def replay_public(source, transcript, **overrides):
+    from envs.wildfire_response.regional.ops.generator import digest
+    pins = source.private_replay_pins()
+    pins['expected_transcript_sha256'] = digest(transcript)
+    pins.update(overrides)
+    fresh = make_adapter(None)
+    fresh.replay_transcript(transcript, **pins)
+    return fresh
+
+
+def test_public_transcript_queries_hold_errors_privacy_and_checkpoint_replay(day_inputs):
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    before = env.fire.checkpoint()
+    env.get_situation()
+    env.get_reports(after_cursor=0, limit=5)
+    env.check_action({'advance_minutes': 1})
+    assert env.fire.checkpoint() == before
+    route = env.route_options('engine-1')['options'][1]
+    env.evacuation_options('population-0', 'destination-0')
+    env.step({'requests': [dict(resource_id='engine-1', sector_id='incident', approach_id=route['id'])]})
+    while not env.get_situation()['offers']:
+        env.advance_time(1)
+    offer = env.get_situation()['offers'][0]
+    proposal = env.propose_hold(offer['id'])[1]
+    with pytest.raises(ValueError):
+        env.authorize_hold(offer['id'], 'invented')
+    env.authorize_hold(offer['id'], proposal['id'])
+    with pytest.raises(RuntimeError, match='only after'):
+        env.outcomes()
+    with pytest.raises(ValueError, match='JSON'):
+        env.step({'bad': float('nan')})
+    transcript = json.loads(json.dumps(env.trajectory()))
+    operations = [entry['operation'] for entry in transcript['calls']]
+    assert {'get_situation', 'get_reports', 'check_action', 'route_options', 'evacuation_options',
+            'step', 'advance_time', 'propose_hold', 'authorize_hold', 'outcomes'} <= set(operations)
+    authorization = [entry for entry in transcript['calls'] if entry['operation'] == 'authorize_hold']
+    assert len(authorization) == 2 and 'error' in authorization[0]
+    assert authorization[1]['arguments']['args'] == [offer['id'], proposal['id']]
+    assert not any(entry['operation'] == 'step' and entry['arguments']['args'] == [{'authorizations': [offer['id']]}]
+                   for entry in transcript['calls'])
+    encoded = json.dumps(transcript)
+    for private_key in ('"containment_audit"', '"pending"', '"strength"', '"_events"',
+                        '"scenario_sha256"', '"_audit"', '"rng_state"'):
+        assert private_key not in encoded
+    assert transcript['reset']['arguments']['kwargs']['seed'] is None
+    restored = make_adapter(day_inputs)
+    restored.restore(json.loads(json.dumps(env.checkpoint())))
+    assert restored.trajectory() == transcript
+    replay = replay_public(env, transcript)
+    assert replay.checkpoint() == env.checkpoint()
+    transcript['calls'].clear()
+    assert env.trajectory()['calls']
+    assert restored.advance_time(5) == env.advance_time(5)
+    assert restored.trajectory() == env.trajectory()
+
+
+def test_public_replay_rejects_tampering_missing_proposal_and_wrong_pins(day_inputs):
+    from envs.wildfire_response.regional.ops.generator import digest
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    option = env.route_options('engine-1')['options'][1]
+    env.step({'requests': [dict(resource_id='engine-1', sector_id='incident', approach_id=option['id'])]})
+    while not env.get_situation()['offers']:
+        env.advance_time(1)
+    offer = env.get_situation()['offers'][0]
+    proposal = env.propose_hold(offer['id'])[0]
+    env.authorize_hold(offer['id'], proposal['id'])
+    transcript = env.trajectory()
+    with pytest.raises(ValueError, match='pins'):
+        replay_public(env, transcript, expected_adapter_sha256='0' * 64)
+    with pytest.raises(ValueError, match='Scenario pin'):
+        replay_public(env, transcript, expected_seed=env._scenario['seed'] + 1)
+    with pytest.raises(ValueError, match='pins'):
+        replay_public(env, transcript, expected_inputs_sha256='0' * 64)
+    with pytest.raises(ValueError, match='pins'):
+        replay_public(env, transcript, expected_pressure_scale=0.5)
+    changed = copy.deepcopy(transcript)
+    changed['calls'][-1]['arguments']['args'][1] = 'invented'
+    with pytest.raises(ValueError, match='pins'):
+        replay_public(env, changed, expected_transcript_sha256=digest(transcript))
+    bad_replay = make_adapter(day_inputs)
+    with pytest.raises(ValueError, match='replay exactly'):
+        bad_replay.replay_transcript(changed, **{**env.private_replay_pins(), 'expected_transcript_sha256': digest(changed)})
+    with pytest.raises(RuntimeError, match='valid reset transcript'):
+        bad_replay.trajectory()
+    missing = copy.deepcopy(transcript)
+    missing['calls'] = [call for call in missing['calls'] if call['operation'] != 'propose_hold']
+    with pytest.raises(ValueError, match='replay exactly'):
+        replay_public(env, missing)
+    changed = copy.deepcopy(transcript)
+    changed['calls'][-1]['result'][0]['minute'] += 1
+    with pytest.raises(ValueError, match='replay exactly'):
+        replay_public(env, changed)
+
+
+def test_verify_abandoned_episode_and_detect_private_and_reward_corruption(day_inputs, monkeypatch):
+    import wildfire_containment_v1.incident_day as module
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    for _ in range(3):
+        env.step({'invalid': True})
+    assert env.truncated and env.abandoned
+    verified = env.verify_episode()
+    assert verified['passed'] and verified['outcomes']['graded_score'] == 0
+    before = env.checkpoint()
+    with monkeypatch.context() as patch:
+        original = module.recompute
+        def corrupt(*args, **kwargs):
+            result = original(*args, **kwargs)
+            result['graded_score'] = .75
+            return result
+        patch.setattr(module, 'recompute', corrupt)
+        with pytest.raises(ValueError, match='accounting'):
+            env.verify_episode()
+    assert env.checkpoint() == before
+    env._audit[-1]['new_footprint'].append(0)
+    with pytest.raises(ValueError, match='differ from replay'):
+        env.verify_episode()
+
+
+def test_exception_after_time_advances_poison_transcript(day_inputs, monkeypatch):
+    from wildfire_containment_v1.fire import ContainmentDayFire
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    with monkeypatch.context() as patch:
+        def fail(*args, **kwargs):
+            raise RuntimeError('synthetic mid-step failure')
+        patch.setattr(ContainmentDayFire, 'step_with_containment', fail)
+        with pytest.raises(RuntimeError, match='mid-step'):
+            env.advance_time(1)
+    assert env.minute == 1
+    with pytest.raises(RuntimeError, match='valid reset transcript'):
+        env.trajectory()
+
+
+def test_failed_base_restore_poison_and_recording_resumes(day_inputs):
+    from envs.wildfire_response.regional.ops.generator import digest
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    env.advance_time(1)
+    invalid = copy.deepcopy(env.checkpoint())
+    invalid['base']['sha256'] = '0' * 64
+    invalid['sha256'] = digest({k: v for k, v in invalid.items() if k != 'sha256'})
+    with pytest.raises(ValueError, match='integrity'):
+        env.restore(invalid)
+    assert env._transcript_enabled and not env._transcript_valid
+    before = len(env._transcript)
+    env.advance_time(1)
+    assert len(env._transcript) == before + 1
+    with pytest.raises(RuntimeError, match='valid reset transcript'):
+        env.trajectory()
+    env.reset('incident-day-dev-000')
+    assert env.trajectory()['calls'] == []
+
+
+def test_keyboard_interrupt_after_fire_clock_advance_poison_transcript(day_inputs, monkeypatch):
+    from wildfire_containment_v1.fire import ContainmentDayFire
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    def interrupt(*args, **kwargs):
+        raise KeyboardInterrupt('interrupted fire step')
+    with monkeypatch.context() as patch:
+        patch.setattr(ContainmentDayFire, 'step_with_containment', interrupt)
+        with pytest.raises(KeyboardInterrupt):
+            env.advance_time(1)
+    assert env.minute == 1 and not env._transcript_valid
+    with pytest.raises(RuntimeError, match='valid reset transcript'):
+        env.trajectory()
+
+
+@pytest.mark.parametrize('error_type', [RuntimeError, ValueError, TypeError, KeyboardInterrupt])
+def test_failed_route_query_after_approach_mutation_poison_transcript(day_inputs, monkeypatch, error_type):
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    minute = env.minute
+    previous = copy.deepcopy(env._approaches)
+    def fail_after_options(*args, **kwargs):
+        raise error_type('after approach cache')
+    monkeypatch.setattr(env, '_log_query', fail_after_options)
+    with pytest.raises(error_type):
+        env.route_options('engine-1')
+    assert env.minute == minute and env._approaches != previous
+    assert not env._transcript_valid
+    with pytest.raises(RuntimeError, match='valid reset transcript'):
+        env.trajectory()
+
+
+def test_failed_proposal_after_cache_mutation_poison_transcript(day_inputs, monkeypatch):
+    import wildfire_containment_v1.incident_day as module
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    route = env.route_options('engine-1')['options'][1]
+    env.step({'requests': [dict(resource_id='engine-1', sector_id='incident', approach_id=route['id'])]})
+    while not env.get_situation()['offers']:
+        env.advance_time(1)
+    offer = env.get_situation()['offers'][0]
+    original = module.digest
+    count = 0
+    def fail_second(value):
+        nonlocal count
+        count += 1
+        if count == 2:
+            raise RuntimeError('after proposal cache')
+        return original(value)
+    with monkeypatch.context() as patch:
+        patch.setattr(module, 'digest', fail_second)
+        with pytest.raises(RuntimeError, match='proposal cache'):
+            env.propose_hold(offer['id'])
+    assert env._proposal_cache and not env._transcript_valid
+    with pytest.raises(RuntimeError, match='valid reset transcript'):
+        env.trajectory()
+
+
+@pytest.mark.parametrize('replacement', [False, 0.0])
+def test_replay_reset_result_uses_type_sensitive_json_equality(day_inputs, replacement):
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    transcript = env.trajectory()
+    transcript['reset']['result'][0]['minute'] = replacement
+    with pytest.raises(ValueError, match='Scenario pin or public reset'):
+        replay_public(env, transcript)
+
+
+@pytest.mark.parametrize('replacement', [True, 1.0])
+def test_replay_call_result_and_timestamps_use_type_sensitive_json(day_inputs, replacement):
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    env.advance_time(1)
+    env.get_situation()
+    original = env.trajectory()
+    changed = copy.deepcopy(original)
+    changed['calls'][-1]['before_minute'] = replacement
+    with pytest.raises(ValueError, match='replay exactly'):
+        replay_public(env, changed)
+    changed = copy.deepcopy(original)
+    changed['calls'][-1]['result']['minute'] = replacement
+    with pytest.raises(ValueError, match='replay exactly'):
+        replay_public(env, changed)
+
+
+def test_replay_pins_and_independent_outcomes_reject_numeric_type_aliases(day_inputs, monkeypatch):
+    import wildfire_containment_v1.incident_day as module
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    transcript = env.trajectory()
+    pins = env.private_replay_pins()
+    pins['expected_containment_config']['wind_factor'] = True
+    with pytest.raises(ValueError, match='pins'):
+        make_adapter(day_inputs).replay_transcript(transcript, **pins)
+    for _ in range(3):
+        env.step({'invalid': True})
+    original = module.recompute
+    def alias_bool(*args, **kwargs):
+        result = original(*args, **kwargs)
+        result['safe_success'] = int(result['safe_success'])
+        return result
+    with monkeypatch.context() as patch:
+        patch.setattr(module, 'recompute', alias_bool)
+        with pytest.raises(ValueError, match='accounting'):
+            env.verify_episode()
+
+
+def test_pre_mutation_route_and_evacuation_errors_remain_replayable(day_inputs):
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    before = copy.deepcopy(env._approaches)
+    minute = env.minute
+    for call, message in (
+        (lambda: env.route_options('missing'), 'Choose a public resource and sector'),
+        (lambda: env.route_options('engine-1', 'missing'), 'Choose a public resource and sector'),
+        (lambda: env.evacuation_options('missing', 'destination-0'), 'Choose a reported group and destination'),
+        (lambda: env.evacuation_options('population-0', 'missing'), 'Choose a reported group and destination'),
+    ):
+        with pytest.raises(ValueError, match=message):
+            call()
+    assert env.minute == minute and env._approaches == before and env._transcript_valid
+    transcript = env.trajectory()
+    entries = transcript['calls'][-4:]
+    assert [item['error']['type'] for item in entries] == ['ValueError'] * 4
+    replay = replay_public(env, transcript)
+    assert replay.checkpoint() == env.checkpoint()
+    for _ in range(3):
+        env.step({'invalid': True})
+    assert env.verify_episode()['independent_reward_agreement']
+
+
+@pytest.mark.parametrize('call', ['route', 'evacuation'])
+def test_unhashable_public_id_errors_remain_replayable(day_inputs, call):
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    with pytest.raises(TypeError, match='unhashable'):
+        if call == 'route':
+            env.route_options([])
+        else:
+            env.evacuation_options([], 'destination-0')
+    assert env._transcript_valid and env.minute == 0
+    assert replay_public(env, env.trajectory()).checkpoint() == env.checkpoint()
+
+
+@pytest.mark.parametrize('error_type', [ValueError, TypeError, KeyboardInterrupt])
+def test_failed_evacuation_query_after_approach_mutation_poison_transcript(day_inputs, monkeypatch, error_type):
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    before = copy.deepcopy(env._approaches)
+    def fail_after_options(*args, **kwargs):
+        raise error_type('after evacuation cache')
+    monkeypatch.setattr(env, '_log_query', fail_after_options)
+    with pytest.raises(error_type):
+        env.evacuation_options('population-0', 'destination-0')
+    assert env.minute == 0 and env._approaches != before and not env._transcript_valid
+    with pytest.raises(RuntimeError, match='valid reset transcript'):
+        env.trajectory()
+
+
+def test_invalid_query_call_signatures_remain_replayable(day_inputs):
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    before_approaches = copy.deepcopy(env._approaches)
+    before_fire = env.fire.checkpoint()
+    for call in (
+        lambda: env.route_options(),
+        lambda: env.route_options('engine-1', unknown='x'),
+        lambda: env.evacuation_options('population-0'),
+    ):
+        with pytest.raises(TypeError):
+            call()
+    assert env.minute == 0 and env._approaches == before_approaches
+    assert env.fire.checkpoint() == before_fire and env._transcript_valid
+    transcript = env.trajectory()
+    entries = transcript['calls'][-3:]
+    assert [entry['operation'] for entry in entries] == [
+        'route_options', 'route_options', 'evacuation_options']
+    assert [entry['error']['type'] for entry in entries] == ['TypeError'] * 3
+    assert all(entry['before_minute'] == entry['after_minute'] == 0 for entry in entries)
+    assert replay_public(env, transcript).checkpoint() == env.checkpoint()
+    for _ in range(3):
+        env.step({'invalid': True})
+    assert env.verify_episode()['independent_reward_agreement']
+
+
+def test_actor_self_keyword_binding_errors_are_recorded_and_replayable(day_inputs):
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    before_approaches = copy.deepcopy(env._approaches)
+    before_fire = env.fire.checkpoint()
+    for call in (
+        lambda: env.route_options('engine-1', **{'self': 'actor-value'}),
+        lambda: env.evacuation_options('population-0', 'destination-0', **{'self': 'actor-value'}),
+        lambda: env.step({'advance_minutes': 1}, **{'self': 'actor-value'}),
+    ):
+        with pytest.raises(TypeError, match='self'):
+            call()
+    assert env.minute == 0 and env._approaches == before_approaches
+    assert env.fire.checkpoint() == before_fire and env._transcript_valid
+    transcript = env.trajectory()
+    entries = transcript['calls'][-3:]
+    assert [entry['operation'] for entry in entries] == ['route_options', 'evacuation_options', 'step']
+    assert all(entry['arguments']['kwargs'] == {'self': 'actor-value'} for entry in entries)
+    assert all(entry['error']['type'] == 'TypeError' for entry in entries)
+    assert all(entry['before_minute'] == entry['after_minute'] == 0 for entry in entries)
+    assert 'rng_state' not in json.dumps(transcript)
+    assert replay_public(env, transcript).checkpoint() == env.checkpoint()
+    for _ in range(3):
+        env.step({'invalid': True})
+    assert env.verify_episode()['independent_reward_agreement']
+
+
+def test_unbound_keyword_instance_still_records_public_call(day_inputs):
+    from wildfire_containment_v1.incident_day import ContainmentIncidentDayEnv
+    env = make_adapter(day_inputs)
+    env.reset('incident-day-dev-000')
+    view = ContainmentIncidentDayEnv.get_situation(self=env)
+    assert view['minute'] == 0
+    assert env.trajectory()['calls'][-1]['operation'] == 'get_situation'
+    assert replay_public(env, env.trajectory()).checkpoint() == env.checkpoint()
