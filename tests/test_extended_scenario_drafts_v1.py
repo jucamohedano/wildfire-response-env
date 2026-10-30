@@ -7,8 +7,8 @@ from eval.extended_scenario_drafts_v1 import _digest, build_drafts, wind_from_de
 
 OLD = {'crs': 'EPSG:25830', 'transform': [500, 0, 297000, 0, -500, 4054500],
        'width': 37, 'height': 36}
-NEW = {'crs': 'EPSG:25830', 'transform': [500, 0, 292000, 0, -500, 4059500],
-       'width': 57, 'height': 46}
+NEW = {'crs': 'EPSG:25830', 'transform': [500, 0, 290000, 0, -500, 4064500],
+       'width': 84, 'height': 59}
 
 
 def source():
@@ -38,9 +38,9 @@ def test_drafts_preserve_source_and_remap_geography():
     result = build_drafts(original, OLD, NEW)
     assert original == before
     assert result['status'] == 'unqualified-not-runnable'
-    assert result['cases'][0]['initial_fire'] == [[24, 36], [25, 36]]
-    assert result['cases'][0]['sector_grid'] == [26, 38]
-    assert result['cases'][0]['incoming_reports'][0]['location'] == [25, 36]
+    assert result['cases'][0]['initial_fire'] == [[28, 46], [29, 46]]
+    assert result['cases'][0]['sector_grid'] == [30, 48]
+    assert result['cases'][0]['incoming_reports'][0]['location'] == [29, 46]
     assert sum(case['wind'][1] < 0 for case in result['cases']) == 10
     assert result['cases'][11]['wind'][1] > 0
     assert len({case['sha256'] for case in result['cases']}) == 12
@@ -49,7 +49,7 @@ def test_drafts_preserve_source_and_remap_geography():
 
 def test_invalid_or_outside_grids_fail_closed():
     with pytest.raises(ValueError, match='aligned'):
-        build_drafts(source(), OLD, {**NEW, 'transform': [500, 0, 292001, 0, -500, 4059500]})
+        build_drafts(source(), OLD, {**NEW, 'transform': [500, 0, 290001, 0, -500, 4064500]})
     with pytest.raises(ValueError, match='cover'):
         build_drafts(source(), OLD, {**NEW, 'width': 20})
 
