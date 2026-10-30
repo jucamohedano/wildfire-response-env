@@ -33,8 +33,12 @@ class FakeEpisode:
                              'completed_minutes': self.minute}}
 
 
+def gate(env):
+    return {'status': 'full_day', 'verified': True, 'score_eligible': True, 'score': .75}
+
+
 def test_twelve_completed_episodes_are_verified_and_scored():
-    report = qualify(IDS, make_environment=lambda _: FakeEpisode(), make_policy=WaitPolicy)
+    report = qualify(IDS, make_environment=lambda _: FakeEpisode(), make_policy=WaitPolicy, verify_outcome=gate)
     assert report['status'] == 'passed'
     assert len(report['cases']) == 12
     assert all(row['minute'] == 1440 and row['score'] == .75 for row in report['cases'])
@@ -45,7 +49,7 @@ def test_censored_and_old_reward_runs_remain_unscored():
         if identifier == IDS[0]:
             return FakeEpisode(censored=True)
         return FakeEpisode(reward_version='old') if identifier == IDS[1] else FakeEpisode()
-    report = qualify(IDS, make_environment=factory, make_policy=WaitPolicy)
+    report = qualify(IDS, make_environment=factory, make_policy=WaitPolicy, verify_outcome=gate)
     assert report['status'] == 'incomplete'
     assert report['cases'][0]['status'] == report['cases'][1]['status'] == 'not_scored'
     assert report['cases'][0]['score'] is report['cases'][1]['score'] is None
@@ -55,9 +59,9 @@ def test_censored_and_old_reward_runs_remain_unscored():
 def test_invalid_case_ids_and_budget_are_rejected():
     for ids in (IDS[:-1], [IDS[0]] * 12):
         with pytest.raises(ValueError):
-            qualify(ids, make_environment=lambda _: FakeEpisode(), make_policy=WaitPolicy)
+            qualify(ids, make_environment=lambda _: FakeEpisode(), make_policy=WaitPolicy, verify_outcome=gate)
     with pytest.raises(ValueError):
-        qualify(IDS, make_environment=lambda _: FakeEpisode(), make_policy=WaitPolicy, wall_seconds=0)
+        qualify(IDS, make_environment=lambda _: FakeEpisode(), make_policy=WaitPolicy, verify_outcome=gate, wall_seconds=0)
 
 
 def test_future_report_or_engine_error_does_not_leak_and_is_unscored():
@@ -68,7 +72,7 @@ def test_future_report_or_engine_error_does_not_leak_and_is_unscored():
         if identifier == IDS[0]:
             raise ValueError('private scenario annotation')
         return BadEpisode() if identifier == IDS[1] else FakeEpisode()
-    report = qualify(IDS, make_environment=factory, make_policy=WaitPolicy)
+    report = qualify(IDS, make_environment=factory, make_policy=WaitPolicy, verify_outcome=gate)
     assert report['cases'][0]['reason'] == report['cases'][1]['reason'] == 'setup_or_validation_error'
     assert 'private scenario annotation' not in str(report)
     assert report['cases'][0]['score'] is report['cases'][1]['score'] is None
@@ -80,14 +84,25 @@ def test_censored_or_incomplete_outcome_is_unscored_even_if_adapter_claims_termi
             result = super().verify_episode()
             result['outcomes']['boundary_censored'] = True
             return result
-    report = qualify(IDS, make_environment=lambda _: ContradictoryEpisode(), make_policy=WaitPolicy)
+    report = qualify(IDS, make_environment=lambda _: ContradictoryEpisode(), make_policy=WaitPolicy, verify_outcome=gate)
+    assert report['status'] == 'incomplete'
+    assert all(row['status'] == 'not_scored' and row['score'] is None for row in report['cases'])
+
+
+@pytest.mark.parametrize('result', [
+    {'status': 'identity_mismatch', 'verified': False, 'score_eligible': False, 'score': None},
+    {'status': 'full_day', 'verified': True, 'score_eligible': True, 'score': .76},
+])
+def test_external_verifier_must_accept_pins_and_agree_on_score(result):
+    report = qualify(IDS, make_environment=lambda _: FakeEpisode(), make_policy=WaitPolicy,
+                     verify_outcome=lambda _: result)
     assert report['status'] == 'incomplete'
     assert all(row['status'] == 'not_scored' and row['score'] is None for row in report['cases'])
 
 
 def test_budget_stop_never_produces_success():
     tick = iter(range(1000))
-    report = qualify(IDS, make_environment=lambda _: FakeEpisode(), make_policy=WaitPolicy,
+    report = qualify(IDS, make_environment=lambda _: FakeEpisode(), make_policy=WaitPolicy, verify_outcome=gate,
                      wall_seconds=5, now=lambda: next(tick))
     assert report['status'] == 'incomplete'
     assert report['cases'][0]['score'] is None

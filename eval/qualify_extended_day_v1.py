@@ -45,14 +45,15 @@ def _chronology(observation):
     return minute
 
 
-def qualify(case_ids, *, make_environment, make_policy, wall_seconds=1800, now=time.monotonic):
+def qualify(case_ids, *, make_environment, make_policy, verify_outcome, wall_seconds=1800, now=time.monotonic):
     """Run all cases with one CPU worker, without exposing private audit data.
 
     ``make_environment(id)`` is a trusted, independently pinned factory whose
     reset returns ``(observation, info)``. The policy is given only its public
     environment and observation. A completed case is scored only when the
-    environment's trusted verifier confirms exact replay, independent outcome
-    agreement, the new reward identity and the full horizon. A budget stop,
+    environment confirms exact replay and independent outcome agreement and
+    the separately supplied trusted verifier checks externally pinned identity,
+    mask, configuration and eligibility. Both must agree on the score. A budget stop,
     thrown exception or non-terminal result is never scored.
     """
     ids = _ids(case_ids)
@@ -92,6 +93,7 @@ def qualify(case_ids, *, make_environment, make_policy, wall_seconds=1800, now=t
                 row['reason'] = 'budget'
             elif terminated or truncated:
                 verification = env.verify_episode()
+                gate = verify_outcome(env)
                 row['exact_replay'] = verification.get('exact_replay') is True
                 row['independent_reward'] = verification.get('independent_reward_agreement') is True
                 outcome = verification.get('outcomes') or {}
@@ -102,7 +104,11 @@ def qualify(case_ids, *, make_environment, make_policy, wall_seconds=1800, now=t
                          outcome.get('score_eligible') is True and outcome.get('boundary_censored') is False and
                          outcome.get('invalid_abandonment') is False and outcome.get('completed_minutes') == HORIZON and
                          type(outcome.get('completed_minutes')) is int and type(score) in (int, float) and
-                         math.isfinite(score) and 0 <= score <= 1)
+                         math.isfinite(score) and 0 <= score <= 1 and
+                         type(gate) is dict and gate.get('status') == 'full_day' and
+                         gate.get('verified') is True and gate.get('score_eligible') is True and
+                         type(gate.get('score')) in (int, float) and math.isfinite(gate['score']) and
+                         math.isclose(gate['score'], score, rel_tol=1e-12, abs_tol=1e-12))
                 if now() - start >= wall_seconds:
                     row['reason'] = 'budget'
                 elif valid:
