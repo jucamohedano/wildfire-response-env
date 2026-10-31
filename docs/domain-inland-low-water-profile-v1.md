@@ -16,6 +16,12 @@ is evidence for a separately versioned evaluator; it is not itself a runnable
 input or a real-world safety assessment. Preserve its private JSON and source
 pins outside the repository.
 
+The separate `eval/domain_low_water_weather_v2.py` converter accepts explicit
+per-cell fuel choices and a crossing assumption. It preserves retained source
+fuel and leaves omitted or unsupported cells censored. The v1 converter and
+runner are retained for the earlier private fire-and-weather smoke; its input
+identity differs from v2. Neither converter produces an operations score.
+
 Use the compiler's `--help` for source paths and validation arguments. Run the
 focused checks with:
 
