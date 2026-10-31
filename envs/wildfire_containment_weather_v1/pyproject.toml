@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wildfire-containment-weather-v1"
+version = "0.1.0"
+description = "Experimental incident containment and weather composition"
+requires-python = ">=3.12"
+dependencies = ["wildfire-containment-v1==0.1.0", "wildfire-response-core==0.1.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
