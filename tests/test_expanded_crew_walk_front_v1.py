@@ -60,9 +60,10 @@ def test_missing_water_is_unknown_and_no_fire_rejected():
 def test_only_source_known_land_and_finite_heights_is_supported():
     v2 = {'cells': [[{'surface':'land', 'fuel_status':'source','source_fuel_class':1},
                      {'surface':'water', 'fuel_status':'source','source_fuel_class':1},
-                     {'surface':'land', 'fuel_status':'estimated','source_fuel_class':1}]],
-          'terrain_candidate': [[1, 2, 3]]}
-    v4 = {'cells': [{'column':1, 'row':0}], 'additional_dera_censors': []}
+                     {'surface':'land', 'fuel_status':'estimated','source_fuel_class':1},
+                     {'surface':'land', 'fuel_status':'source','source_fuel_class':1}]],
+          'terrain_candidate': [[1, 2, 3, 4]]}
+    v4 = {'cells': [{'column':1, 'row':0}, {'column':3, 'row':0}], 'additional_dera_censors': []}
     assert walk.supported_land(v2, v4) == {(0, 0)}
 
 

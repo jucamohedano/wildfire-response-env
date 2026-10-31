@@ -33,7 +33,9 @@ DIRECTIONS = ((0, -1), (-1, 0), (1, 0), (0, 1))
 def supported_land(v2, v4):
     """Only explicit v2 land with known source fuel and finite elevation."""
     supported, censored = staging.supported_cells(v2, v4)
-    return {p for p in supported if p not in censored and v2['cells'][p[1]][p[0]]['surface'] == 'land'}
+    mixed = {(cell['column'], cell['row']) for cell in v4['cells']}
+    return {p for p in supported if p not in censored and p not in mixed
+            and v2['cells'][p[1]][p[0]]['surface'] == 'land'}
 
 
 def hazards_and_front(fire, wind, supported):
