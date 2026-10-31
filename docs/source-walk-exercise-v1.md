@@ -1,5 +1,7 @@
 # Synthetic predeployed crew walk exercise v2
 
+**Privacy:** The underlying legacy host can include a private destination record in a closure report. Use the [redacted facade](source-public-facade-v1.md) when exposing reports to an actor.
+
 `wildfire_source_walk_exercise_v1.SourceWalkExerciseV1` is a separate, opt-in,
 **unscored synthetic exercise** around the restricted source host. It accepts
 only an independently pinned `expanded-crew-observed-front-walk-v1` candidate

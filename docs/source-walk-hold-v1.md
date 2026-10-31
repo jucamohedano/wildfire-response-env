@@ -1,5 +1,7 @@
 # Synthetic source walk-and-hold prototype v1
 
+**Privacy:** The underlying legacy host can include a private destination record in a closure report. Use the [redacted facade](source-public-facade-v1.md) when exposing reports to an actor.
+
 `wildfire_source_walk_hold_v1.SourceWalkHoldV1` is an opt-in, private,
 **unscored and restricted synthetic exercise** around the exact source-walk v2
 host. It models one assumed predeployed crew and the separately approved walk

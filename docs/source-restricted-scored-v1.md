@@ -1,5 +1,7 @@
 # Restricted source scoring v1
 
+**Privacy:** The underlying legacy host can include private destination records in closure reports. Use the [redacted facade or redacted runner](source-public-facade-v1.md) for actor reports; the trusted verifier retains raw private state.
+
 `wildfire_source_restricted_scored_v1.RestrictedSourceScoredV1` wraps the exact
 restricted host. This is a **no-ground, no-evacuation synthetic exercise**,
 not the complete incident environment or a calibrated benchmark. Ground

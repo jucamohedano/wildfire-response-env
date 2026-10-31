@@ -1,5 +1,7 @@
 # Restricted source incident prototype v1
 
+**Privacy:** Raw destination-closure reports contain private destination records. Use the [redacted facade](source-public-facade-v1.md) for actor reports; preserve raw checkpoints and transcripts privately for replay.
+
 `wildfire_source_restricted_v1.RestrictedSourceIncidentV1` is an opt-in private
 prototype using the pinned source-case selector, its original synthetic roster,
 profile and event schedule, and the v4 weather/fire input. One weather/fire,
