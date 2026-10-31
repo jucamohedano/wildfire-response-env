@@ -1,0 +1,56 @@
+{
+  "grid": {
+    "bounds": [
+      290000,
+      4035000,
+      332000,
+      4064500
+    ],
+    "cell_metres": 500,
+    "crs": "EPSG:25830",
+    "height": 59,
+    "transform": [
+      500,
+      0,
+      290000,
+      0,
+      -500,
+      4064500
+    ],
+    "width": 84
+  },
+  "limitations": [
+    "No claim of complete massif, coastal or source-data coverage.",
+    "2025 designated areas are not a historical 2021 incident boundary."
+  ],
+  "rule": {
+    "minimum_parent_bounds_metres": [
+      297000,
+      4036500,
+      315500,
+      4054500
+    ],
+    "north_east_west_buffer_metres": 5000,
+    "southern_buffer_metres": 0
+  },
+  "source": {
+    "interpretation": "Protected areas are a geographic proxy, not the full geological massif.",
+    "member": "n2000_spatial_es_pibal_proy_end25.shp",
+    "sha256": "0b35e4f6ec7ab198f51cd66705a090a496d5b98f9203c825b499a9f8ebbb2cbd",
+    "site_codes": [
+      "ES6170004",
+      "ES6170010"
+    ],
+    "source_crs": "EPSG:25830",
+    "source_reference_bounds_metres": [
+      295023.60809999984,
+      4035210.9110000003,
+      326731.60419999994,
+      4059055.8712000004
+    ],
+    "title": "MITECO Natura 2000 end-2025 protected sites",
+    "url": "https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/servicios/banco-datos-naturaleza/3-rn2000/n2000_2025_shp.zip"
+  },
+  "status": "candidate_extent_not_an_approved_map",
+  "version": "wildfire-extended-domain-v1"
+}

@@ -1,0 +1,110 @@
+{
+  "fuel_coverage": {
+    "cells": 4956,
+    "elevation_values": 1332,
+    "fringe_cells": 3624,
+    "fringe_fuel_unknown": 858,
+    "fringe_fuel_values": 2766,
+    "parent_cells": 1332,
+    "source_fuel_values": 4018,
+    "surface_unknown": 4956,
+    "verified_land": 0,
+    "verified_sea": 0
+  },
+  "fuel_overlap": {
+    "known_mismatches": 0,
+    "known_samples_agree": 1252,
+    "parent_unknown_with_archive_value_count": 2
+  },
+  "grid": {
+    "bounds": [
+      290000,
+      4035000,
+      332000,
+      4064500
+    ],
+    "cell_metres": 500,
+    "crs": "EPSG:25830",
+    "height": 59,
+    "parent_offset": {
+      "column": 14,
+      "row": 20
+    },
+    "transform": [
+      500,
+      0,
+      290000,
+      0,
+      -500,
+      4064500
+    ],
+    "width": 84
+  },
+  "private_map_sha256": "943f4f1a20a498bbd5e4fe7ac6643d117b9b708af3cb0bb3b31b70e390126bf1",
+  "private_terrain_sha256": "45ea9fc582ba3aa2f8694d0e2d4780c03ce447cc0555b7badadafae7a52e7140",
+  "reference": {
+    "archive_sha256": "0b35e4f6ec7ab198f51cd66705a090a496d5b98f9203c825b499a9f8ebbb2cbd",
+    "extent_rule": "5 km north/east/west of reference, south contains reference and parent, outward 500 m",
+    "layer": "n2000_spatial_es_pibal_proy_end25.shp",
+    "reference_bounds": [
+      295023.60809999984,
+      4035210.9110000003,
+      326731.60419999994,
+      4059055.8712000004
+    ],
+    "reference_type": "Natura 2000 protected-area boundaries; not the complete physical massif",
+    "site_codes": [
+      "ES6170004",
+      "ES6170010"
+    ]
+  },
+  "source": {
+    "fuel_archive_sha256": "ed06080d81048de18dc34caf0f4fcc2f26d626f020bf132277d4e470a71a83d8",
+    "fuel_attribution": "European Forest Fire Information System, 2017, European Fuel Map, European Commission",
+    "fuel_member": "FuelMap2000_NFFL_LAEA.tif",
+    "fuel_member_sha256": "cfb7447de166fb6fab12b685c98c1d12f55c4c62708ebff2af26a9ca59452102",
+    "fuel_sampling": "centre projected to EPSG:3035; containing 250 m pixel; zero/NoData unknown",
+    "parent_document_sha256": "50031b3029dcee0a1367ccdd8125d081d19d3b500b2dd373e30ef127d47a2c4d",
+    "parent_file_sha256": "c4568ea6f5f16e41c8a81768f510def1e7d7440eebce0af0e5382d7226f0638e",
+    "parent_network_sha256": "12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16"
+  },
+  "status": "unapproved_aggregate_evidence_only",
+  "terrain_parent_comparison": {
+    "bounds": [
+      296500,
+      4034975,
+      316000,
+      4055000
+    ],
+    "identical_pixels": 5633,
+    "max_absolute_difference": 27.41900634765625,
+    "mean_absolute_difference": 2.653746327128608,
+    "method": "direct comparison integer new sample against floating point parent sample, no rounding",
+    "overlap_pixels": 624780
+  },
+  "terrain_source": {
+    "acquired_on": "2026-10-30",
+    "band_unit": null,
+    "datum_native_void_semantics_and_epoch": "unverified",
+    "declared_nodata": null,
+    "expanded_file_sha256": "299b0cf337786e666fdbdeb32df86531d84a490da8d00dc91678bfe136d909a2",
+    "expanded_sample": "IGN WCS Elevacion25830_5, requested at 25 m using nearest neighbor",
+    "parent_sample_crs": "EPSG:25830 by parent provenance; ASC has no CRS metadata",
+    "parent_sample_sha256": "1b2e4f470bf456b0189cf22e60dddcf09af413617eb9b76f5a2c1650be70e917",
+    "request_uri": "https://servicios.idee.es/wcs-inspire/mdt?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&COVERAGE=Elevacion25830_5&CRS=EPSG%3A25830&RESPONSE_CRS=EPSG%3A25830&BBOX=289975%2C4034975%2C332025%2C4064525&RESX=25&RESY=25&FORMAT=GEOTIFFINT16&INTERPOLATION=nearest%20neighbor"
+  },
+  "terrain_statistics": {
+    "candidate_means": 4639,
+    "cells_with_zero": 317,
+    "halo_pixels": 5724,
+    "interior_pixels": 1982400,
+    "numeric_max": 1916,
+    "numeric_min": 0,
+    "pixels_per_cell": 400,
+    "source_pixels_including_halo": 1988124,
+    "zero_halo_samples": 1067,
+    "zero_interior_samples": 114313,
+    "zero_samples": 115380
+  },
+  "version": "extended-map-evidence-v2"
+}

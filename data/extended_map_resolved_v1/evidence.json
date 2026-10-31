@@ -1,0 +1,151 @@
+{
+  "comparison": {
+    "coastline_hausdorff_metres": 116.293,
+    "land_face_disagreement_square_metres": 176312.025,
+    "osm_source_manifest_sha256": "d331a7fd511ba9ebbd767a85d78dccb7c7e68eaef6a4d4294ab183949e6586e9",
+    "sea_face_disagreement_square_metres": 176897.156,
+    "shoreline_buffer_metres": 250
+  },
+  "dera_archive_audit": {
+    "archive_sha256": {
+      "limits": "749c61776cb90d71b174859bcd8f09abaca9883434b1fb5d251bb276d39b5eb2",
+      "relief": "922b32d80018ef6d49d989c5d3d29ad63454f17bf1f68418cec85b495209aba8"
+    },
+    "coast_features": 64,
+    "coast_hausdorff_metres": 0.0,
+    "coast_symmetric_difference_metres": 0.0,
+    "municipality_features": 30,
+    "sha256": "3e35f44445f0f14a2eb4b1be1dae374288c2c4c57063aea80ae12a940c8f922e",
+    "surface_municipality_relation_counts": {
+      "land_covers": 4332,
+      "sea_outside": 232,
+      "unknown_covers": 306,
+      "unknown_outside": 24,
+      "unknown_partial": 62
+    }
+  },
+  "exercise_v3": {
+    "eligibility_reasons": {
+      "eligible": 2423,
+      "no_source_fuel": 242,
+      "not_corroborated_interior": 143,
+      "osm_water_area_or_open_area_boundary": 186,
+      "worldcover_mixed_or_major_water": 121
+    },
+    "mixed_exercise_cells": 2423,
+    "parent_v2_sha256": "a44d432066d6c3039f49032ca21b8a82496dff47c855fee1e07f8e854ab15b87"
+  },
+  "exercise_v4": {
+    "dera_rivers_response_sha256": "6f26722f6c97bc5d0defc2f5e9245d39db0ba4f6816d89e0678dcda01adcc9d8",
+    "geographic_summary": {
+      "additional_dera_censored_cells": 57,
+      "dera_conflict_v2_land_without_osm": 308,
+      "dera_river_intersecting_cells": 2261,
+      "eligibility_reasons": {
+        "ambiguous_water_area_geometry": 10,
+        "eligible_additional_dera_watercourse": 251,
+        "eligible_small_osm_water_area_2026": 40,
+        "no_source_fuel": 237,
+        "not_corroborated_interior": 238,
+        "worldcover_mixed_or_major_water": 87
+      },
+      "inherited_v3_cells": 2423,
+      "mixed_exercise_cells": 2714,
+      "new_dera_line_cells": 251,
+      "new_small_water_area_cells": 40
+    },
+    "parent_v2_sha256": "a44d432066d6c3039f49032ca21b8a82496dff47c855fee1e07f8e854ab15b87"
+  },
+  "leave_one_out_diagnostic": {
+    "correct": 1772,
+    "eligible": 1883
+  },
+  "private_candidate_sha256": "a63ba37b281a0f3317465a6bbac1f7d1b71793e37908a0b9be5579cd9336e86a",
+  "quadrant_blocked_diagnostic": {
+    "correct": 145,
+    "eligible": 172
+  },
+  "source_pins": {
+    "coast": "8be89addcb3dae3437b42dbb9e31720c22ec6fc5291fa5ee19595987d45741ce",
+    "map_document_sha256": "943f4f1a20a498bbd5e4fe7ac6643d117b9b708af3cb0bb3b31b70e390126bf1",
+    "osm_manifest": "96c5d0c165644911f20098fe37a51aa4431af388fbd573505bf1ffb509132076",
+    "osm_samples": "9aadf4305d432ad675f4e6fcd272247ca1d4292ea95bf325a4f86f05c491b752",
+    "terrain_document_sha256": "45ea9fc582ba3aa2f8694d0e2d4780c03ce447cc0555b7badadafae7a52e7140",
+    "water": "f5fa1249f0a8efbb90ec396c1a233cc48be8297801073fdfbf16cdb37e71b432",
+    "worldcover": "224ffccb57011119e7395a2ff172f3b1b6059add8d12a4280ae1a994d0b71212"
+  },
+  "status": "private_evidence_not_simulator_input",
+  "summary": {
+    "fuel_estimated": 155,
+    "fuel_source": 4018,
+    "fuel_unknown": 783,
+    "land_fuel_unknown": 335,
+    "surface_land": 4332,
+    "surface_sea": 232,
+    "surface_unknown": 392
+  },
+  "surface_fuel_cross_counts": {
+    "land_estimated": 155,
+    "land_source": 3842,
+    "land_unknown": 335,
+    "sea_unknown": 232,
+    "unknown_surface_source": 176,
+    "unknown_surface_unknown": 216
+  },
+  "synthetic_sensitivity": {
+    "parameter_sum_sensitivity": {
+      "high": 1.0,
+      "low": 0.375
+    },
+    "private_document_sha256": "fa115157d5c8535fb4bf69f7e94625c8e272e21716adb6a8dadfbfbd218b332d",
+    "strict_candidate_sha256": "a63ba37b281a0f3317465a6bbac1f7d1b71793e37908a0b9be5579cd9336e86a",
+    "summary": {
+      "class_30": 1,
+      "land_gaps_after_strict": 335,
+      "synthetic_parameterized": 1,
+      "unresolved_built_up": 230,
+      "unresolved_mixed_or_unmapped": 104
+    }
+  },
+  "terrain_candidate_values": 4639,
+  "terrain_cells_with_zero": 317,
+  "version": "extended-map-resolution-aggregate-v1",
+  "water_v2": {
+    "osm_water_policy": {
+      "conflicting_cells": 3161,
+      "effect": "conflict_censors_cell",
+      "feature_statistics": {
+        "water_area_line_features": 7,
+        "water_area_polygon_features": 271,
+        "water_area_relation_features": 3,
+        "watercourse_line_features": 2354
+      },
+      "limitations": "Community mapped, non-atomic and potentially incomplete; open water-area ways are line evidence only; relation holes conservatively censored; absent observations do not establish dry land.",
+      "source_epoch": "2026",
+      "strict_land_demoted": 2844,
+      "strict_sea_demoted": 0
+    },
+    "parent_document_sha256": "a63ba37b281a0f3317465a6bbac1f7d1b71793e37908a0b9be5579cd9336e86a",
+    "private_candidate_sha256": "a44d432066d6c3039f49032ca21b8a82496dff47c855fee1e07f8e854ab15b87",
+    "summary": {
+      "fuel_estimated": 73,
+      "fuel_source": 4018,
+      "fuel_unknown": 865,
+      "land_fuel_unknown": 149,
+      "surface_land": 1488,
+      "surface_sea": 232,
+      "surface_unknown": 3236
+    }
+  },
+  "water_v2_sensitivity": {
+    "parameter_sum_sensitivity": {},
+    "private_document_sha256": "8c2360747d3601ba02174b5e3dfacb8901de3559d01b0d35a61ce50a262b88e3",
+    "strict_candidate_sha256": "a44d432066d6c3039f49032ca21b8a82496dff47c855fee1e07f8e854ab15b87",
+    "summary": {
+      "land_gaps_after_strict": 149,
+      "synthetic_parameterized": 0,
+      "unresolved_built_up": 87,
+      "unresolved_mixed_or_unmapped": 62
+    }
+  }
+}

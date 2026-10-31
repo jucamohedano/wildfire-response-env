@@ -1,0 +1,134 @@
+{
+  "version": "extended-access-osm-samples-v1",
+  "attribution": "© OpenStreetMap contributors",
+  "license": "ODbL-1.0",
+  "status": "partial_samples_not_complete_coverage",
+  "tiles": [
+    {
+      "name": "roads-probe",
+      "path": "/tmp/extended-access-acquisition/roads-probe.json",
+      "bbox_wgs84": [
+        -4.98,
+        36.65,
+        -4.95,
+        36.68
+      ],
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-4.98,36.65,-4.95,36.68",
+      "sha256": "7c447fb4cf877ff6fe9eb102b3b3fe4a44f615a36bde74efd2802c0850cfd680",
+      "bytes": 1014020,
+      "server_date": "Fri, 30 Oct 2026 20:28:53 GMT"
+    },
+    {
+      "name": "northwest",
+      "path": "/tmp/extended-access-acquisition/northwest.json",
+      "bbox_wgs84": [
+        -5.23,
+        36.65,
+        -5.2,
+        36.68
+      ],
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.23,36.65,-5.2,36.68",
+      "sha256": "9289ac5f867d20e37cbab9cbfbf9d97a1aeab1be47d079bb4e47e9d378f46b67",
+      "bytes": 683095,
+      "server_date": "Fri, 30 Oct 2026 20:29:17 GMT"
+    },
+    {
+      "name": "north",
+      "path": "/tmp/extended-access-acquisition/north.json",
+      "bbox_wgs84": [
+        -5.1,
+        36.68,
+        -5.07,
+        36.71
+      ],
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.1,36.68,-5.07,36.71",
+      "sha256": "b2931b04775b0ac1575b56795d760ea6f5da9de6f7593bb60930b638829fd410",
+      "bytes": 1031768,
+      "server_date": "Fri, 30 Oct 2026 20:29:18 GMT"
+    },
+    {
+      "name": "northeast",
+      "path": "/tmp/extended-access-acquisition/northeast.json",
+      "bbox_wgs84": [
+        -4.93,
+        36.65,
+        -4.9,
+        36.68
+      ],
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-4.93,36.65,-4.9,36.68",
+      "sha256": "d4f4542fd57601ab3e17f17cf9ad7ada7f863ffb902f10bee7e2f997e4963d5b",
+      "bytes": 1592136,
+      "server_date": "Fri, 30 Oct 2026 20:29:21 GMT"
+    },
+    {
+      "name": "east",
+      "path": "/tmp/extended-access-acquisition/east.json",
+      "bbox_wgs84": [
+        -4.95,
+        36.58,
+        -4.92,
+        36.61
+      ],
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-4.95,36.58,-4.92,36.61",
+      "sha256": "690851f1503bb31d0fdc678059adaa10b218f3125212f57df011952d9423a77a",
+      "bytes": 1907205,
+      "server_date": "Fri, 30 Oct 2026 20:29:18 GMT"
+    },
+    {
+      "name": "coast",
+      "path": "/tmp/extended-access-acquisition/coast.json",
+      "bbox_wgs84": [
+        -5.16,
+        36.46,
+        -5.13,
+        36.49
+      ],
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.16,36.46,-5.13,36.49",
+      "sha256": "d4a09e2c3bb7fb08b9f0cb8a21a6190835a6bbcdbc953bda56b75f28521ab606",
+      "bytes": 743645,
+      "server_date": "Fri, 30 Oct 2026 20:29:18 GMT"
+    },
+    {
+      "name": "coast-west",
+      "path": "/tmp/extended-access-acquisition/coast-west.json",
+      "bbox_wgs84": [
+        -5.15,
+        36.42,
+        -5.12,
+        36.45
+      ],
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.15,36.42,-5.12,36.45",
+      "sha256": "19b1a4c22a87ba5710f38deaa97fa98a9b30cfcaa971e7d503f589ad00a3dbe2",
+      "bytes": 4791870,
+      "server_date": "Fri, 30 Oct 2026 20:29:39 GMT"
+    },
+    {
+      "name": "coast-center",
+      "path": "/tmp/extended-access-acquisition/coast-center.json",
+      "bbox_wgs84": [
+        -5.08,
+        36.46,
+        -5.05,
+        36.49
+      ],
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-5.08,36.46,-5.05,36.49",
+      "sha256": "ac821ac4d682991c1bdeeddaa928de28e5549c51d1c92cc7f19634507e23e602",
+      "bytes": 3751856,
+      "server_date": "Fri, 30 Oct 2026 20:29:39 GMT"
+    },
+    {
+      "name": "coast-east",
+      "path": "/tmp/extended-access-acquisition/coast-east.json",
+      "bbox_wgs84": [
+        -4.95,
+        36.49,
+        -4.92,
+        36.52
+      ],
+      "url": "https://api.openstreetmap.org/api/0.6/map.json?bbox=-4.95,36.49,-4.92,36.52",
+      "sha256": "f343b9ad80cdff4187d7fa8e63e3d77738f62ee0c90059c27c18e45886fff2d4",
+      "bytes": 4769912,
+      "server_date": "Fri, 30 Oct 2026 20:29:39 GMT"
+    }
+  ]
+}
