@@ -22,6 +22,14 @@ frontier remained unknown. It did not run fire or weather. A fresh-from-seed
 source owner is still required; an old single-state checkpoint cannot be split
 into component histories.
 
+`eval/domain_component_policy_v2.py` defines a fixed, domain-wide synthetic
+selection for source fuel and eligible documented estimates. It does not use
+case frontiers or outcomes. Unique estimates use the documented nominal class;
+tied alternatives use a reproducible lowest-class choice. The fuel, crossing,
+inert-share and transfer values are uncalibrated assumptions, and unsupported
+cells remain unknown. A private fresh-from-seed fire/weather check using this
+policy censored at day minute 1,260; it was not a full operations evaluation.
+
 ```sh
 PYTHONPATH=envs/wildfire_response/core/src:envs/wildfire_containment_v1/src:envs/wildfire_extended_inputs_v1:envs:eval:. \
   PYTHONDONTWRITEBYTECODE=1 PROJ_NETWORK=OFF python -m pytest \
