@@ -28,3 +28,11 @@ PYTHONPATH=envs/wildfire_response/core/src:envs/wildfire_extended_inputs_v1:envs
 
 See [estimated-fuel fire experiment v1](expanded-estimated-fuel-v1.md) for the
 underlying source and uncertainty assumptions.
+
+`eval/estimated_fuel_frontier_followup_v3.py` adds a private sensitivity
+experiment for a tied vegetation vote and a mapped inland-basin conflict.
+It tests two source-supported vegetation classes and an explicitly assumed
+partially burnable mixed cell. Its fuel and crossing factors are synthetic;
+they are not derived from the mapped basin's area. Other unsupported cells
+still censor the run. Geometry and evidence checks are exercised by
+`tests/test_mixed_frontier_sensitivity_v1.py`.
