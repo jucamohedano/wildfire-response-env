@@ -1,0 +1,22 @@
+# Source-to-component staging adapter
+
+`eval/source_two_component_adapter_v1.py` prepares evaluator-private synthetic
+component inputs from the pinned map profiles and WorldCover sample counts. It
+requires explicit per-cell fuel, transfer, crossing, component-absence and
+inert-share assumptions. Classified samples are not surveyed building footprints
+or measured fuel. Unsupported or unselected cells remain unknown; mapped sea is
+only treated as synthetic inert with an explicit choice.
+
+This is a staging adapter, not a runnable source episode. The v1 component model
+cannot represent a third inert share or non-neutral per-cell crossing effects and
+has a 4,096-cell limit, smaller than the 4,956-cell source grid. The previously
+censored mixed built-up/vegetation frontier therefore remains unknown. A source
+fire/weather owner, explicit boundary censoring and an independently reviewed
+input contract are still needed. No source fire steps or scores were produced by
+the staging check.
+
+```sh
+PYTHONPATH=envs/wildfire_response/core/src:envs/wildfire_containment_v1/src:envs/wildfire_extended_inputs_v1:envs:eval:. \
+  PYTHONDONTWRITEBYTECODE=1 PROJ_NETWORK=OFF python -m pytest \
+  tests/test_source_two_component_adapter_v1.py -q -p no:cacheprovider
+```
