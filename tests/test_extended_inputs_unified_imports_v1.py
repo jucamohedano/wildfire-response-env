@@ -72,3 +72,18 @@ else:
 '''
     subprocess.run([sys.executable, '-c', script], cwd=ROOT, env=env,
                    check=True, capture_output=True, text=True)
+
+
+def test_input_bridge_does_not_require_optional_fire_modules():
+    # The repository has a same-named namespace directory even if the actual
+    # containment package's src directory is absent from the Python path.
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONPATH=os.pathsep.join((
+        str(ROOT / 'envs/wildfire_extended_inputs_v1'), str(ROOT / 'envs'),
+        str(ROOT / 'envs/wildfire_response/core/src'), str(ROOT))))
+    script = '''
+import adapter_bootstrap_v1
+package = adapter_bootstrap_v1.enable()
+assert package.VERSION == 'wildfire-extended-inputs-v1'
+'''
+    subprocess.run([sys.executable, '-c', script], cwd=ROOT, env=env,
+                   check=True, capture_output=True, text=True)

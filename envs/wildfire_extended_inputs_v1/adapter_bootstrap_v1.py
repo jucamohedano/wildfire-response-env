@@ -69,8 +69,12 @@ def enable():
     # Alias the optional fire backend too, but only if its dependencies are
     # already available. Calling enable() again after adding those paths is safe.
     try:
+        # A namespace package directory alone does not make the optional
+        # modules importable (for example, ``envs/wildfire_containment_v1``
+        # exists even when its ``src`` directory is not on the path).
         fire_available = all(importlib.util.find_spec(name) is not None for name in (
-            'wildfire_containment_v1', 'envs.wildfire_response', 'simulator'))
+            'wildfire_containment_v1.fire', 'wildfire_containment_v1.incident_day',
+            'envs.wildfire_response.incident_day.scenarios', 'simulator.engine'))
     except (ImportError, ModuleNotFoundError, ValueError):
         fire_available = False
     if fire_available:
