@@ -15,8 +15,16 @@ fire/weather owner, explicit boundary censoring and an independently reviewed
 input contract are still needed. No source fire steps or scores were produced by
 the staging check.
 
+`eval/source_two_component_adapter_v2.py` stages the explicit assumptions in
+the v2 component format, including per-cell crossing and inert shares. A
+private 84×59 staging check selected only two cells; the previously censored
+frontier remained unknown. It did not run fire or weather. A fresh-from-seed
+source owner is still required; an old single-state checkpoint cannot be split
+into component histories.
+
 ```sh
 PYTHONPATH=envs/wildfire_response/core/src:envs/wildfire_containment_v1/src:envs/wildfire_extended_inputs_v1:envs:eval:. \
   PYTHONDONTWRITEBYTECODE=1 PROJ_NETWORK=OFF python -m pytest \
-  tests/test_source_two_component_adapter_v1.py -q -p no:cacheprovider
+  tests/test_source_two_component_adapter_v1.py tests/test_source_two_component_adapter_v2.py \
+  -q -p no:cacheprovider
 ```
