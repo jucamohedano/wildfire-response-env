@@ -10,7 +10,7 @@ The factory(case_id) returns a fresh scored host exposing situation() and the
 shared-clock public commands below. policy_factory(case_id) returns a policy
 whose act(public_host, observation) executes one bounded decision. The verifier
 (case_id, host) independently replays and scores a completed host, returning the
-shared-clock verifier's status/verified/score_eligible/score mapping.
+verifier's status/scope/reward_version/verified/score_eligible/score mapping.
 
 One worker runs at a time. Budgets are cooperative between calls: an injected
 factory, policy, host or verifier must itself bound blocking work. With an optional trusted state adapter, authenticated private host and policy
@@ -21,6 +21,7 @@ import base64
 import json
 import math
 import os
+import re
 import stat
 from pathlib import Path
 import tempfile
@@ -28,7 +29,7 @@ import time
 
 from eval.qualify_extended_day_v1 import _ids
 
-VERSION = 'wildfire-source-day-orchestration-v2'
+VERSION = 'wildfire-source-day-orchestration-v2.1'
 HORIZON = 1440
 _COMMANDS = frozenset(('situation', 'reports', 'dispatch_hold', 'clear_aircraft',
                        'dispatch_aircraft', 'protect', 'release', 'request_status', 'advance'))
@@ -104,7 +105,7 @@ def _save(path, report, continuations):
             os.unlink(name)
 
 
-def _load(path, ids, run_id):
+def _load(path, ids, run_id, expected_scope, expected_reward_version):
     _check_path(path, existing=True)
     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
     with os.fdopen(fd, encoding='utf-8') as stream:
@@ -113,8 +114,10 @@ def _load(path, ids, run_id):
     if (type(continuations) is not dict or any(type(k) is not str or type(v) is not str
             or len(v) > 32_000_000 for k, v in continuations.items())):
         raise ValueError('invalid private continuation')
-    if (type(report) is not dict or set(report) != {'version', 'run_id', 'cases'}
+    if (type(report) is not dict or set(report) != {'version', 'run_id', 'expected_scope', 'expected_reward_version', 'cases'}
             or report['version'] != VERSION or report['run_id'] != run_id
+            or report['expected_scope'] != expected_scope
+            or report['expected_reward_version'] != expected_reward_version
             or type(report['cases']) is not list or len(report['cases']) != 12):
         raise ValueError('checkpoint identity or format mismatch')
     for case_id, row in zip(ids, report['cases']):
@@ -134,13 +137,14 @@ def _load(path, ids, run_id):
     return report, continuations
 
 
-def _capture(adapter, host, policy, run_id, case_id, obs):
+def _capture(adapter, host, policy, run_id, case_id, obs, expected_scope, expected_reward_version):
     """Bind opaque adapter state to the run, case and public clock before sealing."""
     state = adapter.capture(host, policy)
     if type(state) is not bytes or len(state) > 16_000_000:
         raise ValueError('invalid private state')
     body = json.dumps({'version': VERSION, 'run_id': run_id, 'case_id': case_id,
                        'minute': obs['minute'], 'status': obs['status'],
+                       'expected_scope': expected_scope, 'expected_reward_version': expected_reward_version,
                        'state': base64.b64encode(state).decode('ascii')},
                       separators=(',', ':')).encode()
     sealed = adapter.seal(body)
@@ -149,15 +153,18 @@ def _capture(adapter, host, policy, run_id, case_id, obs):
     return base64.b64encode(sealed).decode('ascii')
 
 
-def _restore(adapter, envelope, run_id, case_id):
+def _restore(adapter, envelope, run_id, case_id, expected_scope, expected_reward_version):
     try:
         sealed = base64.b64decode(envelope, validate=True)
         body = adapter.open(sealed)  # Must authenticate before returning plaintext.
         if type(body) is not bytes or len(body) > 24_000_000:
             raise ValueError('invalid authenticated state')
         data = json.loads(body)
-        if (type(data) is not dict or set(data) != {'version', 'run_id', 'case_id', 'minute', 'status', 'state'}
+        if (type(data) is not dict or set(data) != {'version', 'run_id', 'case_id', 'minute', 'status', 'state',
+                                           'expected_scope', 'expected_reward_version'}
                 or data['version'] != VERSION or data['run_id'] != run_id or data['case_id'] != case_id
+                or data['expected_scope'] != expected_scope
+                or data['expected_reward_version'] != expected_reward_version
                 or type(data['minute']) is not int or not 0 <= data['minute'] <= HORIZON
                 or data['status'] not in ('active', 'censored', 'end_unscored')):
             raise ValueError('state binding differs')
@@ -173,8 +180,8 @@ def _restore(adapter, envelope, run_id, case_id):
         raise ValueError('private continuation authentication or restore failed') from None
 
 
-def qualify(case_ids, *, checkpoint, run_id, make_environment, make_policy,
-            verify_outcome, wall_seconds=1800, max_decisions=3000, resume=False,
+def qualify(case_ids, *, checkpoint, run_id, expected_scope, expected_reward_version,
+            make_environment, make_policy, verify_outcome, wall_seconds=1800, max_decisions=3000, resume=False,
             now=time.monotonic, state_adapter=None):
     """Evaluate twelve cases; return a public, sanitized checkpoint report.
 
@@ -182,12 +189,19 @@ def qualify(case_ids, *, checkpoint, run_id, make_environment, make_policy,
     matches. Completed, censored, and blocked rows are retained on resume;
     incomplete rows resume from authenticated state when an adapter is supplied;
     otherwise they restart, so policies must be reproducible from handover.
+    Callers must independently pin expected_scope and expected_reward_version.
     A scored row requires an uncensored terminal day and the trusted independent
-    verifier's affirmative full-day result. No aggregate score is inferred.
+    verifier's affirmative full-day result matching both pins. No aggregate score
+    is inferred; checkpoints from older unpinned formats cannot be resumed.
     """
     ids = _ids(case_ids)
     if type(run_id) is not str or not run_id:
         raise ValueError('public run_id required')
+    for identity in (expected_scope, expected_reward_version):
+        if (type(identity) is not str or not identity or len(identity) > 256
+                or not identity.isprintable() or identity != identity.strip()
+                or any(part.startswith('restricted') for part in re.split(r'[^a-z0-9]+', identity.casefold()))):
+            raise ValueError('independently pinned full-environment identities required')
     if type(wall_seconds) not in (int, float) or not math.isfinite(wall_seconds) or wall_seconds <= 0:
         raise ValueError('positive finite wall budget required')
     if type(max_decisions) is not int or max_decisions <= 0 or type(resume) is not bool:
@@ -198,11 +212,12 @@ def qualify(case_ids, *, checkpoint, run_id, make_environment, make_policy,
                                          for method in ('capture', 'seal', 'open', 'restore')):
         raise ValueError('invalid state adapter')
     if resume:
-        report, continuations = _load(path, ids, run_id)
+        report, continuations = _load(path, ids, run_id, expected_scope, expected_reward_version)
         if continuations and state_adapter is None:
             raise ValueError('state adapter required for private continuation')
     else:
-        report = {'version': VERSION, 'run_id': run_id, 'cases': [_empty(i) for i in ids]}
+        report = {'version': VERSION, 'run_id': run_id, 'expected_scope': expected_scope,
+                  'expected_reward_version': expected_reward_version, 'cases': [_empty(i) for i in ids]}
         continuations = {}
         # Exclusive creation prevents accidentally replacing prior evidence.
         fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
@@ -220,7 +235,8 @@ def qualify(case_ids, *, checkpoint, run_id, make_environment, make_policy,
                 break
             current = index
             # Authentication must succeed before changing any persisted result.
-            restored = (_restore(state_adapter, continuations[row['id']], run_id, row['id'])
+            restored = (_restore(state_adapter, continuations[row['id']], run_id, row['id'],
+                                 expected_scope, expected_reward_version)
                         if row['id'] in continuations else None)
             row.update(status='incomplete', reason='running', score=None)
             _save(path, report, continuations)
@@ -238,7 +254,9 @@ def qualify(case_ids, *, checkpoint, run_id, make_environment, make_policy,
                 public = _PublicHost(host)
                 if state_adapter is not None and restored is None:
                     try:
-                        continuations[row['id']] = _capture(state_adapter, host, policy, run_id, row['id'], obs)
+                        continuations[row['id']] = _capture(
+                            state_adapter, host, policy, run_id, row['id'], obs,
+                            expected_scope, expected_reward_version)
                         _save(path, report, continuations)
                     except Exception:
                         raise _StateError from None
@@ -259,7 +277,9 @@ def qualify(case_ids, *, checkpoint, run_id, make_environment, make_policy,
                     row['minute'] = obs['minute']
                     if state_adapter is not None:
                         try:
-                            continuations[row['id']] = _capture(state_adapter, host, policy, run_id, row['id'], obs)
+                            continuations[row['id']] = _capture(
+                                state_adapter, host, policy, run_id, row['id'], obs,
+                                expected_scope, expected_reward_version)
                             _save(path, report, continuations)
                         except Exception:
                             raise _StateError from None
@@ -275,6 +295,9 @@ def qualify(case_ids, *, checkpoint, run_id, make_environment, make_policy,
                         if now() - start >= wall_seconds:
                             row['reason'] = 'budget'
                         elif (type(gate) is dict and gate.get('status') == 'full_day'
+                              and type(gate.get('scope')) is str and gate['scope'] == expected_scope
+                              and type(gate.get('reward_version')) is str
+                              and gate['reward_version'] == expected_reward_version
                               and gate.get('verified') is True and gate.get('score_eligible') is True
                               and type(gate.get('score')) in (int, float)
                               and math.isfinite(gate['score']) and 0 <= gate['score'] <= 1):
@@ -296,7 +319,7 @@ def qualify(case_ids, *, checkpoint, run_id, make_environment, make_policy,
                 break
     except KeyboardInterrupt:
         # Discard any in-flight changes and return to the last durable decision.
-        report, continuations = _load(path, ids, run_id)
+        report, continuations = _load(path, ids, run_id, expected_scope, expected_reward_version)
         if current is not None:
             report['cases'][current].update(status='incomplete', reason='interrupted', score=None)
         _save(path, report, continuations)

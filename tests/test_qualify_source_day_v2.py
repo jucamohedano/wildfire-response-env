@@ -5,6 +5,8 @@ import pytest
 from eval.qualify_source_day_v2 import BlockedCase, qualify
 
 IDS = [f'case-{i}' for i in range(12)]
+FULL_SCOPE = 'full_source_environment'
+FULL_REWARD = 'wildfire-full-source-outcomes-v1'
 
 
 class Host:
@@ -32,11 +34,13 @@ class Policy:
 
 
 def gate(case_id, host):
-    return {'status': 'full_day', 'verified': True, 'score_eligible': True, 'score': .75}
+    return {'status': 'full_day', 'scope': FULL_SCOPE, 'reward_version': FULL_REWARD,
+            'verified': True, 'score_eligible': True, 'score': .75}
 
 
 def run(path, **overrides):
-    kwargs = dict(checkpoint=path, run_id='public-v1', make_environment=lambda _: Host(),
+    kwargs = dict(checkpoint=path, run_id='public-v1', expected_scope=FULL_SCOPE,
+                  expected_reward_version=FULL_REWARD, make_environment=lambda _: Host(),
                   make_policy=lambda _: Policy(), verify_outcome=gate)
     kwargs.update(overrides)
     return qualify(IDS, **kwargs)
@@ -109,7 +113,7 @@ def test_decision_and_wall_budgets_are_incomplete(tmp_path):
 
 @pytest.mark.parametrize('bad', [float('nan'), True, -1, 1.1, None])
 def test_bad_scores_are_never_accepted(tmp_path, bad):
-    report = run(tmp_path / 'state', verify_outcome=lambda *_: dict(status='full_day', verified=True, score_eligible=True, score=bad))
+    report = run(tmp_path / 'state', verify_outcome=lambda *_: dict(status='full_day', scope=FULL_SCOPE, reward_version=FULL_REWARD, verified=True, score_eligible=True, score=bad))
     assert all(row['status'] == 'blocked' and row['score'] is None for row in report['cases'])
 
 
@@ -123,7 +127,7 @@ def test_corrupt_checkpoint_and_invalid_inputs_fail_closed(tmp_path):
     with pytest.raises(ValueError):
         run(tmp_path / 'bad', max_decisions=True)
     with pytest.raises(ValueError):
-        qualify(IDS[:-1], checkpoint=tmp_path / 'bad', run_id='x', make_environment=None, make_policy=None, verify_outcome=None)
+        qualify(IDS[:-1], checkpoint=tmp_path / 'bad', run_id='x', expected_scope=FULL_SCOPE, expected_reward_version=FULL_REWARD, make_environment=None, make_policy=None, verify_outcome=None)
 
 
 def test_censored_at_handover_does_not_require_a_policy(tmp_path):
@@ -319,3 +323,83 @@ def test_terminal_checkpoint_resumes_verification_after_budget(tmp_path):
                   make_environment=lambda _: StatefulHost(), make_policy=lambda _: AlternatingPolicy())
     assert adapter.restored[0] == (IDS[0], 24, 1440)
     assert all(row['status'] == 'scored' for row in resumed['cases'])
+
+
+@pytest.mark.parametrize('metadata', [
+    {},
+    {'scope': FULL_SCOPE},
+    {'reward_version': FULL_REWARD},
+    {'scope': 'restricted_no_ground_no_evac', 'reward_version': 'wildfire-restricted-no-ground-no-evac-outcomes-v1'},
+    {'scope': 'restricted_no_ground_no_evac', 'reward_version': FULL_REWARD},
+    {'scope': FULL_SCOPE, 'reward_version': 'wildfire-restricted-no-ground-no-evac-outcomes-v1'},
+    {'scope': 'other_full_environment', 'reward_version': FULL_REWARD},
+    {'scope': FULL_SCOPE, 'reward_version': 'other-reward-v1'},
+    {'scope': None, 'reward_version': FULL_REWARD},
+])
+def test_normalized_or_missing_verifier_metadata_never_scores(tmp_path, metadata):
+    def verify(*_):
+        return dict(status='full_day', verified=True, score_eligible=True, score=.75, **metadata)
+    report = run(tmp_path / 'state', verify_outcome=verify)
+    assert all(row['status'] == 'blocked' and row['reason'] == 'verification_failed'
+               and row['score'] is None for row in report['cases'])
+
+
+@pytest.mark.parametrize('argument,value', [
+    ('expected_scope', 'restricted_no_ground_no_evac'),
+    ('expected_scope', 'RESTRICTED-no-ground'),
+    ('expected_reward_version', 'wildfire-restricted-no-ground-no-evac-outcomes-v1'),
+    ('expected_scope', ''),
+    ('expected_reward_version', None),
+])
+def test_invalid_or_restricted_expected_identity_rejected_before_creation(tmp_path, argument, value):
+    path = tmp_path / 'state'
+    with pytest.raises(ValueError, match='full-environment identities'):
+        run(path, **{argument: value})
+    assert not path.exists()
+
+
+def test_resume_pins_must_match_and_old_checkpoint_is_preserved(tmp_path):
+    path = tmp_path / 'state'
+    first = run(path)
+    assert first['expected_scope'] == FULL_SCOPE
+    assert first['expected_reward_version'] == FULL_REWARD
+    before = path.read_bytes()
+    for kwargs in ({'expected_scope': 'different_full_scope'},
+                   {'expected_reward_version': 'different_full_reward'}):
+        with pytest.raises(ValueError, match='checkpoint identity'):
+            run(path, resume=True, **kwargs)
+        assert path.read_bytes() == before
+    old = dict(first)
+    old.pop('expected_scope')
+    old.pop('expected_reward_version')
+    old['version'] = 'wildfire-source-day-orchestration-v2'
+    path.write_text(json.dumps(old))
+    before = path.read_bytes()
+    with pytest.raises(ValueError, match='checkpoint identity'):
+        run(path, resume=True)
+    assert path.read_bytes() == before
+
+
+def test_continuation_authenticates_scope_and_reward_pins(tmp_path):
+    path = tmp_path / 'state'
+    adapter = AuthenticatedState()
+    run(path, make_environment=lambda _: StatefulHost(), make_policy=lambda _: AlternatingPolicy(),
+        state_adapter=adapter, max_decisions=1)
+    doc = json.loads(path.read_text())
+    doc['expected_scope'] = 'different_full_scope'
+    path.write_text(json.dumps(doc))
+    before = path.read_bytes()
+    with pytest.raises(ValueError, match='authentication or restore'):
+        run(path, resume=True, expected_scope='different_full_scope', state_adapter=adapter)
+    assert path.read_bytes() == before
+
+
+def test_expected_pins_are_required_and_unrestricted_is_not_restricted(tmp_path):
+    with pytest.raises(TypeError):
+        qualify(IDS, checkpoint=tmp_path / 'missing', run_id='test',
+                make_environment=lambda _: Host(), make_policy=lambda _: Policy(), verify_outcome=gate)
+    report = run(tmp_path / 'state', expected_scope='unrestricted_full_environment',
+                 verify_outcome=lambda *_: dict(status='full_day', scope='unrestricted_full_environment',
+                                               reward_version=FULL_REWARD, verified=True,
+                                               score_eligible=True, score=.75))
+    assert all(row['status'] == 'scored' for row in report['cases'])
