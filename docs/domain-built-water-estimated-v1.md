@@ -19,6 +19,11 @@ used as a complete catalog policy. A separately versioned corrected policy and
 fresh batch are required. Private source profiles, reports, assumptions and
 checkpoints must stay outside the repository.
 
+`eval/domain_built_water_estimated_policy_v2.py` corrects that omission by
+retaining the source class for eligible low-water cells. Its choices remain
+synthetic, and its results have a new identity; the v1 result is not silently
+reused. A complete v2 batch must still be run and verified.
+
 ```sh
 PYTHONPATH=envs/wildfire_response/core/src:envs/wildfire_containment_v1/src:envs/wildfire_extended_inputs_v1:envs:eval:. \
   PYTHONDONTWRITEBYTECODE=1 PROJ_NETWORK=OFF python -m pytest \
