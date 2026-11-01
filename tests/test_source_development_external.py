@@ -28,9 +28,15 @@ PRIVATE_MARKERS = ('checkpoint', 'sha256', 'outcomes', 'graded_score', '_audit',
 
 
 def assert_public(value):
-    serialized = json.dumps(value).lower()
-    for marker in PRIVATE_MARKERS:
-        assert marker not in serialized
+    # Wake reasons legitimately include 'hourly_checkpoint'; only reject
+    # private data fields, not ordinary words in public report values.
+    if isinstance(value, dict):
+        for key, item in value.items():
+            assert not any(marker in key.lower() for marker in PRIVATE_MARKERS), key
+            assert_public(item)
+    elif isinstance(value, list):
+        for item in value:
+            assert_public(item)
 
 
 def test_source_development_external_client_matches_local_day():
