@@ -57,9 +57,10 @@ trajectory; keep it private.
 
 The source validator crosses the 12 additional source-map development cases
 with four policies (48 cells), using one CPU worker. Start with a fresh output
-directory and allow a suitable wall budget:
+directory on disk-backed storage, check free space and allow a suitable wall budget:
 
 ```bash
+df -h /var/tmp  # Or check the filesystem containing your chosen output directory.
 python -m eval.validate_source_runtime_matrix \
   --data-dir /tmp/my-wildfire-development-bundle --runtime es-ma-2021 \
   --output /tmp/my-wildfire-source-matrix --wall-seconds 3600
