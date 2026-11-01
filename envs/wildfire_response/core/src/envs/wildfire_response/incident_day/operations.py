@@ -156,6 +156,7 @@ class Operations:
         unit = self.resources.get(resource_id)
         if (unit is None or unit['state'] not in ('available', 'blocked', 'needs_assistance')
                 or unit.get('blocked_outbound_recovery') is True
+                or unit.get('blocked_return_recovery') is True
                 or unit['available_at'] > minute
                 or unit['work_remaining'] <= 0
                 or _duty_finished(unit, minute)
@@ -276,6 +277,8 @@ class Operations:
 
     def _at_base(self, unit, minute):
         unit.pop('blocked_outbound_recovery', None)
+        unit.pop('blocked_return_recovery', None)
+        unit.pop('return_recovery_preflight_at', None)
         unit['position'] = copy.deepcopy(unit['base_position'])
         unit['journey'] = None
         if _duty_finished(unit, minute):
@@ -363,6 +366,8 @@ class Operations:
         unit.pop('blocked_state', None)
         unit.pop('duty_return_attempted', None)
         unit.pop('blocked_outbound_recovery', None)
+        unit.pop('blocked_return_recovery', None)
+        unit.pop('return_recovery_preflight_at', None)
         unit.update(state='off_duty', journey=None)
 
     def _flight_window(self, wind, daylight):
@@ -371,6 +376,27 @@ class Operations:
 
     def set_flight_conditions(self, wind, daylight):
         self.air_window_open = self._flight_window(wind, daylight)
+
+    def _replan_blocked_return(self, unit, minute, planner, hazard_check, movement_check, emit):
+        """Retry a return without moving or declaring recovery until a safe tick."""
+        ready = self._return(unit, None, minute, planner)
+        if ready and unit['state'] == 'returning':
+            # Preflight against current conditions; the real tick checks again.
+            probe = copy.deepcopy(unit['journey'])
+            position = journey_position(probe, minute + 1)[0]
+            ready = _movement_safe(probe, minute + 1, unit['kind'], position, hazard_check, movement_check,
+                returning_egress=self.profile.get('emergency_egress_policy') == 'return-only-buffer-exit-v1')
+            if ready:
+                unit.update(state='blocked', blocked_state='returning', return_recovery_preflight_at=minute)
+            else:
+                unit.update(state='needs_assistance', journey=None)
+        if ready:
+            if unit['state'] != 'blocked':
+                unit.pop('egress_unavailable_since', None)
+        elif unit.get('egress_unavailable_since') is None:
+            unit['egress_unavailable_since'] = minute
+            emit('operations', 'egress_unavailable', {'resource_id': unit['id'],
+                 'position': copy.deepcopy(unit['position'])}, actionable=True)
 
     def tick(self, minute, *, wind, daylight, hazard_check, suppress, emit, return_planner=None,
              exposure_check=None, movement_check=None):
@@ -395,6 +421,11 @@ class Operations:
         for unit in self.resources.values():
             state = unit['state']
             movement_state = unit.get('blocked_state') if state == 'blocked' else state
+            if (self.profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2'
+                    and unit['kind'] in ('engine', 'crew') and state == 'needs_assistance'
+                    and unit.get('blocked_return_recovery') is True):
+                self._replan_blocked_return(unit, minute, planner, hazard_check, movement_check, emit)
+                continue
             if (self.profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2'
                     and unit['kind'] in ('engine', 'crew') and state == 'blocked'
                     and movement_state == 'travel'):
@@ -483,11 +514,18 @@ class Operations:
                                 unit['egress_unavailable_since'] = minute
                                 emit('operations', 'egress_unavailable', {'resource_id': unit['id'],
                                      'position': copy.deepcopy(unit['position'])}, actionable=True)
+                    elif (self.profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2'
+                          and unit['kind'] in ('engine', 'crew') and movement_state == 'returning'):
+                        unit['blocked_return_recovery'] = True
+                        self._replan_blocked_return(unit, minute, planner, hazard_check, movement_check, emit)
                     continue
                 unit['position'] = position
                 if state == 'blocked':
                     unit['state'] = movement_state
                     unit.pop('blocked_state', None)
+                    if unit.get('blocked_return_recovery') is True:
+                        unit.pop('egress_unavailable_since', None)
+                        unit.pop('return_recovery_preflight_at', None)
                     emit('operations', 'movement_resumed',
                          {'resource_id': unit['id'], 'movement_state': movement_state,
                           'position': copy.deepcopy(position)}, actionable=True)

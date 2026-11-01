@@ -67,15 +67,15 @@ def test_unsafe_recovery_does_not_move_and_resumes_when_safe():
     tick(ops, 0, events=events)
     tick(ops, 1, moving=False, events=events)
     unit = ops.resources['unit']
-    assert unit['state'] == 'blocked'
-    assert unit['blocked_state'] == 'returning'
+    assert unit['state'] == 'needs_assistance'
     assert unit['position'] == [2000, 0]
     tick(ops, 2, safe=False, events=events)
     assert unit['position'] == [2000, 0]
     tick(ops, 3, events=events)
-    assert unit['state'] == 'returning'
-    assert unit['position'] == [1000, 0]
-    assert [kind for kind, _ in events] == ['work_target_unavailable', 'movement_blocked', 'movement_resumed']
+    assert unit['state'] == 'blocked' and unit['blocked_state'] == 'returning'
+    tick(ops, 4, events=events)
+    assert unit['state'] == 'returning' and unit['position'] == [1000, 0]
+    assert [kind for kind, _ in events] == ['work_target_unavailable', 'movement_blocked', 'egress_unavailable', 'movement_resumed']
 
 
 def test_expired_shift_continues_safe_recovery_but_cannot_dispatch():
@@ -87,10 +87,11 @@ def test_expired_shift_continues_safe_recovery_but_cannot_dispatch():
         tick(ops, minute, moving=False)
     tick(ops, 5)
     tick(ops, 6)
+    tick(ops, 7)
     unit = ops.resources['unit']
     assert unit['position'] == [0, 0]
     assert unit['state'] == 'off_duty'
-    assert not ops.dispatch('unit', 'incident', [0, 0], recovery(unit, 6), 6)
+    assert not ops.dispatch('unit', 'incident', [0, 0], recovery(unit, 7), 7)
 
 
 @pytest.mark.parametrize('version', ['wildfire-incident-day-realmap-profile-v2',
@@ -121,9 +122,11 @@ def test_blocked_outbound_immediately_recovers_and_return_stays_safety_checked(k
     assert unit['state'] == 'returning' and unit['journey']['destination'] == [0, 0]
     assert [item[0] for item in events] == ['movement_blocked']
     tick(ops, 2, moving=False, events=events)
-    assert unit['state'] == 'blocked' and unit['blocked_state'] == 'returning'
+    assert unit['state'] == 'needs_assistance'
     assert unit['position'] == [2000, 0]
     tick(ops, 3, moving=True, events=events)
+    assert unit['state'] == 'blocked' and unit['blocked_state'] == 'returning'
+    tick(ops, 4, moving=True, events=events)
     assert unit['state'] == 'returning' and unit['position'] != [2000, 0]
 
 
@@ -188,10 +191,143 @@ def test_assistance_retries_return_and_cannot_be_reassigned_until_recovered():
     tick(ops, 3, events=events)
     assert unit['state'] == 'returning' and unit['position'] == [2000, 0]
     tick(ops, 4, moving=False, events=events)
-    assert unit['state'] == 'blocked' and unit['blocked_state'] == 'returning'
+    assert unit['state'] == 'needs_assistance'
     assert not ops.dispatch('unit', 'incident', [1, 1], recovery(unit, 4), 4)
     tick(ops, 5, events=events)
     tick(ops, 6, events=events)
+    tick(ops, 7, events=events)
     assert unit['state'] == 'available' and unit['position'] == [0, 0]
     assert 'blocked_outbound_recovery' not in unit
-    assert [name for name, _ in events].count('egress_unavailable') == 1
+    assert [name for name, _ in events].count('egress_unavailable') == 2
+
+
+def test_blocked_return_uses_new_planner_route_and_checkpoint_continuation():
+    import json
+    def alternate(unit, minute):
+        origin, base = unit['position'], unit['base_position']
+        waypoint = [origin[0], origin[1] + 1000]
+        return make_journey([make_leg('road', [origin, waypoint], 60, edge_id='alternate-1'),
+                             make_leg('road', [waypoint, base], 60, edge_id='alternate-2')],
+                            origin, base, 'alternate')
+    ops = environment(planner=alternate)
+    unit = ops.resources['unit']
+    old = make_journey([make_leg('road', [[2000, 0], [0, 0]], 60, edge_id='old')],
+                       [2000, 0], [0, 0], 'old')
+    old.update(departed_at=0, arrives_at=old['duration_minutes'])
+    unit.update(state='returning', journey=old)
+    events = []
+    def advance(target, minute, event_sink):
+        target.tick(minute, wind=0, daylight=True, hazard_check=lambda *args: True,
+            movement_check=lambda journey, *args: all(leg['edge_id'] != 'old' for leg in journey['legs']),
+            suppress=lambda *args: None,
+            emit=lambda source, kind, payload, **kwargs: event_sink.append((kind, payload)))
+    advance(ops, 1, events)
+    assert unit['position'] == [2000, 0]
+    assert unit['state'] == 'blocked' and unit['blocked_state'] == 'returning'
+    assert unit['blocked_return_recovery'] is True
+    assert [leg['edge_id'] for leg in unit['journey']['legs']] == ['alternate-1', 'alternate-2']
+    assert not ops.dispatch('unit', 'incident', [0, 0], alternate(unit, 1), 1)
+    resumed = Operations.restore(json.loads(json.dumps(ops.checkpoint())), return_planner=alternate)
+    replay_events = []
+    for minute in range(2, 8):
+        advance(ops, minute, events)
+        advance(resumed, minute, replay_events)
+        assert ops.checkpoint() == resumed.checkpoint()
+        if ops.resources['unit']['state'] in ('available', 'off_duty'):
+            break
+    assert ops.resources['unit']['state'] == 'available'
+    assert [kind for kind, _ in events] == ['movement_blocked', 'movement_resumed']
+    assert [kind for kind, _ in replay_events] == ['movement_resumed']
+
+
+def test_blocked_return_no_route_waits_and_retries_without_report_storm():
+    available = [False]
+    def planner(unit, minute):
+        return recovery(unit, minute) if available[0] else None
+    ops = environment(planner=planner)
+    unit = ops.resources['unit']
+    old = recovery(unit, 0)
+    old.update(departed_at=0, arrives_at=old['duration_minutes'])
+    unit.update(state='returning', journey=old)
+    events = []
+    tick(ops, 1, moving=False, events=events)
+    assert unit['state'] == 'needs_assistance' and unit['blocked_return_recovery'] is True
+    assert not ops.dispatch('unit', 'incident', [0, 0], old, 1)
+    for minute in (2, 3, 4):
+        tick(ops, minute, moving=False, events=events)
+    assert [kind for kind, _ in events] == ['movement_blocked', 'egress_unavailable']
+    available[0] = True
+    # A route exists but fails the current movement check: retain assistance.
+    tick(ops, 5, moving=False, events=events)
+    assert unit['state'] == 'needs_assistance' and unit['position'] == [2000, 0]
+    tick(ops, 6, moving=True, events=events)
+    assert unit['state'] == 'blocked' and unit['blocked_state'] == 'returning'
+    # Changing hazards still prevent moving and do not emit duplicate alerts.
+    tick(ops, 7, moving=False, events=events)
+    assert unit['state'] == 'needs_assistance' and unit['position'] == [2000, 0]
+    assert [kind for kind, _ in events] == ['movement_blocked', 'egress_unavailable']
+    tick(ops, 8, moving=True, events=events)
+    tick(ops, 9, moving=True, events=events)
+    assert unit['state'] == 'returning' and unit['position'] != [2000, 0]
+    assert [kind for kind, _ in events] == ['movement_blocked', 'egress_unavailable', 'movement_resumed']
+
+
+@pytest.mark.parametrize('version', ['wildfire-incident-day-realmap-development-profile-v1',
+                                      'wildfire-incident-day-realmap-profile-v2'])
+def test_legacy_blocked_return_does_not_replan(version):
+    calls = []
+    def planner(unit, minute):
+        calls.append(minute)
+        return recovery(unit, minute)
+    ops = environment(version=version, planner=planner)
+    unit = ops.resources['unit']
+    old = recovery(unit, 0)
+    old.update(departed_at=0, arrives_at=old['duration_minutes'])
+    unit.update(state='returning', journey=old)
+    tick(ops, 1, moving=False)
+    assert unit['state'] == 'blocked' and unit['blocked_state'] == 'returning'
+    assert not calls
+    assert 'blocked_return_recovery' not in unit
+
+
+def test_consecutive_preflight_markers_are_current_tick_and_replay_without_alert_storm():
+    import json
+    ops = environment()
+    unit = ops.resources['unit']
+    old = recovery(unit, 0)
+    old.update(departed_at=0, arrives_at=old['duration_minutes'])
+    unit.update(state='returning', journey=old)
+    events = []
+    checks = iter((False, True, False, True, True))
+    def advance(target, minute, sequence, log):
+        target.tick(minute, wind=0, daylight=True, hazard_check=lambda *args: True,
+                    movement_check=lambda *args: next(sequence), suppress=lambda *args: None,
+                    emit=lambda source, kind, payload, **kwargs: log.append(kind))
+    advance(ops, 1, checks, events)
+    assert unit['state'] == 'blocked' and unit['return_recovery_preflight_at'] == 1
+    restored = Operations.restore(json.loads(json.dumps(ops.checkpoint())), return_planner=recovery)
+    replay_checks, replay_events = iter((False, True, True)), []
+    advance(ops, 2, checks, events)
+    advance(restored, 2, replay_checks, replay_events)
+    assert unit['state'] == 'blocked' and unit['return_recovery_preflight_at'] == 2
+    assert ops.checkpoint() == restored.checkpoint()
+    advance(ops, 3, checks, events)
+    advance(restored, 3, replay_checks, replay_events)
+    assert unit['state'] == 'returning' and unit['position'] != [2000, 0]
+    assert ops.checkpoint() == restored.checkpoint()
+    assert events == ['movement_blocked', 'movement_resumed']
+    assert replay_events == ['movement_resumed']
+
+
+def test_short_preflight_return_can_reach_base_directly_after_shift_end():
+    ops = environment()
+    unit = ops.resources['unit']
+    unit.update(state='needs_assistance', base_position=[1900, 0], duty_end_at=1,
+                blocked_return_recovery=True, egress_unavailable_since=0)
+    tick(ops, 1)
+    assert unit['state'] == 'blocked' and unit['blocked_state'] == 'returning'
+    assert unit['return_recovery_preflight_at'] == 1
+    assert unit['journey']['duration_minutes'] == 1
+    tick(ops, 2)
+    assert unit['state'] == 'off_duty' and unit['position'] == [1900, 0]
+    assert 'return_recovery_preflight_at' not in unit

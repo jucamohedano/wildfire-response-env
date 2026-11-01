@@ -198,11 +198,29 @@ def recovery_overrun_finding(identifier, unit, minute, audit, reports, profile):
             if (report.get('kind') != 'egress_unavailable' or report.get('payload', {}).get('resource_id') != identifier
                     or type(observed) is not int or not 0 <= observed <= deadline < minute):
                 continue
-            if all(record['resources'][identifier]['state'] == 'needs_assistance'
-                   for record in audit[observed:minute]):
+            waiting = [record['resources'][identifier] for record in audit[observed:minute]]
+            explained = bool(waiting) and all(item['state'] == 'needs_assistance' for item in waiting)
+            if profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2' and waiting:
+                # Each blocked retry must carry the private evidence that its
+                # current-tick return preflight passed. Consecutive retries are
+                # possible if the prior preflight became unsafe on the next tick.
+                position = waiting[0]['position']
+                explained = (waiting[0]['state'] == 'needs_assistance'
+                    and all(math.dist(item['position'], position) <= 1e-6 for item in waiting)
+                    and all(item['state'] == 'needs_assistance' or
+                            (item['state'] == 'blocked' and item.get('blocked_state') == 'returning'
+                             and type(item.get('return_recovery_preflight_at')) is int
+                             and item['return_recovery_preflight_at'] == observed + index)
+                            for index, item in enumerate(waiting)))
+                reported_position = report.get('payload', {}).get('position')
+                if reported_position is not None:
+                    explained = explained and math.dist(reported_position, position) <= 1e-6
+            if explained:
+                detail = (f'Egress was reported unavailable at minute {observed}; the unit remained stationary awaiting recovery. '
+                          if profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2' else
+                          f'Egress was reported unavailable at minute {observed}; the unit remained in assistance until late recovery. ')
                 return finding('recovery_after_shift_end_egress_unavailable',
-                    f'Egress was reported unavailable at minute {observed}; the unit remained in assistance until late recovery. '
-                    'This is an unresolved modeled access exception, not proof of an unexpected fire or real-world impossibility.',
+                    detail + 'This is an unresolved modeled access exception, not proof of an unexpected fire or real-world impossibility.',
                     minute, identifier, category='unsupported')
     return finding('recovery_after_shift_end', 'Return travel continues beyond the declared shift; safe recovery must still continue.', minute, identifier)
 
@@ -249,6 +267,20 @@ def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), 
                 findings.append(finding('active_after_shift_end', 'Resource is active after its declared shift end.', minute, identifier))
             if (current['state'] == 'returning' and minute > unit['duty_end_at']
                     and (prior is None or prior['state'] != 'returning' or minute == unit['duty_end_at'] + 1)):
+                findings.append(recovery_overrun_finding(identifier, unit, minute, audit, reports, profile))
+            # A short preflighted return can arrive in one tick, transitioning
+            # directly from blocked/returning to off_duty without an audited
+            # returning state. Do not require a marker here: missing evidence
+            # must still surface as an unexplained late return.
+            if (profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2'
+                    and unit['kind'] in ('engine', 'crew') and minute > unit['duty_end_at']
+                    and prior is not None and prior['state'] == 'blocked'
+                    and prior.get('blocked_state') == 'returning' and current['state'] == 'off_duty'
+                    and math.dist(prior['position'], unit['base_position']) > 0.01
+                    and math.dist(current['position'], unit['base_position']) <= 0.01
+                    and not any(item.get('resource') == identifier and item['code'] in (
+                        'recovery_after_shift_end', 'recovery_after_shift_end_egress_unavailable')
+                        for item in findings)):
                 findings.append(recovery_overrun_finding(identifier, unit, minute, audit, reports, profile))
             if prior is None or prior['state'] != current['state']:
                 if prior is not None:

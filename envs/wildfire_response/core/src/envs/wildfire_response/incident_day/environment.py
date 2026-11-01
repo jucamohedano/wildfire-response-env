@@ -693,6 +693,9 @@ class IncidentDayEnv:
         if self._scenario['profile'].get('version') == 'wildfire-incident-day-realmap-development-profile-v2':
             for identifier, unit in self.ops.resources.items():
                 record['resources'][identifier]['blocked_state'] = copy.deepcopy(unit.get('blocked_state'))
+                marker = unit.get('return_recovery_preflight_at')
+                record['resources'][identifier]['return_recovery_preflight_at'] = (
+                    marker if type(marker) is int and marker == self.minute else None)
         if initial:
             record.update(footprint=sorted(footprint), cell_area_hectares=self.inputs['grid']['cell_km'] ** 2 * 100,
                           burnable=[row * self.fire.width + column for row, cells in enumerate(self.fire.cells)
