@@ -39,6 +39,8 @@ A completed run independently verifies replay and reward. These are CPU referenc
 policies, not model evaluations or expert demonstrations. A model uses the same
 `IncidentDayTools` interface through a separate bounded provider adapter.
 
+For the separate 12-case source-map development bundle and resumable evaluation, see the [local packaged workflow](packaged-completion.md).
+
 ## Dataset configurations
 
 `validation_cells` has 48 operation-wide quality-control rows (12 configurations × four scripted policies). They are not actor input or training labels. The old `v0.2.0` revision remains unchanged; its lock is retained at `data/hub_runtime_v1/releases/v0.2.0.json`.
