@@ -5,11 +5,11 @@ from wildfire_core.incident_day import IncidentDayEnv, fixture_inputs
 from eval.incident_day_policies import POLICY_NAMES
 from eval.validate_incident_day_runtime import (PublicFacade, cell_identity, commit,
     duration_statistics, expected_cells, validate_matrix, _continuation, _query_independence,
-    REQUIRED_OPERATIONS, _checkpoint, load_progress, validator_digest, checksum, aggregate_findings)
+    REQUIRED_OPERATIONS, MATRIX_CATALOG_IDS, _checkpoint, load_progress, validator_digest, checksum, aggregate_findings)
 
 
 def manifest():
-    catalogs=[c for c in registry()['catalogs'] if c['status']=='active_development']
+    catalogs=[c for c in registry()['catalogs'] if c['id'] in MATRIX_CATALOG_IDS]
     return {'runtimes':{('es-ma-2021' if 'realmap' in c['id'] else 'fixture'):
         dict(inputs_sha256=c['inputs_sha256'],network_sha256=c['network_sha256'],scenario_ids=c['case_ids'])
         for c in catalogs}}
@@ -30,17 +30,42 @@ def environment():
     return env
 
 
-def test_expected_domain_is_all_active_cases_cross_all_required_policies():
+def test_expected_domain_is_original_two_catalogs_cross_all_required_policies():
     expected=expected_cells(manifest())
     assert len(expected)==48 and len(set(map(cell_identity,expected)))==48
     assert {c['policy'] for c in expected}==set(POLICY_NAMES)
-    bad=manifest();bad['runtimes'].pop('fixture')
+    catalogs={c['id']:c for c in registry()['catalogs']}
+    original_ids=set(catalogs['incident_day_fixture']['case_ids'] + catalogs['incident_day_realmap_v2']['case_ids'])
+    new_ids=set(catalogs['incident_day_realmap_development_v1']['case_ids'])
+    assert {c['case_id'] for c in expected} == original_ids
+    assert not original_ids & new_ids
+    assert {(c['case_id'], c['policy']) for c in expected} == {
+        (case, policy) for case in original_ids for policy in POLICY_NAMES}
+    # Same-pin newer source cases cannot substitute for the original six.
+    replaced=manifest();replaced['runtimes']['es-ma-2021']['scenario_ids']=sorted(new_ids)
     import pytest
+    with pytest.raises(ValueError,match='complete active case set'):expected_cells(replaced)
+    bad=manifest();bad['runtimes'].pop('fixture')
     with pytest.raises(ValueError,match='Both active'):expected_cells(bad)
     with pytest.raises(ValueError,match='shrink'):expected_cells(manifest(),('passive',))
     aliased=manifest();aliased['runtimes']['alias']=copy.deepcopy(aliased['runtimes']['fixture'])
     aliased['runtimes'].pop('es-ma-2021')
     with pytest.raises(ValueError,match='Duplicate'):expected_cells(aliased)
+
+
+def test_original_catalogs_must_remain_active_and_complete(monkeypatch):
+    import pytest
+    import eval.validate_incident_day_runtime as validator
+    original=registry()
+    for change in ('archived', 'missing', 'duplicate_case'):
+        value=copy.deepcopy(original)
+        fixture=next(c for c in value['catalogs'] if c['id']=='incident_day_fixture')
+        if change == 'archived': fixture['status']='archived'
+        elif change == 'missing': value['catalogs'].remove(fixture)
+        else: fixture['case_ids'][-1]=fixture['case_ids'][0]
+        monkeypatch.setattr(validator,'registry',lambda: value)
+        with pytest.raises(ValueError,match='Both active six-case'):expected_cells(manifest())
+        monkeypatch.undo()
 
 
 def test_matrix_cannot_pass_missing_duplicate_incomplete_or_false_verified_cells():
