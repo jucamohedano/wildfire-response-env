@@ -508,9 +508,8 @@ class Operations:
                          'position': copy.deepcopy(unit['position'])}, actionable=True)
                     if unit['kind'] == 'aircraft':
                         self._return(unit, return_journey, minute, planner)
-                    elif (unit['kind'] in ('engine', 'crew') and self.profile.get('version') in (
-                            'wildfire-incident-day-realmap-development-profile-v1',
-                            'wildfire-incident-day-realmap-development-profile-v2')):
+                    elif (unit['kind'] in ('engine', 'crew') and self.profile.get('version') ==
+                          'wildfire-incident-day-realmap-development-profile-v2'):
                         # Returning remains subject to the normal per-tick movement checks.
                         # Without a valid route, retain the legacy assistance state.
                         recovery = planner(copy.deepcopy(unit), minute) if planner is not None else None

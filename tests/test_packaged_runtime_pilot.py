@@ -123,12 +123,16 @@ def test_timeout_checkpoint_and_resume(package, tmp_path, monkeypatch):
 def test_development_lifecycle_selection_and_archival_rejection():
     from wildfire_core.catalog_lifecycle import select_day_case_id
     from envs.wildfire_response.incident_day.real_map_scenarios import PACK_PIN, NETWORK_PIN
-    case = 'incident-day-realmap-development-v1-000'
+    case = 'incident-day-realmap-development-v2-000'
     assert select_day_case_id(case, PACK_PIN, NETWORK_PIN) == case
     with pytest.raises(ValueError):
         select_day_case_id(case, '0' * 64, NETWORK_PIN)
     with pytest.raises(ValueError):
         select_day_case_id('incident-day-realmap-v1-000', PACK_PIN, NETWORK_PIN)
+    archived = 'incident-day-realmap-development-v1-000'
+    with pytest.raises(ValueError, match='Archived'):
+        select_day_case_id(archived, PACK_PIN, NETWORK_PIN)
+    assert select_day_case_id(archived, PACK_PIN, NETWORK_PIN, allow_archived=True) == archived
 
 
 def test_resume_matches_uninterrupted_policy_and_environment(package, tmp_path):
@@ -159,7 +163,7 @@ def test_checkpoint_tampering_rejected(package, tmp_path):
 
 def test_development_case_must_be_advertised(tmp_path, monkeypatch):
     from envs.wildfire_response.incident_day.real_map_scenarios import PACK_PIN, NETWORK_PIN
-    case = 'incident-day-realmap-development-v1-000'
+    case = 'incident-day-realmap-development-v2-000'
     entry = dict(inputs_sha256=PACK_PIN, network_sha256=NETWORK_PIN,
                  scenario_ids=['incident-day-realmap-v2-000'])
     monkeypatch.setattr(pilot, 'make_environment', lambda *args, **kwargs: (object(), entry))

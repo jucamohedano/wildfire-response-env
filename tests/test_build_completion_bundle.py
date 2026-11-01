@@ -50,7 +50,7 @@ def test_refuses_modified_source_without_output(package, tmp_path, monkeypatch):
 def test_loader_requires_exact_catalog_for_additional_ids(package, monkeypatch):
     source, manifest = package
     entry = manifest['runtimes']['fixture']
-    catalog = {'id': 'incident_day_realmap_development_v1', 'status': 'active_development',
+    catalog = {'id': 'incident_day_realmap_development_v2', 'status': 'active_development',
                'inputs_sha256': entry['inputs_sha256'], 'network_sha256': entry['network_sha256'],
                'case_ids': ['new-1', 'new-2']}
     existing = hub_runtime.registry()
@@ -74,3 +74,27 @@ def test_refuses_unlisted_source_file(package, tmp_path, monkeypatch):
     with pytest.raises(ValueError, match='inventory mismatch'):
         builder.build(source, output)
     assert not output.exists()
+
+
+def test_real_source_bundle_advertises_revised_twelve(tmp_path, monkeypatch):
+    import os
+    from pathlib import Path
+    from eval.validate_source_runtime_matrix import expected_cells, POLICY_NAMES
+    from envs.wildfire_response.incident_day.scenarios import REAL_MAP_DEVELOPMENT_CASE_IDS
+
+    source = Path(os.environ.get('WILDFIRE_LOCAL_RUNTIME', '.runtime/wildfire-response-spain'))
+    if not (source / 'manifest.json').is_file():
+        pytest.skip('Pinned local source runtime unavailable')
+    pin_source(monkeypatch, tmp_path, source)
+    output = tmp_path / 'bundle'
+    result = builder.build(source, output)
+    entry = result['runtimes']['es-ma-2021']
+    assert entry['additional_scenario_ids'] == list(REAL_MAP_DEVELOPMENT_CASE_IDS)
+    rows = pq.read_table(output / 'tasks/development.parquet').to_pylist()
+    source_ids = {r['task_id'] for r in rows if r['runtime_id'] == 'es-ma-2021'}
+    assert source_ids == set(entry['scenario_ids'] + entry['additional_scenario_ids'])
+    assert not {'incident-day-realmap-development-v1-005', 'incident-day-realmap-development-v1-006'} & source_ids
+    cells = expected_cells(hub_runtime.verify_package(output))
+    assert len(cells) == 48
+    assert {(c['case_id'], c['policy']) for c in cells} == {
+        (case, policy) for case in REAL_MAP_DEVELOPMENT_CASE_IDS for policy in POLICY_NAMES}

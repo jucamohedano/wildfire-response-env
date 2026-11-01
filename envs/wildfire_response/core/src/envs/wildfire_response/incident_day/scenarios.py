@@ -25,9 +25,11 @@ COVERAGE_CASE_IDS = (EGRESS_CASE_IDS[0], EGRESS_CASE_IDS[1], COVERAGE_VARIANT_ID
                      EGRESS_CASE_IDS[3], COVERAGE_VARIANT_IDS[1], EGRESS_CASE_IDS[5])
 REAL_MAP_CASE_IDS = tuple(f'incident-day-realmap-v1-{index:03}' for index in range(6))
 REAL_MAP_V2_CASE_IDS = tuple(f'incident-day-realmap-v2-{index:03}' for index in range(6))
-REAL_MAP_DEVELOPMENT_CASE_IDS = tuple(f'incident-day-realmap-development-v1-{index:03}' for index in range(12))
+REAL_MAP_DEVELOPMENT_V1_CASE_IDS = tuple(f'incident-day-realmap-development-v1-{index:03}' for index in range(12))
+REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS = tuple(f'incident-day-realmap-development-v2-{index:03}' for index in range(12))
+REAL_MAP_DEVELOPMENT_CASE_IDS = REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS
 REAL_MAP_ACCEPTANCE_CASE_IDS = REAL_MAP_V2_CASE_IDS
-ALL_CASE_IDS = CASE_IDS + CALIBRATED_CASE_IDS + EGRESS_CASE_IDS + COVERAGE_VARIANT_IDS + REAL_MAP_CASE_IDS + REAL_MAP_V2_CASE_IDS + REAL_MAP_DEVELOPMENT_CASE_IDS
+ALL_CASE_IDS = CASE_IDS + CALIBRATED_CASE_IDS + EGRESS_CASE_IDS + COVERAGE_VARIANT_IDS + REAL_MAP_CASE_IDS + REAL_MAP_V2_CASE_IDS + REAL_MAP_DEVELOPMENT_V1_CASE_IDS + REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS
 
 
 class DayFire(RegionalFire, EdgeFireStep):
@@ -73,7 +75,7 @@ def grid_point(inputs, position):
 
 
 def build_scenario(inputs, network, identifier, seed=None):
-    if identifier in REAL_MAP_DEVELOPMENT_CASE_IDS:
+    if identifier in REAL_MAP_DEVELOPMENT_V1_CASE_IDS + REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS:
         from .real_map_scenarios import build_real_map_development_scenario
         return build_real_map_development_scenario(inputs, network, identifier, seed)
     if identifier in REAL_MAP_V2_CASE_IDS:

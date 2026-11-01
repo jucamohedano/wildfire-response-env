@@ -5,8 +5,7 @@ from envs.wildfire_response.incident_day.operations import Operations
 from wildfire_core.mobility_routing import make_journey, make_leg
 
 
-VERSIONS = ('wildfire-incident-day-realmap-development-profile-v1',
-            'wildfire-incident-day-realmap-development-profile-v2')
+VERSIONS = ('wildfire-incident-day-realmap-development-profile-v2',)
 
 
 def recovery(unit, minute):
@@ -94,8 +93,10 @@ def test_expired_shift_continues_safe_recovery_but_cannot_dispatch():
     assert not ops.dispatch('unit', 'incident', [0, 0], recovery(unit, 6), 6)
 
 
-def test_legacy_profile_keeps_assistance_behavior():
-    ops = environment(version='wildfire-incident-day-realmap-profile-v2')
+@pytest.mark.parametrize('version', ['wildfire-incident-day-realmap-profile-v2',
+    'wildfire-incident-day-realmap-development-profile-v1'])
+def test_legacy_profile_keeps_assistance_behavior(version):
+    ops = environment(version=version)
     tick(ops, 0)
     assert ops.resources['unit']['state'] == 'needs_assistance'
     assert ops.resources['unit']['position'] == [2000, 0]

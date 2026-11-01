@@ -8,7 +8,8 @@ from .scenarios import grid_point
 def wind_access_event(scenario):
     """Select the exercise wind transition, rejecting missing or ambiguous evidence."""
     winds = [event for event in scenario['events'] if event.get('kind') == 'wind']
-    if scenario['version'] == 'wildfire-incident-day-realmap-development-scenarios-v1':
+    if scenario['version'] in ('wildfire-incident-day-realmap-development-scenarios-v1',
+                               'wildfire-incident-day-realmap-development-scenarios-v2'):
         # The development variants move the v2 transition, preserving its wind.
         matches = [event for event in winds if event.get('wind') == [0., 2.]]
     else:

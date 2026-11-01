@@ -91,7 +91,8 @@ def test_old_fixture_profile_does_not_opt_in():
     assert 'recovery_candidate_policy' not in env._scenario['profile']
 
 
-def test_recorded_real_map_recovery_geometry_when_pinned_inputs_available():
+@pytest.fixture
+def source_environment():
     import json
     import os
     from pathlib import Path
@@ -103,10 +104,16 @@ def test_recorded_real_map_recovery_geometry_when_pinned_inputs_available():
     if not input_path.is_file() or not network_path.is_file():
         pytest.skip('Pinned source-map inputs unavailable')
     inputs, network = json.loads(input_path.read_text()), json.loads(network_path.read_text())
-    env = IncidentDayEnv(inputs, network, expected_inputs_sha256=PACK_PIN,
-                         expected_network_sha256=NETWORK_PIN, allow_unapproved_data=True)
+    return IncidentDayEnv(inputs, network, expected_inputs_sha256=PACK_PIN,
+                          expected_network_sha256=NETWORK_PIN, allow_unapproved_data=True)
+
+
+def test_recorded_real_map_recovery_geometry_when_pinned_inputs_available(source_environment):
+    env = source_environment
     env.reset('incident-day-realmap-development-v1-005')
-    assert env._scenario['profile']['recovery_candidate_policy'] == 'bounded-origin-targets-v1'
+    assert 'recovery_candidate_policy' not in env._scenario['profile']
+    # Exercise the historical geometry with the candidate option explicitly:
+    # this does not enable it in the frozen v1 scenario.
     burning = {(14, 26), (14, 27), (14, 28), (15, 26), (15, 27), (15, 28),
                (16, 26), (16, 27), (16, 29), (17, 26), (17, 27), (17, 28),
                (17, 29), (18, 26), (18, 27), (18, 28), (18, 29), (18, 30),
@@ -147,3 +154,91 @@ def test_recorded_real_map_recovery_geometry_when_pinned_inputs_available():
             recovery_origin_candidates=True)['options']
     env.reset('incident-day-realmap-v2-002')
     assert 'recovery_candidate_policy' not in env._scenario['profile']
+
+
+def test_active_redesigned_profile_opts_into_recovery_candidates(source_environment, monkeypatch):
+    from envs.wildfire_response.incident_day.real_map_scenarios import REDESIGNED_POST_NODE
+
+    env = source_environment
+    env.reset('incident-day-realmap-development-v2-005')
+    assert env._scenario['profile']['recovery_candidate_policy'] == 'bounded-origin-targets-v1'
+    unit = env.ops.resources['crew-0']
+    assert unit['base_position'] == env.network.nodes[REDESIGNED_POST_NODE]
+    calls = []
+    def options(*args, **kwargs):
+        calls.append((args, kwargs))
+        return {'options': []}
+    monkeypatch.setattr(env.router, 'options', options)
+    assert env._return_route(unit, 0) is None
+    assert calls[0][1]['recovery_origin_candidates'] is True
+    assert calls[0][1]['emergency_egress'] is True
+    assert calls[0][1]['target_metric'] == unit['base_position']
+
+
+def test_redesigned_corridor_has_only_declared_pinned_directions_and_supports_recorded_escape(source_environment):
+    from envs.wildfire_response.incident_day.real_map_scenarios import REDESIGNED_EGRESS_EDGES
+    env = source_environment
+    expected = {
+        'osm:w652769435:0000:r', 'osm:w652769435:0001:r', 'osm:w652769435:0002:r',
+        'osm:w47438359:0000:r', 'osm:w47438359:0001:r', 'osm:w47438359:0002:r',
+        'osm:w47438359:0003:r', 'osm:w374742049:0000:f',
+    }
+    assert REDESIGNED_EGRESS_EDGES == expected
+    original = None
+    for index in range(12):
+        env.reset(f'incident-day-realmap-development-v1-{index:03}')
+        before = set(env._scenario['profile']['allowed_road_edge_ids'])
+        assert not before & expected
+        if index == 5:
+            original = before
+        env.reset(f'incident-day-realmap-development-v2-{index:03}')
+        after = set(env._scenario['profile']['allowed_road_edge_ids'])
+        assert after == before | (expected if index in (5, 6) else set())
+        if index in (5, 6):
+            assert set(env._scenario['profile']['synthetic_egress_corridor']['edge_ids']) == expected
+            assert expected <= set(env.network.edges)
+            for edge_id in expected:
+                reverse = edge_id[:-1] + ('f' if edge_id.endswith('r') else 'r')
+                assert reverse not in after
+    env.reset('incident-day-realmap-development-v2-005')
+    burning = {(13, 31), (14, 26), (14, 27), (14, 28), (14, 29), (14, 30), (14, 31),
+               (15, 26), (15, 27), (15, 28), (15, 29), (15, 30), (16, 26), (16, 27),
+               (16, 28), (16, 29), (16, 30), (17, 26), (17, 27), (17, 28), (17, 29),
+               (17, 30), (17, 31), (18, 26), (18, 27), (18, 28), (18, 29), (18, 30),
+               (19, 26), (19, 28), (19, 29), (19, 31)}
+    position = [306250.0, 4038486.9986383966]
+    base = env.ops.resources['crew-0']['base_position']
+    target = env.router._cell(base)
+    args = dict(mode='crew', burning=burning, wind=[0., 1.], target_metric=base,
+                emergency_egress=True, recovery_origin_candidates=True, limit=1)
+    legacy_router = HazardRouter(env.network, env.inputs, env.inputs['heights'],
+                                 walk_mask=env.inputs['walk_mask'], allowed_edge_ids=original)
+    assert not legacy_router.options(position, target, **args)['options']
+    journey = env.router.options(position, target, **args)['options'][0]['journey']
+    assert {leg['edge_id'] for leg in journey['legs'] if leg['mode'] == 'road'} - original <= expected
+    assert any(leg['edge_id'] in expected for leg in journey['legs'] if leg['mode'] == 'road')
+    assert journey['origin'] == position and journey['destination'] == base
+    for minute in range(journey['duration_minutes']):
+        checked = env.router.safe_journey_segment(journey, minute, burning, [0., 1.],
+                                                   mode='crew', egress_status=True)
+        assert checked['safe']
+        journey['emergency_egress']['exited'] = checked['egress_exited']
+    assert journey['emergency_egress']['exited']
+    # A burning base remains forbidden even with the extended corridor.
+    assert not env.router.options(position, target, **dict(args, burning=burning | {target}))['options']
+
+
+@pytest.mark.parametrize('index', [5, 6])
+def test_corridor_keeps_meaningful_family_event(source_environment, index):
+    from envs.wildfire_response.incident_day.plausibility import counterfactual_case
+    env = source_environment
+    env.reset(f'incident-day-realmap-development-v2-{index:03}')
+    probe = counterfactual_case(env)
+    assert probe['status'] == 'demonstrated'
+    if index == 5:
+        routes = probe['details']['candidate_routes']
+        assert routes['engine']['before'] > 0 and routes['engine']['after'] == 0
+        assert routes['crew']['after'] > 0
+    else:
+        assert probe['details']['minute'] == 180
+        assert probe['details']['otherwise_open'] and probe['details']['closed_by_event']

@@ -27,7 +27,7 @@ from eval.incident_day_policies import POLICY_NAMES, make_policy
 from eval.incident_day_movement_checks import MovementObserver
 
 VERSION = 'wildfire-source-runtime-matrix-v1'
-CATALOG_ID = 'incident_day_realmap_development_v1'
+CATALOG_ID = 'incident_day_realmap_development_v2'
 ROOT = Path(__file__).resolve().parents[1]
 BOUNDS = ROOT / 'data/incident_day_v2/plausibility/bounds-v1.json'
 REQUIRED_OPERATIONS=('get_situation','get_reports','route_options','evacuation_options','check_action',

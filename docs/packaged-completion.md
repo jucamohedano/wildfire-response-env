@@ -42,7 +42,7 @@ case explicitly. The wall limit is at most 1,800 seconds.
 ```bash
 python -m eval.packaged_runtime_pilot \
   --data-dir /tmp/my-wildfire-development-bundle --runtime es-ma-2021 \
-  --case-id incident-day-realmap-development-v1-000 --allow-unapproved-data \
+  --case-id incident-day-realmap-development-v2-000 --allow-unapproved-data \
   --output-dir /tmp/my-wildfire-pilot --wall-seconds 1800
 ```
 

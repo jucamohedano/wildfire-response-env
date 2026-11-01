@@ -36,7 +36,7 @@ def test_expected_domain_is_original_two_catalogs_cross_all_required_policies():
     assert {c['policy'] for c in expected}==set(POLICY_NAMES)
     catalogs={c['id']:c for c in registry()['catalogs']}
     original_ids=set(catalogs['incident_day_fixture']['case_ids'] + catalogs['incident_day_realmap_v2']['case_ids'])
-    new_ids=set(catalogs['incident_day_realmap_development_v1']['case_ids'])
+    new_ids=set(catalogs['incident_day_realmap_development_v2']['case_ids'])
     assert {c['case_id'] for c in expected} == original_ids
     assert not original_ids & new_ids
     assert {(c['case_id'], c['policy']) for c in expected} == {

@@ -22,7 +22,8 @@ def counterfactual_case(env):
     demonstrated = False
     if family == 'quiet_handover':
         if scenario['version'] in ('wildfire-incident-day-realmap-scenarios-v2',
-                                   'wildfire-incident-day-realmap-development-scenarios-v1'):
+                                   'wildfire-incident-day-realmap-development-scenarios-v1',
+                                   'wildfire-incident-day-realmap-development-scenarios-v2'):
             from .real_map_acceptance import ready_route_work_return_probe
             probe = ready_route_work_return_probe(env)
             return dict(status=probe['status'], details=probe,

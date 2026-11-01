@@ -10,7 +10,7 @@ import json
 
 from envs.wildfire_response.incident_day.scenarios import (
     ALL_CASE_IDS, COVERAGE_CASE_IDS, REAL_MAP_CASE_IDS, REAL_MAP_V2_CASE_IDS,
-    REAL_MAP_DEVELOPMENT_CASE_IDS, fixture_inputs,
+    REAL_MAP_DEVELOPMENT_CASE_IDS, REAL_MAP_DEVELOPMENT_V1_CASE_IDS, fixture_inputs,
 )
 from envs.wildfire_response.incident_day.real_map_scenarios import PACK_PIN, NETWORK_PIN
 
@@ -53,7 +53,7 @@ def select_day_case_id(case_id, inputs_sha256, network_sha256, *, allow_archived
         return default_day_case_id(inputs_sha256, network_sha256)
     if case_id not in ALL_CASE_IDS:
         raise ValueError('Unknown incident-day scenario')
-    if case_id in REAL_MAP_CASE_IDS + REAL_MAP_V2_CASE_IDS + REAL_MAP_DEVELOPMENT_CASE_IDS and (inputs_sha256, network_sha256) != (PACK_PIN, NETWORK_PIN):
+    if case_id in REAL_MAP_CASE_IDS + REAL_MAP_V2_CASE_IDS + REAL_MAP_DEVELOPMENT_V1_CASE_IDS + REAL_MAP_DEVELOPMENT_CASE_IDS and (inputs_sha256, network_sha256) != (PACK_PIN, NETWORK_PIN):
         raise ValueError('Real-map scenario requires its matching input and network pins')
     if case_id in ACTIVE_REAL_MAP_DEVELOPMENT_CASE_IDS:
         return case_id
@@ -79,7 +79,7 @@ def registry():
              horizon_minutes=1440, inputs_sha256=_fixture_pins()[0], network_sha256=_fixture_pins()[1]),
         dict(id='incident_day_realmap_v2', status='active_development', case_ids=list(ACTIVE_REAL_MAP_CASE_IDS),
              horizon_minutes=1440, inputs_sha256=PACK_PIN, network_sha256=NETWORK_PIN),
-        dict(id='incident_day_realmap_development_v1', status='active_development',
+        dict(id='incident_day_realmap_development_v2', status='active_development',
              case_ids=list(ACTIVE_REAL_MAP_DEVELOPMENT_CASE_IDS), horizon_minutes=1440,
              inputs_sha256=PACK_PIN, network_sha256=NETWORK_PIN),
         dict(id='incident_day_legacy', status='archived', case_ids=list(ARCHIVED_DAY_CASE_IDS),
