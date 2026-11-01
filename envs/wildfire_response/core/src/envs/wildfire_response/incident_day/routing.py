@@ -397,9 +397,12 @@ class HazardRouter:
         return result
 
     def options(self, origin_metric, target_grid, *, mode='engine', burning, wind, revision=0, limit=3,
-                excluded_cells=(), target_metric=None, emergency_egress=False):
+                excluded_cells=(), target_metric=None, emergency_egress=False,
+                recovery_origin_candidates=False):
         origin = point(origin_metric)
-        if (type(emergency_egress) is not bool or mode not in ('engine', 'crew') or not isinstance(target_grid, (tuple, list))
+        if (type(emergency_egress) is not bool or type(recovery_origin_candidates) is not bool
+                or (recovery_origin_candidates and (not emergency_egress or mode != 'crew' or target_metric is None))
+                or mode not in ('engine', 'crew') or not isinstance(target_grid, (tuple, list))
                 or len(target_grid) != 2 or any(type(value) is not int for value in target_grid)
                 or type(revision) is not int or type(limit) is not int or not 1 <= limit <= 32):
             raise ValueError('Invalid mode, target, revision or option limit')
@@ -420,10 +423,10 @@ class HazardRouter:
             if origin_cell in hazards:
                 return self._egress_options(origin, tuple(target_grid), mode, key_burning,
                                             tuple(wind), revision, limit, hazards, excluded,
-                                            tuple(target_metric))
+                                            tuple(target_metric), recovery_origin_candidates)
         result = copy.deepcopy(self._cached_options(tuple(origin), tuple(target_grid), mode,
             key_burning, tuple(wind), 0, 32, hazards, tuple(sorted(excluded)),
-            tuple(target_metric) if target_metric is not None else None))
+            tuple(target_metric) if target_metric is not None else None, recovery_origin_candidates))
         if revision:
             for option in result['options']:
                 identity = dict(network=self.network.sha256, origin=tuple(origin), target=tuple(target_grid),
@@ -438,8 +441,24 @@ class HazardRouter:
         result['options'] = result['options'][:limit]
         return result
 
+    def _recovery_origin_targets(self, candidates, origins, target, target_metric, hazards):
+        """Add bounded reachable access nodes with a safe walk to the exact base."""
+        present = {node for _, node in candidates}
+        center = self._center(target)
+        radius = MAX_STAGING_CELLS * max(self.transform[0], -self.transform[4])
+        extra = []
+        for node, _ in origins[:MAX_WALK_CANDIDATES]:
+            position = self.network.nodes[node]
+            distance = math.dist(position, center)
+            if (node not in present and distance <= radius
+                    and self._safe_cell(self._cell(position), hazards, 'crew')
+                    and self._walk(position, target, hazards, destination=list(target_metric)) is not None):
+                extra.append((distance, node))
+                present.add(node)
+        return candidates + sorted(extra)
+
     def _egress_options(self, origin, target, mode, burning, wind, revision, limit,
-                        hazards, excluded, target_metric):
+                        hazards, excluded, target_metric, recovery_origin_candidates=False, _augment=False):
         hard = frozenset(burning) | excluded
         if not self._inside(target) or not self._inside(self._cell(origin)):
             return dict(status='unmapped', options=[])
@@ -458,6 +477,8 @@ class HazardRouter:
                             and (mode != 'crew' or self._walkable(self._cell(position)))
                             and (mode != 'engine' or position == list(target_metric)))
         candidates = candidates[:MAX_WALK_CANDIDATES if mode == 'crew' else MAX_CANDIDATES]
+        if _augment:
+            candidates = self._recovery_origin_targets(candidates, origins, target, target_metric, hazards)
         if not candidates:
             return dict(status='unmapped', options=[])
         targets = {node for _, node in candidates}
@@ -491,6 +512,9 @@ class HazardRouter:
                                 travel_minutes=journey['duration_minutes'], knowledge_revision=revision,
                                 uncertainty=PROFILE))
         options.sort(key=lambda option: (option['travel_minutes'], option['id']))
+        if not options and recovery_origin_candidates and not _augment:
+            return self._egress_options(origin, target, mode, burning, wind, revision, limit,
+                hazards, excluded, target_metric, recovery_origin_candidates, True)
         return dict(status='reachable' if options else 'unmapped', options=options[:limit])
 
     def _egress_roads(self, origins, hard, hazards, targets, mode):
@@ -582,7 +606,8 @@ class HazardRouter:
                                 else (math.floor(value),))
                 yield {(column, row) for column in axes[0] for row in axes[1]}
 
-    def _plan(self, origin, target, mode, burning, wind, revision, limit, hazards, excluded, target_metric):
+    def _plan(self, origin, target, mode, burning, wind, revision, limit, hazards, excluded, target_metric,
+              recovery_origin_candidates=False, _augment=False):
         if not self._inside(target):
             return dict(status='unmapped', options=[])
         if not self._inside(self._cell(origin)):
@@ -618,6 +643,8 @@ class HazardRouter:
                 return dict(status='unmapped', options=[])
         truncated = len(candidates) > (MAX_WALK_CANDIDATES if mode == 'crew' else MAX_CANDIDATES)
         candidates = candidates[:MAX_WALK_CANDIDATES if mode == 'crew' else MAX_CANDIDATES]
+        if _augment:
+            candidates = self._recovery_origin_targets(candidates, origins, target, target_metric, hazards)
         targets = {node for _, node in candidates}
         paths, complete = self._roads(origins, hazards, targets, mode)
         safe_goals = sorted((math.dist((column, row), target), column, row)
@@ -668,6 +695,9 @@ class HazardRouter:
                                          option['travel_minutes'], option['id']))
         if options:
             return dict(status='reachable', options=options[:limit])
+        if recovery_origin_candidates and not _augment:
+            return self._plan(origin, target, mode, burning, wind, revision, limit, hazards, excluded,
+                              target_metric, recovery_origin_candidates, True)
         unrestricted, unrestricted_complete = self._roads(origins, frozenset(), targets, mode)
         graph_reachable = any(node in unrestricted for _, node in candidates)
         if graph_reachable and (not paths or any(node in unrestricted and node not in paths for _, node in candidates)

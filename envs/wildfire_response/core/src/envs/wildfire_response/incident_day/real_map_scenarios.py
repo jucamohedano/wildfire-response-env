@@ -241,7 +241,8 @@ def build_real_map_development_scenario(inputs, network, identifier, seed=None):
     scenario = copy.deepcopy(build_real_map_v2_scenario(inputs, network, REAL_MAP_V2_CASE_IDS[family], seed))
     scenario.update(id=identifier, version='wildfire-incident-day-realmap-development-scenarios-v1',
                     parent_scenario_sha256=scenario['sha256'])
-    scenario['profile']['version'] = 'wildfire-incident-day-realmap-development-profile-v1'
+    scenario['profile'].update(version='wildfire-incident-day-realmap-development-profile-v2',
+                               recovery_candidate_policy='bounded-origin-targets-v1')
 
     if family == 0:
         # Two quiet handovers with different initial ground readiness and stocks.

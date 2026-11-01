@@ -324,7 +324,9 @@ class IncidentDayEnv:
             mode=unit['kind'], burning=self._burning(), wind=list(self.fire.wind),
             excluded_cells=self._excluded(unit['kind'], self._restrictions),
             revision=0, target_metric=unit['base_position'], limit=1,
-            emergency_egress=self._scenario['profile'].get('emergency_egress_policy') == 'return-only-buffer-exit-v1')
+            emergency_egress=self._scenario['profile'].get('emergency_egress_policy') == 'return-only-buffer-exit-v1',
+            recovery_origin_candidates=(unit['kind'] == 'crew' and self._scenario['profile'].get(
+                'recovery_candidate_policy') == 'bounded-origin-targets-v1'))
         return result['options'][0]['journey'] if result['options'] else None
 
     def check_action(self, action):
