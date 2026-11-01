@@ -33,6 +33,10 @@ are not historical replays, held-out evaluations, or a training corpus. The
 source-map runtime requires explicit acceptance of its unapproved inputs; this
 does not approve or calibrate them.
 
+In v2 cases 005 and 006, eight additional directed mapped edges form a general
+modeled road corridor usable for ordinary routes, evacuation and recovery;
+access is assumed, not verified.
+
 ## Public-tool pilot
 
 The pilot uses the actor's public tools and verifies the completed episode and
