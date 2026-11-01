@@ -225,3 +225,82 @@ def test_process_killed_inside_wait_replays_from_atomic_checkpoint(tmp_path):
         assert env.checkpoint() == resumed.checkpoint()
         assert policy.checkpoint() == restored_policy.checkpoint()
         assert observer.snapshot() == restored_observer.snapshot()
+
+
+def test_source_runner_signal_resume_matches_uninterrupted_checkpoint(tmp_path, monkeypatch):
+    """Exercise the real runner with a verified fixture and deterministic signals."""
+    import hashlib
+    import json
+    import os
+    import signal
+
+    from eval import hub_runtime
+    from eval.incident_day_policies import POLICY_NAMES
+    from wildfire_core.catalog_lifecycle import active_day_case_ids, registry
+
+    inputs, network = fixture_inputs()
+    package = tmp_path / 'package'
+    package.mkdir()
+    payload = {
+        'runtime/fixture/inputs.json': json.dumps(inputs, sort_keys=True).encode(),
+        'runtime/fixture/network.json': json.dumps(network, sort_keys=True).encode(),
+        'tasks/development.parquet': b'fixture task placeholder',
+    }
+    inventory = []
+    for name, data in payload.items():
+        target = package / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+        inventory.append(dict(path=name, bytes=len(data), sha256=hashlib.sha256(data).hexdigest()))
+    entry = dict(inputs='runtime/fixture/inputs.json', network='runtime/fixture/network.json',
+                 inputs_sha256=inputs['sha256'], network_sha256=network['sha256'],
+                 allow_unapproved_data=False,
+                 scenario_ids=list(active_day_case_ids(inputs['sha256'], network['sha256'])))
+    manifest = dict(version=hub_runtime.VERSION, release_version='0.0.0-test', dataset_repo='test',
+                    source_revision='test', engine_implementation_sha256=implementation_digest(),
+                    lifecycle_sha256=registry()['sha256'], files=inventory, runtimes={'fixture': entry})
+    (package / 'manifest.json').write_text(json.dumps(manifest))
+    assert hub_runtime.verify_package(package) == manifest
+
+    # The source matrix's production catalog requires unavailable real-map
+    # inputs. Only its domain selection and static screen are substituted;
+    # all runner, package, environment, policy and checkpoint code is real.
+    cases = [entry['scenario_ids'][0]] + [f'unused-fixture-case-{i}' for i in range(11)]
+    policies = ('conservative',) + tuple(p for p in POLICY_NAMES if p != 'conservative')
+    expected = [dict(runtime_id='fixture', case_id=case, policy=policy)
+                for case in cases for policy in policies]
+    monkeypatch.setattr(matrix, 'expected_cells', lambda manifest, runtime_id: expected)
+    monkeypatch.setattr(matrix, 'static_audit', lambda *args: [])
+
+    original_commit = matrix.commit
+    threshold = [None]
+    signalled = [False]
+    def interrupt_after_commit(public, action):
+        result = original_commit(public, action)
+        # Ignore the runner's throwaway continuation probes, whose journal
+        # starts empty; the live journal already contains its initial reads.
+        if (len(public._PublicFacade__journal) >= 2 and not signalled[0]
+                and result['observation']['minute'] >= threshold[0]):
+            signalled[0] = True
+            os.kill(os.getpid(), signal.SIGTERM)
+        return result
+    monkeypatch.setattr(matrix, 'commit', interrupt_after_commit)
+
+    def run_until(output, target, *, resume=False):
+        threshold[0], signalled[0] = target, False
+        report = matrix.run(package, output, runtime_id='fixture', wall_seconds=60, resume=resume)
+        assert signalled[0]
+        assert report['cells'][0]['reason'] == 'signal'
+        _, checkpoint = matrix.load_progress(output, expected, matrix.validator_digest())
+        assert checkpoint['index'] == 0
+        return checkpoint
+
+    control = run_until(tmp_path / 'uninterrupted', 65)
+    interrupted = run_until(tmp_path / 'interrupted', 10)
+    assert 0 < interrupted['environment']['state']['minute'] < control['environment']['state']['minute']
+    resumed = run_until(tmp_path / 'interrupted', 65, resume=True)
+    for key in ('environment', 'policy', 'movement_observer', 'calls', 'checked',
+                'resume_checks', 'query_independence'):
+        assert resumed[key] == control[key], key
+    assert resumed['movement_observer']['coverage']['ticks_observed'] > 0
+    assert resumed['policy']['sheltered']
