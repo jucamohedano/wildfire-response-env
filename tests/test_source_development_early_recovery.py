@@ -100,3 +100,98 @@ def test_legacy_profile_keeps_assistance_behavior(version):
     tick(ops, 0)
     assert ops.resources['unit']['state'] == 'needs_assistance'
     assert ops.resources['unit']['position'] == [2000, 0]
+
+
+def outbound(ops):
+    unit = ops.resources['unit']
+    route = make_journey([make_leg('road', [[2000, 0], [3000, 0]], 60)],
+                         [2000, 0], [3000, 0], 'outbound')
+    route.update(departed_at=0, arrives_at=route['duration_minutes'])
+    unit.update(state='travel', journey=route)
+    return unit
+
+
+@pytest.mark.parametrize('kind', ['engine', 'crew'])
+def test_blocked_outbound_immediately_recovers_and_return_stays_safety_checked(kind):
+    ops = environment(kind=kind)
+    unit = outbound(ops)
+    events = []
+    tick(ops, 1, moving=False, events=events)
+    assert unit['position'] == [2000, 0]
+    assert unit['state'] == 'returning' and unit['journey']['destination'] == [0, 0]
+    assert [item[0] for item in events] == ['movement_blocked']
+    tick(ops, 2, moving=False, events=events)
+    assert unit['state'] == 'blocked' and unit['blocked_state'] == 'returning'
+    assert unit['position'] == [2000, 0]
+    tick(ops, 3, moving=True, events=events)
+    assert unit['state'] == 'returning' and unit['position'] != [2000, 0]
+
+
+def test_blocked_outbound_without_current_recovery_reports_assistance():
+    calls = []
+    def disappearing_route(unit, minute):
+        calls.append(minute)
+        return recovery(unit, minute) if len(calls) == 1 else None
+    ops = environment(planner=disappearing_route)
+    unit = outbound(ops)
+    events = []
+    tick(ops, 1, moving=False, events=events)
+    assert unit['state'] == 'needs_assistance' and unit['position'] == [2000, 0]
+    assert [item[0] for item in events] == ['movement_blocked', 'egress_unavailable']
+    tick(ops, 2, moving=False, events=events)
+    assert [item[0] for item in events].count('egress_unavailable') == 1
+
+
+def test_preexisting_blocked_outbound_is_recovered_on_next_tick():
+    ops = environment()
+    unit = outbound(ops)
+    unit.update(state='blocked', blocked_state='travel')
+    tick(ops, 1)
+    assert unit['state'] == 'returning' and unit['position'] == [2000, 0]
+
+
+@pytest.mark.parametrize('version', ['wildfire-incident-day-realmap-development-profile-v1',
+                                      'wildfire-incident-day-realmap-profile-v2'])
+def test_legacy_blocked_outbound_remains_blocked(version):
+    ops = environment(version=version)
+    unit = outbound(ops)
+    tick(ops, 1, moving=False)
+    assert unit['state'] == 'blocked' and unit['blocked_state'] == 'travel'
+    assert unit['position'] == [2000, 0]
+
+
+def test_assistance_retries_return_and_cannot_be_reassigned_until_recovered():
+    import json
+    available = [True]
+    calls = [0]
+    def planner(unit, minute):
+        calls[0] += 1
+        # The initial guard sees a route, then it disappears as movement blocks.
+        if calls[0] == 2 or not available[0]:
+            return None
+        return recovery(unit, minute)
+    ops = environment(planner=planner)
+    unit = outbound(ops)
+    events = []
+    tick(ops, 1, moving=False, events=events)
+    assert unit['state'] == 'needs_assistance' and unit['blocked_outbound_recovery'] is True
+    assert not ops.dispatch('unit', 'incident', [1, 1], recovery(unit, 1), 1)
+    available[0] = False
+    tick(ops, 2, events=events)
+    assert unit['state'] == 'needs_assistance'
+    # Checkpoint persistence also applies while the route is unavailable.
+    restored = Operations.restore(json.loads(json.dumps(ops.checkpoint())), return_planner=planner)
+    ops = restored
+    unit = ops.resources['unit']
+    assert unit['blocked_outbound_recovery'] is True
+    available[0] = True
+    tick(ops, 3, events=events)
+    assert unit['state'] == 'returning' and unit['position'] == [2000, 0]
+    tick(ops, 4, moving=False, events=events)
+    assert unit['state'] == 'blocked' and unit['blocked_state'] == 'returning'
+    assert not ops.dispatch('unit', 'incident', [1, 1], recovery(unit, 4), 4)
+    tick(ops, 5, events=events)
+    tick(ops, 6, events=events)
+    assert unit['state'] == 'available' and unit['position'] == [0, 0]
+    assert 'blocked_outbound_recovery' not in unit
+    assert [name for name, _ in events].count('egress_unavailable') == 1

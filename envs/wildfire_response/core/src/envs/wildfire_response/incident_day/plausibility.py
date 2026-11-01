@@ -301,6 +301,38 @@ def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), 
                 daylight = solar_daylight(datetime.fromisoformat(scenario['start_utc']) + timedelta(minutes=minute), longitude, latitude)
                 if not daylight or math.hypot(*record['wind']) > profile['aircraft_max_wind']:
                     findings.append(finding('air_work_outside_exercise_window', 'Aircraft work outside modeled daylight or wind window.', minute, identifier))
+    if audit[-1]['minute'] == scenario['horizon_minutes']:
+        overrun_codes = {'recovery_after_shift_end', 'recovery_after_shift_end_egress_unavailable',
+                         'terminal_assistance_after_shift', 'terminal_return_blocked_at_shift_end',
+                         'terminal_outbound_blocked_at_shift_end'}
+        already_reported = {item.get('resource') for item in findings if item.get('code') in overrun_codes}
+        for identifier, unit in units.items():
+            current = audit[-1]['resources'][identifier]
+            if audit[-1]['minute'] < unit['duty_end_at'] or identifier in already_reported:
+                continue
+            if current['state'] == 'needs_assistance':
+                findings.append(finding('terminal_assistance_after_shift',
+                    'Resource remains in assistance at or beyond its shift end at the episode horizon; '
+                    'safe recovery is unresolved.', audit[-1]['minute'], identifier, category='unsupported'))
+            elif current['state'] == 'blocked':
+                blocked_state = current.get('blocked_state')
+                if blocked_state is None:
+                    # Older audits did not record blocked_state; infer only when
+                    # the contiguous blocked interval follows a return.
+                    previous = next((row['resources'][identifier]['state'] for row in reversed(audit[:-1])
+                                     if row['resources'][identifier]['state'] != 'blocked'), None)
+                    blocked_state = previous if previous in ('returning', 'travel') else None
+                if blocked_state == 'returning':
+                    findings.append(finding('terminal_return_blocked_at_shift_end',
+                        'Return remains blocked at or beyond the shift end at the episode horizon; '
+                        'safe recovery is unresolved.', audit[-1]['minute'], identifier, category='unsupported'))
+                elif (blocked_state == 'travel' and unit['kind'] in ('engine', 'crew')
+                      and profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2'
+                      and math.dist(current['position'], unit['base_position']) > 0.01):
+                    findings.append(finding('terminal_outbound_blocked_at_shift_end',
+                        'Ground resource remains blocked outbound away from base at or beyond its shift end '
+                        'at the episode horizon; safe recovery is unresolved.',
+                        audit[-1]['minute'], identifier, category='unsupported'))
     if max_front_speed > bounds['maximum_screening_fire_front_kph']:
         findings.append(finding('fire_front_screen', f'Coarse radial activation estimate {max_front_speed:.2f} km/h exceeds assumed screening bound; not a measured front speed.', category='unsupported'))
     for report in reports:

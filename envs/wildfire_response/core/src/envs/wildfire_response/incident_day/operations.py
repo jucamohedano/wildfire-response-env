@@ -155,6 +155,7 @@ class Operations:
         self._time(minute)
         unit = self.resources.get(resource_id)
         if (unit is None or unit['state'] not in ('available', 'blocked', 'needs_assistance')
+                or unit.get('blocked_outbound_recovery') is True
                 or unit['available_at'] > minute
                 or unit['work_remaining'] <= 0
                 or _duty_finished(unit, minute)
@@ -274,6 +275,7 @@ class Operations:
         return order_id
 
     def _at_base(self, unit, minute):
+        unit.pop('blocked_outbound_recovery', None)
         unit['position'] = copy.deepcopy(unit['base_position'])
         unit['journey'] = None
         if _duty_finished(unit, minute):
@@ -360,6 +362,7 @@ class Operations:
             self.air_refill_active = None
         unit.pop('blocked_state', None)
         unit.pop('duty_return_attempted', None)
+        unit.pop('blocked_outbound_recovery', None)
         unit.update(state='off_duty', journey=None)
 
     def _flight_window(self, wind, daylight):
@@ -392,6 +395,10 @@ class Operations:
         for unit in self.resources.values():
             state = unit['state']
             movement_state = unit.get('blocked_state') if state == 'blocked' else state
+            if (self.profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2'
+                    and unit['kind'] in ('engine', 'crew') and state == 'blocked'
+                    and movement_state == 'travel'):
+                unit['blocked_outbound_recovery'] = True
             if (self.profile.get('revalidate_setup_safety') and unit['kind'] in ('engine', 'crew')
                     and state == 'on_scene' and not hazard_check(copy.deepcopy(unit['position']), unit['kind'])):
                 self._return(unit, None, minute, planner)
@@ -411,6 +418,13 @@ class Operations:
                              'position': copy.deepcopy(unit['position'])}, actionable=True)
                     continue
                 unit.pop('egress_unavailable_since', None)
+                if unit.get('blocked_outbound_recovery') is True:
+                    if not self._return(unit, recovery, minute, planner):
+                        if unit.get('egress_unavailable_since') is None:
+                            unit['egress_unavailable_since'] = minute
+                            emit('operations', 'egress_unavailable', {'resource_id': unit['id'],
+                                 'position': copy.deepcopy(unit['position'])}, actionable=True)
+                    continue
                 if minute + math.ceil(recovery['duration_minutes']) >= unit['duty_end_at']:
                     self._return(unit, recovery, minute, planner)
                     continue
@@ -461,6 +475,14 @@ class Operations:
                         emit('operations', 'movement_blocked',
                              {'resource_id': unit['id'], 'movement_state': movement_state,
                               'position': copy.deepcopy(unit['position'])}, actionable=True)
+                    if (self.profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2'
+                            and unit['kind'] in ('engine', 'crew') and movement_state == 'travel'):
+                        unit['blocked_outbound_recovery'] = True
+                        if not self._return(unit, None, minute, planner):
+                            if unit.get('egress_unavailable_since') is None:
+                                unit['egress_unavailable_since'] = minute
+                                emit('operations', 'egress_unavailable', {'resource_id': unit['id'],
+                                     'position': copy.deepcopy(unit['position'])}, actionable=True)
                     continue
                 unit['position'] = position
                 if state == 'blocked':

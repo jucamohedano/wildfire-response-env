@@ -690,6 +690,9 @@ class IncidentDayEnv:
                 status=group['status'], protection_pending=any(order['group_id'] == key
                     and order['state'] not in ('completed', 'cancelled', 'unable_to_comply')
                     for order in self.ops.orders.values())) for key, group in self.ops.groups.items()})
+        if self._scenario['profile'].get('version') == 'wildfire-incident-day-realmap-development-profile-v2':
+            for identifier, unit in self.ops.resources.items():
+                record['resources'][identifier]['blocked_state'] = copy.deepcopy(unit.get('blocked_state'))
         if initial:
             record.update(footprint=sorted(footprint), cell_area_hectares=self.inputs['grid']['cell_km'] ** 2 * 100,
                           burnable=[row * self.fire.width + column for row, cells in enumerate(self.fire.cells)
