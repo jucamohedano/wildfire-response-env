@@ -71,6 +71,16 @@ python -m eval.validate_source_runtime_matrix \
   --output /tmp/my-wildfire-source-matrix --wall-seconds 3600 --resume
 ```
 
+Create a private HTML snapshot with score components, timings and coverage:
+
+```bash
+python -m eval.render_source_matrix_report \
+  --report /tmp/my-wildfire-source-matrix/report.json \
+  --output /tmp/my-wildfire-source-matrix/review.html
+```
+
+The output must be a new filename; render another snapshot to see later progress.
+
 Keep the package, lifecycle, implementation and validator unchanged when
 resuming. `report.json` and `report.html` contain aggregate progress; the
 `private/` directory contains checkpoints and detailed evaluator material and
