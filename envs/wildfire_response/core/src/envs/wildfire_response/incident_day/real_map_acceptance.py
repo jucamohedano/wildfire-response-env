@@ -5,6 +5,20 @@ import math
 from .scenarios import grid_point
 
 
+def wind_access_event(scenario):
+    """Select the exercise wind transition, rejecting missing or ambiguous evidence."""
+    winds = [event for event in scenario['events'] if event.get('kind') == 'wind']
+    if scenario['version'] == 'wildfire-incident-day-realmap-development-scenarios-v1':
+        # The development variants move the v2 transition, preserving its wind.
+        matches = [event for event in winds if event.get('wind') == [0., 2.]]
+    else:
+        minute = 15 if scenario['profile'].get('realmap_v2_wind_coverage') else 180
+        matches = [event for event in winds if event.get('minute') == minute]
+    if len(matches) != 1 or type(matches[0].get('minute')) is not int:
+        raise ValueError('Wind access exercise requires one identifiable scheduled wind event')
+    return matches[0]
+
+
 def capture_wind_effect(environment, event):
     """Capture one same-state comparison immediately before the wind is changed."""
     burning = environment._burning()

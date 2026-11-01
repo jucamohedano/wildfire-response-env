@@ -467,10 +467,12 @@ class IncidentDayEnv:
         for event in [event for event in self._events if event['minute'] == self.minute]:
             self._events.remove(event)
             if event['kind'] == 'wind':
-                if self._scenario['profile'].get('realmap_v2_wind_coverage') and event['minute'] == 15:
-                    from .real_map_acceptance import capture_wind_effect
+                if (self._scenario['profile'].get('realmap_v2_wind_coverage')
+                        and self._scenario['family'] == 'wind_access_loss'):
+                    from .real_map_acceptance import capture_wind_effect, wind_access_event
 
-                    self._event_effects.append(capture_wind_effect(self, event))
+                    if event == wind_access_event(self._scenario):
+                        self._event_effects.append(capture_wind_effect(self, event))
                 self.fire.set_wind(x=event['wind'][0], y=event['wind'][1])
                 self.bus.emit('weather', 'wind_update', dict(wind=event['wind'][:]), self.minute, channel='radio')
             elif event['kind'] == 'access_restriction':

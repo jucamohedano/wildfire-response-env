@@ -21,7 +21,8 @@ def counterfactual_case(env):
     details = {}
     demonstrated = False
     if family == 'quiet_handover':
-        if scenario['version'] == 'wildfire-incident-day-realmap-scenarios-v2':
+        if scenario['version'] in ('wildfire-incident-day-realmap-scenarios-v2',
+                                   'wildfire-incident-day-realmap-development-scenarios-v1'):
             from .real_map_acceptance import ready_route_work_return_probe
             probe = ready_route_work_return_probe(env)
             return dict(status=probe['status'], details=probe,
@@ -44,8 +45,8 @@ def counterfactual_case(env):
                        recovery_does_not_establish_suppression_access=True)
         demonstrated = bool(useful or recovery)
     elif family == 'wind_access_loss':
-        event_minute = 15 if scenario['profile'].get('realmap_v2_wind_coverage') else 180
-        event = next(item for item in events if item['kind'] == 'wind' and item['minute'] == event_minute)
+        from .real_map_acceptance import wind_access_event
+        event = wind_access_event(scenario)
         before, after = scenario['wind'], event['wind']
         before_safe = {identifier for identifier, position in env.network.nodes.items()
                        if env.router.safe_position(position, burning, before, mode='crew')}
@@ -328,9 +329,11 @@ def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), 
                        or (event['kind'] == 'center_unavailable' and item['kind'] == 'status_response'
                            and item['source'] == event['center_id'] and item['payload'].get('available') is False)]
         event_evidence.append(dict(event=event, status='constraint_evidence_observed' if consequence else 'event_only_or_no_constraint_evidence', reports=matching))
-        if scenario['profile'].get('realmap_v2_wind_coverage') and event['kind'] == 'wind' and event['minute'] == 15:
-            from .real_map_acceptance import wind_event_coverage
-            event_evidence[-1].update(wind_event_coverage(event, inputs, audit, reports))
+        if (scenario['profile'].get('realmap_v2_wind_coverage')
+                and scenario['family'] == 'wind_access_loss' and event['kind'] == 'wind'):
+            from .real_map_acceptance import wind_access_event, wind_event_coverage
+            if event == wind_access_event(scenario):
+                event_evidence[-1].update(wind_event_coverage(event, inputs, audit, reports))
         if (scenario['profile'].get('causal_coverage')
                 and event['kind'] in ('access_restriction', 'destination_closed')):
             from .scenario_coverage import event_coverage
