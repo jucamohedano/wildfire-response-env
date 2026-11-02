@@ -50,7 +50,7 @@ def test_refuses_modified_source_without_output(package, tmp_path, monkeypatch):
 def test_loader_requires_exact_catalog_for_additional_ids(package, monkeypatch):
     source, manifest = package
     entry = manifest['runtimes']['fixture']
-    catalog = {'id': 'incident_day_realmap_development_v2', 'status': 'active_development',
+    catalog = {'id': 'incident_day_realmap_development_v3', 'status': 'active_development',
                'inputs_sha256': entry['inputs_sha256'], 'network_sha256': entry['network_sha256'],
                'case_ids': ['new-1', 'new-2']}
     existing = hub_runtime.registry()
@@ -93,7 +93,8 @@ def test_real_source_bundle_advertises_revised_twelve(tmp_path, monkeypatch):
     rows = pq.read_table(output / 'tasks/development.parquet').to_pylist()
     source_ids = {r['task_id'] for r in rows if r['runtime_id'] == 'es-ma-2021'}
     assert source_ids == set(entry['scenario_ids'] + entry['additional_scenario_ids'])
-    assert not {'incident-day-realmap-development-v1-005', 'incident-day-realmap-development-v1-006'} & source_ids
+    assert not {'incident-day-realmap-development-v1-005', 'incident-day-realmap-development-v1-006',
+                'incident-day-realmap-development-v2-002', 'incident-day-realmap-development-v2-003'} & source_ids
     cells = expected_cells(hub_runtime.verify_package(output))
     assert len(cells) == 48
     assert {(c['case_id'], c['policy']) for c in cells} == {

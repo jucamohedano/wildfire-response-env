@@ -14,6 +14,7 @@ from envs.wildfire_response.incident_day.operations import Operations
 from envs.wildfire_response.incident_day.scenarios import (
     ALL_CASE_IDS, FAMILIES, REAL_MAP_DEVELOPMENT_CASE_IDS, REAL_MAP_V2_CASE_IDS,
     REAL_MAP_DEVELOPMENT_V1_CASE_IDS, REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS,
+    REAL_MAP_DEVELOPMENT_RECOVERY_CASE_IDS,
     build_scenario,
 )
 from wildfire_core.catalog_lifecycle import (
@@ -44,7 +45,7 @@ def test_lifecycle_is_additive_and_pinned():
     assert ACTIVE_REAL_MAP_DEVELOPMENT_CASE_IDS == REAL_MAP_DEVELOPMENT_CASE_IDS
     assert not set(REAL_MAP_DEVELOPMENT_CASE_IDS) & set(ARCHIVED_DAY_CASE_IDS)
     assert default_day_case_id(PACK_PIN, NETWORK_PIN) == ACTIVE_REAL_MAP_CASE_IDS[0]
-    catalog = next(item for item in registry()['catalogs'] if item['id'] == 'incident_day_realmap_development_v2')
+    catalog = next(item for item in registry()['catalogs'] if item['id'] == 'incident_day_realmap_development_v3')
     assert catalog['case_ids'] == list(REAL_MAP_DEVELOPMENT_CASE_IDS)
     for identifier in REAL_MAP_DEVELOPMENT_CASE_IDS:
         assert select_day_case_id(identifier, PACK_PIN, NETWORK_PIN) == identifier
@@ -60,9 +61,11 @@ def test_variants_inherit_supported_parent_geography_and_differ_materially(cases
         first, second = scenarios[family * 2:family * 2 + 2]
         assert first['family'] == second['family'] == name
         for case in (first, second):
-            expected_parent = (build_scenario(inputs, network, REAL_MAP_DEVELOPMENT_V1_CASE_IDS[
-                REAL_MAP_DEVELOPMENT_CASE_IDS.index(case['id'])])
-                if case['id'] in REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS else parent)
+            index = REAL_MAP_DEVELOPMENT_CASE_IDS.index(case['id'])
+            parent_ids = (REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS
+                          if case['id'] in REAL_MAP_DEVELOPMENT_RECOVERY_CASE_IDS
+                          else REAL_MAP_DEVELOPMENT_V1_CASE_IDS)
+            expected_parent = build_scenario(inputs, network, parent_ids[index])
             assert case['parent_scenario_sha256'] == expected_parent['sha256']
             assert case['seed'] == parent['seed']
             assert case['initial_fire'] == parent['initial_fire']
@@ -259,3 +262,46 @@ def test_relocated_post_supports_actual_ground_work_and_refill(cases, index):
                      suppress=lambda *args: None, emit=lambda *args, **kwargs: None)
         assert unit['water_litres'] == unit['capacity_litres']
         assert unit['state'] == 'available'
+
+
+@pytest.mark.parametrize('index,parent_sha,recovery_minute,morning_minute', [
+    (2, 'fcd97e48c4a4c43ece62af7cd22b3cc898d0d7d1b71037b43338664aede9a168', 720, 20),
+    (3, '7fcbb3eef30b044aa4316ec75d67da70a5a9b8068e3f6d8c291e4904d606ade8', 750, 45),
+])
+def test_v3_wind_exercises_preserve_archived_parent_and_only_redesign_afternoon(
+        cases, index, parent_sha, recovery_minute, morning_minute):
+    import copy
+    from envs.wildfire_response.incident_day.real_map_acceptance import wind_access_event
+
+    inputs, network, _ = cases
+    old_id = REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS[index]
+    new_id = REAL_MAP_DEVELOPMENT_CASE_IDS[index]
+    assert new_id == f'incident-day-realmap-development-v3-{index:03}'
+    old = build_scenario(inputs, network, old_id)
+    new = build_scenario(inputs, network, new_id)
+    assert old['sha256'] == parent_sha
+    assert new['parent_scenario_sha256'] == parent_sha
+    assert new['sha256'] != parent_sha
+    assert new['version'] == 'wildfire-incident-day-realmap-development-scenarios-v3'
+    assert wind_access_event(old) == wind_access_event(new) == {
+        'minute': morning_minute, 'kind': 'wind', 'wind': [0., 2.]}
+    original_recovery = next(event for event in old['events'] if event['minute'] == 1020)
+    assert original_recovery == {'minute': 1020, 'kind': 'wind', 'wind': [0., -1.]}
+    expected_events = copy.deepcopy(old['events'])
+    next(event for event in expected_events if event['minute'] == 1020)['minute'] = recovery_minute
+    expected_events.sort(key=lambda event: event['minute'])
+    assert new['events'] == expected_events
+    design = new['synthetic_recovery_design']
+    assert design['version'] == 'afternoon-wind-window-v1'
+    assert design['original_minute'] == 1020 and design['replacement_minute'] == recovery_minute
+    assert 'not observed weather' in design['assumption']
+    changed = {'id', 'version', 'parent_scenario_sha256', 'events', 'synthetic_recovery_design', 'sha256'}
+    assert {key: value for key, value in old.items() if key not in changed} == {
+        key: value for key, value in new.items() if key not in changed}
+    assert old_id in ARCHIVED_DAY_CASE_IDS and new_id not in ARCHIVED_DAY_CASE_IDS
+    with pytest.raises(ValueError, match='Archived'):
+        select_day_case_id(old_id, PACK_PIN, NETWORK_PIN)
+    assert select_day_case_id(old_id, PACK_PIN, NETWORK_PIN, allow_archived=True) == old_id
+    assert select_day_case_id(new_id, PACK_PIN, NETWORK_PIN) == new_id
+    with pytest.raises(ValueError, match='matching input'):
+        select_day_case_id(new_id, '0' * 64, NETWORK_PIN, allow_archived=True)

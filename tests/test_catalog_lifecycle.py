@@ -25,7 +25,7 @@ def test_active_defaults_are_corrected_and_archives_cannot_enter_discovery():
     _, _, hashes = pins()
     assert active_day_case_ids(*hashes) == ACTIVE_FIXTURE_CASE_IDS
     assert len(ACTIVE_FIXTURE_CASE_IDS) == len(ACTIVE_REAL_MAP_CASE_IDS) == 6
-    assert len(ARCHIVED_DAY_CASE_IDS) == 32
+    assert len(ARCHIVED_DAY_CASE_IDS) == 34
     assert not set(ARCHIVED_DAY_CASE_IDS) & set(ACTIVE_FIXTURE_CASE_IDS + ACTIVE_REAL_MAP_CASE_IDS)
     assert default_day_case_id(*hashes) == 'incident-day-egress-v1-000'
     with pytest.raises(ValueError, match='Archived'):
@@ -56,10 +56,10 @@ def test_registry_seal_and_tracked_snapshot_match_and_cannot_be_mutated():
     snapshot = json.loads(Path('data/catalog_lifecycle_v1/registry.json').read_text())
     value = registry()
     # The tracked release is an immutable snapshot; new local catalogs are additive.
-    actual = copy.deepcopy([item for item in value['catalogs'] if item['id'] != 'incident_day_realmap_development_v2'])
+    actual = copy.deepcopy([item for item in value['catalogs'] if item['id'] != 'incident_day_realmap_development_v3'])
     for item in actual:
         if item['id'] == 'incident_day_legacy':
-            assert set(item['case_ids']) == set(next(x for x in snapshot['catalogs'] if x['id'] == item['id'])['case_ids']) | {f'incident-day-realmap-development-v1-{i:03}' for i in range(12)}
+            assert set(item['case_ids']) == set(next(x for x in snapshot['catalogs'] if x['id'] == item['id'])['case_ids']) | {f'incident-day-realmap-development-v1-{i:03}' for i in range(12)} | {f'incident-day-realmap-development-v2-{i:03}' for i in (2, 3)}
             item['case_ids'] = next(x for x in snapshot['catalogs'] if x['id'] == item['id'])['case_ids']
     assert actual == snapshot['catalogs']
     assert value['version'] == snapshot['version']

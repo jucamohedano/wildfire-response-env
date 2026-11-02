@@ -11,7 +11,7 @@ from wildfire_core.incident_day import (ALL_CASE_IDS, CASE_IDS, COVERAGE_CASE_ID
 from wildfire_openenv.incident_day import IncidentDayEnvironment
 from wildfire_openenv.incident_day_client import IncidentDayClient
 from envs.wildfire_response.incident_day.real_map_scenarios import PACK_PIN, NETWORK_PIN
-from envs.wildfire_response.incident_day.scenarios import REAL_MAP_DEVELOPMENT_CASE_IDS, REAL_MAP_DEVELOPMENT_V1_CASE_IDS
+from envs.wildfire_response.incident_day.scenarios import REAL_MAP_DEVELOPMENT_CASE_IDS, REAL_MAP_DEVELOPMENT_V1_CASE_IDS, REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS
 
 
 def environment(size=32, *, archived=False):
@@ -31,7 +31,7 @@ def test_fixture_default_discovery_and_archive_rejection():
     env = environment(archived=True)
     assert env.reset(task_id=CASE_IDS[0]).data['task_id'] == CASE_IDS[0]
     assert [t['id'] for t in env.list_tasks('development')] == [
-        i for i in ALL_CASE_IDS if i not in REAL_MAP_CASE_IDS + REAL_MAP_V2_CASE_IDS + REAL_MAP_DEVELOPMENT_CASE_IDS + REAL_MAP_DEVELOPMENT_V1_CASE_IDS]
+        i for i in ALL_CASE_IDS if i not in REAL_MAP_CASE_IDS + REAL_MAP_V2_CASE_IDS + REAL_MAP_DEVELOPMENT_CASE_IDS + REAL_MAP_DEVELOPMENT_V1_CASE_IDS + REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS]
     with pytest.raises(ValueError):
         env.reset(task_id=REAL_MAP_CASE_IDS[0])
 

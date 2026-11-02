@@ -37,6 +37,15 @@ In v2 cases 005 and 006, eight additional directed mapped edges form a general
 modeled road corridor usable for ordinary routes, evacuation and recovery;
 access is assumed, not verified.
 
+The active twelve include wind exercises `incident-day-realmap-development-v3-002`
+and `...-v3-003`. These retain their respective minute-20 and minute-45 morning
+wind-access challenges. Their synthetic afternoon wind change occurs at minute
+720 or 750 instead of the v2 parents' minute 1020, creating a designed recovery
+window. This is an exercise assumption, not observed weather or a guarantee of
+safe recovery. The prior v2 identities and evidence remain archived for explicit
+replay; rebuild the bundle and restart validation when scenario or implementation
+pins change.
+
 ## Public-tool pilot
 
 The pilot uses the actor's public tools and verifies the completed episode and

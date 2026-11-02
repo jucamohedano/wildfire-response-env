@@ -66,7 +66,7 @@ def build(source, output):
                              expected_network_sha256=entry['network_sha256'],
                              allow_unapproved_data=entry['allow_unapproved_data'])
         additional = [case for catalog in lifecycle['catalogs']
-                      if catalog.get('id') == 'incident_day_realmap_development_v2'
+                      if catalog.get('id') == 'incident_day_realmap_development_v3'
                       and (catalog.get('inputs_sha256'), catalog.get('network_sha256')) ==
                           (entry['inputs_sha256'], entry['network_sha256'])
                       for case in catalog['case_ids']]

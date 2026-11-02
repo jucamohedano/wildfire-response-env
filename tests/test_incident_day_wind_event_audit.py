@@ -52,6 +52,8 @@ def source_inputs():
     ('incident-day-realmap-v2-001', 15),
     ('incident-day-realmap-development-v1-002', 20),
     ('incident-day-realmap-development-v1-003', 45),
+    ('incident-day-realmap-development-v3-002', 20),
+    ('incident-day-realmap-development-v3-003', 45),
 ])
 def test_scheduled_transition_is_screened_captured_and_audited(source_inputs, case_id, minute):
     inputs, network = source_inputs

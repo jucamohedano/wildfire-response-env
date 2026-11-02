@@ -162,7 +162,7 @@ def verify_package(data_dir):
         if 'additional_scenario_ids' in entry:
             extra = entry['additional_scenario_ids']
             catalogs = [c for c in registry()['catalogs']
-                        if c.get('id') == 'incident_day_realmap_development_v2'
+                        if c.get('id') == 'incident_day_realmap_development_v3'
                         and c.get('status') == 'active_development'
                         and (c.get('inputs_sha256'), c.get('network_sha256')) ==
                             (entry['inputs_sha256'], entry['network_sha256'])]

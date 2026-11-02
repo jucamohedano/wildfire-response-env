@@ -218,7 +218,7 @@ class IncidentDayEnvironment(Environment):
         except ValueError:
             identifiers = ()
         for catalog in registry()['catalogs']:
-            if (catalog['id'] == 'incident_day_realmap_development_v2'
+            if (catalog['id'] == 'incident_day_realmap_development_v3'
                     and catalog['status'] == 'active_development'
                     and (catalog['inputs_sha256'], catalog['network_sha256']) == (inputs_hash, network_hash)):
                 identifiers = tuple(identifiers) + tuple(catalog['case_ids'])

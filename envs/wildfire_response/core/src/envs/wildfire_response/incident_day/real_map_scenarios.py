@@ -239,8 +239,25 @@ def build_real_map_development_scenario(inputs, network, identifier, seed=None):
     to both variants; the changed operational constraints are synthetic.
     """
     from .scenarios import (REAL_MAP_DEVELOPMENT_V1_CASE_IDS,
-                            REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS, REAL_MAP_V2_CASE_IDS)
+                            REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS, REAL_MAP_DEVELOPMENT_RECOVERY_CASE_IDS, REAL_MAP_V2_CASE_IDS)
 
+    if identifier in REAL_MAP_DEVELOPMENT_RECOVERY_CASE_IDS:
+        variant = REAL_MAP_DEVELOPMENT_RECOVERY_CASE_IDS.index(identifier)
+        parent = build_real_map_development_scenario(inputs, network, REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS[2 + variant], seed)
+        scenario = copy.deepcopy(parent)
+        scenario.update(id=identifier, version='wildfire-incident-day-realmap-development-scenarios-v3',
+                        parent_scenario_sha256=parent['sha256'])
+        # A distinct synthetic afternoon wind regime gives this bounded-map
+        # exercise a recovery window before the former late-day bottleneck.
+        # Preserve the morning access-loss event and all physical safety rules.
+        recovery_wind = next(e for e in scenario['events'] if e['kind'] == 'wind' and e['minute'] == 1020)
+        recovery_wind['minute'] = (720, 750)[variant]
+        scenario['events'].sort(key=lambda e: e['minute'])
+        scenario['synthetic_recovery_design'] = dict(version='afternoon-wind-window-v1',
+            original_minute=1020, replacement_minute=recovery_wind['minute'],
+            assumption='Designed synthetic wind timing, not observed weather or a forecast guarantee')
+        scenario['sha256'] = digest({k: v for k, v in scenario.items() if k != 'sha256'})
+        return scenario
     if identifier in REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS:
         index = REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS.index(identifier)
         parent = build_real_map_development_scenario(inputs, network, REAL_MAP_DEVELOPMENT_V1_CASE_IDS[index], seed)

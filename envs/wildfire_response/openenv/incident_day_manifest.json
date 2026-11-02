@@ -46,8 +46,8 @@
   "active_real_map_development_scenario_ids": [
     "incident-day-realmap-development-v2-000",
     "incident-day-realmap-development-v2-001",
-    "incident-day-realmap-development-v2-002",
-    "incident-day-realmap-development-v2-003",
+    "incident-day-realmap-development-v3-002",
+    "incident-day-realmap-development-v3-003",
     "incident-day-realmap-development-v2-004",
     "incident-day-realmap-development-v2-005",
     "incident-day-realmap-development-v2-006",
@@ -89,7 +89,9 @@
     "incident-day-realmap-development-v1-008",
     "incident-day-realmap-development-v1-009",
     "incident-day-realmap-development-v1-010",
-    "incident-day-realmap-development-v1-011"
+    "incident-day-realmap-development-v1-011",
+    "incident-day-realmap-development-v2-002",
+    "incident-day-realmap-development-v2-003"
   ],
   "archived_replay_server_argument": "--allow-archived-scenarios",
   "training_corpus_available": false,
