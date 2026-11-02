@@ -124,3 +124,11 @@ training examples. `report.json` retains all complete, blocked and failed cells;
 only complete, eligible, verified runs receive a score. Interruptions are
 resumable with private environment, policy and observer state. Changing code or
 data invalidates resume. No inference key or GPU is required.
+
+Render an aggregate HTML report to a new private file:
+
+```bash
+python -m eval.render_evaluation_report \
+  --report /var/tmp/my-evaluation-results/report.json \
+  --output /var/tmp/my-evaluation-results/review.html
+```
