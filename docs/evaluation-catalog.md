@@ -143,3 +143,34 @@ development matrix's all-operation coverage gate remains unchanged. This
 qualification contract is not a requirement that an evaluated model use every
 tool. Before reset/restore proceeds, the runner checks each compiled scenario's
 seed, digest and curation identity against the frozen Parquet task row.
+
+## Reporting policy
+
+The selected protocol is [evaluation-protocol-v1](../data/evaluation_v1/protocol.json):
+retain the unchanged verified reward and report evidenced adverse outcomes
+separately. Late recovery and stationary assistance unresolved at the horizon
+are operational flags, not assertions that recovery later succeeded. A high
+population-first score is not a resource-safety certificate. Broken invariants,
+replay mismatches, missing evidence and unfinished/censored episodes stay
+unscored. The original strict report and findings are always retained.
+
+For the historical observer correction, the completed recorded-journal replay
+is pinned to commit `95aeb3d`. Reproduce that original replay from that checkout;
+its observer-only code allowlist intentionally rejects later reporting additions.
+The current reporting tool derives a score view from those hashed artifacts
+without resetting the simulator or invoking a policy:
+
+```bash
+python -m eval.derive_evaluation_scores \
+  --revalidation /var/tmp/my-evaluation-revalidation \
+  --expected-report-sha256 REVIEWED_FINAL_REPORT_SHA256 \
+  --output /var/tmp/my-evaluation-scores.json
+python -m eval.render_evaluation_report \
+  --score-view /var/tmp/my-evaluation-scores.json \
+  --output /var/tmp/my-evaluation-scores.html
+```
+
+The JSON view preserves `status`, `score` and original findings, and adds
+`reported_score`, `adverse` and `operational_status`. Its lineage identifies the
+user-selected reporting policy, corrected evidence and source report hashes.
+Future evaluations must record the reporting policy before comparing models.

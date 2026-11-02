@@ -1,0 +1,18 @@
+{
+  "version": "wildfire-evaluation-protocol-v1",
+  "catalog_id": "incident_day_evaluation_v1",
+  "split": "evaluation",
+  "task_count": 24,
+  "families": 6,
+  "configurations_per_family": 4,
+  "generation_seed": 20261102,
+  "training_split": false,
+  "shared_development_landscape_and_parent_fire_seeds": true,
+  "reward_identity": "wildfire-incident-day-outcomes-v2",
+  "reporting_policy": "verified_reward_with_separate_adverse_flags",
+  "required_evidence": ["complete_horizon", "exact_recorded_replay", "independent_reward_agreement", "invariant_and_coverage_checks"],
+  "adverse_outcomes": ["evidenced_late_recovery", "evidenced_stationary_assistance_unresolved_at_horizon"],
+  "never_score": ["unexplained_invariant_violation", "replay_mismatch", "missing_required_evidence", "incomplete_or_censored_episode"],
+  "historical_reconstruction": false,
+  "unseen_terrain_generalization_claim": false
+}
