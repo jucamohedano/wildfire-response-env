@@ -39,7 +39,8 @@ def assert_public(value):
             assert_public(item)
 
 
-def test_source_development_external_client_matches_local_day():
+@pytest.mark.parametrize('task_index', [0, 2, 3])
+def test_source_development_external_client_matches_local_day(task_index):
     root = Path(os.environ.get('WILDFIRE_LOCAL_RUNTIME',
                                '/var/tmp/wildfire-packaged-completion-data-v2'))
     inputs_path = root / 'runtime/es-ma-2021/inputs.json'
@@ -52,7 +53,7 @@ def test_source_development_external_client_matches_local_day():
                    allow_unapproved_data=True)
     local = IncidentDayEnv(inputs, network, **options)
     adapter = IncidentDayEnvironment(inputs, network, **options)
-    task_id = REAL_MAP_DEVELOPMENT_CASE_IDS[0]
+    task_id = REAL_MAP_DEVELOPMENT_CASE_IDS[task_index]
 
     # Pass the bound socket to uvicorn to avoid a port selection race.
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
