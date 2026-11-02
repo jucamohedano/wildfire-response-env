@@ -36,6 +36,8 @@ def test_all_configurations_replay_and_preserve_parent(source):
     for sid in EVALUATION_CASE_IDS:
         case=build_scenario(inputs,net,sid)
         assert case==build_scenario(inputs,net,sid)
+        assert case==build_scenario(inputs,net,sid,case['seed'])
+        with pytest.raises(ValueError): build_scenario(inputs,net,sid,case['seed']+1)
         meta=case['evaluation']; parent=build_scenario(inputs,net,meta['parent_id'])
         assert case['parent_scenario_sha256']==parent['sha256']
         assert case['events']==parent['events'] and case['initial_fire']==parent['initial_fire']
@@ -55,6 +57,27 @@ def test_actor_never_receives_generation_metadata(source):
     inputs,doc,_=source
     env=IncidentDayEnv(inputs,doc,expected_inputs_sha256=PACK_PIN,expected_network_sha256=NETWORK_PIN,allow_unapproved_data=True)
     obs,_=env.reset(EVALUATION_CASE_IDS[0])
+    assert obs['task_id']=='incident-day-evaluation-v1'
+    assert EVALUATION_CASE_IDS[0] not in json.dumps(obs)
     text=json.dumps(obs)
     for key in ('generation_seed','configuration_group','parent_scenario_sha256','water_fraction','future_events'):
         assert key not in text
+
+
+def test_evaluation_occupancy_and_artifact_privacy(source, tmp_path):
+    inputs, doc, net = source
+    for identifier in EVALUATION_CASE_IDS[16:20]:
+        scenario=build_scenario(inputs,net,identifier)
+        group=next(g for g in scenario['groups'] if g['id']=='population-1')
+        assert scenario['population_handover']['count']==group['count']
+        assert f"{group['count']} people are already" in scenario['handover_notice']
+    env=IncidentDayEnv(inputs,doc,expected_inputs_sha256=PACK_PIN,expected_network_sha256=NETWORK_PIN,
+                       allow_unapproved_data=True,artifact_dir=tmp_path/'export')
+    observation,_=env.reset(EVALUATION_CASE_IDS[0])
+    header=json.loads((tmp_path/'export/header.json').read_text())
+    assert set(header)=={'interface_version','task_id','initial_observation'}
+    assert header['initial_observation']==observation
+    private=json.loads((tmp_path/'export/private/header.json').read_text())
+    assert private['seed']==env._scenario['seed']
+    for profile in ('limited_water','high_population','slow_mobilization','late_crew_reserve'):
+        assert profile not in json.dumps(observation)

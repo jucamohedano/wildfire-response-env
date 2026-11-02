@@ -33,7 +33,9 @@ def build_evaluation_scenario(inputs, network, identifier, seed=None):
     random.Random(GENERATION_SEED + family).shuffle(order)
     config = copy.deepcopy(PROFILES[order[variant]])
     parent_id = REAL_MAP_DEVELOPMENT_CASE_IDS[family * 2 + variant % 2]
-    parent = build_real_map_development_scenario(inputs, network, parent_id, seed)
+    parent = build_real_map_development_scenario(inputs, network, parent_id)
+    if seed is not None and (type(seed) is not int or seed != parent['seed']):
+        raise ValueError('Frozen evaluation tasks require their catalog seed')
     scenario = copy.deepcopy(parent)
     scenario.update(id=identifier, version=VERSION, parent_scenario_sha256=parent['sha256'])
     scenario['evaluation'] = dict(split='evaluation', generation_seed=GENERATION_SEED,
@@ -45,6 +47,13 @@ def build_evaluation_scenario(inputs, network, identifier, seed=None):
         # Do not invent inherited exposure when demand is changed.
         if group.get('exposed', 0):
             raise ValueError('Evaluation demand changes require unexposed inherited cohorts')
+    if 'population_handover' in scenario:
+        handover = scenario['population_handover']
+        old_count = handover['count']
+        cohort = next(g for g in scenario['groups'] if g['id'] == handover['group_id'])
+        handover['count'] = cohort['count']
+        scenario['handover_notice'] = scenario['handover_notice'].replace(
+            f"{old_count} people are already", f"{cohort['count']} people are already")
     for destination in scenario['destinations']:
         destination['capacity'] = sum(config['population'])
     for unit in scenario['resources']:
@@ -61,7 +70,6 @@ def build_evaluation_scenario(inputs, network, identifier, seed=None):
     # the same verified runtime, not a new physics or reward implementation.
     profile['mobilization_minutes'] = profile.get('mobilization_minutes', 1) + config['mobilization_extra']
     profile['ground_setup_minutes'] += config['setup_extra']
-    scenario['handover_notice'] += (' EXERCISE. Evaluation configuration: '+config['name']+'. '
-        'Resource inventories and population demand are synthetic exercise values.')
+    scenario['handover_notice'] += ' EXERCISE. Resource inventories and population demand are synthetic exercise values.'
     scenario['sha256'] = digest({k: v for k, v in scenario.items() if k != 'sha256'})
     return scenario

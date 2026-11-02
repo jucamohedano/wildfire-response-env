@@ -207,24 +207,36 @@ class IncidentDayEnvironment(Environment):
                                   allow_archived=self.allow_archived_scenarios)
 
     def list_splits(self):
-        return ['development']
+        return ['development', 'evaluation']
 
     def list_tasks(self, split):
-        if split != 'development':
+        if split not in self.list_splits():
             raise ValueError('Unknown split')
         inputs_hash, network_hash = self.core.inputs['sha256'], self.core.network.sha256
+        catalogs = registry()['catalogs']
+        evaluation_catalogs = [catalog for catalog in catalogs
+                               if catalog['id'] == 'incident_day_evaluation_v1']
+        if split == 'evaluation':
+            return [dict(id=identifier, split=split)
+                    for catalog in evaluation_catalogs
+                    if catalog['status'] == 'active_evaluation'
+                    and (catalog['inputs_sha256'], catalog['network_sha256']) == (inputs_hash, network_hash)
+                    for identifier in catalog['case_ids']]
         try:
             identifiers = active_day_case_ids(inputs_hash, network_hash)
         except ValueError:
             identifiers = ()
-        for catalog in registry()['catalogs']:
+        for catalog in catalogs:
             if (catalog['id'] == 'incident_day_realmap_development_v3'
                     and catalog['status'] == 'active_development'
                     and (catalog['inputs_sha256'], catalog['network_sha256']) == (inputs_hash, network_hash)):
                 identifiers = tuple(identifiers) + tuple(catalog['case_ids'])
         if self.allow_archived_scenarios:
+            evaluation_ids = {identifier for catalog in evaluation_catalogs for identifier in catalog['case_ids']}
             supported = []
             for identifier in ALL_CASE_IDS:
+                if identifier in evaluation_ids:
+                    continue
                 try:
                     self._select_case(identifier)
                 except ValueError:

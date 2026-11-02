@@ -171,6 +171,65 @@ def verify_package(data_dir):
                     or len(extra) != len(catalogs[0]['case_ids'])
                     or set(extra) != set(catalogs[0]['case_ids']) or set(extra) & set(ids)):
                 raise ValueError('Additional scenario IDs differ from pinned development catalog')
+        if 'evaluation_scenario_ids' in entry:
+            evaluation = entry['evaluation_scenario_ids']
+            catalogs = [catalog for catalog in registry()['catalogs']
+                        if catalog.get('id') == 'incident_day_evaluation_v1'
+                        and catalog.get('status') == 'active_evaluation'
+                        and (catalog.get('inputs_sha256'), catalog.get('network_sha256')) ==
+                            (entry['inputs_sha256'], entry['network_sha256'])]
+            if (len(catalogs) != 1 or type(evaluation) is not list
+                    or any(type(item) is not str for item in evaluation)
+                    or len(evaluation) != len(catalogs[0]['case_ids'])
+                    or set(evaluation) != set(catalogs[0]['case_ids'])
+                    or set(evaluation) & set(ids + entry.get('additional_scenario_ids', []))):
+                raise ValueError('Evaluation scenario IDs differ from pinned evaluation catalog')
+            if ('tasks/evaluation.parquet' not in inventory
+                    or manifest.get('tables', {}).get('evaluation') != 'tasks/evaluation.parquet'):
+                raise ValueError('Evaluation tasks missing from inventory or tables')
+    has_evaluation = any('evaluation_scenario_ids' in entry for entry in runtimes.values())
+    if not has_evaluation and 'tasks/evaluation.parquet' in inventory:
+        raise ValueError('Evaluation task table has no declared evaluation runtime')
+    if has_evaluation:
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+        item = inventory['tasks/evaluation.parquet']
+        rows = pq.read_table(pa.BufferReader(_read(root, item['path'], item['bytes']))).to_pylist()
+        expected = {(name, identifier) for name, entry in runtimes.items()
+                    for identifier in entry.get('evaluation_scenario_ids', [])}
+        if any(type(row.get('runtime_id')) is not str or type(row.get('task_id')) is not str for row in rows):
+            raise ValueError('Invalid evaluation task identity')
+        actual = [(row.get('runtime_id'), row.get('task_id')) for row in rows]
+        if (len(actual) != len(expected) or set(actual) != expected
+                or type(manifest.get('counts', {}).get('evaluation_tasks')) is not int
+                or manifest['counts']['evaluation_tasks'] != len(rows)):
+            raise ValueError('Evaluation task rows differ from declared catalog')
+        for row in rows:
+            runtime = runtimes[row['runtime_id']]
+            catalog = next(c for c in registry()['catalogs'] if c.get('id') == 'incident_day_evaluation_v1'
+                           and (c.get('inputs_sha256'), c.get('network_sha256')) ==
+                               (runtime['inputs_sha256'], runtime['network_sha256']))
+            if (row.get('split') != 'evaluation' or row.get('training_eligible') is not False
+                    or row.get('synthetic') is not True or row.get('historical_replay') is not False
+                    or type(row.get('configuration_group')) is not str or not row['configuration_group']
+                    or row.get('related_exercise_group') != row['configuration_group']
+                    or row.get('horizon_minutes') != 1440
+                    or row.get('parent_scenario_id') not in runtime['scenario_ids'] + runtime.get('additional_scenario_ids', [])
+                    or type(row.get('generation_seed')) is not int
+                    or type(row.get('episode_seed')) is not int
+                    or row['generation_seed'] != catalog.get('generation_seed')
+                    or not _hash(row.get('scenario_sha256'))
+                    or row.get('inputs_ref') != runtime['inputs'] or row.get('network_ref') != runtime['network']):
+                raise ValueError('Invalid evaluation task metadata or split')
+        for name, entry in runtimes.items():
+            if 'evaluation_scenario_ids' in entry:
+                groups = {}
+                for row in rows:
+                    if row['runtime_id'] == name:
+                        group = row['configuration_group']
+                        groups[group] = groups.get(group, 0) + 1
+                if len(groups) != 6 or any(count != 4 for count in groups.values()):
+                    raise ValueError('Evaluation tasks must retain four configurations per family')
     return manifest
 
 
@@ -208,7 +267,7 @@ def run_episode(env, entry, *, policy='passive', case_id=None, wall_seconds=300,
         raise ValueError('Invalid episode limits or policy')
     if type(wall_seconds) not in (int, float) or not math.isfinite(wall_seconds) or wall_seconds <= 0:
         raise ValueError('wall_seconds must be finite and positive')
-    ids = entry['scenario_ids'] + entry.get('additional_scenario_ids', [])
+    ids = entry['scenario_ids'] + entry.get('additional_scenario_ids', []) + entry.get('evaluation_scenario_ids', [])
     if case_id is None:
         case_id = ids[0]
     if case_id not in ids:
