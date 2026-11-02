@@ -5,9 +5,9 @@ import json
 import math
 from pathlib import Path
 from threading import RLock
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, urlsplit
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import Field
 
@@ -70,6 +70,21 @@ def _reject_constant(value):
     raise ValueError('Non-finite JSON number')
 
 
+def _task_split(query_string):
+    if not query_string:
+        return 'development'
+    if len(query_string) > 128:
+        raise ValueError('Only one supported split parameter is allowed')
+    try:
+        pairs = parse_qsl(query_string.decode('ascii'), keep_blank_values=True,
+                          strict_parsing=True, max_num_fields=1)
+    except (UnicodeError, ValueError) as error:
+        raise ValueError('Only one supported split parameter is allowed') from error
+    if len(pairs) != 1 or pairs[0][0] != 'split' or pairs[0][1] not in ('development', 'evaluation'):
+        raise ValueError('Choose split development or evaluation')
+    return pairs[0][1]
+
+
 class LocalRequests:
     def __init__(self, app):
         self.app = app
@@ -90,7 +105,12 @@ class LocalRequests:
         if not client.is_loopback or len(hosts) != 1 or _authority(hosts[0]) is None:
             return await reject(403, 'Loopback client and Host required')
         if scope.get('query_string'):
-            return await reject(400, 'Query strings are not supported')
+            if scope['path'] != '/tasks' or scope['method'] != 'GET':
+                return await reject(400, 'Query strings are not supported')
+            try:
+                _task_split(scope['query_string'])
+            except ValueError as error:
+                return await reject(400, str(error))
         origins = [value.decode('latin1') for key, value in headers if key == b'origin']
         if origins:
             try:
@@ -182,13 +202,19 @@ def create_app(environment):
         return VIEWER
 
     @app.get('/tasks')
-    def tasks():
+    def tasks(request: Request):
         def discover():
-            tasks = environment.list_tasks('development')
-            try:
-                default = environment._select_case(None)
-            except ValueError:
-                default = None
+            split = _task_split(request.scope.get('query_string', b''))
+            tasks = environment.list_tasks(split)
+            default = None
+            if split == 'evaluation':
+                if not tasks:
+                    raise ValueError('Evaluation split unavailable for the configured input/network pins or catalog')
+            else:
+                try:
+                    default = environment._select_case(None)
+                except ValueError:
+                    pass
             return {'tasks': tasks, 'default_scenario_id': default}
         return execute(discover)
 

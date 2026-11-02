@@ -10,7 +10,7 @@ def wind_access_event(scenario):
     winds = [event for event in scenario['events'] if event.get('kind') == 'wind']
     if scenario['version'] in ('wildfire-incident-day-realmap-development-scenarios-v1',
                                'wildfire-incident-day-realmap-development-scenarios-v2',
-                                   'wildfire-incident-day-realmap-development-scenarios-v3'):
+                                   'wildfire-incident-day-realmap-development-scenarios-v3', 'wildfire-incident-day-evaluation-v1'):
         # The development variants move the v2 transition, preserving its wind.
         matches = [event for event in winds if event.get('wind') == [0., 2.]]
     else:

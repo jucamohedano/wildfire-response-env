@@ -57,8 +57,11 @@ class IncidentDayClient:
     def get_reports(self, ids=None, after_cursor=0, limit=20):
         return self._request('/reports', {'ids': ids, 'after_cursor': after_cursor, 'limit': limit})
 
-    def list_tasks(self):
-        return self._request('/tasks')
+    def list_tasks(self, split='development'):
+        if split not in ('development', 'evaluation'):
+            raise ValueError('Choose split development or evaluation')
+        path = '/tasks' if split == 'development' else '/tasks?split=evaluation'
+        return self._request(path)
 
     def get_state(self):
         return self._request('/state')

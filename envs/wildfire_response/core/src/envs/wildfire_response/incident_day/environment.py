@@ -235,7 +235,8 @@ class IncidentDayEnv:
     def get_situation(self):
         if self._scenario is None:
             raise RuntimeError('reset required')
-        return copy.deepcopy(dict(interface_version=VERSION, task_id=self._scenario['id'], minute=self.minute,
+        return copy.deepcopy(dict(interface_version=VERSION, task_id=('incident-day-evaluation-v1'
+            if self._scenario.get('evaluation', {}).get('split') == 'evaluation' else self._scenario['id']), minute=self.minute,
             decision=self.decision, clock=dict(minute=self.minute, horizon_minutes=1440,
                 now_utc=(datetime.fromisoformat(self._scenario['start_utc']) + timedelta(minutes=self.minute)).isoformat()),
             resources=list(self._known_resources.values()), districts=list(self._known_groups.values()),
@@ -806,6 +807,12 @@ class IncidentDayEnv:
         (private / 'audit.jsonl').chmod(0o600)
         header = self.trajectory()
         header.pop('transitions')
+        if self._scenario.get('evaluation', {}).get('split') == 'evaluation':
+            path = private / 'header.json'
+            path.write_text(json.dumps(header, sort_keys=True, allow_nan=False) + '\n')
+            path.chmod(0o600)
+            header = {key: header[key] for key in ('interface_version', 'initial_observation')}
+            header['task_id'] = 'incident-day-evaluation-v1'
         (self.artifact_dir / 'header.json').write_text(json.dumps(header, sort_keys=True, allow_nan=False) + '\n')
 
     def verify_episode(self):

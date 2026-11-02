@@ -56,7 +56,7 @@ def test_registry_seal_and_tracked_snapshot_match_and_cannot_be_mutated():
     snapshot = json.loads(Path('data/catalog_lifecycle_v1/registry.json').read_text())
     value = registry()
     # The tracked release is an immutable snapshot; new local catalogs are additive.
-    actual = copy.deepcopy([item for item in value['catalogs'] if item['id'] != 'incident_day_realmap_development_v3'])
+    actual = copy.deepcopy([item for item in value['catalogs'] if item['id'] not in ('incident_day_realmap_development_v3', 'incident_day_evaluation_v1')])
     for item in actual:
         if item['id'] == 'incident_day_legacy':
             assert set(item['case_ids']) == set(next(x for x in snapshot['catalogs'] if x['id'] == item['id'])['case_ids']) | {f'incident-day-realmap-development-v1-{i:03}' for i in range(12)} | {f'incident-day-realmap-development-v2-{i:03}' for i in (2, 3)}

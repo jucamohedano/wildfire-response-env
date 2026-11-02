@@ -204,9 +204,12 @@ def test_snapshot_rejects_invalid_or_non_json_state_atomically():
     observer = MovementObserver(fake(FakeOps()))
     tick(observer.ops)
     original = observer.snapshot()
+    assert original['version'] == 4
     for state in [dict(version=True, coverage={}, findings={}),
-                  dict(version=2, coverage={'ticks_observed': True}, findings={}),
-                  dict(version=2, coverage={}, findings={'bad': {'count': 1, 'first': {
+                  dict(version=2, coverage={}, findings={}),
+                  dict(version=3, coverage={}, findings={}),
+                  dict(version=4, coverage={'ticks_observed': True}, findings={}),
+                  dict(version=4, coverage={}, findings={'bad': {'count': 1, 'first': {
                       'minute': 1, 'entity': 'u', 'detail': 'bad', 'extra': object()}}})]:
         with pytest.raises(ValueError):
             observer.restore(state)
@@ -246,3 +249,281 @@ def test_stationary_active_travel_still_requires_timed_progress():
     observer = MovementObserver(fake(ops))
     tick(ops, minute=2)
     assert 'off_timed_path' in observer.snapshot()['findings']
+
+
+def returning_aircraft(journey):
+    return dict(id='plane', kind='aircraft', state='returning', position=[90, 0],
+                base_position=[100, 0], journey=journey, facility_id='airbase',
+                capacity_litres=3100, water_litres=0, fuel_minutes=40,
+                fuel_capacity_minutes=180, clearance=True)
+
+
+def shortage_ops(journey=None, *, position=None, base=None, facility_stock=2800, kind='aircraft', minute=10):
+    journey = copy.deepcopy(journey or route())
+    aircraft = returning_aircraft(journey)
+    aircraft['kind'] = kind
+    if base is not None:
+        aircraft['base_position'] = base
+    def finish(ops, now, kwargs):
+        ops.resources['plane'].update(position=position if position is not None else [100, 0],
+                                      state='needs_assistance', journey=None, fuel_minutes=39)
+    ops = FakeOps(resources={'plane': aircraft}, mutate=finish)
+    ops.last_minute = minute - 1
+    ops.profile['facilities'] = {'airbase': dict(position=[100, 0], allowed_kinds=['aircraft'],
+                                                 refuel=True, water_litres=facility_stock)}
+    return ops
+
+
+def test_aircraft_arrival_with_finite_shortage_keeps_path_and_geometry_checks():
+    ops = shortage_ops()
+    observer = MovementObserver(fake(ops))
+    tick(ops, minute=10)
+    assert observer.snapshot()['findings'] == {}
+    assert observer.snapshot()['coverage']['timed_positions_checked'] == 2
+    assert observer.snapshot()['coverage']['road_legs_checked'] == 2
+    assert observer.snapshot()['coverage']['capacity_ticks_checked'] == 1
+
+
+@pytest.mark.parametrize('fault,expected', [
+    ('wrong_base', 'movement_during_assistance_transition'),
+    ('wrong_endpoint', 'movement_during_assistance_transition'),
+    ('off_path', 'movement_during_assistance_transition'),
+    ('early', 'early_arrival'),
+    ('road_geometry', 'unsupported_road_leg'),
+    ('prior_off_path', 'off_timed_path'),
+    ('disconnected_route', 'movement_during_assistance_transition'),
+    ('invalid_clock', 'movement_during_assistance_transition'),
+    ('no_shortage', 'movement_during_assistance_transition'),
+    ('invalid_stock', 'movement_during_assistance_transition'),
+    ('exhausted_fuel', 'movement_during_assistance_transition'),
+    ('incorrect_fuel', 'movement_during_assistance_transition'),
+    ('changed_water', 'movement_during_assistance_transition'),
+    ('ground_unit', 'movement_during_assistance_transition'),
+])
+def test_shortage_arrival_does_not_hide_faults(fault, expected):
+    journey = route(edge='missing' if fault == 'road_geometry' else 'e')
+    kwargs = {}
+    minute = 10
+    if fault == 'wrong_base': kwargs['base'] = [101, 0]
+    if fault == 'wrong_endpoint': journey['destination'] = [99, 0]
+    if fault == 'disconnected_route': journey['legs'][0]['coordinates'][0] = [5, 0]
+    if fault == 'invalid_clock': journey['arrives_at'] = 11
+    if fault == 'off_path': kwargs['position'] = [100, 1]
+    if fault == 'early': minute = 9
+    if fault == 'no_shortage': kwargs['facility_stock'] = 3100
+    if fault == 'invalid_stock': kwargs['facility_stock'] = float('nan')
+    if fault == 'ground_unit': kwargs['kind'] = 'engine'
+    ops = shortage_ops(journey, minute=minute, **kwargs)
+    if fault == 'prior_off_path': ops.resources['plane']['position'] = [90, 2]
+    if fault == 'exhausted_fuel': ops.resources['plane']['fuel_minutes'] = 0
+    if fault == 'incorrect_fuel': ops.resources['plane']['fuel_minutes'] = 41
+    if fault == 'changed_water':
+        mutate = ops.mutate
+        def corrupt_water(ops, now, kwargs):
+            mutate(ops, now, kwargs)
+            ops.resources['plane']['water_litres'] = 100
+        ops.mutate = corrupt_water
+    observer = MovementObserver(fake(ops))
+    tick(ops, minute=minute)
+    assert expected in observer.snapshot()['findings']
+
+
+def test_actual_operations_arrival_and_finite_refill_shortage():
+    from envs.wildfire_response.incident_day.operations import Operations
+    aircraft = returning_aircraft(route())
+    ops = Operations([aircraft], [], [], {'aircraft_max_wind': 5, 'facilities': {
+        'airbase': dict(position=[100, 0], allowed_kinds=['aircraft'], refuel=True, water_litres=2800)}})
+    ops.last_minute = 9
+    observer = MovementObserver(fake(ops))
+    tick(ops, minute=10, hazard_check=lambda *args: True, emit=lambda *args, **kwargs: None)
+    assert ops.resources['plane']['state'] == 'needs_assistance'
+    assert ops.resources['plane']['position'] == [100, 0]
+    assert ops.profile['facilities']['airbase']['water_litres'] == 2800
+    assert ops.resources['plane']['fuel_minutes'] == 39
+    assert observer.snapshot()['findings'] == {}
+    assert observer.snapshot()['coverage']['timed_positions_checked'] == 2
+
+
+def test_saved_evaluation_aircraft_return_against_recorded_audit():
+    import gzip
+    from pathlib import Path
+    path = Path('/var/tmp/wildfire-evaluation-baselines-v2/private/es-ma-2021-incident-day-evaluation-v1-003-dispatcher.json.gz')
+    if not path.is_file():
+        pytest.skip('Saved private evaluation audit unavailable')
+    with gzip.open(path, 'rt') as stream:
+        data = json.load(stream)
+    before, after = (data['audit'][minute]['resources']['plane-1'] for minute in (776, 777))
+    origin = data['audit'][761]['resources']['plane-1']['position']
+    base = after['position']
+    assert before['state'] == 'returning' and after['state'] == 'needs_assistance'
+    assert before['fuel_minutes'] - after['fuel_minutes'] == 1
+    # The audit records positions but not journey plans; reconstruct the observed
+    # straight flight solely for this local observer regression.
+    leg = make_leg('flight', [origin, base], 240)
+    journey = make_journey([leg], origin, base, 'test')
+    journey.update(departed_at=761, arrives_at=777, duration_minutes=16)
+    journey['legs'][0]['duration_minutes'] = 16
+    def finish(ops, minute, kwargs):
+        ops.resources['plane-1'].update(position=base, state='needs_assistance', journey=None,
+                                        fuel_minutes=after['fuel_minutes'])
+    plane = dict(id='plane-1', kind='aircraft', state='returning', position=before['position'],
+                 base_position=base, journey=journey, facility_id='airbase', capacity_litres=3100,
+                 water_litres=before['water_litres'], fuel_minutes=before['fuel_minutes'])
+    ops = FakeOps(resources={'plane-1': plane}, mutate=finish)
+    ops.last_minute = 776
+    ops.profile['facilities'] = {'airbase': dict(position=base, allowed_kinds=['aircraft'],
+                                                 refuel=True, water_litres=2800)}
+    observer = MovementObserver(fake(ops))
+    tick(ops, minute=777)
+    assert observer.snapshot()['findings'] == {}
+    assert observer.snapshot()['coverage']['timed_positions_checked'] == 2
+
+
+def ground_shortage_ops(journey=None, *, stock=3000, position=None, base=None, minute=10):
+    ops = shortage_ops(journey, kind='engine', facility_stock=stock,
+                       position=position, base=base, minute=minute)
+    ops.resources['plane'].update(capacity_litres=3500, fuel_minutes=None)
+    ops.profile['facilities']['airbase']['allowed_kinds'] = ['engine', 'crew']
+    ops.profile['facilities']['airbase'].pop('refuel')
+    def finish(ops, now, kwargs):
+        ops.resources['plane'].update(position=position if position is not None else [100, 0],
+                                      state='needs_assistance', journey=None)
+    ops.mutate = finish
+    return ops
+
+
+def test_engine_arrival_with_shortage_checks_both_positions_and_directed_road():
+    ops = ground_shortage_ops()
+    observer = MovementObserver(fake(ops))
+    tick(ops, minute=10)
+    evidence = observer.snapshot()
+    assert evidence['findings'] == {}
+    assert evidence['coverage']['timed_positions_checked'] == 2
+    assert evidence['coverage']['road_legs_checked'] == 2
+    assert evidence['coverage']['capacity_ticks_checked'] == 1
+
+
+@pytest.mark.parametrize('fault,expected', [
+    ('wrong_base', 'movement_during_assistance_transition'),
+    ('near_base', 'movement_during_assistance_transition'),
+    ('wrong_endpoint', 'movement_during_assistance_transition'),
+    ('off_path', 'movement_during_assistance_transition'),
+    ('prior_off_path', 'off_timed_path'),
+    ('early', 'early_arrival'),
+    ('road_geometry', 'unsupported_road_leg'),
+    ('wrong_direction', 'direction_invalid_road_leg'),
+    ('disconnected_route', 'movement_during_assistance_transition'),
+    ('invalid_clock', 'movement_during_assistance_transition'),
+    ('no_shortage', 'movement_during_assistance_transition'),
+    ('invalid_stock', 'movement_during_assistance_transition'),
+    ('wrong_facility_kind', 'movement_during_assistance_transition'),
+    ('malformed_facility_kinds', 'movement_during_assistance_transition'),
+    ('wrong_facility_position', 'movement_during_assistance_transition'),
+    ('incompatible', 'movement_during_assistance_transition'),
+    ('changed_water', 'movement_during_assistance_transition'),
+    ('zero_capacity_crew', 'movement_during_assistance_transition'),
+])
+def test_ground_shortage_arrival_rejects_unproven_and_invalid_paths(fault, expected):
+    journey = route(edge='missing' if fault == 'road_geometry' else 'e')
+    args, minute = {}, 10
+    if fault == 'wrong_base': args['base'] = [101, 0]
+    if fault == 'near_base': args['position'] = [100.01, 0]
+    if fault == 'wrong_endpoint': journey['destination'] = [99, 0]
+    if fault == 'off_path': args['position'] = [100, 1]
+    if fault == 'early': minute = 9
+    if fault == 'no_shortage': args['stock'] = 3500
+    if fault == 'invalid_stock': args['stock'] = float('nan')
+    if fault == 'disconnected_route': journey['legs'][0]['coordinates'][0] = [5, 0]
+    if fault == 'invalid_clock': journey['arrives_at'] = 11
+    if fault == 'wrong_direction':
+        journey = route([[100, 0], [0, 0]])
+        args.update(base=[0, 0], position=[0, 0])
+    ops = ground_shortage_ops(journey, minute=minute, **args)
+    if fault == 'wrong_direction':
+        ops.resources['plane']['position'] = [10, 0]
+        ops.profile['facilities']['airbase']['position'] = [0, 0]
+    if fault == 'prior_off_path': ops.resources['plane']['position'] = [90, 2]
+    if fault == 'wrong_facility_kind': ops.profile['facilities']['airbase']['allowed_kinds'] = ['crew']
+    if fault == 'malformed_facility_kinds': ops.profile['facilities']['airbase']['allowed_kinds'] = None
+    if fault == 'wrong_facility_position': ops.profile['facilities']['airbase']['position'] = [100.01, 0]
+    if fault == 'incompatible': ops.resources['plane']['refill_compatible'] = False
+    if fault == 'zero_capacity_crew': ops.resources['plane'].update(kind='crew', capacity_litres=0)
+    if fault == 'changed_water':
+        mutate = ops.mutate
+        def corrupt_water(ops, now, kwargs):
+            mutate(ops, now, kwargs)
+            ops.resources['plane']['water_litres'] = 100
+        ops.mutate = corrupt_water
+    observer = MovementObserver(fake(ops))
+    tick(ops, minute=minute)
+    assert expected in observer.snapshot()['findings']
+
+
+@pytest.mark.parametrize('mode', ['flight', 'walk'])
+def test_engine_shortage_arrival_rejects_nonroad_leg(mode):
+    journey = route()
+    journey['legs'][0]['mode'] = mode
+    ops = ground_shortage_ops(journey)
+    observer = MovementObserver(fake(ops))
+    tick(ops, minute=10)
+    assert 'movement_during_assistance_transition' in observer.snapshot()['findings']
+
+
+def test_real_engine_tick_arrives_then_cannot_refill():
+    from envs.wildfire_response.incident_day.operations import Operations
+    engine = returning_aircraft(route())
+    engine.update(kind='engine', capacity_litres=3500, fuel_minutes=None)
+    ops = Operations([engine], [], [], {'aircraft_max_wind': 5, 'facilities': {
+        'airbase': dict(position=[100, 0], allowed_kinds=['engine'], water_litres=3000)}})
+    ops.last_minute = 9
+    observer = MovementObserver(fake(ops))
+    tick(ops, minute=10, hazard_check=lambda *args: True, movement_check=lambda *args: True,
+         emit=lambda *args, **kwargs: None)
+    assert ops.resources['plane']['state'] == 'needs_assistance'
+    assert ops.resources['plane']['position'] == [100, 0]
+    assert ops.profile['facilities']['airbase']['water_litres'] == 3000
+    assert ops.resources['plane']['water_litres'] == 0
+    assert observer.snapshot()['findings'] == {}
+    assert observer.snapshot()['coverage']['road_legs_checked'] == 2
+
+
+@pytest.mark.parametrize('resource,minute,facility,expected_stock', [
+    ('engine-0-shift-3', 1030, 'center-0', 3000),
+    ('engine-1-shift-3', 1031, 'center-1', 1000),
+])
+def test_saved_007_ground_arrival_shortage_recognition(resource, minute, facility, expected_stock):
+    import gzip
+    from pathlib import Path
+    path = Path('/var/tmp/wildfire-evaluation-baselines-v2/private/es-ma-2021-incident-day-evaluation-v1-007-dispatcher.json.gz')
+    if not path.is_file():
+        pytest.skip('Saved private evaluation audit unavailable')
+    with gzip.open(path, 'rt') as stream:
+        data = json.load(stream)
+    audit = data['audit']
+    before, after = audit[minute-1]['resources'][resource], audit[minute]['resources'][resource]
+    assert before['state'] == 'returning' and after['state'] == 'needs_assistance'
+    report = next(r for r in data['reports'] if r['kind'] == 'resource_status'
+                  and r['observed_at'] == minute and r['payload']['resource']['id'] == resource)
+    base = report['payload']['resource']['base_position']
+    assert after['position'] == base and after['water_litres'] == before['water_litres'] == 0
+    prefix = 'engine-' + facility[-1]
+    related = [prefix, prefix + '-shift-2', prefix + '-shift-3']
+    refilled = sum(max(0, b['resources'][uid]['water_litres'] - a['resources'][uid]['water_litres'])
+                   for a, b in zip(audit, audit[1:minute+1]) for uid in related)
+    assert not any(r['state'] == 'refilling' for r in audit[minute]['resources'].values())
+    stock = 40000 - refilled  # 100000 parent stock × the saved 0.4 facility fraction.
+    assert data['evaluation_metadata']['configuration']['facility_fraction'] == .4
+    assert stock == expected_stock < 3500
+    # The saved minute audit omits journey plans. Use a synthetic final segment
+    # to exercise recognition with the exact saved positions; separate tests
+    # verify directed real-road geometry and full route timing.
+    leg = make_leg('road', [before['position'], base], 6, edge_id='e')
+    journey = make_journey([leg], before['position'], base, 'test')
+    journey.update(departed_at=minute-1, arrives_at=minute, duration_minutes=1)
+    journey['legs'][0]['duration_minutes'] = 1
+    unit = dict(id=resource, kind='engine', state='returning', position=before['position'],
+                base_position=base, journey=journey, facility_id=facility,
+                capacity_litres=3500, water_litres=before['water_litres'])
+    current = dict(unit, state='needs_assistance', position=after['position'], journey=None)
+    facilities = {facility: dict(position=base, allowed_kinds=['engine'], water_litres=stock)}
+    assert MovementObserver._arrived_without_refill(unit, current, facilities)

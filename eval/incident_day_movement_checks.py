@@ -6,7 +6,7 @@ clearance. This observer does not participate in operational decisions.
 import copy
 import math
 
-_VERSION = 2
+_VERSION = 4
 _TOL = 0.05  # metric geometry tolerance, metres
 
 
@@ -31,6 +31,30 @@ def _interpolate(route, minute):
             return list(points[-1])
         elapsed -= duration
     return list(route['destination'])
+
+
+def _valid_return_route(route):
+    """Require a finite connected route before treating assistance as arrival."""
+    if not isinstance(route, dict) or not _point(route.get('origin')) or not _point(route.get('destination')):
+        return False
+    departure, arrival, duration = (route.get(key) for key in ('departed_at', 'arrives_at', 'duration_minutes'))
+    if (not all(type(value) in (int, float) and math.isfinite(value) for value in (departure, arrival, duration))
+            or duration <= 0 or not math.isclose(arrival, departure + duration, abs_tol=1e-5, rel_tol=0)):
+        return False
+    legs = route.get('legs')
+    if not isinstance(legs, list) or not legs:
+        return False
+    previous, total = route['origin'], 0
+    for leg in legs:
+        if not isinstance(leg, dict):
+            return False
+        coords, leg_duration = leg.get('coordinates'), leg.get('duration_minutes')
+        if (not isinstance(coords, list) or len(coords) < 2 or not all(_point(point) for point in coords)
+                or type(leg_duration) not in (int, float) or not math.isfinite(leg_duration) or leg_duration <= 0
+                or math.dist(previous, coords[0]) > _TOL):
+            return False
+        previous, total = coords[-1], total + leg_duration
+    return math.dist(previous, route['destination']) <= _TOL and math.isclose(total, duration, abs_tol=1e-5, rel_tol=0)
 
 
 def _project(point, line):
@@ -93,7 +117,46 @@ class MovementObserver:
 
     def _capture(self):
         return copy.deepcopy(dict(resources=self.ops.resources, groups=self.ops.groups, orders=self.ops.orders,
-                                  reservations=self.ops.reservations, destinations=self.ops.destinations))
+                                  reservations=self.ops.reservations, destinations=self.ops.destinations,
+                                  facilities=self.ops.profile.get('facilities')))
+
+    @staticmethod
+    def _arrived_without_refill(unit, current, facilities):
+        """Identify a return completed at base with insufficient finite water."""
+        route, base = unit.get('journey'), unit.get('base_position')
+        kind = unit.get('kind')
+        if (kind not in ('aircraft', 'engine') or unit.get('state') != 'returning'
+                or current.get('state') != 'needs_assistance' or current.get('journey') is not None
+                or not _valid_return_route(route) or not _point(base)
+                or not _point(current.get('position')) or not _point(route.get('destination'))
+                or list(current['position']) != list(base)
+                or list(route['destination']) != list(base)
+                or not isinstance(facilities, dict)):
+            return False
+        if kind == 'engine' and any(leg.get('mode') != 'road' for leg in route['legs']):
+            return False
+        facility = facilities.get(unit.get('facility_id'))
+        if (not isinstance(facility, dict) or not _point(facility.get('position'))
+                or list(facility['position']) != list(base)
+                or not isinstance(facility.get('allowed_kinds'), (list, tuple, set))
+                or kind not in facility.get('allowed_kinds', ())
+                or unit.get('refill_compatible', True) is not True
+                or (kind == 'aircraft' and facility.get('refuel') is not True)
+                or current.get('refill_reservation') is not None):
+            return False
+        stock, capacity, water = facility.get('water_litres'), unit.get('capacity_litres'), current.get('water_litres')
+        old_water = unit.get('water_litres')
+        if not all(type(value) in (int, float) and math.isfinite(value)
+                   for value in (stock, capacity, water, old_water)):
+            return False
+        if not (0 <= stock < capacity - water and 0 <= water < capacity and water == old_water):
+            return False
+        if kind == 'aircraft':
+            fuel, remaining_fuel = unit.get('fuel_minutes'), current.get('fuel_minutes')
+            if (not all(type(value) in (int, float) and math.isfinite(value) for value in (fuel, remaining_fuel))
+                    or fuel < 1 or remaining_fuel != fuel - 1):
+                return False
+        return True
 
     def _road_checks(self, route, minute, entity):
         for leg in route.get('legs', []):
@@ -189,8 +252,15 @@ class MovementObserver:
                                   'Departure lacks simulated clearance or modeled flight window')
             state = unit.get('blocked_state') if unit.get('state') == 'blocked' else unit.get('state')
             if state in ('travel', 'returning'):
+                shortage_arrival = self._arrived_without_refill(unit, current, after['facilities'])
+                if shortage_arrival:
+                    # Check the last position too: a correct endpoint cannot
+                    # excuse an off-path position on the preceding tick.
+                    self._movement(unit, unit, unit.get('journey'), unit.get('journey'), minute,
+                                   identifier, False, position_minute=minute - 1)
                 arrival = ((state == 'travel' and current.get('state') in ('on_scene', 'working'))
-                           or (state == 'returning' and current.get('state') in ('available', 'refilling', 'resting', 'off_duty')))
+                           or (state == 'returning' and current.get('state') in ('available', 'refilling', 'resting', 'off_duty'))
+                           or shortage_arrival)
                 if (current.get('state') == 'needs_assistance' and _point(unit.get('position'))
                         and _point(current.get('position')) and unit['position'] == current['position']):
                     # Return planning or fuel exhaustion can halt before movement.
@@ -200,7 +270,7 @@ class MovementObserver:
                     self._movement(unit, current, unit.get('journey'), unit.get('journey'), minute,
                                    identifier, False, position_minute=minute - 1)
                 else:
-                    if (current.get('state') == 'needs_assistance' and _point(unit.get('position'))
+                    if (not shortage_arrival and current.get('state') == 'needs_assistance' and _point(unit.get('position'))
                             and _point(current.get('position'))
                             and math.dist(unit['position'], current['position']) > _TOL):
                         self._finding('movement_during_assistance_transition', minute, identifier,

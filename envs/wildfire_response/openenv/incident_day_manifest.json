@@ -95,5 +95,37 @@
   ],
   "archived_replay_server_argument": "--allow-archived-scenarios",
   "training_corpus_available": false,
-  "catalog_scope": "Active scenarios are development exercises; archived scenarios are retained for explicit replay."
+  "catalog_scope": "Development and evaluation configurations share the pinned landscape and development parents; no independent held-out incidents or training corpus are claimed. Archived scenarios require explicit replay opt-in.",
+  "splits": [
+    "development",
+    "evaluation"
+  ],
+  "evaluation_catalog_id": "incident_day_evaluation_v1",
+  "active_evaluation_scenario_ids": [
+    "incident-day-evaluation-v1-000",
+    "incident-day-evaluation-v1-001",
+    "incident-day-evaluation-v1-002",
+    "incident-day-evaluation-v1-003",
+    "incident-day-evaluation-v1-004",
+    "incident-day-evaluation-v1-005",
+    "incident-day-evaluation-v1-006",
+    "incident-day-evaluation-v1-007",
+    "incident-day-evaluation-v1-008",
+    "incident-day-evaluation-v1-009",
+    "incident-day-evaluation-v1-010",
+    "incident-day-evaluation-v1-011",
+    "incident-day-evaluation-v1-012",
+    "incident-day-evaluation-v1-013",
+    "incident-day-evaluation-v1-014",
+    "incident-day-evaluation-v1-015",
+    "incident-day-evaluation-v1-016",
+    "incident-day-evaluation-v1-017",
+    "incident-day-evaluation-v1-018",
+    "incident-day-evaluation-v1-019",
+    "incident-day-evaluation-v1-020",
+    "incident-day-evaluation-v1-021",
+    "incident-day-evaluation-v1-022",
+    "incident-day-evaluation-v1-023"
+  ],
+  "rest_task_discovery_split": "development"
 }
