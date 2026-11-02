@@ -55,6 +55,50 @@ def validator_digest():
                      for path in paths})
 
 
+def checkpoint_state(value):
+    """Read versioned private checkpoint state without accepting another format."""
+    if value.get('version') == 'wildfire-incident-day-ops-v3':
+        value = value.get('core', {})
+    if not isinstance(value, dict) or not isinstance(value.get('state'), dict):
+        raise ValueError('Unknown evaluation checkpoint format')
+    return value['state']
+
+
+def _fork(env):
+    clone = type(env)(env.inputs, env.network.document,
+        expected_inputs_sha256=env.inputs['sha256'], expected_network_sha256=env.network.sha256,
+        allow_unapproved_data=env.inputs['approval_status'] != 'approved_synthetic_fixture')
+    clone.restore(env.checkpoint())
+    return clone
+
+
+def versioned_continuation(env, policy):
+    if type(env).__name__ == 'IncidentDayEnv':
+        return _continuation(env, policy)
+    other = _fork(env)
+    clone = make_policy(policy.name)
+    clone.restore(policy.checkpoint())
+    public = PublicFacade(other, [])
+    action = clone.action(public, other.get_situation())
+    result = commit(public, action)
+    return dict(action=action, result=checksum(result), audit=checksum(other._audit),
+                fire=checksum(other.fire.checkpoint()), policy=checksum(clone.checkpoint()))
+
+
+def versioned_query_independence(env):
+    if type(env).__name__ == 'IncidentDayEnv':
+        return _query_independence(env)
+    other, baseline = _fork(env), _fork(env)
+    for _ in range(2):
+        other.get_situation(); other.get_reports(); other.check_action({'advance_minutes': 60})
+        other.route_options(sorted(other._known_resources)[0])
+    for _ in range(3):
+        a, b = baseline.advance_time(20), other.advance_time(20)
+        if a != b or baseline.fire.checkpoint() != other.fire.checkpoint() or baseline.bus.checkpoint() != other.bus.checkpoint():
+            raise ValueError('Extra reads changed versioned continuation')
+    return dict(passed=True, method='Versioned public reads/drafts/routes; identical three-wait continuation')
+
+
 def expected_cells(manifest, runtime_id='es-ma-2021'):
     entry = manifest['runtimes'].get(runtime_id)
     if entry is None:
@@ -187,7 +231,7 @@ def load_progress(output, expected, pins):
     if live is not None:
         if (index >= len(expected) or live.get('identity') != expected[index]
                 or live['policy'].get('policy') != expected[index]['policy']
-                or live['environment']['state']['_scenario']['id'] != expected[index]['case_id']
+                or checkpoint_state(live['environment'])['_scenario']['id'] != expected[index]['case_id']
                 or report['cells'][index]['status'] != 'incomplete'):
             raise ValueError('Live evaluation checkpoint has a different case or policy')
     return report, index, live
@@ -250,17 +294,28 @@ def finish_cell(identity, env, observer, calls, resume_checks, query_check):
 
 def run(data_dir, output, *, runtime_id='es-ma-2021', wall_seconds=1800, max_cells=None,
         max_commands=None, resume=False, expected_implementation_sha256=None,
-        expected_lifecycle_sha256=None, expected_package_sha256=None, expected_validator_sha256=None):
+        expected_lifecycle_sha256=None, expected_package_sha256=None, expected_validator_sha256=None,
+        observation_version='v2', expected_observation_sha256=None):
     if type(wall_seconds) not in (int, float) or not math.isfinite(wall_seconds) or wall_seconds <= 0:
         raise ValueError('Positive finite wall budget required')
     for name, value in (('max_cells', max_cells), ('max_commands', max_commands)):
         if value is not None and (type(value) is not int or value < 1):
             raise ValueError(name + ' must be positive')
+    if observation_version not in ('v2', 'v3'):
+        raise ValueError('Unknown observation version')
+    observation_provider = None
+    if observation_version == 'v3':
+        from wildfire_ops_v3 import observation_identity
+        observation_provider = observation_identity
     manifest = verify_package(data_dir)
     expected = expected_cells(manifest, runtime_id)
     rows = evaluation_rows(data_dir, manifest)
     pins = dict(implementation_sha256=implementation_digest(), lifecycle_sha256=registry()['sha256'],
                 package_sha256=checksum(manifest), validator_sha256=validator_digest())
+    if observation_provider is not None:
+        pins.update(observation_version=observation_version, observation_sha256=observation_provider())
+    if expected_observation_sha256 is not None and pins.get('observation_sha256') != expected_observation_sha256:
+        raise ValueError('Expected observation identity differs')
     requested = dict(implementation_sha256=expected_implementation_sha256,
         lifecycle_sha256=expected_lifecycle_sha256, package_sha256=expected_package_sha256,
         validator_sha256=expected_validator_sha256)
@@ -269,6 +324,7 @@ def run(data_dir, output, *, runtime_id='es-ma-2021', wall_seconds=1800, max_cel
             raise ValueError('Expected ' + key + ' differs')
     def freeze():
         if (implementation_digest() != pins['implementation_sha256'] or registry()['sha256'] != pins['lifecycle_sha256']
+                or (observation_provider is not None and observation_provider() != pins['observation_sha256'])
                 or validator_digest() != pins['validator_sha256'] or checksum(verify_package(data_dir)) != pins['package_sha256']):
             raise ValueError('Evaluation code, lifecycle or package changed during execution')
     output = Path(output)
@@ -300,7 +356,7 @@ def run(data_dir, output, *, runtime_id='es-ma-2021', wall_seconds=1800, max_cel
         _save(output, report, index, live)
         if live is not None:
             print(json.dumps(dict(index=index + 1, total=len(expected), **live['identity'],
-                status='incomplete', minute=live['environment']['state']['minute'],
+                status='incomplete', minute=checkpoint_state(live['environment'])['minute'],
                 elapsed_seconds=round(live['cell_elapsed_seconds'], 3))), flush=True)
     try:
         if saved is None:
@@ -314,7 +370,9 @@ def run(data_dir, output, *, runtime_id='es-ma-2021', wall_seconds=1800, max_cel
             identity = expected[index]
             cell_start = time.perf_counter()
             carried_elapsed = saved.get('cell_elapsed_seconds', 0) if saved is not None else 0
-            env, entry = make_environment(data_dir, runtime_id, allow_unapproved_data=True)
+            env, entry = (make_environment(data_dir, runtime_id, allow_unapproved_data=True)
+                if observation_version == 'v2' else make_environment(data_dir, runtime_id,
+                    allow_unapproved_data=True, observation_version=observation_version))
             if entry != manifest['runtimes'][runtime_id]:
                 raise ValueError('Evaluation runtime changed')
             policy = make_policy(identity['policy'])
@@ -322,7 +380,7 @@ def run(data_dir, output, *, runtime_id='es-ma-2021', wall_seconds=1800, max_cel
                 observation, _ = env.reset(identity['case_id'])
                 bind_scenario(env, identity, rows[(runtime_id, identity['case_id'])])
                 calls, checked, resume_checks = [], set(), []
-                query_check = _query_independence(env)
+                query_check = versioned_query_independence(env)
                 observer = MovementObserver(env)
                 public = PublicFacade(env, calls)
                 public.get_situation(); public.get_reports(limit=20)
@@ -352,7 +410,7 @@ def run(data_dir, output, *, runtime_id='es-ma-2021', wall_seconds=1800, max_cel
                 phases = {unit['state'] for unit in env.ops.resources.values()}
                 boundaries = sorted((phases & {'travel', 'on_scene', 'working', 'returning', 'refilling', 'resting'}) - checked)
                 label = boundaries[0] if boundaries else 'initial' if not checked else None
-                continuation = _continuation(env, policy) if label else None
+                continuation = versioned_continuation(env, policy) if label else None
                 action = policy.action(public, observation)
                 result = commit(public, action)
                 if 'observation' not in result:
@@ -395,11 +453,14 @@ def main():
     parser.add_argument('--wall-seconds', type=float, default=1800)
     parser.add_argument('--max-cells', type=int); parser.add_argument('--max-commands', type=int)
     parser.add_argument('--resume', action='store_true')
+    parser.add_argument('--observation-version', choices=('v2', 'v3'), default='v2')
+    parser.add_argument('--expected-observation-sha256')
     for kind in ('implementation', 'lifecycle', 'package', 'validator'):
         parser.add_argument('--expected-' + kind + '-sha256')
     args = parser.parse_args()
     report = run(args.data_dir, args.output, runtime_id=args.runtime, wall_seconds=args.wall_seconds,
         max_cells=args.max_cells, max_commands=args.max_commands, resume=args.resume,
+        observation_version=args.observation_version, expected_observation_sha256=args.expected_observation_sha256,
         **{f'expected_{kind}_sha256': getattr(args, f'expected_{kind}_sha256')
            for kind in ('implementation', 'lifecycle', 'package', 'validator')})
     print(json.dumps(dict(status=report['status'], summary=report['summary'], pins=report['pins'])))

@@ -215,7 +215,10 @@ def create_app(environment):
                     default = environment._select_case(None)
                 except ValueError:
                     pass
-            return {'tasks': tasks, 'default_scenario_id': default}
+            result = {'tasks': tasks, 'default_scenario_id': default}
+            if getattr(environment, 'observation_version', 'v2') == 'v3':
+                result.update(observation_version='v3', observation_identity=environment.observation_identity)
+            return result
         return execute(discover)
 
     @app.post('/reset')
@@ -248,8 +251,13 @@ def create_app(environment):
 
     @app.get('/state')
     def state():
-        return execute(lambda: {'state': environment.state.model_dump(),
-            'situation': environment.get_situation(), 'trajectory': environment.trajectory()})
+        def inspect():
+            result = {'state': environment.state.model_dump(),
+                'situation': environment.get_situation(), 'trajectory': environment.trajectory()}
+            if getattr(environment, 'observation_version', 'v2') == 'v3':
+                result.update(observation_version='v3', observation_identity=environment.observation_identity)
+            return result
+        return execute(inspect)
 
     return app
 
@@ -259,6 +267,7 @@ def main(argv=None):
     parser.add_argument('--host', choices=('127.0.0.1', 'localhost', '::1'), default='127.0.0.1')
     parser.add_argument('--port', type=int, default=8005)
     parser.add_argument('--fixture', action='store_true')
+    parser.add_argument('--observation-version', choices=('v2', 'v3'), default='v2')
     parser.add_argument('--inputs', type=Path)
     parser.add_argument('--network', type=Path)
     parser.add_argument('--inputs-sha256')
@@ -280,7 +289,7 @@ def main(argv=None):
         inputs_hash, network_hash = args.inputs_sha256, args.network_sha256
     environment = IncidentDayEnvironment(inputs, network, expected_inputs_sha256=inputs_hash,
         expected_network_sha256=network_hash, allow_unapproved_data=args.allow_unapproved_data,
-        allow_archived_scenarios=args.allow_archived_scenarios)
+        allow_archived_scenarios=args.allow_archived_scenarios, observation_version=args.observation_version)
     import uvicorn
     uvicorn.run(create_app(environment), host=args.host, port=args.port)
 
