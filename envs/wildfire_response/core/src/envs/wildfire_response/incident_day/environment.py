@@ -324,7 +324,9 @@ class IncidentDayEnv:
             mode=unit['kind'], burning=self._burning(), wind=list(self.fire.wind),
             excluded_cells=self._excluded(unit['kind'], self._restrictions),
             revision=0, target_metric=unit['base_position'], limit=1,
-            emergency_egress=self._scenario['profile'].get('emergency_egress_policy') == 'return-only-buffer-exit-v1')
+            emergency_egress=self._scenario['profile'].get('emergency_egress_policy') == 'return-only-buffer-exit-v1',
+            recovery_origin_candidates=(unit['kind'] == 'crew' and self._scenario['profile'].get(
+                'recovery_candidate_policy') == 'bounded-origin-targets-v1'))
         return result['options'][0]['journey'] if result['options'] else None
 
     def check_action(self, action):
@@ -467,10 +469,12 @@ class IncidentDayEnv:
         for event in [event for event in self._events if event['minute'] == self.minute]:
             self._events.remove(event)
             if event['kind'] == 'wind':
-                if self._scenario['profile'].get('realmap_v2_wind_coverage') and event['minute'] == 15:
-                    from .real_map_acceptance import capture_wind_effect
+                if (self._scenario['profile'].get('realmap_v2_wind_coverage')
+                        and self._scenario['family'] == 'wind_access_loss'):
+                    from .real_map_acceptance import capture_wind_effect, wind_access_event
 
-                    self._event_effects.append(capture_wind_effect(self, event))
+                    if event == wind_access_event(self._scenario):
+                        self._event_effects.append(capture_wind_effect(self, event))
                 self.fire.set_wind(x=event['wind'][0], y=event['wind'][1])
                 self.bus.emit('weather', 'wind_update', dict(wind=event['wind'][:]), self.minute, channel='radio')
             elif event['kind'] == 'access_restriction':
@@ -686,6 +690,12 @@ class IncidentDayEnv:
                 status=group['status'], protection_pending=any(order['group_id'] == key
                     and order['state'] not in ('completed', 'cancelled', 'unable_to_comply')
                     for order in self.ops.orders.values())) for key, group in self.ops.groups.items()})
+        if self._scenario['profile'].get('version') == 'wildfire-incident-day-realmap-development-profile-v2':
+            for identifier, unit in self.ops.resources.items():
+                record['resources'][identifier]['blocked_state'] = copy.deepcopy(unit.get('blocked_state'))
+                marker = unit.get('return_recovery_preflight_at')
+                record['resources'][identifier]['return_recovery_preflight_at'] = (
+                    marker if type(marker) is int and marker == self.minute else None)
         if initial:
             record.update(footprint=sorted(footprint), cell_area_hectares=self.inputs['grid']['cell_km'] ** 2 * 100,
                           burnable=[row * self.fire.width + column for row, cells in enumerate(self.fire.cells)

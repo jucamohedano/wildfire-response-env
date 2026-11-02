@@ -15,6 +15,12 @@ NETWORK_PIN = '12782cb4ccb4bbfd2d59eaaa7380ad6b1a807320cf5a15b6d01e44d7ec89fc16'
 SNAPSHOT_PIN = 'fd276b8a4a799cffedd268f485a97aaff5ff88d83d11726be0e23894d282f323'
 SECTOR = (16, 28)
 POST_NODES = ('osm:n321315386', 'osm:n6119295366')
+REDESIGNED_POST_NODE = 'osm:n4341595138'
+REDESIGNED_EGRESS_EDGES = frozenset({
+    'osm:w652769435:0000:r', 'osm:w652769435:0001:r', 'osm:w652769435:0002:r',
+    'osm:w47438359:0000:r', 'osm:w47438359:0001:r', 'osm:w47438359:0002:r',
+    'osm:w47438359:0003:r', 'osm:w374742049:0000:f',
+})
 HOME_NODES = ('osm:n595570962', 'osm:n4341595138')
 ALLOWED_ROAD_EDGES = frozenset(
     f'osm:w{way}:{part}:{direction}'
@@ -222,5 +228,111 @@ def build_real_map_v2_scenario(inputs, network, identifier, seed=None):
         scenario['profile'].update(causal_coverage=True, realmap_v2_wind_coverage=True)
     if index == 2:
         scenario['profile']['causal_coverage'] = True
+    scenario['sha256'] = digest({key: value for key, value in scenario.items() if key != 'sha256'})
+    return scenario
+
+
+def build_real_map_development_scenario(inputs, network, identifier, seed=None):
+    """Two controlled operational variants per source-map v2 family.
+
+    Keep the parent's pinned fire seed and geography so route validation applies
+    to both variants; the changed operational constraints are synthetic.
+    """
+    from .scenarios import (REAL_MAP_DEVELOPMENT_V1_CASE_IDS,
+                            REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS, REAL_MAP_DEVELOPMENT_RECOVERY_CASE_IDS, REAL_MAP_V2_CASE_IDS)
+
+    if identifier in REAL_MAP_DEVELOPMENT_RECOVERY_CASE_IDS:
+        variant = REAL_MAP_DEVELOPMENT_RECOVERY_CASE_IDS.index(identifier)
+        parent = build_real_map_development_scenario(inputs, network, REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS[2 + variant], seed)
+        scenario = copy.deepcopy(parent)
+        scenario.update(id=identifier, version='wildfire-incident-day-realmap-development-scenarios-v3',
+                        parent_scenario_sha256=parent['sha256'])
+        # A distinct synthetic afternoon wind regime gives this bounded-map
+        # exercise a recovery window before the former late-day bottleneck.
+        # Preserve the morning access-loss event and all physical safety rules.
+        recovery_wind = next(e for e in scenario['events'] if e['kind'] == 'wind' and e['minute'] == 1020)
+        recovery_wind['minute'] = (720, 750)[variant]
+        scenario['events'].sort(key=lambda e: e['minute'])
+        scenario['synthetic_recovery_design'] = dict(version='afternoon-wind-window-v1',
+            original_minute=1020, replacement_minute=recovery_wind['minute'],
+            assumption='Designed synthetic wind timing, not observed weather or a forecast guarantee')
+        scenario['sha256'] = digest({k: v for k, v in scenario.items() if k != 'sha256'})
+        return scenario
+    if identifier in REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS:
+        index = REAL_MAP_DEVELOPMENT_REDESIGNED_CASE_IDS.index(identifier)
+        parent = build_real_map_development_scenario(inputs, network, REAL_MAP_DEVELOPMENT_V1_CASE_IDS[index], seed)
+        scenario = copy.deepcopy(parent)
+        scenario.update(id=identifier, version='wildfire-incident-day-realmap-development-scenarios-v2',
+                        parent_scenario_sha256=parent['sha256'])
+        scenario['profile'].update(version='wildfire-incident-day-realmap-development-profile-v2',
+                                   recovery_candidate_policy='bounded-origin-targets-v1')
+        if index in (5, 6):
+            scenario['profile']['allowed_road_edge_ids'] = sorted(
+                set(scenario['profile']['allowed_road_edge_ids']) | REDESIGNED_EGRESS_EDGES)
+            scenario['profile']['synthetic_egress_corridor'] = dict(
+                edge_ids=sorted(REDESIGNED_EGRESS_EDGES),
+                assumption='Synthetic exercise access on pinned directed map edges; '
+                           'not verified road clearance or historical access')
+            position = network.nodes[REDESIGNED_POST_NODE][:]
+            for unit in scenario['resources']:
+                if unit['kind'] in ('engine', 'crew'):
+                    unit.update(position=position[:], base_position=position[:])
+            for center in ('center-0', 'center-1'):
+                scenario['profile']['facilities'][center]['position'] = position[:]
+            for post in scenario['temporary_posts']:
+                post['node_id'] = REDESIGNED_POST_NODE
+            scenario['handover_notice'] += (' EXERCISE. Both synthetic ground posts share a mapped node; '
+                                            'reception centres retain their original locations.')
+        scenario['sha256'] = digest({key: value for key, value in scenario.items() if key != 'sha256'})
+        return scenario
+    if identifier not in REAL_MAP_DEVELOPMENT_V1_CASE_IDS:
+        raise ValueError('Unknown real-map development scenario')
+    index = REAL_MAP_DEVELOPMENT_V1_CASE_IDS.index(identifier)
+    family, variant = divmod(index, 2)
+    scenario = copy.deepcopy(build_real_map_v2_scenario(inputs, network, REAL_MAP_V2_CASE_IDS[family], seed))
+    scenario.update(id=identifier, version='wildfire-incident-day-realmap-development-scenarios-v1',
+                    parent_scenario_sha256=scenario['sha256'])
+    scenario['profile']['version'] = 'wildfire-incident-day-realmap-development-profile-v1'
+
+    if family == 0:
+        # Two quiet handovers with different initial ground readiness and stocks.
+        unit = next(unit for unit in scenario['resources'] if unit['id'] == 'engine-0')
+        unit['water_litres'] = (1200, 3500)[variant]
+        unit['work_remaining'] = (120, 240)[variant]
+    elif family == 1:
+        event = next(event for event in scenario['events'] if event['kind'] == 'wind')
+        event['minute'] = (20, 45)[variant]
+        unit = next(unit for unit in scenario['resources'] if unit['id'] == 'engine-0')
+        unit['work_remaining'] = (150, 240)[variant]
+    elif family == 2:
+        event = next(event for event in scenario['events'] if event['kind'] == 'access_restriction')
+        event['minute'] = (30, 150)[variant]
+        unit = next(unit for unit in scenario['resources'] if unit['id'] == 'crew-0')
+        unit['work_remaining'] = (150, 240)[variant]
+    elif family == 3:
+        event = next(event for event in scenario['events'] if event['kind'] == 'aircraft_unavailable')
+        event.update(minute=(180, 360)[variant], until=(360, 660)[variant])
+        aircraft = next(unit for unit in scenario['resources'] if unit['id'] == 'plane-0')
+        aircraft['fuel_minutes'] = (120, 180)[variant]
+    elif family == 4:
+        event = next(event for event in scenario['events'] if event['kind'] == 'destination_closed')
+        event['minute'] = (240, 600)[variant]
+        # The occupied centre differs, making both closures consequential.
+        destination = next(item for item in scenario['destinations'] if item['id'] == f'destination-{variant}')
+        group = next(item for item in scenario['groups'] if item['id'] == 'population-1')
+        group.update(position=destination['position'][:], status='arrived', destination_id=destination['id'])
+        event['destination_id'] = destination['id']
+        scenario['population_handover']['destination_id'] = destination['id']
+        scenario['handover_notice'] = scenario['handover_notice'].replace(
+            'at the first reception centre', f'at reception centre {variant + 1}')
+    else:
+        event = next(event for event in scenario['events'] if event['kind'] == 'center_unavailable')
+        event.update(minute=(360, 720)[variant], until=(600, 1080)[variant])
+        unit = next(unit for unit in scenario['resources'] if unit['id'] == 'engine-1')
+        # The initial roster slot ends at minute 480; its replacement starts
+        # then. Delays must leave a usable window within that first shift.
+        unit.update(available_at=(180, 360)[variant], state='unavailable')
+
+    scenario['events'].sort(key=lambda item: item['minute'])
     scenario['sha256'] = digest({key: value for key, value in scenario.items() if key != 'sha256'})
     return scenario

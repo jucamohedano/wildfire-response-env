@@ -32,6 +32,7 @@ BOUNDS = ROOT / 'data/incident_day_v2/plausibility/bounds-v1.json'
 REQUIRED_OPERATIONS=('get_situation','get_reports','route_options','evacuation_options','check_action',
     'commit_orders','request_status','advance_time','requests','authorizations','releases',
     'shelter','evacuate','status_requests','waits')
+MATRIX_CATALOG_IDS = frozenset(('incident_day_fixture', 'incident_day_realmap_v2'))
 
 
 def checksum(value):
@@ -91,12 +92,17 @@ def commit(public, action):
 def expected_cells(manifest, policies=POLICY_NAMES):
     if tuple(policies) != POLICY_NAMES:
         raise ValueError('The required policy set must not silently shrink')
-    active = [c for c in registry()['catalogs'] if c['status'] == 'active_development']
+    active = [c for c in registry()['catalogs'] if c['id'] in MATRIX_CATALOG_IDS
+              and c['status'] == 'active_development']
+    if (len(active) != 2 or {c['id'] for c in active} != MATRIX_CATALOG_IDS
+            or any(len(c['case_ids']) != 6 or len(set(c['case_ids'])) != 6 for c in active)):
+        raise ValueError('Both active six-case representations are required')
     result, matched = [], set()
     for runtime_id, entry in sorted(manifest['runtimes'].items()):
         match = next((c for c in active if c['inputs_sha256'] == entry['inputs_sha256']
                       and c['network_sha256'] == entry['network_sha256']), None)
-        if match is None or set(entry['scenario_ids']) != set(match['case_ids']):
+        if (match is None or len(entry['scenario_ids']) != 6
+                or set(entry['scenario_ids']) != set(match['case_ids'])):
             raise ValueError('Runtime does not identify its complete active case set')
         if match['id'] in matched:
             raise ValueError('Duplicate active representation under different runtime names')

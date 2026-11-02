@@ -205,3 +205,260 @@ def test_report_keeps_static_evidence_when_budget_censors(tmp_path):
         run(output, [], 1)
     with pytest.raises(ValueError):
         run(tmp_path / 'bad', [], float('nan'))
+
+
+def test_terminal_assistance_after_shift_is_reported_once_only_at_horizon(fixture_environment):
+    env = fixture_environment
+    scenario = copy.deepcopy(env._scenario)
+    scenario['horizon_minutes'] = 3
+    next(unit for unit in scenario['resources'] if unit['id'] == 'engine-1')['duty_end_at'] = 1
+    records = [copy.deepcopy(env._audit[0])]
+    for minute in (1, 2, 3):
+        record = copy.deepcopy(records[-1])
+        record.update(minute=minute, new_footprint=[], applied_work=[])
+        record['resources']['engine-1']['state'] = 'needs_assistance'
+        records.append(record)
+    result = audit_case(scenario, env.inputs, env.network, records, BOUNDS)
+    findings = [item for item in result['findings'] if item['resource'] == 'engine-1'
+                and item['code'] == 'terminal_assistance_after_shift']
+    assert len(findings) == 1 and findings[0]['category'] == 'unsupported'
+    result = audit_case(scenario, env.inputs, env.network, records[:-1], BOUNDS)
+    assert not any(item['code'] == 'terminal_assistance_after_shift' for item in result['findings'])
+    # A prior late return is already flagged; do not double-count that unit.
+    records[2]['resources']['engine-1']['state'] = 'returning'
+    result = audit_case(scenario, env.inputs, env.network, records, BOUNDS)
+    assert sum(item['resource'] == 'engine-1' and item['code'] in (
+        'terminal_assistance_after_shift', 'recovery_after_shift_end',
+        'recovery_after_shift_end_egress_unavailable') for item in result['findings']) == 1
+
+
+@pytest.mark.parametrize('blocked_state', ['returning', None, 'travel'])
+def test_terminal_blocked_return_and_assistance_at_shift_equality(fixture_environment, blocked_state):
+    env = fixture_environment
+    scenario = copy.deepcopy(env._scenario)
+    scenario['horizon_minutes'] = 3
+    unit = next(item for item in scenario['resources'] if item['id'] == 'engine-1')
+    unit['duty_end_at'] = 3
+    records = [copy.deepcopy(env._audit[0])]
+    for minute in (1, 2, 3):
+        record = copy.deepcopy(records[-1])
+        record.update(minute=minute, new_footprint=[], applied_work=[])
+        record['resources']['engine-1']['state'] = 'returning' if minute == 1 else 'blocked'
+        record['resources']['engine-1']['blocked_state'] = blocked_state if minute >= 2 else None
+        records.append(record)
+    result = audit_case(scenario, env.inputs, env.network, records, BOUNDS)
+    found = [item for item in result['findings'] if item['code'] == 'terminal_return_blocked_at_shift_end'
+             and item['resource'] == 'engine-1']
+    assert len(found) == (0 if blocked_state == 'travel' else 1)
+    if found:
+        assert found[0]['category'] == 'unsupported'
+    records[-1]['resources']['engine-1'].update(state='needs_assistance', blocked_state=None)
+    result = audit_case(scenario, env.inputs, env.network, records, BOUNDS)
+    assert sum(item['code'] == 'terminal_assistance_after_shift' and item['resource'] == 'engine-1'
+               for item in result['findings']) == 1
+    unit['duty_end_at'] = 4
+    result = audit_case(scenario, env.inputs, env.network, records, BOUNDS)
+    assert not any(item['code'] == 'terminal_assistance_after_shift' and item['resource'] == 'engine-1'
+                   for item in result['findings'])
+
+
+def test_legacy_audit_fields_stay_unchanged_and_v2_records_blocked_state(fixture_environment):
+    env = fixture_environment
+    expected = {'state', 'position', 'water_litres', 'work_remaining',
+                'total_work_remaining', 'fuel_minutes', 'due_at', 'duty_end_at'}
+    assert set(env._audit[0]['resources']['engine-1']) == expected
+    env.ops.resources['engine-1'].update(state='blocked', blocked_state='returning')
+    env.minute = 1
+    env._record()
+    assert set(env._audit[-1]['resources']['engine-1']) == expected
+    env._scenario['profile']['version'] = 'wildfire-incident-day-realmap-development-profile-v2'
+    env.minute = 2
+    env._record()
+    recorded = env._audit[-1]['resources']['engine-1']
+    assert set(recorded) == expected | {'blocked_state', 'return_recovery_preflight_at'}
+    assert recorded['return_recovery_preflight_at'] is None
+    assert recorded['blocked_state'] == 'returning'
+    env.ops.resources['engine-1']['return_recovery_preflight_at'] = 3
+    env.minute = 3
+    env._record()
+    assert env._audit[-1]['resources']['engine-1']['return_recovery_preflight_at'] == 3
+    env.minute = 4
+    env._record()
+    assert env._audit[-1]['resources']['engine-1']['return_recovery_preflight_at'] is None
+
+
+@pytest.mark.parametrize('state,at_base,profile,duty,expected', [
+    ('travel', False, 'wildfire-incident-day-realmap-development-profile-v2', 3, True),
+    ('travel', False, 'wildfire-incident-day-realmap-development-profile-v2', 2, True),
+    ('travel', False, 'wildfire-incident-day-realmap-development-profile-v2', 4, False),
+    ('travel', True, 'wildfire-incident-day-realmap-development-profile-v2', 3, False),
+    ('travel', False, 'wildfire-incident-day-realmap-development-profile-v1', 3, False),
+    ('returning', False, 'wildfire-incident-day-realmap-development-profile-v2', 3, False),
+])
+def test_v2_terminal_outbound_blocked_away_from_base(fixture_environment, state, at_base, profile, duty, expected):
+    env = fixture_environment
+    scenario = copy.deepcopy(env._scenario)
+    scenario['horizon_minutes'] = 3
+    scenario['profile']['version'] = profile
+    unit = next(item for item in scenario['resources'] if item['id'] == 'engine-1')
+    unit['duty_end_at'] = duty
+    records = [copy.deepcopy(env._audit[0])]
+    for minute in (1, 2, 3):
+        record = copy.deepcopy(records[-1])
+        record.update(minute=minute, new_footprint=[], applied_work=[])
+        resource = record['resources']['engine-1']
+        resource.update(state='blocked', blocked_state=state,
+                        position=unit['base_position'][:] if at_base else
+                                 [unit['base_position'][0] + 100, unit['base_position'][1]])
+        records.append(record)
+    result = audit_case(scenario, env.inputs, env.network, records, BOUNDS)
+    found = [item for item in result['findings'] if item['code'] == 'terminal_outbound_blocked_at_shift_end'
+             and item['resource'] == 'engine-1']
+    assert len(found) == int(expected)
+    if found:
+        assert found[0]['category'] == 'unsupported' and found[0]['minute'] == 3
+
+
+@pytest.mark.parametrize('kind,expected', [('crew', True), ('aircraft', False)])
+def test_terminal_outbound_finding_is_scoped_to_ground_resources(fixture_environment, kind, expected):
+    env = fixture_environment
+    scenario = copy.deepcopy(env._scenario)
+    scenario.update(horizon_minutes=1)
+    scenario['profile']['version'] = 'wildfire-incident-day-realmap-development-profile-v2'
+    unit = next(item for item in scenario['resources'] if item['id'] == 'engine-1')
+    unit.update(kind=kind, duty_end_at=1)
+    first = copy.deepcopy(env._audit[0])
+    last = copy.deepcopy(first)
+    last.update(minute=1, new_footprint=[], applied_work=[])
+    last['resources']['engine-1'].update(state='blocked', blocked_state='travel',
+        position=[unit['base_position'][0] + 100, unit['base_position'][1]])
+    result = audit_case(scenario, env.inputs, env.network, [first, last], BOUNDS)
+    assert any(item['code'] == 'terminal_outbound_blocked_at_shift_end' and item['resource'] == 'engine-1'
+               for item in result['findings']) is expected
+
+
+def test_stationary_retry_preflight_explains_v2_late_recovery_across_shift_boundary():
+    from envs.wildfire_response.incident_day.plausibility import recovery_overrun_finding
+    unit = {'duty_end_at': 2}
+    profile = {'require_return_within_shift': True,
+               'version': 'wildfire-incident-day-realmap-development-profile-v2'}
+    def record(state, blocked_state=None, position=(100, 100)):
+        return {'resources': {'u': {'state': state, 'blocked_state': blocked_state, 'position': list(position)}}}
+    report = {'kind': 'egress_unavailable', 'observed_at': 1,
+              'payload': {'resource_id': 'u', 'position': [100, 100]}}
+    # An unavailable return becomes a stationary one-tick preflight at the
+    # shift boundary, then moves on the following tick.
+    records = [record('available'), record('needs_assistance'), record('blocked', 'returning'),
+               record('returning', position=(101, 100))]
+    records[2]['resources']['u']['return_recovery_preflight_at'] = 2
+    result = recovery_overrun_finding('u', unit, 3, records, [report], profile)
+    assert result['code'] == 'recovery_after_shift_end_egress_unavailable'
+    assert result['category'] == 'unsupported'
+    # The same preflight may occur immediately after the shift ends.
+    records = [record('available'), record('needs_assistance'), record('needs_assistance'),
+               record('blocked', 'returning'), record('returning', position=(101, 100))]
+    records[3]['resources']['u']['return_recovery_preflight_at'] = 3
+    assert recovery_overrun_finding('u', unit, 4, records, [report], profile)['category'] == 'unsupported'
+    # Both successive blocked ticks have distinct current-tick evidence.
+    records[2] = record('blocked', 'returning')
+    records[2]['resources']['u']['return_recovery_preflight_at'] = 2
+    assert recovery_overrun_finding('u', unit, 4, records, [report], profile)['category'] == 'unsupported'
+
+
+@pytest.mark.parametrize('corruption', ['movement', 'wrong_blocked_state', 'active', 'missing_marker', 'stale_marker', 'stale_consecutive',
+                                        'no_report', 'late_report', 'different_report_position', 'legacy'])
+def test_retry_preflight_does_not_explain_unproven_late_recovery(corruption):
+    from envs.wildfire_response.incident_day.plausibility import recovery_overrun_finding
+    unit = {'duty_end_at': 2}
+    profile = {'require_return_within_shift': True,
+               'version': 'wildfire-incident-day-realmap-development-profile-v2'}
+    def record(state, blocked_state=None, position=(100, 100)):
+        return {'resources': {'u': {'state': state, 'blocked_state': blocked_state, 'position': list(position)}}}
+    records = [record('available'), record('needs_assistance'), record('blocked', 'returning'),
+               record('returning', position=(101, 100))]
+    report = {'kind': 'egress_unavailable', 'observed_at': 1,
+              'payload': {'resource_id': 'u', 'position': [100, 100]}}
+    records[2]['resources']['u']['return_recovery_preflight_at'] = 2
+    if corruption == 'movement': records[2]['resources']['u']['position'][0] += 1
+    elif corruption == 'wrong_blocked_state': records[2]['resources']['u']['blocked_state'] = 'travel'
+    elif corruption == 'active': records[2]['resources']['u']['state'] = 'working'
+    elif corruption == 'stale_consecutive':
+        records.insert(2, record('blocked', 'returning'))
+        records[2]['resources']['u']['return_recovery_preflight_at'] = 2
+        # The second blocked tick carries a stale marker from the prior tick.
+    elif corruption == 'missing_marker': records[2]['resources']['u'].pop('return_recovery_preflight_at')
+    elif corruption == 'stale_marker': records[2]['resources']['u']['return_recovery_preflight_at'] = 1
+    elif corruption == 'late_report': report['observed_at'] = 3
+    elif corruption == 'different_report_position': report['payload']['position'] = [200, 100]
+    elif corruption == 'legacy': profile['version'] = 'wildfire-incident-day-realmap-development-profile-v1'
+    reports = [] if corruption == 'no_report' else [report]
+    result = recovery_overrun_finding('u', unit, len(records) - 1, records, reports, profile)
+    assert result['code'] == 'recovery_after_shift_end' and result['category'] == 'contradiction'
+
+
+@pytest.mark.parametrize('case,expected', [
+    ('documented', 'recovery_after_shift_end_egress_unavailable'),
+    ('no_report', 'recovery_after_shift_end'),
+    ('stale_preflight', 'recovery_after_shift_end'),
+    ('moved_while_waiting', 'recovery_after_shift_end'),
+    ('on_time', None),
+    ('legacy', None),
+])
+def test_short_blocked_return_arrival_after_shift_is_audited(fixture_environment, case, expected):
+    env = fixture_environment
+    scenario = copy.deepcopy(env._scenario)
+    scenario['horizon_minutes'] = 3
+    scenario['profile'].update(version='wildfire-incident-day-realmap-development-profile-v2',
+                               require_return_within_shift=True)
+    unit = next(item for item in scenario['resources'] if item['id'] == 'engine-1')
+    unit['duty_end_at'] = 3 if case == 'on_time' else 2
+    base = unit['base_position'][:]
+    away = [base[0] + 100, base[1]]
+    records = [copy.deepcopy(env._audit[0])]
+    for minute, state in ((1, 'needs_assistance'), (2, 'blocked'), (3, 'off_duty')):
+        record = copy.deepcopy(records[-1])
+        record.update(minute=minute, new_footprint=[], applied_work=[])
+        record['resources']['engine-1'].update(
+            state=state, position=base[:] if minute == 3 else away[:],
+            blocked_state='returning' if minute == 2 else None,
+            return_recovery_preflight_at=2 if minute == 2 else None)
+        records.append(record)
+    report = dict(kind='egress_unavailable', observed_at=1, reported_at=1, received_at=2,
+                  payload={'resource_id': 'engine-1', 'position': away[:]})
+    if case == 'stale_preflight':
+        records[2]['resources']['engine-1']['return_recovery_preflight_at'] = 1
+    if case == 'moved_while_waiting':
+        records[2]['resources']['engine-1']['position'][0] += 1
+    if case == 'legacy':
+        scenario['profile']['version'] = 'wildfire-incident-day-realmap-development-profile-v1'
+    result = audit_case(scenario, env.inputs, env.network, records, BOUNDS,
+                        reports=[] if case == 'no_report' else [report])
+    findings = [item for item in result['findings'] if item['resource'] == 'engine-1'
+                and item['code'] in ('recovery_after_shift_end', 'recovery_after_shift_end_egress_unavailable')]
+    assert [item['code'] for item in findings] == ([] if expected is None else [expected])
+    if findings:
+        assert findings[0]['minute'] == 3
+        assert findings[0]['category'] == ('unsupported' if case == 'documented' else 'contradiction')
+
+
+def test_short_late_arrival_does_not_duplicate_an_existing_overrun(fixture_environment):
+    env = fixture_environment
+    scenario = copy.deepcopy(env._scenario)
+    scenario['horizon_minutes'] = 4
+    scenario['profile']['version'] = 'wildfire-incident-day-realmap-development-profile-v2'
+    unit = next(item for item in scenario['resources'] if item['id'] == 'engine-1')
+    unit['duty_end_at'] = 1
+    base = unit['base_position'][:]
+    away = [base[0] + 100, base[1]]
+    records = [copy.deepcopy(env._audit[0])]
+    for minute, state in ((1, 'available'), (2, 'returning'), (3, 'blocked'), (4, 'off_duty')):
+        record = copy.deepcopy(records[-1])
+        record.update(minute=minute, new_footprint=[], applied_work=[])
+        record['resources']['engine-1'].update(state=state, position=base[:] if minute == 4 else away[:],
+            blocked_state='returning' if minute == 3 else None,
+            return_recovery_preflight_at=3 if minute == 3 else None)
+        records.append(record)
+    result = audit_case(scenario, env.inputs, env.network, records, BOUNDS)
+    assert sum(item['resource'] == 'engine-1' and item['code'] in (
+        'recovery_after_shift_end', 'recovery_after_shift_end_egress_unavailable')
+        for item in result['findings']) == 1

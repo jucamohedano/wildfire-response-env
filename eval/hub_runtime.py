@@ -159,6 +159,18 @@ def verify_package(data_dir):
         ids = entry['scenario_ids']
         if type(ids) is not list or any(type(item) is not str for item in ids) or len(ids) != len(active) or set(ids) != set(active):
             raise ValueError('Runtime scenario IDs differ from active set')
+        if 'additional_scenario_ids' in entry:
+            extra = entry['additional_scenario_ids']
+            catalogs = [c for c in registry()['catalogs']
+                        if c.get('id') == 'incident_day_realmap_development_v3'
+                        and c.get('status') == 'active_development'
+                        and (c.get('inputs_sha256'), c.get('network_sha256')) ==
+                            (entry['inputs_sha256'], entry['network_sha256'])]
+            if (len(catalogs) != 1 or type(extra) is not list
+                    or any(type(item) is not str for item in extra)
+                    or len(extra) != len(catalogs[0]['case_ids'])
+                    or set(extra) != set(catalogs[0]['case_ids']) or set(extra) & set(ids)):
+                raise ValueError('Additional scenario IDs differ from pinned development catalog')
     return manifest
 
 
@@ -196,7 +208,7 @@ def run_episode(env, entry, *, policy='passive', case_id=None, wall_seconds=300,
         raise ValueError('Invalid episode limits or policy')
     if type(wall_seconds) not in (int, float) or not math.isfinite(wall_seconds) or wall_seconds <= 0:
         raise ValueError('wall_seconds must be finite and positive')
-    ids = entry['scenario_ids']
+    ids = entry['scenario_ids'] + entry.get('additional_scenario_ids', [])
     if case_id is None:
         case_id = ids[0]
     if case_id not in ids:

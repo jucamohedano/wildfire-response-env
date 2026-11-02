@@ -31,7 +31,7 @@ except ModuleNotFoundError as error:
         step_count: int = 0
 
 from wildfire_core.incident_day import ALL_CASE_IDS, REAL_MAP_CASE_IDS, REAL_MAP_V2_CASE_IDS, IncidentDayEnv
-from wildfire_core.catalog_lifecycle import active_day_case_ids, select_day_case_id
+from wildfire_core.catalog_lifecycle import active_day_case_ids, select_day_case_id, registry
 
 
 Identifier = Annotated[str, Field(strict=True, min_length=1, max_length=128, pattern=r'^[A-Za-z0-9_.:-]+$')]
@@ -217,6 +217,11 @@ class IncidentDayEnvironment(Environment):
             identifiers = active_day_case_ids(inputs_hash, network_hash)
         except ValueError:
             identifiers = ()
+        for catalog in registry()['catalogs']:
+            if (catalog['id'] == 'incident_day_realmap_development_v3'
+                    and catalog['status'] == 'active_development'
+                    and (catalog['inputs_sha256'], catalog['network_sha256']) == (inputs_hash, network_hash)):
+                identifiers = tuple(identifiers) + tuple(catalog['case_ids'])
         if self.allow_archived_scenarios:
             supported = []
             for identifier in ALL_CASE_IDS:

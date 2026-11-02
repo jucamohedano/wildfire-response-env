@@ -21,7 +21,10 @@ def counterfactual_case(env):
     details = {}
     demonstrated = False
     if family == 'quiet_handover':
-        if scenario['version'] == 'wildfire-incident-day-realmap-scenarios-v2':
+        if scenario['version'] in ('wildfire-incident-day-realmap-scenarios-v2',
+                                   'wildfire-incident-day-realmap-development-scenarios-v1',
+                                   'wildfire-incident-day-realmap-development-scenarios-v2',
+                                   'wildfire-incident-day-realmap-development-scenarios-v3'):
             from .real_map_acceptance import ready_route_work_return_probe
             probe = ready_route_work_return_probe(env)
             return dict(status=probe['status'], details=probe,
@@ -44,8 +47,8 @@ def counterfactual_case(env):
                        recovery_does_not_establish_suppression_access=True)
         demonstrated = bool(useful or recovery)
     elif family == 'wind_access_loss':
-        event_minute = 15 if scenario['profile'].get('realmap_v2_wind_coverage') else 180
-        event = next(item for item in events if item['kind'] == 'wind' and item['minute'] == event_minute)
+        from .real_map_acceptance import wind_access_event
+        event = wind_access_event(scenario)
         before, after = scenario['wind'], event['wind']
         before_safe = {identifier for identifier, position in env.network.nodes.items()
                        if env.router.safe_position(position, burning, before, mode='crew')}
@@ -196,11 +199,29 @@ def recovery_overrun_finding(identifier, unit, minute, audit, reports, profile):
             if (report.get('kind') != 'egress_unavailable' or report.get('payload', {}).get('resource_id') != identifier
                     or type(observed) is not int or not 0 <= observed <= deadline < minute):
                 continue
-            if all(record['resources'][identifier]['state'] == 'needs_assistance'
-                   for record in audit[observed:minute]):
+            waiting = [record['resources'][identifier] for record in audit[observed:minute]]
+            explained = bool(waiting) and all(item['state'] == 'needs_assistance' for item in waiting)
+            if profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2' and waiting:
+                # Each blocked retry must carry the private evidence that its
+                # current-tick return preflight passed. Consecutive retries are
+                # possible if the prior preflight became unsafe on the next tick.
+                position = waiting[0]['position']
+                explained = (waiting[0]['state'] == 'needs_assistance'
+                    and all(math.dist(item['position'], position) <= 1e-6 for item in waiting)
+                    and all(item['state'] == 'needs_assistance' or
+                            (item['state'] == 'blocked' and item.get('blocked_state') == 'returning'
+                             and type(item.get('return_recovery_preflight_at')) is int
+                             and item['return_recovery_preflight_at'] == observed + index)
+                            for index, item in enumerate(waiting)))
+                reported_position = report.get('payload', {}).get('position')
+                if reported_position is not None:
+                    explained = explained and math.dist(reported_position, position) <= 1e-6
+            if explained:
+                detail = (f'Egress was reported unavailable at minute {observed}; the unit remained stationary awaiting recovery. '
+                          if profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2' else
+                          f'Egress was reported unavailable at minute {observed}; the unit remained in assistance until late recovery. ')
                 return finding('recovery_after_shift_end_egress_unavailable',
-                    f'Egress was reported unavailable at minute {observed}; the unit remained in assistance until late recovery. '
-                    'This is an unresolved modeled access exception, not proof of an unexpected fire or real-world impossibility.',
+                    detail + 'This is an unresolved modeled access exception, not proof of an unexpected fire or real-world impossibility.',
                     minute, identifier, category='unsupported')
     return finding('recovery_after_shift_end', 'Return travel continues beyond the declared shift; safe recovery must still continue.', minute, identifier)
 
@@ -247,6 +268,20 @@ def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), 
                 findings.append(finding('active_after_shift_end', 'Resource is active after its declared shift end.', minute, identifier))
             if (current['state'] == 'returning' and minute > unit['duty_end_at']
                     and (prior is None or prior['state'] != 'returning' or minute == unit['duty_end_at'] + 1)):
+                findings.append(recovery_overrun_finding(identifier, unit, minute, audit, reports, profile))
+            # A short preflighted return can arrive in one tick, transitioning
+            # directly from blocked/returning to off_duty without an audited
+            # returning state. Do not require a marker here: missing evidence
+            # must still surface as an unexplained late return.
+            if (profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2'
+                    and unit['kind'] in ('engine', 'crew') and minute > unit['duty_end_at']
+                    and prior is not None and prior['state'] == 'blocked'
+                    and prior.get('blocked_state') == 'returning' and current['state'] == 'off_duty'
+                    and math.dist(prior['position'], unit['base_position']) > 0.01
+                    and math.dist(current['position'], unit['base_position']) <= 0.01
+                    and not any(item.get('resource') == identifier and item['code'] in (
+                        'recovery_after_shift_end', 'recovery_after_shift_end_egress_unavailable')
+                        for item in findings)):
                 findings.append(recovery_overrun_finding(identifier, unit, minute, audit, reports, profile))
             if prior is None or prior['state'] != current['state']:
                 if prior is not None:
@@ -299,6 +334,38 @@ def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), 
                 daylight = solar_daylight(datetime.fromisoformat(scenario['start_utc']) + timedelta(minutes=minute), longitude, latitude)
                 if not daylight or math.hypot(*record['wind']) > profile['aircraft_max_wind']:
                     findings.append(finding('air_work_outside_exercise_window', 'Aircraft work outside modeled daylight or wind window.', minute, identifier))
+    if audit[-1]['minute'] == scenario['horizon_minutes']:
+        overrun_codes = {'recovery_after_shift_end', 'recovery_after_shift_end_egress_unavailable',
+                         'terminal_assistance_after_shift', 'terminal_return_blocked_at_shift_end',
+                         'terminal_outbound_blocked_at_shift_end'}
+        already_reported = {item.get('resource') for item in findings if item.get('code') in overrun_codes}
+        for identifier, unit in units.items():
+            current = audit[-1]['resources'][identifier]
+            if audit[-1]['minute'] < unit['duty_end_at'] or identifier in already_reported:
+                continue
+            if current['state'] == 'needs_assistance':
+                findings.append(finding('terminal_assistance_after_shift',
+                    'Resource remains in assistance at or beyond its shift end at the episode horizon; '
+                    'safe recovery is unresolved.', audit[-1]['minute'], identifier, category='unsupported'))
+            elif current['state'] == 'blocked':
+                blocked_state = current.get('blocked_state')
+                if blocked_state is None:
+                    # Older audits did not record blocked_state; infer only when
+                    # the contiguous blocked interval follows a return.
+                    previous = next((row['resources'][identifier]['state'] for row in reversed(audit[:-1])
+                                     if row['resources'][identifier]['state'] != 'blocked'), None)
+                    blocked_state = previous if previous in ('returning', 'travel') else None
+                if blocked_state == 'returning':
+                    findings.append(finding('terminal_return_blocked_at_shift_end',
+                        'Return remains blocked at or beyond the shift end at the episode horizon; '
+                        'safe recovery is unresolved.', audit[-1]['minute'], identifier, category='unsupported'))
+                elif (blocked_state == 'travel' and unit['kind'] in ('engine', 'crew')
+                      and profile.get('version') == 'wildfire-incident-day-realmap-development-profile-v2'
+                      and math.dist(current['position'], unit['base_position']) > 0.01):
+                    findings.append(finding('terminal_outbound_blocked_at_shift_end',
+                        'Ground resource remains blocked outbound away from base at or beyond its shift end '
+                        'at the episode horizon; safe recovery is unresolved.',
+                        audit[-1]['minute'], identifier, category='unsupported'))
     if max_front_speed > bounds['maximum_screening_fire_front_kph']:
         findings.append(finding('fire_front_screen', f'Coarse radial activation estimate {max_front_speed:.2f} km/h exceeds assumed screening bound; not a measured front speed.', category='unsupported'))
     for report in reports:
@@ -328,9 +395,11 @@ def audit_case(scenario, inputs, network, audit, bounds, reports=(), orders=(), 
                        or (event['kind'] == 'center_unavailable' and item['kind'] == 'status_response'
                            and item['source'] == event['center_id'] and item['payload'].get('available') is False)]
         event_evidence.append(dict(event=event, status='constraint_evidence_observed' if consequence else 'event_only_or_no_constraint_evidence', reports=matching))
-        if scenario['profile'].get('realmap_v2_wind_coverage') and event['kind'] == 'wind' and event['minute'] == 15:
-            from .real_map_acceptance import wind_event_coverage
-            event_evidence[-1].update(wind_event_coverage(event, inputs, audit, reports))
+        if (scenario['profile'].get('realmap_v2_wind_coverage')
+                and scenario['family'] == 'wind_access_loss' and event['kind'] == 'wind'):
+            from .real_map_acceptance import wind_access_event, wind_event_coverage
+            if event == wind_access_event(scenario):
+                event_evidence[-1].update(wind_event_coverage(event, inputs, audit, reports))
         if (scenario['profile'].get('causal_coverage')
                 and event['kind'] in ('access_restriction', 'destination_closed')):
             from .scenario_coverage import event_coverage
