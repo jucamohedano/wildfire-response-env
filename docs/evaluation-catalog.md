@@ -132,3 +132,14 @@ python -m eval.render_evaluation_report \
   --report /var/tmp/my-evaluation-results/report.json \
   --output /var/tmp/my-evaluation-results/review.html
 ```
+
+The `passive-dispatcher-operations-v1` qualification contract requires aggregate
+evidence for situation/report reads, approach/destination lookups, committed
+orders, status requests, bounded waits, resource requests and authorizations,
+evacuation and status responses. Per-cell movement, capacity, stock, timing,
+privacy and replay checks remain mandatory. Draft checks, explicit releases and
+shelter orders are optional for these two baselines; the original four-policy
+development matrix's all-operation coverage gate remains unchanged. This
+qualification contract is not a requirement that an evaluated model use every
+tool. Before reset/restore proceeds, the runner checks each compiled scenario's
+seed, digest and curation identity against the frozen Parquet task row.

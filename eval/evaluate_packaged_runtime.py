@@ -2,6 +2,12 @@
 
 Private evidence and checkpoints stay under private/. Evaluation is not training,
 independent historical incidents, or evidence of physical calibration.
+
+Baseline validation contract passive-dispatcher-operations-v1 requires aggregate
+evidence of the two scripts' applicable operations, not every tool in every
+cell. Draft checks, releases and shelter are optional: these scripts do not
+promise them. Per-cell movement/capacity/finite-stock audits still apply. This
+does not replace the source matrix's four-policy all-operation contract.
 """
 import argparse
 import copy
@@ -15,7 +21,7 @@ import time
 
 from envs.wildfire_response.incident_day.environment import implementation_digest
 from wildfire_core.catalog_lifecycle import registry
-from eval.hub_runtime import make_environment, verify_package
+from eval.hub_runtime import make_environment, verify_package, _read
 from eval.incident_day_action_checks import audit_runtime
 from eval.incident_day_movement_checks import MovementObserver
 from eval.incident_day_policies import make_policy
@@ -28,6 +34,13 @@ from eval.validate_source_runtime_matrix import (
 VERSION = 'wildfire-packaged-evaluation-v1'
 CATALOG_ID = 'incident_day_evaluation_v1'
 POLICIES = ('passive', 'dispatcher')
+BASELINE_COVERAGE_VERSION = 'passive-dispatcher-operations-v1'
+BASELINE_REQUIRED_OPERATIONS = (
+    'get_situation', 'get_reports', 'route_options', 'evacuation_options',
+    'commit_orders', 'request_status', 'advance_time', 'requests', 'authorizations',
+    'evacuate', 'status_requests', 'waits',
+)
+BASELINE_OPTIONAL_OPERATIONS = ('check_action', 'releases', 'shelter')
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -64,6 +77,35 @@ def _identity(cell):
     return tuple(cell[key] for key in ('runtime_id', 'case_id', 'policy'))
 
 
+def evaluation_rows(data_dir, manifest):
+    """Read the inventory-pinned evaluation table, independent of compiled cases."""
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    path = manifest['tables']['evaluation']
+    entry = next(item for item in manifest['files'] if item['path'] == path)
+    raw = _read(Path(data_dir), path, entry['bytes'])
+    if len(raw) != entry['bytes'] or hashlib.sha256(raw).hexdigest() != entry['sha256']:
+        raise ValueError('Frozen evaluation table changed')
+    rows = pq.read_table(pa.BufferReader(raw)).to_pylist()
+    result = {(row['runtime_id'], row['task_id']): row for row in rows}
+    expected = {(runtime_id, identifier) for runtime_id, runtime in manifest['runtimes'].items()
+                for identifier in runtime.get('evaluation_scenario_ids', [])}
+    if len(result) != len(rows) or set(result) != expected:
+        raise ValueError('Frozen evaluation row identities differ')
+    return result
+
+
+def bind_scenario(env, identity, row):
+    scenario = env._scenario
+    if (row.get('runtime_id') != identity['runtime_id'] or row.get('task_id') != identity['case_id']
+            or scenario.get('id') != identity['case_id']
+            or type(row.get('episode_seed')) is not int or type(scenario.get('seed')) is not int
+            or scenario['seed'] != row['episode_seed']
+            or scenario.get('sha256') != row.get('scenario_sha256')
+            or checksum({key: value for key, value in scenario.items() if key != 'sha256'}) != row['scenario_sha256']):
+        raise ValueError('Compiled or restored scenario differs from frozen evaluation row')
+
+
 def refresh_report(report):
     cells, expected = report['cells'], report['expected_cells']
     if (len(cells) != 48 or [_identity(cell) for cell in cells] != [_identity(cell) for cell in expected]
@@ -93,6 +135,16 @@ def refresh_report(report):
         elif (uninspectable_findings(cell.get('findings', []))
               or uninspectable_coverage(cell.get('operation_coverage', {}))):
             statuses.add('blocked')
+    missing = [name for name in BASELINE_REQUIRED_OPERATIONS if not any(
+        cell.get('operation_coverage', {}).get(name, {}).get('status') == 'complete'
+        and type(cell['operation_coverage'][name].get('observed')) is int
+        and cell['operation_coverage'][name]['observed'] > 0 for cell in cells)]
+    report['baseline_coverage_contract'] = dict(version=BASELINE_COVERAGE_VERSION,
+        required_operations=list(BASELINE_REQUIRED_OPERATIONS),
+        optional_operations=list(BASELINE_OPTIONAL_OPERATIONS), unobserved_required=missing,
+        scope='Aggregate scripted-baseline validation; per-cell safety audits apply independently')
+    if missing and not statuses & {'not_run', 'incomplete'}:
+        statuses.add('blocked')
     report['status'] = ('failed' if 'failed' in statuses else 'blocked' if 'blocked' in statuses
                         else 'incomplete' if statuses & {'not_run', 'incomplete'} else 'complete')
     report['summary'] = dict(expected=48, evaluated=sum(cell['status'] in ('complete', 'blocked', 'failed')
@@ -206,6 +258,7 @@ def run(data_dir, output, *, runtime_id='es-ma-2021', wall_seconds=1800, max_cel
             raise ValueError(name + ' must be positive')
     manifest = verify_package(data_dir)
     expected = expected_cells(manifest, runtime_id)
+    rows = evaluation_rows(data_dir, manifest)
     pins = dict(implementation_sha256=implementation_digest(), lifecycle_sha256=registry()['sha256'],
                 package_sha256=checksum(manifest), validator_sha256=validator_digest())
     requested = dict(implementation_sha256=expected_implementation_sha256,
@@ -267,6 +320,7 @@ def run(data_dir, output, *, runtime_id='es-ma-2021', wall_seconds=1800, max_cel
             policy = make_policy(identity['policy'])
             if saved is None:
                 observation, _ = env.reset(identity['case_id'])
+                bind_scenario(env, identity, rows[(runtime_id, identity['case_id'])])
                 calls, checked, resume_checks = [], set(), []
                 query_check = _query_independence(env)
                 observer = MovementObserver(env)
@@ -274,6 +328,7 @@ def run(data_dir, output, *, runtime_id='es-ma-2021', wall_seconds=1800, max_cel
                 public.get_situation(); public.get_reports(limit=20)
             else:
                 observation = env.restore(saved['environment'])
+                bind_scenario(env, identity, rows[(runtime_id, identity['case_id'])])
                 policy.restore(saved['policy'])
                 observer = MovementObserver(env); observer.restore(saved['movement_observer'])
                 calls, checked = saved['calls'], set(saved['checked'])

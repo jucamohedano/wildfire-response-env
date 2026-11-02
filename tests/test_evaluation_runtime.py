@@ -24,6 +24,12 @@ def tiny(monkeypatch):
         return (IncidentDayEnv(inputs, network, expected_inputs_sha256=inputs['sha256'],
                 expected_network_sha256=network['sha256']), copy.deepcopy(entry))
     monkeypatch.setattr(runner, 'make_environment', make)
+    reference, _ = make()
+    reference.reset(ids[0])
+    rows = {('fixture', identifier): dict(runtime_id='fixture', task_id=identifier,
+        episode_seed=reference._scenario['seed'], scenario_sha256=reference._scenario['sha256'])
+        for identifier in ids}
+    monkeypatch.setattr(runner, 'evaluation_rows', lambda *args: copy.deepcopy(rows))
     return manifest
 
 
@@ -137,3 +143,71 @@ def test_gate_keeps_unsupported_and_score_components(monkeypatch, tiny, category
     assert report['status'] == status
     serialized = json.dumps(report)
     assert 'generation_seed' not in serialized and 'configuration_group' not in serialized
+
+
+@pytest.mark.parametrize('fault', ['seed', 'digest', 'content'])
+def test_compiled_case_must_match_frozen_row_before_policy_execution(tiny, tmp_path, monkeypatch, fault):
+    make = runner.make_environment
+    executed = []
+    def corrupt(*args, **kwargs):
+        env, entry = make(*args, **kwargs)
+        reset = env.reset
+        def wrong_reset(*reset_args):
+            observation, info = reset(*reset_args)
+            if fault == 'seed': env._scenario['seed'] += 1
+            elif fault == 'digest': env._scenario['sha256'] = '0' * 64
+            else: env._scenario['profile']['ground_setup_minutes'] += 1
+            return observation, info
+        env.reset = wrong_reset
+        return env, entry
+    monkeypatch.setattr(runner, 'make_environment', corrupt)
+    monkeypatch.setattr(runner, 'commit', lambda *args: executed.append('commit'))
+    with pytest.raises(ValueError, match='frozen evaluation row'):
+        runner.run('fixture', tmp_path / fault, runtime_id='fixture', max_commands=1)
+    assert executed == []
+
+
+@pytest.mark.parametrize('fault', ['seed', 'configuration'])
+def test_resumed_case_is_bound_even_with_rehashed_checkpoint(tiny, tmp_path, monkeypatch, fault):
+    output = tmp_path / fault
+    runner.run('fixture', output, runtime_id='fixture', max_commands=1)
+    data = checkpoint(output)
+    frozen = data['live']['environment']
+    scenario = frozen['state']['_scenario']
+    if fault == 'seed': scenario['seed'] += 1
+    else: scenario['profile']['ground_setup_minutes'] += 1
+    scenario['sha256'] = runner.checksum({key: value for key, value in scenario.items() if key != 'sha256'})
+    frozen['sha256'] = runner.checksum({key: value for key, value in frozen.items() if key != 'sha256'})
+    data['sha256'] = runner.checksum({key: value for key, value in data.items() if key != 'sha256'})
+    (output / 'private/checkpoint.json.gz').write_bytes(gzip.compress(json.dumps(data).encode()))
+    executed = []
+    monkeypatch.setattr(runner, 'commit', lambda *args: executed.append('commit'))
+    with pytest.raises(ValueError, match='frozen evaluation row'):
+        runner.run('fixture', output, runtime_id='fixture', max_commands=1, resume=True)
+    assert executed == []
+
+
+def test_missing_aggregate_baseline_operation_blocks_without_requiring_optional_actions(tiny):
+    expected = runner.expected_cells(tiny, 'fixture')
+    coverage = {key: dict(status='complete', observed=1) for key in REQUIRED_COVERAGE}
+    for optional in runner.BASELINE_OPTIONAL_OPERATIONS:
+        coverage[optional] = dict(status='not_exercised', observed=0)
+    good = dict(status='complete', minute=1440, split='evaluation', training_eligible=False,
+        verification=dict(passed=True, exact_replay=True, independent_reward_agreement=True),
+        outcome=dict(score_eligible=True), query_independence=dict(passed=True), resume_checks=[{'passed': True}],
+        findings=[], operation_coverage=coverage)
+    report = dict(expected_cells=expected, cells=[dict(copy.deepcopy(good), **identity) for identity in expected])
+    runner.refresh_report(report)
+    assert report['status'] == 'complete'
+    assert report['baseline_coverage_contract']['version'] == 'passive-dispatcher-operations-v1'
+    assert set(report['baseline_coverage_contract']['optional_operations']) == {'check_action', 'releases', 'shelter'}
+    for cell in report['cells']:
+        cell['operation_coverage']['evacuate'] = dict(status='not_exercised', observed=0)
+    runner.refresh_report(report)
+    assert report['status'] == 'blocked'
+    assert report['baseline_coverage_contract']['unobserved_required'] == ['evacuate']
+    # Partial progress has not failed its aggregate contract merely because a
+    # later baseline cell has not yet exercised evacuation.
+    report['cells'][-1]['status'] = 'not_run'
+    runner.refresh_report(report)
+    assert report['status'] == 'incomplete'

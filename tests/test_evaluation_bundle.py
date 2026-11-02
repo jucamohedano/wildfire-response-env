@@ -64,6 +64,10 @@ def test_opt_in_has_exact_catalog_and_configuration_metadata(evaluation_source):
     assert all(row['split'] == 'evaluation' and row['training_eligible'] is False for row in rows)
     assert {row['generation_seed'] for row in rows} == {20261102}
     assert {row['episode_seed'] for row in rows} == {42}
+    from eval.evaluate_packaged_runtime import evaluation_rows
+    frozen = evaluation_rows(output, result)
+    assert set(frozen) == {('fixture', identifier) for identifier in ids}
+    assert frozen[('fixture', ids[0])]['episode_seed'] == 42
     groups = {row['configuration_group'] for row in rows}
     assert len(groups) == 6
     assert all(sum(row['configuration_group'] == group for row in rows) == 4 for group in groups)
