@@ -116,3 +116,12 @@ WILDFIRE_LOCAL_RUNTIME=/tmp/my-wildfire-development-bundle \
 ```
 
 A missing runtime or optional dependency can cause a skip; a skip is not a pass.
+
+Generate the private code/data/seed manifest for the same report:
+
+```bash
+python -m eval.write_source_matrix_repro \
+  --report /tmp/my-wildfire-source-matrix/report.json \
+  --data-dir /tmp/my-wildfire-development-bundle \
+  --output /tmp/my-wildfire-source-matrix/reproducibility.json
+```
