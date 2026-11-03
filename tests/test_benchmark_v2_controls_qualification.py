@@ -104,6 +104,7 @@ def qualification(tmp_path, monkeypatch):
         if reconcile:
             controls['expected_cells'] = [{key: item[key] for key in ('runtime_id', 'case_id', 'policy')}
                                           for item in controls['cells']]
+            controls['pins']['campaign_domain_sha256'] = cli.seal(controls['expected_cells'])
             statuses = {}
             for item in controls['cells']:
                 statuses[item['status']] = statuses.get(item['status'], 0) + 1
