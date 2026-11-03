@@ -25,6 +25,7 @@
     "require_all_expected_tasks_for_official_aggregate": true
   },
   "reference_kind": "best_observed_scripted_online",
+  "reference_candidates": ["dispatcher", "stress"],
   "reference_proven_optimal": false,
   "weak_active_registration": {
     "name": "conservative",

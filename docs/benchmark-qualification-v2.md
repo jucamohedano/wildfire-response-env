@@ -146,6 +146,38 @@ behavior zero and retains the requested 80/20 harm objective.
 
 ## Remaining release evidence
 
+### Private control campaign
+
+`eval.run_benchmark_v2_controls` runs the declared stress candidate on the
+privately selected tied case first, then the frozen conservative control on all
+24 cases. It reuses the existing per-cell validator and records matching policy
+receipts in each report and saved execution. It preserves the original runner,
+catalog, baselines and artifacts.
+
+```sh
+python -m eval.run_benchmark_v2_controls \
+  --data-dir /private/evaluation-pack \
+  --protocol data/benchmark_v2/protocol.json \
+  --expected-protocol-sha256 "$REVIEWED_PROTOCOL_SHA256" \
+  --expected-package-sha256 "$REVIEWED_PACKAGE_SHA256" \
+  --reference-task "$PRIVATE_TIED_TASK_ID" \
+  --output /private/controls --max-cells 1 --wall-seconds 180
+```
+
+Repeat the same command with `--resume` to continue serial batches. The runner
+checks available memory before heavy imports and watches its own child process
+group. It requires 4 GiB available RAM and 256 MiB free swap, limits address space
+to 3 GiB and group RSS to 1.5 GiB, and uses one CPU. A memory/budget hold is
+incomplete work, never a successful benchmark score. Resume retains environment,
+policy and observer state from the last committed checkpoint.
+
+Once the campaign finishes, add `--controls-report /private/controls/report.json`
+and `--expected-controls-report-sha256 "$REVIEWED_CONTROLS_SHA256"` to the
+qualification command, writing to a new directory. A verified better stress
+outcome may replace the best-observed reference; a tie does not create headroom.
+The conservative control must retain its declared receipt and genuinely execute
+operational orders. Missing runs or grades above 0.6 keep qualification blocked.
+
 Historical projections are not fresh model evaluations. Existing saved runs
 can establish raw accounting and reference headroom, but cannot establish the
 missing weak-active baseline or robustness across new seeds. Complete those
