@@ -1,0 +1,61 @@
+{
+  "version": "wildfire-benchmark-protocol-v2",
+  "status": "candidate_not_released",
+  "catalog_id": "incident_day_evaluation_v1",
+  "expected_tasks": 24,
+  "expected_families": 6,
+  "tasks_per_family": 4,
+  "objective": {
+    "version": "new-harm-cost-v1",
+    "population_weight": 0.8,
+    "burned_area_weight": 0.2
+  },
+  "grade": {
+    "version": "reference-improvement-v2",
+    "formula": "clip((passive_cost-agent_cost)/(passive_cost-reference_cost),0,1)",
+    "completion_bonus": 0,
+    "retain_unclipped_gain": true,
+    "ties": "retain lower raw weighted cost and reference_exceeded; do not claim optimum"
+  },
+  "qualification": {
+    "minimum_exposure_improvement_people": 1,
+    "minimum_equal_exposure_burn_improvement_cells": 1,
+    "maximum_weak_active_grade": 0.6,
+    "require_weak_active_reference_for_release": true,
+    "require_all_expected_tasks_for_official_aggregate": true
+  },
+  "reference_kind": "best_observed_scripted_online",
+  "reference_proven_optimal": false,
+  "weak_active_registration": {
+    "name": "conservative",
+    "factory": "eval.incident_day_policies:make_policy",
+    "configuration": {"name": "conservative"},
+    "source_sha256": "be3128d0cad03a1dc4e5d36bf602c16200ad24da0fd7e95b6e0232d93cbd2ee0",
+    "dependency_sha256": {
+      "baselines.py": "02c769c753908d7348ab0eea3fed83ca60362e68cba0b3e755cb8b1b6abffac1"
+    },
+    "implementation_sha256": "f1e9388cbdc01ea48c51ceda091e66a9ecb103718bf62f0dfe6b01cfd3166581",
+    "observation_sha256": "1ab2bffcf436743c66e4b739005161c3e8c33604c84fd241f6d220bc9b709aa7",
+    "interface_version": "wildfire-incident-day-ops-v3"
+  },
+  "operational_outcomes": "retain_verified_score_and_report_adverse_flags",
+  "legacy_reward_v2": "diagnostic_only_for_new_protocol",
+  "frozen_v1_results": "retain_without_relabeling_or_rescoring",
+  "training": false,
+  "publication": false,
+  "limitations": [
+    "Shared development landscape and parent fire seeds",
+    "Reference-normalization alone does not establish benchmark difficulty",
+    "No proven wildfire optimum or physical calibration",
+    "No model baselines executed under this candidate protocol"
+  ],
+  "source_observation_contract": "wildfire-incident-day-ops-v3",
+  "families": [
+    "quiet_handover",
+    "wind_access_loss",
+    "crew_only_access",
+    "aircraft_window",
+    "destination_threat",
+    "regional_shortage"
+  ]
+}

@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wildfire-benchmark-v2"
+version = "0.1.0"
+description = "Qualified reference-relative grading for synthetic Wildfire Ops evaluation"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["wildfire_benchmark_v2*"]
