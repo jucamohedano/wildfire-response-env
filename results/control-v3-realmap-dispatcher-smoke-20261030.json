@@ -1,0 +1,20 @@
+{
+  "version": "wildfire-control-v3-parity-v1",
+  "status": "subset_passed",
+  "runtime": "es-ma-2021",
+  "policy": "dispatcher",
+  "workers": 1,
+  "requested_cases": 1,
+  "total_active_cases": 6,
+  "cases": [
+    {
+      "case": "incident-day-realmap-v2-000",
+      "status": "passed",
+      "minute": 1440,
+      "steps": 644,
+      "elapsed_seconds": 84.409
+    }
+  ],
+  "control_interface_sha256": "50689a8149532363468d1c94f947629e1e87beee707d8a00f67938e6f2a35361",
+  "elapsed_seconds": 85.542
+}

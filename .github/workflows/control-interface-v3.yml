@@ -1,0 +1,63 @@
+name: Incident-day control interface v3
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/control-interface-v3.yml'
+      - 'envs/wildfire_control_v3/**'
+      - 'envs/wildfire_response/core/**'
+      - 'eval/check_control_v3_parity.py'
+      - 'eval/validate_population_v3_runtime.py'
+      - 'eval/validate_population_refill_probe.py'
+      - 'eval/wait_recovery_v1.py'
+      - 'eval/session_recovery_v1.py'
+      - 'eval/validate_session_recovery_matrix.py'
+      - 'eval/validate_wait_recovery.py'
+      - 'eval/validate_wait_recovery_matrix.py'
+      - 'tests/test_control_interface_v3.py'
+      - 'tests/test_control_v3_parity_runner.py'
+      - 'tests/test_control_population_v3_integration.py'
+      - 'tests/test_incident_day_*_v3.py'
+      - 'tests/test_population_*_v3*.py'
+      - 'tests/test_population_refill_probe.py'
+      - 'tests/test_wait_recovery*.py'
+      - 'tests/test_session_recovery*.py'
+      - 'tests/test_full_session_recovery_integration.py'
+  workflow_dispatch:
+
+jobs:
+  fixture-and-interface:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install core, interface and test dependencies
+        run: python -m pip install -e envs/wildfire_response/core -e envs/wildfire_control_v3 pytest==9.2.0 pyarrow==26.0.0
+      - name: Test public interface and existing core contracts
+        run: >-
+          python -m pytest -q -ra
+          tests/test_control_interface_v3.py
+          tests/test_control_v3_parity_runner.py
+          tests/test_control_population_v3_integration.py
+          tests/test_incident_day_action_feedback_v3.py
+          tests/test_incident_day_briefing_v3.py
+          tests/test_incident_day_knowledge_v3.py
+          tests/test_incident_day_realmap_briefing_v3.py
+          tests/test_incident_day_verifier_v3.py
+          tests/test_population_engine_v3_unit.py
+          tests/test_population_freshness_v3_integration.py
+          tests/test_population_v3_runtime_matrix.py
+          tests/test_population_refill_probe.py
+          tests/test_wait_recovery_v1.py
+          tests/test_wait_recovery_validation.py
+          tests/test_wait_recovery_active_matrix.py
+          tests/test_session_recovery_v1.py
+          tests/test_session_recovery_matrix.py
+          tests/test_full_session_recovery_integration.py
+          tests/test_incident_day_core.py
+          tests/test_incident_day_events.py

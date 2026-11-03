@@ -1,0 +1,55 @@
+{
+  "version": "wildfire-control-v3-parity-v1",
+  "status": "passed",
+  "runtime": "es-ma-2021",
+  "policy": "passive",
+  "workers": 1,
+  "requested_cases": 6,
+  "total_active_cases": 6,
+  "cases": [
+    {
+      "case": "incident-day-realmap-v2-000",
+      "status": "passed",
+      "minute": 1440,
+      "steps": 41,
+      "elapsed_seconds": 15.922
+    },
+    {
+      "case": "incident-day-realmap-v2-001",
+      "status": "passed",
+      "minute": 1440,
+      "steps": 39,
+      "elapsed_seconds": 16.994
+    },
+    {
+      "case": "incident-day-realmap-v2-002",
+      "status": "passed",
+      "minute": 1440,
+      "steps": 40,
+      "elapsed_seconds": 16.116
+    },
+    {
+      "case": "incident-day-realmap-v2-003",
+      "status": "passed",
+      "minute": 1440,
+      "steps": 39,
+      "elapsed_seconds": 16.401
+    },
+    {
+      "case": "incident-day-realmap-v2-004",
+      "status": "passed",
+      "minute": 1440,
+      "steps": 40,
+      "elapsed_seconds": 16.006
+    },
+    {
+      "case": "incident-day-realmap-v2-005",
+      "status": "passed",
+      "minute": 1440,
+      "steps": 38,
+      "elapsed_seconds": 15.717
+    }
+  ],
+  "control_interface_sha256": "50689a8149532363468d1c94f947629e1e87beee707d8a00f67938e6f2a35361",
+  "elapsed_seconds": 98.337
+}

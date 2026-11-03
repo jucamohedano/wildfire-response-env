@@ -1,0 +1,209 @@
+# Incident-day control interface v3 (experimental)
+
+This package contains an additive, single-controller interface and an opt-in
+population-knowledge engine. The new engine uses the v2 fire physics, resources
+and outcome rules but has a separately pinned observation/validation identity.
+The v2 engine, existing scenario IDs, v2 implementation digest and archived runs
+remain unchanged. This is **not** yet the hosted AgentEnv/OpenEnv day interface
+or an approved training benchmark.
+
+Install the existing core and the new package from a checkout, then create a
+dedicated environment instance for each controller:
+
+```sh
+python -m pip install -e envs/wildfire_response/core -e envs/wildfire_control_v3
+python - <<'PY'
+from wildfire_core.incident_day import fixture_inputs
+from wildfire_control_v3.control import create_population_control
+
+inputs, network = fixture_inputs()
+control = create_population_control(inputs, network, expected_inputs_sha256=inputs['sha256'],
+                                    expected_network_sha256=network['sha256'])
+observation, info = control.reset('incident-day-egress-v1-000')
+print(control.execute('get_briefing', {})['page'])
+result = control.execute('advance', {'max_minutes': 5})
+print(result['observation']['minute'], result['info']['wake_reason'])
+PY
+```
+
+`tool_definitions_v3()` returns the named public tools. The additive
+`get_briefing` page is a bounded projection; it is **not** the complete world
+or complete delivered record. `get_situation` still provides the selected
+engine's full public observation. `get_report_page` supplies explicit cursor, count and
+continuation fields; `get_reports` remains available for existing queries.
+Report content and role are untrusted data. An observation is what has been
+delivered, not a guarantee of current conditions or knowledge of future events.
+
+The reset metadata and action results include the briefing when available.
+`create_population_control(...)` opts into `PopulationEngineV3`, which captures
+population snapshots at the time of an event and updates its known state only
+when those reports are delivered. Its observation, evacuation routing and order
+validation use the same last-reported position. A conflicting or unknown
+position returns `position_unknown` and no route options; a route based on a
+delivered blocked-position report is explicitly labelled as last reported and
+may be declined later if the group has moved. This is not live tracking or a
+guarantee of current physical position.
+
+For archived behavior, `ControlCenterV3(IncidentDayEnv(...))` still wraps the
+unchanged v2 engine. Its separate briefing overlay can identify delivered
+arrival evidence, but its underlying v2 router/validator can still use the
+older population view. Do not mistake that legacy mode for the opt-in fix.
+
+`check_action` returns its selected engine's authoritative validity plus v3 diagnostic codes,
+affected fields and suggested lookups where known. A commit remains atomic and
+consumes the same simulated time as v2. An exception after dispatch returns an
+indeterminate execution status: inspect the public situation before retrying.
+The wrapper blocks the fourth consecutive identical failed draft in an
+unchanged situation; it neither chooses an action nor advances time. Valid
+orders and reads remain available. An external driver still needs its own
+bounded call/time budget; a model can ignore the guard and keep calling it.
+
+`advance` is a versioned alias for the engine's `advance_time`: it defaults to a
+60-minute maximum, accepts a shorter limit, and stops earlier when the engine
+delivers actionable information or reaches an operational boundary. Commands
+and the fire continue to use the existing one-minute engine ticks. Returned
+actions include the selected engine's full public observation plus a separately labelled
+briefing, so no observation fields are replaced by a summary.
+
+Terminal action results deliberately withhold the raw score until a trusted
+driver calls `finalize(expected_identity=..., expected_interface_sha256=...,
+infrastructure_timeout=...)`.
+The caller must supply predeclared task, seed, engine, input, network and
+scenario identity pins and the v3 interface code digest from its evaluation
+configuration; never take its
+expected pins from the run being evaluated. The gate invokes the selected engine's replay and
+independent reward calculation, rejects mismatched identity, and distinguishes
+completed days, invalid abandonment, censoring, incomplete runs and timeouts.
+It does not prove field realism. The caller must report timeouts accurately.
+`wildfire_control_v3.control.interface_digest()` and
+`wildfire_control_v3.population_engine_v3.population_engine_identity()` can be
+used when preparing and
+recording an evaluation configuration before the run starts. Use a fresh
+process and immutable source files for evaluation. The interface records source
+fingerprints when its modules load, checks source against the loader's code,
+and checks them around verification. The source/bytecode comparison is tested
+on source-installed CPython 3.12; unsupported loaders fail closed. These are
+consistency checks, not a security attestation of an untrusted process or a
+substitute for immutable deployments.
+
+`private_checkpoint()` and `restore_private_checkpoint(...)` are **trusted
+driver methods**, not model tools. Their envelope contains the v2 checkpoint,
+including hidden future events and evaluator state; store it privately. The
+v3 envelope pins its own code and check-guard state separately from the v2
+engine, so a resumed wrapper retains the guard. Do not include it in prompts,
+public trajectories or datasets. Restore validates in a separate engine and,
+on success, replaces `control.environment` with that engine. It currently
+requires an environment without an active artifact directory; segmented
+artifact continuation is not yet supported by this wrapper.
+
+## Paired development checks
+
+With the prepared dataset already downloaded and `pyarrow` installed, the
+following runs a single paired real-map exercise on one CPU worker:
+
+```sh
+PYTHONPATH=envs/wildfire_control_v3/src:envs/wildfire_response/core/src:. \
+python -m eval.check_control_v3_parity \
+  --data-dir .runtime/wildfire-response-spain --runtime es-ma-2021 \
+  --allow-unapproved-data --policy dispatcher --limit 1 --wall-seconds 240 \
+  --output /tmp/new-control-parity.json
+```
+
+The reference and v3 wrapper **over the v2 engine** run the same policy and scenario on separate
+engine instances. The check compares public observations, actions, timing and
+replayed terminal reward; it does not establish physical calibration or compare
+every hidden state. `subset_passed` is a successful selected-case smoke check,
+not a passed suite. `incomplete` and `failed` exit nonzero. Budgets are checked
+after atomic simulator and verifier calls and after staging the final report,
+before its atomic rename. The rename itself cannot be preempted. Interrupted
+work is never scored.
+
+## Population-engine runtime matrix
+
+With the pinned data pack available, the real-map briefing regression can be
+run independently. Set `WILDFIRE_ISSUE59_DATA` if it is not stored at
+`.runtime/wildfire-response-spain`:
+
+```sh
+python -m pytest -q -ra tests/test_incident_day_realmap_briefing_v3.py
+```
+
+Count the real-map regression as verified only when it passes; a missing pack
+is reported as a skip. The fixture-based regression also runs without the pack.
+
+To check the separately versioned population engine against all active
+development cases and policies, use a fresh process and output directory:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPYCACHEPREFIX="$(mktemp -d /tmp/wildfire-v3-cache.XXXXXX)" \
+PYTHONPATH=envs/wildfire_control_v3/src:envs/wildfire_response/core/src:. \
+python -m eval.validate_population_v3_runtime \
+  --data-dir .runtime/wildfire-response-spain \
+  --output /tmp/wildfire-population-v3-matrix --wall-seconds 5400
+```
+
+The runner uses one CPU worker and publishes only aggregate checks. Keep all
+source files immutable from before import until the process exits: loader/source
+comparisons alone cannot prove which code executed during an import-time edit.
+An interrupted or budget-limited run is incomplete and must be restarted in a
+new output directory; this runner does not resume a partial matrix. Unexercised
+checkpoint boundaries are reported, not counted as passed. These development
+checks do not establish real-world calibration.
+
+When a completed matrix identifies a refill phase only inside an uninterrupted
+wait, a separate probe can reconstruct the case and policy under the same pins,
+split the wait into one-minute actions and test a new checkpoint boundary:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPYCACHEPREFIX="$(mktemp -d /tmp/wildfire-v3-probe-cache.XXXXXX)" \
+PYTHONPATH=envs/wildfire_control_v3/src:envs/wildfire_response/core/src:. \
+python -m eval.validate_population_refill_probe \
+  --data-dir .runtime/wildfire-response-spain \
+  --original-report results/population-v3-runtime-matrix-20261030.json \
+  --original-report-sha256 "$(sha256sum results/population-v3-runtime-matrix-20261030.json | cut -d' ' -f1)" \
+  --output /tmp/wildfire-v3-refill-probe --wall-seconds 1200
+```
+
+This is supplemental evidence for a modified action history. Its baseline is
+a fresh reconstruction; it does not restore a checkpoint from the original run
+or remove that run's blocked matrix status. Run it only after the matrix process
+has exited. Like the matrix, the probe cannot resume an interrupted run.
+
+## Trusted wait recovery
+
+`eval.wait_recovery_v1.WaitRecoveryV1` is an opt-in trusted-driver layer for
+`ControlCenterV3` waits. It writes a private checkpoint and the selected wait
+before executing it, and writes the resulting checkpoint and public result
+before returning. After a restart, `recover()` restores the journal and, if the
+wait was pending, replays it from the pre-wait checkpoint. Its owner-only
+directory must be unique to the episode; the caller must use consecutive
+sequence numbers and serialize access to the control.
+
+```python
+from eval.wait_recovery_v1 import WaitRecoveryV1
+
+# control is reset; private_dir already exists with owner-only permissions.
+waits = WaitRecoveryV1(control, private_dir, run_identity="unique-episode-id")
+result = waits.start(1, max_minutes=60, initialize=True)
+# After a process restart, construct a fresh matching control and driver, then
+# call waits.recover() before issuing any further actions.
+```
+
+This layer does not automatically wrap agent tools. The driver must use it for
+every wait and recover before issuing later actions. It persists control state,
+not policy, observer or matrix-runner state, later non-wait actions, or external
+output delivery; those require separate coordination. The control must not use
+an artifact directory. Journal hashes detect accidental corruption, not a
+malicious writer or rollback. This method does not checkpoint inside a wait or
+change the historical matrix's blocked entries. Exceptions and tracebacks are
+trusted-only: their frames can retain private state, so do not expose them to
+an agent or an untrusted logging service.
+
+The [recovery campaign](../results/wait-recovery-v1-20261030.json) exercises
+the six previously blocked case-policy pairs with real child-process deaths,
+including during a refill tick. It reconstructs those cases and does not prove
+identity with the archived trajectories. It is not a 48-case recovery matrix.
+
+`eval.validate_wait_recovery_matrix` separately checks a selected wait in each
+active case and policy. Its report describes only those reconstructed waits and
+their short policy continuations, not full-day recovery or matrix-runner resume.

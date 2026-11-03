@@ -1,0 +1,180 @@
+{
+  "version": "wait-recovery-validation-v2",
+  "status": "complete",
+  "original_report_sha256": "9bea928ca4cb00aade9f8be20d5d54e1f27fc4aee89ed5e3248429bccfc0ee79",
+  "pins": {
+    "dataset_manifest_sha256": "8cf89a78daa3e24f3f8a31695d86c052b9ce0e164790e29e159c99bde6785065",
+    "dataset_revision": "d7e1e1c82eb249e35315bd19d1e0fea730fc0da7",
+    "core_sha256": "af4adc0b2fb92282246411dbac83c1eeac23eb3b4730200c0b34dc288b59323a",
+    "lifecycle_sha256": "c46f9b3e8cdebed050022e6b7eb966d09ae89049b689f360b41d28ab2a345d04",
+    "interface_version": "wildfire-control-interface-v3",
+    "population_version": "wildfire-incident-day-population-v3",
+    "population_engine_sha256": "8faa3a8dd6ce756f2ec58fd341977e26765efda943e9d9659b31ca5fdf9280e7",
+    "v3_sources_sha256": "8ff843d115a9108f8cae3ffd768216bb5b30ed7717a77edbd6377831365f5a1f",
+    "validator_sha256": "ae50f63da27bf2b8885e8fee536df5d4dd7ded5ad67cf1a3d31ce71addefa2f2",
+    "source_attestation": "current_source_and_loader_only; immutable_sources_from_before_import_required"
+  },
+  "driver_sha256": "823441f412bb6fe6dd32c235c71e35da3c077f02a1c5f0308fd7da2dd15ec90c",
+  "harness_sha256": "40a2c72687bd3da4e052f8b1012e3f445734d8cb989fddf6409ce8c80c22fdd2",
+  "probe_sha256": "f65f1bc5c16446486d87cbc82568e61a050c1e88dcbb8879108e106b7e83532d",
+  "eligible_cells": 6,
+  "cases": [
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-coverage-v1-002",
+      "policy": "passive",
+      "original_cell_status": "blocked",
+      "status": "passed",
+      "faults": [
+        {
+          "fault": "after_prepare",
+          "passed": true
+        },
+        {
+          "fault": "during_wait",
+          "passed": true
+        },
+        {
+          "fault": "after_execute",
+          "passed": true
+        },
+        {
+          "fault": "after_commit",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-coverage-v1-004",
+      "policy": "passive",
+      "original_cell_status": "blocked",
+      "status": "passed",
+      "faults": [
+        {
+          "fault": "after_prepare",
+          "passed": true
+        },
+        {
+          "fault": "during_wait",
+          "passed": true
+        },
+        {
+          "fault": "after_execute",
+          "passed": true
+        },
+        {
+          "fault": "after_commit",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-egress-v1-000",
+      "policy": "conservative",
+      "original_cell_status": "blocked",
+      "status": "passed",
+      "faults": [
+        {
+          "fault": "after_prepare",
+          "passed": true
+        },
+        {
+          "fault": "during_wait",
+          "passed": true
+        },
+        {
+          "fault": "after_execute",
+          "passed": true
+        },
+        {
+          "fault": "after_commit",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-egress-v1-000",
+      "policy": "passive",
+      "original_cell_status": "blocked",
+      "status": "passed",
+      "faults": [
+        {
+          "fault": "after_prepare",
+          "passed": true
+        },
+        {
+          "fault": "during_wait",
+          "passed": true
+        },
+        {
+          "fault": "after_execute",
+          "passed": true
+        },
+        {
+          "fault": "after_commit",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-egress-v1-003",
+      "policy": "conservative",
+      "original_cell_status": "blocked",
+      "status": "passed",
+      "faults": [
+        {
+          "fault": "after_prepare",
+          "passed": true
+        },
+        {
+          "fault": "during_wait",
+          "passed": true
+        },
+        {
+          "fault": "after_execute",
+          "passed": true
+        },
+        {
+          "fault": "after_commit",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "runtime_id": "fixture",
+      "case_id": "incident-day-egress-v1-005",
+      "policy": "passive",
+      "original_cell_status": "blocked",
+      "status": "passed",
+      "faults": [
+        {
+          "fault": "after_prepare",
+          "passed": true
+        },
+        {
+          "fault": "during_wait",
+          "passed": true
+        },
+        {
+          "fault": "after_execute",
+          "passed": true
+        },
+        {
+          "fault": "after_commit",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Freshly reconstructed unsplit waits; original matrix identity and score equality are not established.",
+    "Supplementary evidence only; original blocked cells and matrix status remain unchanged.",
+    "The driver persists control waits only; policy and matrix progress recovery are not tested.",
+    "No checkpoint is taken inside the original uninterrupted wait.",
+    "Sources must remain immutable before import and throughout execution."
+  ]
+}
