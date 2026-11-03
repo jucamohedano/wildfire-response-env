@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wildfire-ops-v3"
+version = "0.1.0"
+description = "Versioned delivered-population knowledge and actionable feedback for Wildfire Ops"
+requires-python = ">=3.12"
+dependencies = ["wildfire-response-core==0.1.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["wildfire_ops_v3*"]

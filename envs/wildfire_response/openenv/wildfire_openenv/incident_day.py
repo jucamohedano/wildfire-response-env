@@ -119,19 +119,41 @@ def _public_info(value):
     return copy.deepcopy({key: item for key, item in value.items() if key in _INFO_FIELDS})
 
 
+def _observation_backend(version):
+    if version == 'v2':
+        return IncidentDayEnv, None
+    if version != 'v3':
+        raise ValueError('observation_version must be v2 or v3')
+    try:
+        from wildfire_ops_v3 import IncidentDayEnvV3, observation_identity
+    except ModuleNotFoundError as error:
+        if error.name != 'wildfire_ops_v3':
+            raise
+        raise ValueError('Install the v3 addon with pip install -e envs/wildfire_ops_v3') from error
+    return IncidentDayEnvV3, observation_identity
+
+
 class IncidentDayEnvironment(Environment):
     SUPPORTS_CONCURRENT_SESSIONS = False
 
     def __init__(self, inputs, network, *, expected_inputs_sha256, expected_network_sha256,
-                 allow_unapproved_data=False, allow_archived_scenarios=False):
+                 allow_unapproved_data=False, allow_archived_scenarios=False, observation_version='v2'):
         super().__init__()
-        self.core = IncidentDayEnv(inputs, network, expected_inputs_sha256=expected_inputs_sha256,
+        backend, self._observation_identity_provider = _observation_backend(observation_version)
+        self.observation_version = observation_version
+        self.core = backend(inputs, network, expected_inputs_sha256=expected_inputs_sha256,
             expected_network_sha256=expected_network_sha256, allow_unapproved_data=allow_unapproved_data)
         if type(allow_archived_scenarios) is not bool:
             raise TypeError('allow_archived_scenarios must be a boolean')
         self.allow_archived_scenarios = allow_archived_scenarios
         self._state = IncidentDayState()
         self._frames = []
+
+    @property
+    def observation_identity(self):
+        # Trusted evaluator metadata, kept out of actor observation/info fields.
+        provider = getattr(self, '_observation_identity_provider', None)
+        return copy.deepcopy(provider()) if provider is not None else None
 
     def reset(self, seed=None, episode_id=None, task_id=None, **kwargs):
         if kwargs:

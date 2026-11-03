@@ -14,6 +14,16 @@ unseen terrain, or independent historical incidents. Operational inventories,
 demand and timing changes remain synthetic assumptions. Runtime consistency does
 not establish physical or reward calibration.
 
+## Corrected interface for new policy evaluations
+
+Use the explicit [Ops v3 contract](ops-v3.md) for new model runs so delivered
+population arrivals are reconciled and approach errors are actionable. Install
+`envs/wildfire_ops_v3` alongside the core, select `observation_version='v3'` in the
+adapter/factory or `--observation-version v3` in the evaluation CLI, and keep its
+observation identity with the run. The prepared tasks and reward are unchanged.
+The default v2 path remains available for reproducing frozen results; do not
+silently relabel those observations or resume them as v3.
+
 ## Evaluator APIs and model boundary
 
 Discovery (`list_tasks`, `/tasks`) and reset are trusted evaluator APIs. The

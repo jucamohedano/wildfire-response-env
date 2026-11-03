@@ -1,5 +1,6 @@
 """Verify a downloaded runtime package and run a bounded development episode."""
 import argparse
+import copy
 import hashlib
 import json
 import math
@@ -233,7 +234,9 @@ def verify_package(data_dir):
     return manifest
 
 
-def make_environment(data_dir, runtime='fixture', *, allow_unapproved_data=False):
+def make_environment(data_dir, runtime='fixture', *, allow_unapproved_data=False, observation_version='v2'):
+    if observation_version not in ('v2', 'v3'):
+        raise ValueError('observation_version must be v2 or v3')
     if type(allow_unapproved_data) is not bool:
         raise ValueError('allow_unapproved_data must be a boolean')
     manifest = verify_package(data_dir)
@@ -252,9 +255,22 @@ def make_environment(data_dir, runtime='fixture', *, allow_unapproved_data=False
         if len(raw) != item['bytes'] or hashlib.sha256(raw).hexdigest() != item['sha256']:
             raise ValueError('Runtime file changed after verification')
         documents.append(_json(raw))
-    env = IncidentDayEnv(*documents, expected_inputs_sha256=entry['inputs_sha256'],
-                         expected_network_sha256=entry['network_sha256'],
-                         allow_unapproved_data=allow_unapproved_data)
+    backend = IncidentDayEnv
+    identity_provider = None
+    if observation_version == 'v3':
+        try:
+            from wildfire_ops_v3 import IncidentDayEnvV3, observation_identity
+        except ModuleNotFoundError as error:
+            if error.name != 'wildfire_ops_v3':
+                raise
+            raise ValueError('Install the v3 addon with pip install -e envs/wildfire_ops_v3') from error
+        backend, identity_provider = IncidentDayEnvV3, observation_identity
+    env = backend(*documents, expected_inputs_sha256=entry['inputs_sha256'],
+                  expected_network_sha256=entry['network_sha256'],
+                  allow_unapproved_data=allow_unapproved_data)
+    if identity_provider is not None:
+        # Entrypoint metadata only; the pinned runtime entry stays unchanged.
+        env._runtime_observation_identity = identity_provider
     return env, entry
 
 
@@ -274,8 +290,12 @@ def run_episode(env, entry, *, policy='passive', case_id=None, wall_seconds=300,
         raise ValueError('Case is not active for runtime')
     start = time.monotonic()
     engine_pin = implementation_digest()
+    identity_provider = getattr(env, '_runtime_observation_identity', None)
+    observation_pin = copy.deepcopy(identity_provider()) if identity_provider is not None else None
     result = dict(status='incomplete', case_id=case_id, policy=policy, commands=0, score=None,
                   verification='not_run')
+    if identity_provider is not None:
+        result.update(observation_version='v3', observation_identity=observation_pin)
     def expire(signum, frame):
         raise _Deadline()
     old_handler = signal.signal(signal.SIGALRM, expire)
@@ -292,7 +312,8 @@ def run_episode(env, entry, *, policy='passive', case_id=None, wall_seconds=300,
             outcome = verification.get('outcomes', {})
             if (all(verification.get(k) is True for k in ('passed', 'exact_replay', 'independent_reward_agreement'))
                     and outcome.get('completed_minutes') == 1440 and outcome.get('score_eligible') is True
-                    and implementation_digest() == engine_pin):
+                    and implementation_digest() == engine_pin
+                    and (identity_provider is None or identity_provider() == observation_pin)):
                 result.update(status='complete', verification='passed', score=outcome['graded_score'])
             else:
                 result.update(status='failed', verification='failed')
@@ -314,6 +335,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data-dir', type=Path, required=True)
     parser.add_argument('--runtime', default='fixture')
+    parser.add_argument('--observation-version', choices=('v2', 'v3'), default='v2')
     parser.add_argument('--policy', choices=('passive', 'dispatcher'), default='passive')
     parser.add_argument('--allow-unapproved-data', action='store_true')
     parser.add_argument('--wall-seconds', type=float, default=300)
@@ -327,7 +349,8 @@ def main(argv=None):
             manifest = verify_package(args.data_dir)
             result = dict(status='verified', files=len(manifest['files']), runtimes=sorted(manifest['runtimes']))
         else:
-            env, entry = make_environment(args.data_dir, args.runtime, allow_unapproved_data=args.allow_unapproved_data)
+            env, entry = make_environment(args.data_dir, args.runtime, allow_unapproved_data=args.allow_unapproved_data,
+                                          observation_version=args.observation_version)
             result = run_episode(env, entry, policy=args.policy, case_id=args.case_id,
                                  wall_seconds=args.wall_seconds, max_commands=args.max_commands)
         output = json.dumps(result, sort_keys=True, allow_nan=False)
