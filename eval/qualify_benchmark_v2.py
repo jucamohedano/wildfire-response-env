@@ -117,6 +117,8 @@ def collect_controls(path,expected_sha256,rows,baseline_report,protocol,collecte
             result.append(tuple(item[key] for key in ('runtime_id','case_id','policy')))
         return result
     expected_ids,actual_ids=identities(declared),identities(cells)
+    if controls['pins'].get('campaign_domain_sha256')!=seal(declared):
+        raise ValueError('Controls frozen campaign domain pin differs')
     if (len(set(expected_ids))!=len(declared) or len(set(actual_ids))!=len(cells)
             or set(expected_ids)!=set(actual_ids)):
         raise ValueError('Controls declared identities differ from actual terminal cells')

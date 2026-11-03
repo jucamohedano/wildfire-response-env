@@ -75,6 +75,7 @@ def qualification(tmp_path, monkeypatch):
     controls['expected_cells'] = [{key: item[key] for key in ('runtime_id', 'case_id', 'policy')}
                                   for item in controls['cells']]
     controls['summary'] = dict(expected=25, finished=25, statuses={'complete': 25})
+    controls['pins']['campaign_domain_sha256'] = cli.seal(controls['expected_cells'])
     report_path = tmp_path / 'baseline/report.json'
     controls_path = tmp_path / 'controls/report.json'
     freeze_path, protocol_path = tmp_path / 'freeze.json', tmp_path / 'protocol.json'
@@ -227,11 +228,19 @@ def test_bounded_saved_reader_merges_global_pins_and_recounts_registered_orders(
     'validator', 'missing_validator', 'receipt_map_missing_stress', 'receipt_map_hash',
     'changed_registration_rehashed', 'declared_missing', 'declared_extra', 'declared_duplicate',
     'actual_missing', 'summary_expected', 'summary_finished', 'summary_bool', 'summary_statuses',
-    'complete_with_blocked_cell',
+    'complete_with_blocked_cell', 'domain_pin', 'missing_domain_pin', 'reduced_domain_stale_pin',
 ])
 def test_controls_campaign_pins_domain_and_completion_must_reconcile(qualification, fault):
     controls = qualification.controls
-    if fault == 'validator':
+    if fault == 'domain_pin':
+        controls['pins']['campaign_domain_sha256'] = '0' * 64
+    elif fault == 'missing_domain_pin':
+        controls['pins'].pop('campaign_domain_sha256')
+    elif fault == 'reduced_domain_stale_pin':
+        controls['cells'].pop()
+        controls['expected_cells'].pop()
+        controls['summary'] = dict(expected=24, finished=24, statuses={'complete': 24})
+    elif fault == 'validator':
         controls['pins']['validator_sha256'] = '0' * 64
     elif fault == 'missing_validator':
         controls['pins'].pop('validator_sha256')
@@ -275,6 +284,7 @@ def test_genuinely_sparse_domain_still_requires_both_receipts_and_all_weak_cases
     controls['expected_cells'] = [{key: item[key] for key in ('runtime_id', 'case_id', 'policy')}
                                   for item in controls['cells']]
     controls['summary'] = dict(expected=1, finished=1, statuses={'complete': 1})
+    controls['pins']['campaign_domain_sha256'] = cli.seal(controls['expected_cells'])
     qualification.protocol['status'] = 'released'
     result, _ = qualification.build(reconcile=False)
     assert result['cases'][TASKS[7]]['reference_policy'] == 'stress'
