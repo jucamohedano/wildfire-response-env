@@ -1,0 +1,47 @@
+name: Benchmark v2 grading contract
+
+on:
+  pull_request:
+    paths:
+      - 'envs/wildfire_benchmark_v2/**'
+      - 'data/benchmark_v2/**'
+      - 'eval/qualify_benchmark_v2.py'
+      - 'eval/grade_benchmark_v2.py'
+      - 'eval/run_benchmark_v2_controls.py'
+      - 'tests/test_benchmark_v2_*.py'
+      - '.github/workflows/benchmark-v2-grading.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pure-grading-and-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install the standalone pure grading package
+        run: python -m pip install -e envs/wildfire_benchmark_v2 pytest==9.1.1 wheel
+      - name: Check synthetic objective, qualification, eligibility and verifier contracts
+        run: python -m pytest -q tests/test_benchmark_v2_grading.py tests/test_benchmark_v2_evidence.py tests/test_benchmark_v2_verifier.py tests/test_benchmark_v2_controls_qualification.py
+
+  control-runner-fixtures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install fixture runtime only
+        run: python -m pip install -e envs/wildfire_response/core -e envs/wildfire_ops_v3 -e envs/wildfire_benchmark_v2 pytest==9.1.1 pyarrow==26.0.0 wheel
+      - name: Check control-runner recovery, receipts and safety using synthetic fixtures
+        run: python -m pytest -q tests/test_benchmark_v2_control_runner.py

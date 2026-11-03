@@ -1,0 +1,56 @@
+{
+  "version": "wildfire-benchmark-v2-qualification-summary-v1",
+  "status": "candidate_not_released",
+  "historical_projection_only": true,
+  "new_simulations": 0,
+  "new_model_evaluations": 0,
+  "training_runs": 0,
+  "expected_tasks": 24,
+  "saved_executions_checked": 48,
+  "positive_reference_headroom_cases": 23,
+  "zero_reference_headroom_cases": 1,
+  "verified_weak_active_controls": 0,
+  "required_weak_active_controls": 24,
+  "official_benchmark_mean": null,
+  "projected_endpoints": {
+    "qualified_cases_only": 23,
+    "passive_grade": 0.0,
+    "reference_grade": 1.0,
+    "endpoints_by_construction": true,
+    "evidence_of_benchmark_difficulty": false,
+    "unqualified_cases_receive_no_grade": true,
+    "no_subset_aggregate_reported": true
+  },
+  "legacy_raw_reward_diagnostics": {
+    "passive_mean": 0.9198562285849631,
+    "dispatcher_mean": 0.9954794695230809,
+    "original_results_modified": false,
+    "reference_cases_with_retained_adverse_flags": 4
+  },
+  "source_report_sha256": "55edc6ef84d7f2eacfaf55771a165795a040ae101c0490e72539c7aa83dfbb98",
+  "source_task_freeze_sha256": "c9f9c71513c6032aabba0680d15e6e358b8348c252e57a995b891405e4305f33",
+  "private_anchor_manifest_sha256": "d3a84f2aaaf76756fac4590ecd3d5322ce8fff6e697b3bc5ef14cafa6594827f",
+  "evidence_analysis_address_space_limit_bytes": 268435456,
+  "private_artifact_bytes": 244799,
+  "remote_ci": {
+    "tested_commit": "cb4bbde",
+    "url": "https://github.com/jucamohedano/wildfire-response-env/actions/runs/41631357481",
+    "passed": 340,
+    "failed": 0,
+    "skipped": 0,
+    "test_elapsed_seconds": 1.52,
+    "local_test_suites_run": 0
+  },
+  "remaining_release_evidence": [
+    "Demonstrate a beneficial reference or introduce a new qualified replacement for the zero-headroom candidate without rewriting frozen cases.",
+    "Run the preregistered conservative control across all expected cases with verified policy receipts and operational activity.",
+    "Reject or redesign cases where the weak active control exceeds the frozen 0.6 qualification threshold.",
+    "Explicitly release a fully qualified protocol before issuing official benchmark scores."
+  ],
+  "limitations": [
+    "References are best observed scripted online policies, not proven optima.",
+    "Reference normalization alone does not establish benchmark difficulty.",
+    "Current actions address a fixed incident sector, not arbitrary multi-front command.",
+    "No new model ranking, physical calibration or real-world safety claim."
+  ]
+}
