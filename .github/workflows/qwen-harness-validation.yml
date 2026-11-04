@@ -1,0 +1,28 @@
+name: Qwen evaluation harness guards
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/qwen-harness-validation.yml'
+      - 'eval/qwen3_*.py'
+      - 'eval/run_qwen3_day.py'
+      - 'eval/replay_qwen3_day.py'
+      - 'eval/render_qwen3_day_report.py'
+      - 'tests/test_qwen3_*.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-guards:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      PYTHONPATH: envs/wildfire_response/core/src:.
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e envs/wildfire_response/core pytest==9.2.0
+      - run: python -m pytest tests/test_qwen3_history.py tests/test_qwen3_protocol.py tests/test_qwen3_report.py tests/test_qwen3_replay.py -q
